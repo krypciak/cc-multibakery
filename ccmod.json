@@ -1,0 +1,17 @@
+{
+    "id": "cc-server",
+    "version": "0.0.1",
+    "title": "CC Multiplayer?!??!",
+    "description": "No way",
+    "repository": "https://github.com/krypciak/cc-server",
+    "tags": ["fun"],
+    "authors": ["krypek"],
+    "icons": {
+        "24": "icon/icon.png"
+    },
+    "dependencies": {
+        "crosscode": ">=1.4.0",
+        "Named-Saves": ">=1.0.0"
+    },
+    "plugin": "plugin.js"
+}
