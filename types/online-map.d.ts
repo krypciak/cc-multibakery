@@ -1,0 +1,33 @@
+import { Player } from './player';
+export declare class OnlineMap {
+    mapName: string;
+    alwaysLoaded: boolean;
+    private _levelData;
+    get levelData(): sc.MapModel.Map;
+    private conditionalEntities;
+    private shownEntities;
+    private namedEntities;
+    private mapEntities;
+    private entities;
+    private freeEntityIds;
+    private renderer;
+    private physics;
+    private events;
+    private levels;
+    private maps;
+    private masterLevel;
+    private maxLevel;
+    private minLevelZ;
+    private screen;
+    private size;
+    private states;
+    private _deferredVarChanged;
+    players: Player[];
+    constructor(mapName: string, alwaysLoaded?: boolean);
+    private reset;
+    readLevelData(): Promise<void>;
+    enter(player: Player): void;
+    leave(player: Player): boolean;
+    prepareForUpdate(): void;
+    afterUpdate(): void;
+}
