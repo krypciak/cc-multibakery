@@ -1,7 +1,7 @@
 import { Mod } from 'ultimate-crosscode-typedefs/modloader/mod'
-import { WindowMultiplayer } from './global'
+import { Multiplayer } from './multiplayer'
 
-export type Mod1 = Writable<Mod> & {
+export type Mod1 = Mod & {
     isCCModPacked: boolean
     findAllAssets?(): void /* only there for ccl2, used to set isCCL3 */
 } & (
@@ -21,6 +21,10 @@ export type Mod1 = Writable<Mod> & {
           }
     )
 
+export interface API_JOIN {
+    username: string
+}
+
 declare global {
     namespace ig {
         namespace SaveSlot {
@@ -30,7 +34,8 @@ declare global {
         }
         interface Game {
             prepareNewLevelView(this: this, path: string): void
-
         }
+
+        var multiplayer: Multiplayer
     }
 }

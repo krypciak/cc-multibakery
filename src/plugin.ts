@@ -1,7 +1,7 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import { Mod1 } from './types'
-import { DEFAULT_PORT, Multiplayer } from './global'
-import { Server } from './server'
+import { DEFAULT_PORT, Multiplayer } from './multiplayer'
+import { CCServer } from './server'
 
 export default class CCMultiplayerServer implements PluginClass {
     static dir: string
@@ -20,7 +20,7 @@ export default class CCMultiplayerServer implements PluginClass {
     }
 
     async poststart() {
-        new Server({
+        new CCServer({
             name: 'example',
             slotName: 'example',
             host: 'localhost',

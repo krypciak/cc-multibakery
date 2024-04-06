@@ -3,7 +3,7 @@ import { OnlineMap } from './online-map'
 export {}
 
 export function runFilteredAddons(map: OnlineMap, addons: any[], func: string, filterList: any[]) {
-    const viewMap = ig.multiplayer?.server?.viewMap
+    const viewMap = ig.multiplayer?.ccserver?.viewMap
     for (const addon of addons) {
         if (viewMap && map != viewMap && filterList.some(filter => addon instanceof filter)) {
             continue
@@ -21,7 +21,7 @@ const addonDeferredUpdateFiler: any[] = [ig.GamepadManager, ig.Bgm, ig.Light, ig
 
 ig.Game.inject({
     update() {
-        const s = ig.multiplayer.server
+        const s = ig.multiplayer.ccserver
         if (!s) return
         for (const map of Object.values(s.maps)) {
             map.prepareForUpdate()
@@ -42,7 +42,7 @@ ig.Game.inject({
         }
     },
     draw() {
-        const map = ig.multiplayer?.server?.viewMap
+        const map = ig.multiplayer?.ccserver?.viewMap
         if (!map) return
         map.prepareForUpdate()
         this.parent()
@@ -55,8 +55,8 @@ ig.Game.inject({
         // return this.parent(data, false, false)
     },
     prepareNewLevelView(path) {
-        ig.multiplayer.server.currentMapViewName = path
-        const map = ig.multiplayer.server.viewMap
+        ig.multiplayer.ccserver.currentMapViewName = path
+        const map = ig.multiplayer.ccserver.viewMap
         map.prepareForUpdate()
 
         const data = map.levelData
@@ -84,7 +84,7 @@ ig.Game.inject({
         map.afterUpdate()
     },
     deferredUpdate() {
-        const s = ig.multiplayer.server
+        const s = ig.multiplayer.ccserver
         if (!s) return
         const orig = ig.system.tick
 

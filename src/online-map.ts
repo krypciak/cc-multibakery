@@ -1,4 +1,4 @@
-import { PlayerClass } from './server'
+import { Player } from './player'
 
 export class OnlineMap {
     private _levelData!: sc.MapModel.Map
@@ -26,7 +26,7 @@ export class OnlineMap {
     private states!: typeof ig.game.states
     private _deferredVarChanged!: typeof ig.game._deferredVarChanged
 
-    players!: PlayerClass[]
+    players!: Player[]
 
     constructor(
         public mapName: string,
@@ -76,11 +76,12 @@ export class OnlineMap {
         this.afterUpdate()
     }
 
-    public enter(player: PlayerClass) {
+    public enter(player: Player) {
+        player.mapName = this.mapName
         this.players.push(player)
     }
 
-    public leave(player: PlayerClass): boolean {
+    public leave(player: Player): boolean {
         this.players.erase(player)
         return this.players.length == 0
     }

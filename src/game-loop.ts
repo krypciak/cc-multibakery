@@ -25,7 +25,7 @@ ig.System.inject({
         if (!ig.multiplayer.headless && window.requestAnimationFrame) {
             window.requestAnimationFrame(this.run.bind(this))
         } else {
-            this.intervalId = setInterval(this.run.bind(this), 1e3 / ig.multiplayer.server.s.globalTps) as unknown as number
+            this.intervalId = setInterval(this.run.bind(this), 1e3 / ig.multiplayer.ccserver.s.globalTps) as unknown as number
         }
         this.running = true
     },

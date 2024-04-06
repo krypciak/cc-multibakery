@@ -1,7 +1,5 @@
-import { OnlineMap } from './online-map'
-
-export type PlayerId = string
-export type PlayerClass = string
+import { OnlineMap as CCMap } from './online-map'
+import { Player } from './player'
 
 export type ServerSettings = {
     name: string
@@ -14,12 +12,12 @@ export type ServerSettings = {
     eventTps: number
 }
 
-export class Server {
-    maps: Record<string, OnlineMap> = {}
+export class CCServer {
+    maps: Record<string, CCMap> = {}
 
     currentMapViewName: string = ''
 
-    get viewMap(): OnlineMap {
+    get viewMap(): CCMap {
         return this.maps[this.currentMapViewName]
     }
 
@@ -27,7 +25,14 @@ export class Server {
         ig.multiplayer.appendServer(this)
     }
 
-    appendMap(map: OnlineMap) {
+    async getMap(mapName: string): Promise<CCMap> {
+        if (this.maps[mapName]) return this.maps[mapName]
+        const map = new CCMap(mapName)
+        await map.readLevelData()
+        return map
+    }
+
+    private appendMap(map: CCMap) {
         this.maps[map.mapName] = map
     }
 
@@ -38,14 +43,28 @@ export class Server {
     async start() {
         await this.loadSlot()
         /* debug */
-        this.appendMap(new OnlineMap('rhombus-dng/room-1', true))
-        this.appendMap(new OnlineMap('rhombus-dng/room-1-5', true))
+        this.appendMap(new CCMap('rhombus-dng/room-1', true))
+        this.appendMap(new CCMap('rhombus-dng/room-1-5', true))
 
         await this.readAllMaps()
 
         sc.model.enterGame()
         sc.model.enterRunning()
         ig.game.prepareNewLevelView('rhombus-dng/room-1')
+    }
+
+    getPlayers(): Player[] {
+        const players: Player[] = []
+        for (const map of Object.values(this.maps)) {
+            players.concat(map.players)
+        }
+        return players
+    }
+
+    async joinPlayer(player: Player) {
+        const map = await this.getMap(player.mapName)
+        map.enter(player)
+        console.log('join!', player.name)
     }
 
     private findSlot(): number {
