@@ -28,5 +28,9 @@ declare global {
                 saveName?: string /* from Named-Saves */
             }
         }
+        interface Game {
+            prepareNewLevelView(this: this, path: string): void
+
+        }
     }
 }

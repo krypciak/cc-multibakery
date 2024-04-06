@@ -1,16 +1,17 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import { Mod1 } from './types'
-import { DEFAULT_PORT, Multiplayer, appendServer, createServer } from './global'
+import { DEFAULT_PORT, Multiplayer } from './global'
+import { Server } from './server'
 
-export default class Server implements PluginClass {
+export default class CCMultiplayerServer implements PluginClass {
     static dir: string
     static mod: Mod1
 
     constructor(mod: Mod1) {
-        Server.dir = mod.baseDirectory
-        Server.mod = mod
-        Server.mod.isCCL3 = mod.findAllAssets ? true : false
-        Server.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
+        CCMultiplayerServer.dir = mod.baseDirectory
+        CCMultiplayerServer.mod = mod
+        CCMultiplayerServer.mod.isCCL3 = mod.findAllAssets ? true : false
+        CCMultiplayerServer.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
     }
 
     async prestart() {
@@ -19,19 +20,17 @@ export default class Server implements PluginClass {
     }
 
     async poststart() {
-        initTestServer()
+        new Server({
+            name: 'example',
+            slotName: 'example',
+            host: 'localhost',
+            port: DEFAULT_PORT,
+            globalTps: 60,
+            entityTps: 60,
+            physicsTps: 60,
+            eventTps: 60,
+        })
 
-        async function initTestServer() {
-            const server = await createServer({
-                name: 'example',
-                slotName: 'example',
-                host: 'localhost',
-                port: DEFAULT_PORT,
-                globalTps: 60,
-                entityTickSkipEvery: 0,
-                physicsTickSkipEvery: 0,
-            })
-            appendServer(server)
-        }
+        ig.multiplayer.start()
     }
 }
