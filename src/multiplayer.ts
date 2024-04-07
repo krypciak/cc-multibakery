@@ -2,13 +2,17 @@ import { CCServer } from './server'
 import { Player } from './player'
 
 import { Server, Socket } from 'socket.io'
-import { ClientToServerEvents, InterServerEvents, PlayerJoinResponse, ServerToClientEvents } from './api'
+import {
+    ClientToServerEvents,
+    InterServerEvents,
+    PlayerJoinResponse,
+    ServerToClientEvents,
+    ToClientUpdatePacket,
+} from './api'
 
 export const DEFAULT_PORT = 33405
 
-interface SocketData {
-    username: string
-}
+type SocketData = Player | undefined
 
 function setIntervalWorkaround() {
     const setInterval = window.setInterval
@@ -38,12 +42,13 @@ export class Multiplayer {
     server!: CCServer
 
     io!: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
-    sockets!: Record<string, Socket>
+    sockets!: Record<string, Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>>
     usernameToSocketId!: Record<string, string>
 
     constructor() {
         import('./game-loop')
         import('./update-loop')
+        import('./dummy-player')
     }
 
     appendServer(server: CCServer) {
@@ -72,13 +77,23 @@ export class Multiplayer {
 
             socket.on('disconnect', () => {
                 this.disconnectSocket(socket)
+                console.log('disconnect', socket.data)
             })
             socket.on('join', async (username, callback) => {
-                callback(await this.playerJoin(username))
+                const player = await Player.new(username)
+                const data: PlayerJoinResponse = await this.server.joinPlayer(player)
+                socket.data = player
+                this.usernameToSocketId[player.name] = socket.id
+                callback(data)
             })
             socket.on('leave', () => {
                 if (socket.data) {
-                    this.kick(socket.data.username, 'left')
+                    this.kick(socket.data.name, 'left')
+                }
+            })
+            socket.on('update', packet => {
+                if (socket.data) {
+                    this.server.playerUpdate(socket.data, packet)
                 }
             })
         })
@@ -91,12 +106,18 @@ export class Multiplayer {
         }
     }
 
-    public kick(username: string, message: string) {
+    kick(username: string, message: string) {
         console.log(`kick "${username}": ${message}`)
     }
 
-    private async playerJoin(username: string): Promise<PlayerJoinResponse> {
-        const player = await Player.new(username)
-        return this.server.joinPlayer(player)
+    sendOutUpdatePackets(packets: Record<string, ToClientUpdatePacket>) {
+        for (const mapName in packets) {
+            const packet = packets[mapName]
+            const map = this.server.maps[mapName]
+            for (const player of map.players) {
+                const socket = this.sockets[this.usernameToSocketId[player.name]]
+                socket.emit('update', packet)
+            }
+        }
     }
 }

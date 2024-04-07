@@ -1,8 +1,8 @@
-import { OnlineMap } from './online-map'
+import { CCMap } from './ccmap'
+import { UpdatePacketGather } from './update-packet-gather'
+import { runUpdatePacket } from './update-packet-run'
 
-export {}
-
-export function runFilteredAddons(map: OnlineMap, addons: any[], func: string, filterList: any[]) {
+function runFilteredAddons(map: CCMap, addons: any[], func: string, filterList: any[]) {
     const viewMap = ig.multiplayer?.server?.viewMap
     for (const addon of addons) {
         if (viewMap && map != viewMap && filterList.some(filter => addon instanceof filter)) {
@@ -13,27 +13,25 @@ export function runFilteredAddons(map: OnlineMap, addons: any[], func: string, f
 }
 
 const addonPreUpdateFilter: any[] = [ig.GamepadManager, sc.GlobalInput, sc.InputForcer]
-const addonPostUpdateFilter: any[] = [
-    // @ts-expect-error
-    ig.ScreenBlur,
-    sc.MenuModel,
-    ig.Camera,
-    // @ts-expect-error
-    ig.Rumble,
-    sc.GlobalInput,
-    // @ts-expect-error
-    sc.BetaControls,
-]
+// @ts-expect-error
+// prettier-ignore
+const addonPostUpdateFilter: any[] = [ig.ScreenBlur, sc.MenuModel, ig.Camera, ig.Rumble, sc.GlobalInput, sc.BetaControls]
 // @ts-expect-error
 // prettier-ignore
 const addonDeferredUpdateFiler: any[] = [ig.GamepadManager, ig.Bgm, ig.Light, ig.Weather, ig.Overlay, ig.InteractManager, ig.EnvParticles, ig.MapSounds, sc.Detectors, sc.GameSense]
+
+const updatePacketGather = new UpdatePacketGather()
 
 ig.Game.inject({
     update() {
         const s = ig.multiplayer.server
         if (!s) return
+
         for (const map of Object.values(s.maps)) {
             map.prepareForUpdate()
+
+            for (const { packet, player } of map.scheduledForUpdate) runUpdatePacket(player, packet)
+            map.scheduledForUpdate = []
 
             runFilteredAddons(map, this.addons.preUpdate, 'onPreUpdate', addonPreUpdateFilter)
 
@@ -46,6 +44,8 @@ ig.Game.inject({
             }
             ig.loading || this.events.update()
             runFilteredAddons(map, this.addons.postUpdate, 'onPostUpdate', addonPostUpdateFilter)
+
+            ig.multiplayer.sendOutUpdatePackets(updatePacketGather.pop())
 
             map.afterUpdate()
         }
@@ -67,9 +67,6 @@ ig.Game.inject({
         ig.multiplayer.server.currentMapViewName = path
         const map = ig.multiplayer.server.viewMap
         map.prepareForUpdate()
-
-        const data = map.levelData
-        ig.game.mapName = data.name
 
         ig.imageAtlas.defragment()
         ig.ready = false

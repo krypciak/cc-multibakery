@@ -1,6 +1,7 @@
+import { FromClientUpdatePacket } from './api'
 import { Player } from './player'
 
-export class OnlineMap {
+export class CCMap {
     private _levelData!: sc.MapModel.Map
     get levelData(): sc.MapModel.Map {
         return this._levelData
@@ -27,6 +28,8 @@ export class OnlineMap {
     private _deferredVarChanged!: typeof ig.game._deferredVarChanged
 
     players!: Player[]
+
+    scheduledForUpdate!: { player: Player; packet: FromClientUpdatePacket }[]
 
     constructor(
         public mapName: string,
@@ -56,6 +59,8 @@ export class OnlineMap {
         this.size = Vec2.create()
         this.states = []
         this._deferredVarChanged = false
+
+        this.scheduledForUpdate = []
     }
 
     public async readLevelData() {
@@ -106,6 +111,7 @@ export class OnlineMap {
         ig.game.size = this.size
         ig.game.states = this.states
         ig.game._deferredVarChanged = this._deferredVarChanged
+        ig.game.mapName = this.mapName
 
         ig.vars.onLevelChange(this.mapName)
     }

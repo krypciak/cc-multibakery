@@ -11,18 +11,13 @@
         "eslint-config-prettier": "^9.1.0",
         "prettier": "3.2.5",
         "typescript": "^5.4.4",
-        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
+        "socket.io": "^4.7.5"
     },
     "scripts": {
         "start": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
         "watch": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
         "build": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js src/plugin.ts",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line"
-    },
-    "trustedDependencies": [
-        "ultimate-crosscode-typedefs"
-    ],
-    "dependencies": {
-        "socket.io": "^4.7.5"
     }
 }

@@ -1,16 +1,11 @@
-import { PlayerJoinResponse } from './api'
-import { OnlineMap as CCMap } from './online-map'
+import { PlayerJoinResponse, ServerSettingsBase, FromClientUpdatePacket } from './api'
+import { CCMap as CCMap } from './ccmap'
 import { Player } from './player'
 
-export type ServerSettings = {
-    name: string
+export interface ServerSettings extends ServerSettingsBase {
     slotName: string
     host: string
     port: number
-    globalTps: number
-    entityTps: number
-    physicsTps: number
-    eventTps: number
 }
 
 export class CCServer {
@@ -71,7 +66,18 @@ export class CCServer {
         console.log('join!', player.name)
         return {
             mapName,
+            serverSettings: {
+                name: this.s.name,
+                globalTps: this.s.globalTps,
+                entityTps: this.s.entityTps,
+                physicsTps: this.s.physicsTps,
+                eventTps: this.s.eventTps,
+            },
         }
+    }
+
+    async playerUpdate(player: Player, packet: FromClientUpdatePacket) {
+        this.maps[player.mapName].scheduledForUpdate.push({ player, packet })
     }
 
     private findSlot(): number {
