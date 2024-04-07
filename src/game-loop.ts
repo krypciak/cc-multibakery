@@ -25,7 +25,10 @@ ig.System.inject({
         if (!ig.multiplayer.headless && window.requestAnimationFrame) {
             window.requestAnimationFrame(this.run.bind(this))
         } else {
-            this.intervalId = setInterval(this.run.bind(this), 1e3 / ig.multiplayer.ccserver.s.globalTps) as unknown as number
+            this.intervalId = setInterval(
+                this.run.bind(this),
+                1e3 / ig.multiplayer.server.s.globalTps
+            ) as unknown as number
         }
         this.running = true
     },
@@ -44,13 +47,15 @@ function runLoop() {
     frame = frame + 1
     if (frame % ig.system.frameSkip == 0) {
         ig.Timer.step()
-        ig.system.rawTick = ig.system.actualTick = Math.min(ig.Timer.maxStep, ig.system.clock.tick()) * ig.system.totalTimeFactor
+        ig.system.rawTick = ig.system.actualTick =
+            Math.min(ig.Timer.maxStep, ig.system.clock.tick()) * ig.system.totalTimeFactor
         if (ig.system.hasFocusLost()) ig.system.actualTick = 0
         ig.system.tick = ig.system.actualTick * ig.system.timeFactor
 
         if (!ig.multiplayer.headless) {
             const currentMusicTime = ig.soundManager.context.getCurrentTimeRaw()
-            ig.soundManager.context.timeOffset = currentMusicTime == previousMusicTime ? ig.soundManager.context.timeOffset + ig.system.rawTick : 0
+            ig.soundManager.context.timeOffset =
+                currentMusicTime == previousMusicTime ? ig.soundManager.context.timeOffset + ig.system.rawTick : 0
             previousMusicTime = currentMusicTime
         }
 
@@ -58,7 +63,10 @@ function runLoop() {
         //     ig.system.tick = ig.system.tick * 8
         //     ig.system.actualTick = ig.system.actualTick * 8
         // }
-        ig.system.hasFocusLost() && ig.system.cancelFocusLostCallback && ig.system.cancelFocusLostCallback() && ig.system.regainFocus()
+        ig.system.hasFocusLost() &&
+            ig.system.cancelFocusLostCallback &&
+            ig.system.cancelFocusLostCallback() &&
+            ig.system.regainFocus()
 
         ig.system.delegate.run()
 
@@ -67,7 +75,9 @@ function runLoop() {
             ig.system.newGameClass = null
         }
     }
-    !ig.multiplayer.headless && window.requestAnimationFrame && window.requestAnimationFrame(ig.system.run.bind(ig.system))
+    !ig.multiplayer.headless &&
+        window.requestAnimationFrame &&
+        window.requestAnimationFrame(ig.system.run.bind(ig.system))
 }
 
 ig.Game.inject({

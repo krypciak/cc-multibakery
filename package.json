@@ -1,27 +1,28 @@
 {
-  "name": "cc-server",
-  "version": "0.0.1",
-  "devDependencies": {
-    "@types/express": "^4.17.21",
-    "@types/jquery": "^3.5.29",
-    "@types/node": "^20.12.4",
-    "@typescript-eslint/eslint-plugin": "^7.5.0",
-    "@typescript-eslint/parser": "^7.5.0",
-    "axios": "^1.6.8",
-    "body-parser": "^1.20.2",
-    "esbuild": "^0.20.2",
-    "eslint": "^8.57.0",
-    "eslint-config-prettier": "^9.1.0",
-    "express": "^4.19.2",
-    "prettier": "3.2.5",
-    "typescript": "^5.4.4",
-    "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
-  },
-  "scripts": {
-    "start": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
-    "watch": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
-    "build": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js src/plugin.ts",
-    "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line"
-  },
-  "trustedDependencies": ["ultimate-crosscode-typedefs"]
+    "name": "cc-server",
+    "version": "0.0.1",
+    "devDependencies": {
+        "@types/jquery": "^3.5.29",
+        "@types/node": "^11.6.0",
+        "@typescript-eslint/eslint-plugin": "^7.5.0",
+        "@typescript-eslint/parser": "^7.5.0",
+        "esbuild": "^0.20.2",
+        "eslint": "^8.57.0",
+        "eslint-config-prettier": "^9.1.0",
+        "prettier": "3.2.5",
+        "typescript": "^5.4.4",
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
+    },
+    "scripts": {
+        "start": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
+        "watch": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
+        "build": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js src/plugin.ts",
+        "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line"
+    },
+    "trustedDependencies": [
+        "ultimate-crosscode-typedefs"
+    ],
+    "dependencies": {
+        "socket.io": "^4.7.5"
+    }
 }

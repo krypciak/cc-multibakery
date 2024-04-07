@@ -1,4 +1,1 @@
-
-export function getAll() {
-
-}
+export function getAll() {}

@@ -9,9 +9,7 @@
 
         "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
 
-        "declaration": true /* Generate .d.ts files from TypeScript and JavaScript files in your project. */,
-        "emitDeclarationOnly": true /* Only output d.ts files and not JavaScript files. */,
-        "outDir": "./types" /* Specify an output folder for all emitted files. */,
+        "noEmit": true /* Disable emitting files from a compilation. */,
 
         "isolatedModules": true /* Ensure that each file can be safely transpiled without relying on other imports. */,
         "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,

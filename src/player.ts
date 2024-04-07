@@ -5,6 +5,6 @@ export class Player {
     ) {}
 
     static async new(name: string): Promise<Player> {
-        return new Player(name, 'rhombus-dng.room-1')
+        return new Player(name, 'rhombus-dng/room-1')
     }
 }

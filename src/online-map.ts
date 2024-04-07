@@ -154,7 +154,10 @@ const setDataFromLevelData = function (this: ig.Game, data: sc.MapModel.Map) {
             this.levels[level][LayerConstructor.levelKey] = layerClass
         } else {
             /* this type cast below is always true */
-            const layerClass1 = layerClass as Exclude<Exclude<Exclude<typeof layerClass, ig.MAP.HeightMap>, ig.MAP.Navigation>, ig.MAP.Collision>
+            const layerClass1 = layerClass as Exclude<
+                Exclude<Exclude<typeof layerClass, ig.MAP.HeightMap>, ig.MAP.Navigation>,
+                ig.MAP.Collision
+            >
             this.levels[level].maps!.push(layerClass1)
         }
     }

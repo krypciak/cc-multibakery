@@ -1,3 +1,4 @@
+import { PlayerJoinResponse } from './api'
 import { OnlineMap as CCMap } from './online-map'
 import { Player } from './player'
 
@@ -56,15 +57,21 @@ export class CCServer {
     getPlayers(): Player[] {
         const players: Player[] = []
         for (const map of Object.values(this.maps)) {
-            players.concat(map.players)
+            players.push(...map.players)
         }
         return players
     }
 
-    async joinPlayer(player: Player) {
-        const map = await this.getMap(player.mapName)
+    async joinPlayer(player: Player): Promise<PlayerJoinResponse> {
+        if (this.getPlayers().some(p => p.name == player.name)) return { usernameTaken: true }
+
+        const mapName = player.mapName
+        const map = await this.getMap(mapName)
         map.enter(player)
         console.log('join!', player.name)
+        return {
+            mapName,
+        }
     }
 
     private findSlot(): number {
@@ -82,7 +89,11 @@ export class CCServer {
         ig.interact.entries.forEach(e => ig.interact.removeEntry(e))
     }
 
-    private async createSlot(quitAfter: boolean, originMap: string = 'rhombus-dng.entrance', marker: string = 'start'): Promise<boolean> {
+    private async createSlot(
+        quitAfter: boolean,
+        originMap: string = 'rhombus-dng.entrance',
+        marker: string = 'start'
+    ): Promise<boolean> {
         const name = this.s.name
         console.log(`creating a new slot: ${name} ${originMap}@${marker}`)
         ig.game.start()

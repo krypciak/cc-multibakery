@@ -3,7 +3,7 @@ import { OnlineMap } from './online-map'
 export {}
 
 export function runFilteredAddons(map: OnlineMap, addons: any[], func: string, filterList: any[]) {
-    const viewMap = ig.multiplayer?.ccserver?.viewMap
+    const viewMap = ig.multiplayer?.server?.viewMap
     for (const addon of addons) {
         if (viewMap && map != viewMap && filterList.some(filter => addon instanceof filter)) {
             continue
@@ -13,15 +13,24 @@ export function runFilteredAddons(map: OnlineMap, addons: any[], func: string, f
 }
 
 const addonPreUpdateFilter: any[] = [ig.GamepadManager, sc.GlobalInput, sc.InputForcer]
-// @ts-expect-error
-const addonPostUpdateFilter: any[] = [ig.ScreenBlur, sc.MenuModel, ig.Camera, ig.Rumble, sc.GlobalInput, sc.BetaControls]
+const addonPostUpdateFilter: any[] = [
+    // @ts-expect-error
+    ig.ScreenBlur,
+    sc.MenuModel,
+    ig.Camera,
+    // @ts-expect-error
+    ig.Rumble,
+    sc.GlobalInput,
+    // @ts-expect-error
+    sc.BetaControls,
+]
 // @ts-expect-error
 // prettier-ignore
 const addonDeferredUpdateFiler: any[] = [ig.GamepadManager, ig.Bgm, ig.Light, ig.Weather, ig.Overlay, ig.InteractManager, ig.EnvParticles, ig.MapSounds, sc.Detectors, sc.GameSense]
 
 ig.Game.inject({
     update() {
-        const s = ig.multiplayer.ccserver
+        const s = ig.multiplayer.server
         if (!s) return
         for (const map of Object.values(s.maps)) {
             map.prepareForUpdate()
@@ -42,7 +51,7 @@ ig.Game.inject({
         }
     },
     draw() {
-        const map = ig.multiplayer?.ccserver?.viewMap
+        const map = ig.multiplayer?.server?.viewMap
         if (!map) return
         map.prepareForUpdate()
         this.parent()
@@ -55,8 +64,8 @@ ig.Game.inject({
         // return this.parent(data, false, false)
     },
     prepareNewLevelView(path) {
-        ig.multiplayer.ccserver.currentMapViewName = path
-        const map = ig.multiplayer.ccserver.viewMap
+        ig.multiplayer.server.currentMapViewName = path
+        const map = ig.multiplayer.server.viewMap
         map.prepareForUpdate()
 
         const data = map.levelData
@@ -84,7 +93,7 @@ ig.Game.inject({
         map.afterUpdate()
     },
     deferredUpdate() {
-        const s = ig.multiplayer.ccserver
+        const s = ig.multiplayer.server
         if (!s) return
         const orig = ig.system.tick
 

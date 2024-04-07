@@ -21,10 +21,6 @@ export type Mod1 = Mod & {
           }
     )
 
-export interface API_JOIN {
-    username: string
-}
-
 declare global {
     namespace ig {
         namespace SaveSlot {

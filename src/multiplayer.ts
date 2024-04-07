@@ -1,29 +1,45 @@
-import { Server } from 'http'
 import { CCServer } from './server'
+import { Player } from './player'
+
+import { Server, Socket } from 'socket.io'
+import { ClientToServerEvents, InterServerEvents, PlayerJoinResponse, ServerToClientEvents } from './api'
 
 export const DEFAULT_PORT = 33405
 
-import * as express from 'express'
-import * as bodyParser from 'body-parser'
-import { API_JOIN } from './types'
-import { Player } from './player'
-const axios: typeof import('axios') = require('axios')
+interface SocketData {
+    username: string
+}
 
-declare global {
-    interface Window {
-        axios: typeof axios
+function setIntervalWorkaround() {
+    const setInterval = window.setInterval
+    // @ts-expect-error
+    window.setInterval = (...args) => {
+        const id = setInterval(...args)
+        return { unref: () => {}, ref: () => {}, id }
+    }
+
+    const clearInterval = window.clearInterval
+    window.clearInterval = id => {
+        if (id === undefined) return
+        if (typeof id === 'number') {
+            clearInterval(id)
+        } else {
+            // @ts-expect-error
+            clearInterval(id.id)
+        }
     }
 }
 
 export class Multiplayer {
     headless: boolean = false
 
-    ccservers: Record<string, CCServer> = {}
+    servers: Record<string, CCServer> = {}
     /* current processed server */
-    ccserver!: CCServer
+    server!: CCServer
 
-    app!: express.Application
-    webserver!: Server
+    io!: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+    sockets!: Record<string, Socket>
+    usernameToSocketId!: Record<string, string>
 
     constructor() {
         import('./game-loop')
@@ -31,51 +47,56 @@ export class Multiplayer {
     }
 
     appendServer(server: CCServer) {
-        ig.multiplayer.ccservers[server.s.name] = server
-    }
-
-    private validateJoin(data: any): data is API_JOIN {
-        return typeof data.username === 'string'
+        ig.multiplayer.servers[server.s.name] = server
     }
 
     start() {
-        this.ccserver = Object.values(this.ccservers)[0]
-        this.ccserver.start()
+        this.server = Object.values(this.servers)[0]
+        this.server.start()
 
-        this.app = express.default()
-        const port = this.ccserver.s.port
-
-        this.webserver = this.app.listen(port, () => {
-            console.log(`Example app listening on port ${port}`)
-        })
-
+        setIntervalWorkaround()
+        this.io = new Server(this.server.s.port, { connectionStateRecovery: {} })
         window.addEventListener('beforeunload', () => {
-            this.webserver.close()
+            this.io.close()
         })
 
-        this.app.get('/', (_req, res) => {
-            res.send('krosskod')
-        })
+        this.sockets = {}
+        this.usernameToSocketId = {}
+        this.io.on('connection', socket => {
+            this.sockets[socket.id] = socket
 
-        this.app.get('/playernames', (_req, res) => {
-            res.send(this.ccserver.getPlayers().map(p => p.name))
-        })
+            socket.on('getPlayerUsernames', callback => {
+                const usernames = this.server.getPlayers().map(p => p.name)
+                callback(usernames)
+            })
 
-        this.app.post('/join', bodyParser.json(), (req, res) => {
-            const body: unknown = req.body
-            if (this.validateJoin(body)) {
-                this.playerJoin(body)
-                res.status(200).send()
-            } else {
-                res.status(400).send()
-            }
+            socket.on('disconnect', () => {
+                this.disconnectSocket(socket)
+            })
+            socket.on('join', async (username, callback) => {
+                callback(await this.playerJoin(username))
+            })
+            socket.on('leave', () => {
+                if (socket.data) {
+                    this.kick(socket.data.username, 'left')
+                }
+            })
         })
-
-        window.axios = axios
     }
 
-    private async playerJoin(data: API_JOIN) {
-        const player = await Player.new(data.username)
-        this.ccserver.joinPlayer(player)
+    private disconnectSocket(socket: Socket) {
+        delete this.sockets[socket.id]
+        if (socket.data) {
+            delete this.usernameToSocketId[socket.data.username]
+        }
+    }
+
+    public kick(username: string, message: string) {
+        console.log(`kick "${username}": ${message}`)
+    }
+
+    private async playerJoin(username: string): Promise<PlayerJoinResponse> {
+        const player = await Player.new(username)
+        return this.server.joinPlayer(player)
     }
 }
