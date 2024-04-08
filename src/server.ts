@@ -69,15 +69,16 @@ export class CCServer {
             serverSettings: {
                 name: this.s.name,
                 globalTps: this.s.globalTps,
-                entityTps: this.s.entityTps,
-                physicsTps: this.s.physicsTps,
-                eventTps: this.s.eventTps,
+                rollback: this.s.rollback,
+                clientStateCorrection: this.s.clientStateCorrection,
             },
         }
     }
 
     async playerUpdate(player: Player, packet: FromClientUpdatePacket) {
-        this.maps[player.mapName].scheduledForUpdate.push({ player, packet })
+        const map = this.maps[player.mapName]
+        if (!map) return
+        map.scheduledForUpdate.push({ player, packet })
     }
 
     private findSlot(): number {

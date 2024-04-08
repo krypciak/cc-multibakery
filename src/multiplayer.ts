@@ -9,6 +9,7 @@ import {
     ServerToClientEvents,
     ToClientUpdatePacket,
 } from './api'
+import { UpdatePacketGather } from './update-packet-gather'
 
 export const DEFAULT_PORT = 33405
 
@@ -24,7 +25,7 @@ function setIntervalWorkaround() {
 
     const clearInterval = window.clearInterval
     window.clearInterval = id => {
-        if (id === undefined) return
+        if (id === undefined || id === null) return
         if (typeof id === 'number') {
             clearInterval(id)
         } else {
@@ -110,13 +111,22 @@ export class Multiplayer {
         console.log(`kick "${username}": ${message}`)
     }
 
-    sendOutUpdatePackets(packets: Record<string, ToClientUpdatePacket>) {
-        for (const mapName in packets) {
-            const packet = packets[mapName]
+    sendOutUpdatePackets(obj: ReturnType<UpdatePacketGather['pop']>) {
+        const { state, statePlayer } = obj
+        for (const mapName in this.server.maps) {
             const map = this.server.maps[mapName]
+            const mapPacket: ToClientUpdatePacket | undefined = state[mapName]
+
             for (const player of map.players) {
+                const playerPacket: ToClientUpdatePacket | undefined = statePlayer[player.name]
+
+                let finalPacket: ToClientUpdatePacket | undefined = mapPacket
+                if (finalPacket && playerPacket) ig.merge(finalPacket, playerPacket)
+                if (!finalPacket) finalPacket = playerPacket
+                if (!finalPacket) continue
+
                 const socket = this.sockets[this.usernameToSocketId[player.name]]
-                socket.emit('update', packet)
+                socket.emit('update', finalPacket)
             }
         }
     }

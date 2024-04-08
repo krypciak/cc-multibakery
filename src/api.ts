@@ -14,8 +14,28 @@ export namespace FromClientUpdatePacket {
         value: any /* possible RCE exploit???? */
     }
 }
+
+export interface UpdateInput {
+    isUsingMouse: boolean
+    isUsingKeyboard: boolean
+    isUsingAccelerometer: boolean
+    ignoreKeyboard: boolean
+    mouseGuiActive: boolean
+    mouse: Vec2
+    accel: Vec3
+    presses: ig.Input['presses']
+    keyups: ig.Input['keyups']
+    locks: ig.Input['locks']
+    delayedKeyup: ig.Input['delayedKeyup']
+    currentDevice: ig.Input['currentDevice']
+    actions: ig.Input['actions']
+}
+
 export interface FromClientUpdatePacket {
     vars?: FromClientUpdatePacket.Var[]
+    input?: UpdateInput
+    gatherInput?: ig.ENTITY.Player.PlayerInput
+    relativeCursorPos?: Vec2
 }
 
 export interface ClientToServerEvents {
@@ -27,6 +47,7 @@ export interface ClientToServerEvents {
 /* --------- */
 export interface ToClientUpdatePacket {
     vars?: FromClientUpdatePacket.Var[]
+    pos?: Vec3
 }
 export interface ServerToClientEvents {
     update(packet: ToClientUpdatePacket): void
@@ -37,7 +58,8 @@ export interface InterServerEvents {}
 export interface ServerSettingsBase {
     name: string
     globalTps: number
-    entityTps: number
-    physicsTps: number
-    eventTps: number
+    rollback: boolean
+    clientStateCorrection?: {
+        posTickInterval?: number
+    }
 }

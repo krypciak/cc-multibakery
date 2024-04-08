@@ -1,11 +1,11 @@
 export class Player {
-    dummy: ig.ENTITY.DummyPlayer
+    dummy: ig.dummy.DummyPlayer
 
     private constructor(
         public name: string,
         public mapName: string
     ) {
-        this.dummy = new ig.ENTITY.DummyPlayer()
+        this.dummy = new ig.dummy.DummyPlayer()
     }
 
     static async new(name: string): Promise<Player> {

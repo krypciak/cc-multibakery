@@ -2,6 +2,7 @@ import { ToClientUpdatePacket } from './api'
 
 export class UpdatePacketGather {
     private state: Record<string, ToClientUpdatePacket> = {}
+    private statePlayer: Record<string, ToClientUpdatePacket> = {}
     private ignoreVars = new Set<string>(['mouse.active', 'gamepad.active'])
 
     constructor() {
@@ -21,9 +22,29 @@ export class UpdatePacketGather {
         })
     }
 
-    pop(): Record<string, ToClientUpdatePacket> {
+    private clientStateCorrection() {
+        const s = ig.multiplayer.server?.s?.clientStateCorrection
+        if (!s) return
+
+        for (const mapName in ig.multiplayer.server.maps) {
+            const map = ig.multiplayer.server.maps[mapName]
+            for (const player of map.players) {
+                if (s.posTickInterval && ig.system.frame % s.posTickInterval == 0) {
+                    const state = (this.statePlayer[player.name] ??= {})
+                    state.pos = Vec3.create(player.dummy.coll.pos)
+                }
+            }
+        }
+    }
+
+    pop(): { state: Record<string, ToClientUpdatePacket>; statePlayer: Record<string, ToClientUpdatePacket> } {
+        if (!ig.multiplayer.server.s.rollback) {
+            this.clientStateCorrection()
+        }
         const state = this.state
+        const statePlayer = this.statePlayer
         this.state = {}
-        return state
+        this.statePlayer = {}
+        return { state, statePlayer }
     }
 }

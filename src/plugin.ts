@@ -26,9 +26,10 @@ export default class CCMultiplayerServer implements PluginClass {
             host: 'localhost',
             port: DEFAULT_PORT,
             globalTps: 60,
-            entityTps: 60,
-            physicsTps: 60,
-            eventTps: 60,
+            rollback: false,
+            clientStateCorrection: {
+                posTickInterval: 300,
+            },
         })
 
         ig.multiplayer.start()

@@ -23,6 +23,10 @@ export type Mod1 = Mod & {
 
 declare global {
     namespace ig {
+        interface System {
+            frame: number
+        }
+
         namespace SaveSlot {
             interface Data {
                 saveName?: string /* from Named-Saves */

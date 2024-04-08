@@ -84,10 +84,18 @@ export class CCMap {
     public enter(player: Player) {
         player.mapName = this.mapName
         this.players.push(player)
+
+        const e = player.dummy
+        this.entities.push(e)
+        e.show()
+        /* debug */
+        const pos = ig.game.playerEntity.coll.pos
+        e.setPos(pos.x, pos.y, pos.z)
     }
 
     public leave(player: Player): boolean {
         this.players.erase(player)
+        this.entities.erase(player.dummy)
         return this.players.length == 0
     }
 

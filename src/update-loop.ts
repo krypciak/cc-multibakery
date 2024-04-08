@@ -27,6 +27,8 @@ ig.Game.inject({
         const s = ig.multiplayer.server
         if (!s) return
 
+        if (this.playerEntity) this.playerEntity.coll.ignoreCollision = true
+
         for (const map of Object.values(s.maps)) {
             map.prepareForUpdate()
 
@@ -65,6 +67,10 @@ ig.Game.inject({
     },
     prepareNewLevelView(path) {
         ig.multiplayer.server.currentMapViewName = path
+
+        /* set the viewer skin to junolea, wont crash if the junolea skin isnt installed */
+        sc.playerSkins.currentSkins['Appearance'] = sc.playerSkins._createSkin('junolea')
+
         const map = ig.multiplayer.server.viewMap
         map.prepareForUpdate()
 

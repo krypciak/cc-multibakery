@@ -21,6 +21,7 @@ ig.main = function () {
 
 ig.System.inject({
     startRunLoop() {
+        this.frame = 0
         this.stopRunLoop()
         if (!ig.multiplayer.headless && window.requestAnimationFrame) {
             window.requestAnimationFrame(this.run.bind(this))
@@ -41,11 +42,10 @@ ig.System.inject({
     },
 })
 
-let frame = 0
 let previousMusicTime = 0
 function runLoop() {
-    frame = frame + 1
-    if (frame % ig.system.frameSkip == 0) {
+    ig.system.frame += 1
+    if (ig.system.frame % ig.system.frameSkip == 0) {
         ig.Timer.step()
         ig.system.rawTick = ig.system.actualTick =
             Math.min(ig.Timer.maxStep, ig.system.clock.tick()) * ig.system.totalTimeFactor
