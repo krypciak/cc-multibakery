@@ -96,6 +96,7 @@ export class CCMap {
     public leave(player: Player): boolean {
         this.players.erase(player)
         this.entities.erase(player.dummy)
+        player.dummy.kill()
         return this.players.length == 0
     }
 
@@ -133,8 +134,11 @@ export class CCMap {
 }
 
 type Layer = keyof typeof ig.MAP
-const setDataFromLevelData = function (this: ig.Game, data: sc.MapModel.Map) {
+const setDataFromLevelData = async function (this: ig.Game, data: sc.MapModel.Map) {
     /* mostly stolen from ig.Game#loadLevel */
+
+    this.currentLoadingResource = 'CREATING MAP:  ' + data.name
+    ig.ready = false
 
     for (const addon of this.addons.levelLoadStart) addon.onLevelLoadStart(data)
     this.minLevelZ = 1e5
@@ -186,4 +190,8 @@ const setDataFromLevelData = function (this: ig.Game, data: sc.MapModel.Map) {
 
     // @ts-expect-error
     this.renderer.mapCleared()
+
+    const loader = new (this.mapLoader || ig.Loader)()
+    loader.load()
+    this.currentLoadingResource = loader
 }

@@ -33,7 +33,11 @@ export class CCServer {
     }
 
     async readAllMaps() {
-        await Promise.all(Object.values(this.maps).map(m => m.readLevelData()))
+        /* cannot load multiple maps at once */
+        for (const map of Object.values(this.maps)) {
+            await map.readLevelData()
+        }
+        // await Promise.all(Object.values(this.maps).map(m => m.readLevelData()))
     }
 
     async start() {
@@ -63,7 +67,7 @@ export class CCServer {
         const mapName = player.mapName
         const map = await this.getMap(mapName)
         map.enter(player)
-        console.log('join!', player.name)
+        console.log('join', player.name)
         return {
             mapName,
             serverSettings: {
@@ -71,8 +75,23 @@ export class CCServer {
                 globalTps: this.s.globalTps,
                 rollback: this.s.rollback,
                 clientStateCorrection: this.s.clientStateCorrection,
+                godmode: this.s.godmode,
             },
         }
+    }
+
+    leavePlayer(player: Player) {
+        for (const mapName in this.maps) {
+            const map = this.maps[mapName]
+            if (map.players.find(p => p == player)) {
+                console.log('disconnect', player.name)
+                if (map.leave(player)) {
+                    /* unload map when no players todo */
+                }
+                break
+            }
+        }
+        /* save data todo */
     }
 
     async playerUpdate(player: Player, packet: FromClientUpdatePacket) {

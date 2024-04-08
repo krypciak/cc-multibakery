@@ -11,10 +11,12 @@ declare global {
                 input: ig.dummy.Input
                 nextGatherInput: ig.ENTITY.Player.PlayerInput
                 crosshairController: ig.dummy.PlayerCrossHairController
-                currentSkin: string
+                username: string
+                usernameBox: sc.SmallEntityBox
+                cameraHandle: any
             }
             interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
-                new (): DummyPlayer
+                new (username: string): DummyPlayer
             }
             var DummyPlayer: DummyPlayerConstructor
 
@@ -40,7 +42,7 @@ declare global {
 ig.dummy ??= {} as any
 
 ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
-    init() {
+    init(username) {
         sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, {})
 
         this.levelUpNotifier = new sc.PlayerLevelNotifier()
@@ -56,12 +58,8 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         this.charging.fx = new sc.CombatCharge(this, true)
         sc.combat.addActiveCombatant(this)
 
+        this.username = username
         this.input = new ig.dummy.Input()
-        this.cameraHandle = {
-            // @ts-expect-error
-            setZoom() {},
-            setOffset() {},
-        }
     },
     update() {
         const blocking = sc.inputForcer.isBlocking()
@@ -76,6 +74,9 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
 
         sc.inputForcer.blocked = blocking
     },
+    gatherInput() {
+        return this.nextGatherInput ?? this.parent()
+    },
     show() {
         const backup = sc.PlayerCrossHairController
         sc.PlayerCrossHairController = ig.dummy.PlayerCrossHairController
@@ -83,6 +84,10 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         sc.PlayerCrossHairController = backup
 
         this.crosshairController = this.gui.crosshair.controller
+
+        this.usernameBox = new sc.SmallEntityBox(this, this.username, 1e100)
+        // this.usernameBox.stopRumble()
+        ig.gui.addGuiElement(this.usernameBox)
     },
     updateAnimSheet(updateFx) {
         /* disable skins for dummy players */
@@ -97,6 +102,22 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         this.parent(updateFx)
 
         sc.playerSkins = backup
+    },
+    onKill(_dontRespawn?: boolean) {
+        this.usernameBox.doStateTransition('HIDDEN')
+        this.parent(true)
+    },
+    showChargeEffect(level) {
+        /* prevent crashes */
+        this.cameraHandle = { setZoom() {} }
+        this.parent(level)
+        this.cameraHandle = undefined
+    },
+    clearCharge() {
+        /* prevent crashes */
+        this.cameraHandle = { setZoom() {} }
+        this.parent()
+        this.cameraHandle = undefined
     },
 })
 

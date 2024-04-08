@@ -10,7 +10,6 @@ export function runUpdatePacket(player: Player, packet: FromClientUpdatePacket) 
     if (packet.input) {
         player.dummy.input.setInput(packet.input)
     }
-
     if (packet.gatherInput) {
         player.dummy.nextGatherInput = packet.gatherInput
     }

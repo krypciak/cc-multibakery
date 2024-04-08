@@ -18,7 +18,7 @@ const addonPreUpdateFilter: any[] = [ig.GamepadManager, sc.GlobalInput, sc.Input
 const addonPostUpdateFilter: any[] = [ig.ScreenBlur, sc.MenuModel, ig.Camera, ig.Rumble, sc.GlobalInput, sc.BetaControls]
 // @ts-expect-error
 // prettier-ignore
-const addonDeferredUpdateFiler: any[] = [ig.GamepadManager, ig.Bgm, ig.Light, ig.Weather, ig.Overlay, ig.InteractManager, ig.EnvParticles, ig.MapSounds, sc.Detectors, sc.GameSense]
+const addonDeferredUpdateFiler: any[] = [ig.GamepadManager, ig.Bgm, ig.Light, ig.Weather, ig.Overlay, ig.InteractManager, ig.EnvParticles, ig.MapSounds, sc.Detectors, sc.GameSense, ig.Gui]
 
 const updatePacketGather = new UpdatePacketGather()
 
@@ -94,6 +94,8 @@ ig.Game.inject({
         this.currentLoadingResource = loader
 
         map.afterUpdate()
+
+        ig.godmode()
     },
     deferredUpdate() {
         const s = ig.multiplayer.server

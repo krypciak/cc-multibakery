@@ -16,6 +16,7 @@ export default class CCMultiplayerServer implements PluginClass {
 
     async prestart() {
         await import('./skip-title-screen')
+        await import('./godmode')
         ig.multiplayer = new Multiplayer()
     }
 
@@ -28,8 +29,9 @@ export default class CCMultiplayerServer implements PluginClass {
             globalTps: 60,
             rollback: false,
             clientStateCorrection: {
-                posTickInterval: 300,
+                posTickInterval: 3,
             },
+            godmode: true,
         })
 
         ig.multiplayer.start()

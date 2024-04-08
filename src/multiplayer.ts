@@ -1,7 +1,7 @@
 import { CCServer } from './server'
 import { Player } from './player'
 
-import { Server, Socket } from 'socket.io'
+import { Server as _Server, Socket as _Socket } from 'socket.io'
 import {
     ClientToServerEvents,
     InterServerEvents,
@@ -14,6 +14,8 @@ import { UpdatePacketGather } from './update-packet-gather'
 export const DEFAULT_PORT = 33405
 
 type SocketData = Player | undefined
+type Socket = _Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+type Server = _Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 
 function setIntervalWorkaround() {
     const setInterval = window.setInterval
@@ -42,8 +44,8 @@ export class Multiplayer {
     /* current processed server */
     server!: CCServer
 
-    io!: Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
-    sockets!: Record<string, Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>>
+    io!: Server
+    sockets!: Record<string, Socket>
     usernameToSocketId!: Record<string, string>
 
     constructor() {
@@ -61,7 +63,7 @@ export class Multiplayer {
         this.server.start()
 
         setIntervalWorkaround()
-        this.io = new Server(this.server.s.port, { connectionStateRecovery: {} })
+        this.io = new _Server(this.server.s.port, { connectionStateRecovery: {} })
         window.addEventListener('beforeunload', () => {
             this.io.close()
         })
@@ -78,7 +80,6 @@ export class Multiplayer {
 
             socket.on('disconnect', () => {
                 this.disconnectSocket(socket)
-                console.log('disconnect', socket.data)
             })
             socket.on('join', async (username, callback) => {
                 const player = await Player.new(username)
@@ -89,7 +90,7 @@ export class Multiplayer {
             })
             socket.on('leave', () => {
                 if (socket.data) {
-                    this.kick(socket.data.name, 'left')
+                    this.kick(socket.data, 'left')
                 }
             })
             socket.on('update', packet => {
@@ -103,12 +104,17 @@ export class Multiplayer {
     private disconnectSocket(socket: Socket) {
         delete this.sockets[socket.id]
         if (socket.data) {
-            delete this.usernameToSocketId[socket.data.username]
+            this.disconnectPlayer(socket.data)
         }
     }
+    private disconnectPlayer(player: Player) {
+        delete this.usernameToSocketId[player.name]
+        this.server.leavePlayer(player)
+    }
 
-    kick(username: string, message: string) {
-        console.log(`kick "${username}": ${message}`)
+    kick(player: Player, message: string) {
+        console.log(`kick "${player.name}": ${message}`)
+        this.disconnectPlayer(player)
     }
 
     sendOutUpdatePackets(obj: ReturnType<UpdatePacketGather['pop']>) {

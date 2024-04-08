@@ -62,4 +62,5 @@ export interface ServerSettingsBase {
     clientStateCorrection?: {
         posTickInterval?: number
     }
+    godmode?: boolean
 }

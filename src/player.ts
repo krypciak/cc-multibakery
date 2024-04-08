@@ -5,7 +5,8 @@ export class Player {
         public name: string,
         public mapName: string
     ) {
-        this.dummy = new ig.dummy.DummyPlayer()
+        this.dummy = new ig.dummy.DummyPlayer(name)
+        if (ig.multiplayer.server.s.godmode) ig.godmode(this.dummy.model)
     }
 
     static async new(name: string): Promise<Player> {
