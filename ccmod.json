@@ -1,9 +1,9 @@
 {
-    "id": "cc-server",
+    "id": "cc-multibakery",
     "version": "0.0.1",
-    "title": "CC Multiplayer?!??!",
+    "title": "MultiBakery",
     "description": "No way",
-    "repository": "https://github.com/krypciak/cc-server",
+    "repository": "https://github.com/krypciak/cc-multibakery",
     "tags": ["fun"],
     "authors": ["krypek"],
     "icons": {

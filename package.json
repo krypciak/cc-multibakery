@@ -1,5 +1,5 @@
 {
-    "name": "cc-server",
+    "name": "cc-multibakery",
     "version": "0.0.1",
     "devDependencies": {
         "@types/jquery": "^3.5.29",
