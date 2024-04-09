@@ -35,6 +35,18 @@ declare global {
                 new (): PlayerCrossHairController
             }
             var PlayerCrossHairController: PlayerCrossHairControllerConstructor
+
+            interface PlayerModel extends sc.PlayerModel {
+                dummy: ig.dummy.DummyPlayer
+                _playerBackup: ig.ENTITY.Player
+
+                playerBackup(this: this): void
+                playerRestore(this: this): void
+            }
+            interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
+                new (dummy: ig.dummy.DummyPlayer): PlayerModel
+            }
+            var PlayerModel: PlayerModelConstructor
         }
     }
 }
@@ -48,8 +60,7 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         this.levelUpNotifier = new sc.PlayerLevelNotifier()
         this.itemConsumer = new sc.ItemConsumption()
 
-        this.model = new sc.PlayerModel()
-        this.model.setConfig(sc.model.leaConfig)
+        this.model = new ig.dummy.PlayerModel(this)
         sc.Model.addObserver(this.model, this)
         sc.Model.addObserver(sc.model, this)
         this.initModel()
@@ -144,4 +155,27 @@ ig.dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
         if (this.gamepadMode || !this.relativeCursorPos) return this.parent(crosshair)
         Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
     },
+})
+
+ig.dummy.PlayerModel = sc.PlayerModel.extend({
+    init(dummy) {
+        this.parent()
+        this.dummy = dummy
+        this.setConfig(sc.model.leaConfig)
+    },
+    playerBackup() {
+        this._playerBackup = ig.game.playerEntity
+        ig.game.playerEntity = this.dummy
+    },
+    playerRestore() {
+        ig.game.playerEntity = this._playerBackup
+    },
+    // prettier-ignore
+    updateLoop(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+    // prettier-ignore
+    enterElementalOverload(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+    // prettier-ignore
+    setElementMode(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+    // prettier-ignore
+    onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
 })

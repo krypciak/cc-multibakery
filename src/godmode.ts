@@ -18,7 +18,7 @@ ig.godmode = (model: sc.PlayerModel = sc.model.player) => {
 
     model.setSpLevel(4)
     sc.newgame.setActive(true)
-    sc.newgame.toggle('infinite-sp')
+    if (!sc.newgame.get('infinite-sp')) sc.newgame.toggle('infinite-sp')
     model.setLevel(99)
     model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
 

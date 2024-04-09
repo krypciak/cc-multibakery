@@ -31,12 +31,20 @@ export interface UpdateInput {
     actions: ig.Input['actions']
 }
 
-export interface FromClientUpdatePacket {
-    vars?: FromClientUpdatePacket.Var[]
-    input?: UpdateInput
-    gatherInput?: ig.ENTITY.Player.PlayerInput
-    relativeCursorPos?: Vec2
-}
+export type FromClientUpdatePacket = {
+    element?: sc.ELEMENT
+} & (
+    | {
+          paused: true
+      }
+    | {
+          paused?: false
+          vars?: FromClientUpdatePacket.Var[]
+          input?: UpdateInput
+          gatherInput?: ig.ENTITY.Player.PlayerInput
+          relativeCursorPos?: Vec2
+      }
+)
 
 export interface ClientToServerEvents {
     getPlayerUsernames(callback: (usernames: string[]) => void): void
@@ -63,4 +71,24 @@ export interface ServerSettingsBase {
         posTickInterval?: number
     }
     godmode?: boolean
+}
+
+export function emptyGatherInput(): ig.ENTITY.Player.PlayerInput {
+    return {
+        thrown: false,
+        melee: false,
+        aimStart: false,
+        aim: false,
+        attack: false,
+        autoThrow: false,
+        charge: false,
+        dashX: 0,
+        dashY: 0,
+        guard: false,
+        relativeVel: 0,
+        moveDir: Vec2.create(),
+        lastMoveDir: Vec2.create(),
+        switchMode: false,
+        /* charging crashes */
+    }
 }
