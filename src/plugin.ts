@@ -32,6 +32,7 @@ export default class CCMultiplayerServer implements PluginClass {
                 posTickInterval: 3,
             },
             godmode: true,
+            unloadInactiveMapsMs: 0, /* todo doesnt work other than 0 */
         })
 
         ig.multiplayer.start()

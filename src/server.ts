@@ -1,6 +1,8 @@
 import { PlayerJoinResponse, ServerSettingsBase, FromClientUpdatePacket } from './api'
 import { CCMap as CCMap } from './ccmap'
+import { getInitialState } from './initial-state'
 import { Player } from './player'
+import { teleportPlayerToProperMarekr } from './teleport-fix'
 
 export interface ServerSettings extends ServerSettingsBase {
     slotName: string
@@ -22,9 +24,11 @@ export class CCServer {
     }
 
     async getMap(mapName: string): Promise<CCMap> {
+        mapName = mapName.toPath('', '')
         if (this.maps[mapName]) return this.maps[mapName]
         const map = new CCMap(mapName)
         await map.readLevelData()
+        this.appendMap(map)
         return map
     }
 
@@ -32,25 +36,19 @@ export class CCServer {
         this.maps[map.mapName] = map
     }
 
-    async readAllMaps() {
-        /* cannot load multiple maps at once */
-        for (const map of Object.values(this.maps)) {
-            await map.readLevelData()
-        }
-        // await Promise.all(Object.values(this.maps).map(m => m.readLevelData()))
+    unloadMap(map: CCMap) {
+        delete this.maps[map.mapName]
     }
 
     async start() {
         await this.loadSlot()
-        /* debug */
-        this.appendMap(new CCMap('rhombus-dng/room-1', true))
-        this.appendMap(new CCMap('rhombus-dng/room-1-5', true))
-
-        await this.readAllMaps()
 
         sc.model.enterGame()
         sc.model.enterRunning()
-        ig.game.prepareNewLevelView('rhombus-dng/room-1')
+        this.prepareNewLevelView(ig.game.mapName, new ig.TeleportPosition(ig.game.marker))
+
+        // @ts-expect-error
+        window.s = this
     }
 
     getPlayers(): Player[] {
@@ -61,12 +59,21 @@ export class CCServer {
         return players
     }
 
+    getPlayerByEntity(e: ig.dummy.DummyPlayer): Player {
+        return this.getPlayers().find(p => p.dummy === e)!
+    }
+
     async joinPlayer(player: Player): Promise<PlayerJoinResponse> {
         if (this.getPlayers().some(p => p.name == player.name)) return { usernameTaken: true }
 
         const mapName = player.mapName
         const map = await this.getMap(mapName)
         map.enter(player)
+        /* debug */
+        setTimeout(() => {
+            const pos = ig.game.playerEntity.coll.pos
+            player.dummy.setPos(pos.x, pos.y, pos.z)
+        }, 1000)
         console.log('join', player.name)
         return {
             mapName,
@@ -77,27 +84,19 @@ export class CCServer {
                 clientStateCorrection: this.s.clientStateCorrection,
                 godmode: this.s.godmode,
             },
+            state: getInitialState(),
         }
     }
 
     leavePlayer(player: Player) {
-        for (const mapName in this.maps) {
-            const map = this.maps[mapName]
-            if (map.players.find(p => p == player)) {
-                console.log('disconnect', player.name)
-                if (map.leave(player)) {
-                    /* unload map when no players todo */
-                }
-                break
-            }
-        }
+        player.disconnect()
         /* save data todo */
     }
 
     async playerUpdate(player: Player, packet: FromClientUpdatePacket) {
         const map = this.maps[player.mapName]
         if (!map) return
-        map.scheduledForUpdate.push({ player, packet })
+        map.scheduledPacketsForUpdate.push({ player, packet })
     }
 
     private findSlot(): number {
@@ -109,7 +108,7 @@ export class CCServer {
         if (slotIndex == -1) {
             await this.createSlot(true)
         } else {
-            ig.storage.loadSlot(0)
+            ig.storage.loadSlot(slotIndex)
         }
         /* nuke interactables */
         ig.interact.entries.forEach(e => ig.interact.removeEntry(e))
@@ -144,5 +143,48 @@ export class CCServer {
                 resolve(true)
             }, 3e3)
         })
+    }
+
+    async prepareNewLevelView(mapName: string, tpPos?: ig.TeleportPosition) {
+        mapName = mapName.toPath('', '')
+        const previousMap = this.maps[this.currentMapViewName]
+        this.currentMapViewName = mapName
+
+        if (previousMap) {
+            previousMap.killEntity(ig.game.playerEntity)
+            previousMap.startUnloadTimer()
+        }
+
+        const map = await this.getMap(mapName)
+        map.stopUnloadTimer()
+        map.prepareForUpdate()
+
+        /* set the viewer skin to junolea, wont crash if the junolea skin isnt installed */
+        sc.playerSkins.currentSkins['Appearance'] = sc.playerSkins._createSkin('junolea')
+
+        ig.imageAtlas.defragment()
+        ig.ready = false
+
+        /* modified ig.game.createPlayer() */
+        ig.game.playerEntity = ig.game.spawnEntity(ig.ENTITY.Player, 0, 0, 0, {})
+
+        teleportPlayerToProperMarekr(ig.game.playerEntity, ig.game.marker, tpPos, true)
+
+        ig.ready = true
+
+        const loader = new (ig.game.mapLoader || ig.Loader)()
+        loader.load()
+        ig.game.currentLoadingResource = loader
+
+        map.afterUpdate()
+
+        ig.godmode()
+
+        for (const player of this.getPlayers()) {
+            player.dummy.hideUsernameBox()
+        }
+        for (const player of map.players) {
+            player.dummy.showUsernameBox()
+        }
     }
 }

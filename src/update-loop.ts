@@ -27,13 +27,14 @@ ig.Game.inject({
         const s = ig.multiplayer.server
         if (!s) return
 
-        if (this.playerEntity) this.playerEntity.coll.ignoreCollision = true
-
         for (const map of Object.values(s.maps)) {
+            if (map.players.length == 0 && ig.multiplayer.server.currentMapViewName != map.mapName) continue
             map.prepareForUpdate()
 
-            for (const { packet, player } of map.scheduledForUpdate) runUpdatePacket(player, packet)
-            map.scheduledForUpdate = []
+            for (const func of map.scheduledFunctionsForUpdate) func()
+            map.scheduledFunctionsForUpdate = []
+            for (const { packet, player } of map.scheduledPacketsForUpdate) runUpdatePacket(player, packet)
+            map.scheduledPacketsForUpdate = []
 
             runFilteredAddons(map, this.addons.preUpdate, 'onPreUpdate', addonPreUpdateFilter)
 
@@ -59,43 +60,8 @@ ig.Game.inject({
         this.parent()
         map.afterUpdate()
     },
-    teleport(mapName, marker, hint, clearCache, reloadCache) {
-        console.log('teleport: ', mapName, marker, hint, clearCache, reloadCache)
-    },
     loadLevel(_data) {
         // return this.parent(data, false, false)
-    },
-    prepareNewLevelView(path) {
-        ig.multiplayer.server.currentMapViewName = path
-
-        /* set the viewer skin to junolea, wont crash if the junolea skin isnt installed */
-        sc.playerSkins.currentSkins['Appearance'] = sc.playerSkins._createSkin('junolea')
-
-        const map = ig.multiplayer.server.viewMap
-        map.prepareForUpdate()
-
-        ig.imageAtlas.defragment()
-        ig.ready = false
-
-        this.createPlayer()
-        if (this.playerEntity) {
-            for (const e of this.shownEntities) {
-                if ('applyMarkerPosition' in e && typeof e.applyMarkerPosition === 'function') {
-                    e.applyMarkerPosition(this.playerEntity)
-                    break
-                }
-            }
-        }
-
-        ig.ready = true
-
-        const loader = new (this.mapLoader || ig.Loader)()
-        loader.load()
-        this.currentLoadingResource = loader
-
-        map.afterUpdate()
-
-        ig.godmode()
     },
     deferredUpdate() {
         const s = ig.multiplayer.server

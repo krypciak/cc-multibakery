@@ -14,6 +14,9 @@ declare global {
                 username: string
                 usernameBox: sc.SmallEntityBox
                 cameraHandle: any
+
+                showUsernameBox(this: this): void
+                hideUsernameBox(this: this): void
             }
             interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
                 new (username: string): DummyPlayer
@@ -95,10 +98,16 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         sc.PlayerCrossHairController = backup
 
         this.crosshairController = this.gui.crosshair.controller
-
+    },
+    showUsernameBox() {
+        if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
         this.usernameBox = new sc.SmallEntityBox(this, this.username, 1e100)
         // this.usernameBox.stopRumble()
         ig.gui.addGuiElement(this.usernameBox)
+    },
+    hideUsernameBox() {
+        if (!this.usernameBox) return
+        this.usernameBox.doStateTransition('HIDDEN', false, true)
     },
     updateAnimSheet(updateFx) {
         /* disable skins for dummy players */

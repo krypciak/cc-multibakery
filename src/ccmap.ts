@@ -27,9 +27,16 @@ export class CCMap {
     private states!: typeof ig.game.states
     private _deferredVarChanged!: typeof ig.game._deferredVarChanged
 
-    players!: Player[]
+    /* vars under ig.vars.storage */
+    private Vtmp: typeof ig.vars.storage.tmp
 
-    scheduledForUpdate!: { player: Player; packet: FromClientUpdatePacket }[]
+    // private bounceSwitchGroups!: typeof sc.bounceSwitchGroups
+
+    players!: Player[]
+    private unloadTimeoutId!: NodeJS.Timeout
+
+    scheduledPacketsForUpdate!: { player: Player; packet: FromClientUpdatePacket }[]
+    scheduledFunctionsForUpdate!: (() => void)[]
 
     constructor(
         public mapName: string,
@@ -42,7 +49,7 @@ export class CCMap {
         this.players = []
         this.conditionalEntities = []
         this.shownEntities = []
-        this.namedEntities = []
+        this.namedEntities = {}
         this.mapEntities = []
         this.entities = []
         this.freeEntityIds = []
@@ -60,7 +67,12 @@ export class CCMap {
         this.states = []
         this._deferredVarChanged = false
 
-        this.scheduledForUpdate = []
+        this.scheduledPacketsForUpdate = []
+        this.scheduledFunctionsForUpdate = []
+
+        this.Vtmp = {}
+
+        // this.bounceSwitchGroups = new sc.BounceSwitchGroups()
     }
 
     public async readLevelData() {
@@ -77,27 +89,93 @@ export class CCMap {
         })
         this._levelData = data
         this.prepareForUpdate()
-        setDataFromLevelData.bind(ig.game)(data)
+        await setDataFromLevelData.bind(ig.game)(data)
         this.afterUpdate()
     }
 
     public enter(player: Player) {
         player.mapName = this.mapName
         this.players.push(player)
+        this.stopUnloadTimer()
 
-        const e = player.dummy
-        this.entities.push(e)
-        e.show()
-        /* debug */
-        const pos = ig.game.playerEntity.coll.pos
-        e.setPos(pos.x, pos.y, pos.z)
+        this.enterEntity(player.dummy)
     }
 
-    public leave(player: Player): boolean {
+    public leave(player: Player) {
         this.players.erase(player)
-        this.entities.erase(player.dummy)
-        player.dummy.kill()
-        return this.players.length == 0
+        this.killEntity(player.dummy)
+
+        this.startUnloadTimer()
+    }
+
+    private enterEntity(e: ig.Entity) {
+        this.scheduledFunctionsForUpdate.push(() => {
+            const oldColl = e.coll
+            e.coll = new ig.CollEntry(e)
+            Vec3.assign(e.coll.pos, oldColl.pos)
+            Vec3.assign(e.coll.size, oldColl.size)
+
+            if (e.name) this.namedEntities[e.name] = e
+            this.entities.push(e)
+            if (e.mapId) this.mapEntities[e.mapId] = e
+            e._hidden = true
+            e.show()
+
+            if (e.isPlayer && e instanceof ig.ENTITY.Player) {
+                this.enterEntity(e.gui.crosshair)
+            }
+        })
+    }
+
+    public killEntity(e: ig.Entity) {
+        this.scheduledFunctionsForUpdate.push(() => {
+            this.entities.erase(e)
+            e.clearEntityAttached()
+
+            /* ig.game.removeEntity(e) */
+            e.name && delete this.namedEntities[e.name]
+
+            // e._killed = e.coll._killed = true
+
+            /* consequence of ig.game.detachEntity(e) */
+
+            if (e.id) {
+                this.physics.removeCollEntry(e.coll)
+                // this.physics.collEntryMap.forEach(a =>
+                //     a.forEach(a =>
+                //         a.forEach(c => {
+                //             if (c.entity === e) {
+                //                 a.erase(e.coll)
+                //             }
+                //         })
+                //     )
+                // )
+                /* reactivate it cuz removeCollEntry set it to false */
+                e.coll._active = true
+
+                this.shownEntities[e.id] = null
+                this.freeEntityIds.push(e.id)
+                // e.id = 0
+            }
+            if (e.isPlayer && e instanceof ig.ENTITY.Player) {
+                this.killEntity(e.gui.crosshair)
+            }
+        })
+    }
+
+    public startUnloadTimer() {
+        if (this.alwaysLoaded || this.players.length != 0 || ig.multiplayer.server.currentMapViewName == this.mapName)
+            return
+
+        const waitTime = ig.multiplayer.server.s.unloadInactiveMapsMs
+        if (waitTime === undefined || waitTime == -1) return
+
+        this.unloadTimeoutId = setTimeout(() => {
+            ig.multiplayer.server.unloadMap(this)
+        }, waitTime)
+    }
+    public stopUnloadTimer() {
+        if (this.unloadTimeoutId) clearTimeout(this.unloadTimeoutId)
     }
 
     public prepareForUpdate() {
@@ -122,7 +200,15 @@ export class CCMap {
         ig.game._deferredVarChanged = this._deferredVarChanged
         ig.game.mapName = this.mapName
 
-        ig.vars.onLevelChange(this.mapName)
+        /* manual implementation of ig.vars.onLevelChange(this.mapName) */
+        ig.vars.currentLevelName = this.mapName
+        ig.vars.storage.map = ig.vars.storage.maps[this.mapName] ??= {}
+        ig.vars.storage.tmp = this.Vtmp
+
+        if (!ig.vars.storage.session.maps[this.mapName]) ig.vars.storage.session.maps[this.mapName] = {}
+        ig.vars.storage.session.map = ig.vars.storage.session.maps[this.mapName]
+
+        // sc.bounceSwitchGroups = this.bounceSwitchGroups
     }
 
     public afterUpdate() {
@@ -130,6 +216,7 @@ export class CCMap {
         this.maxLevel = ig.game.maxLevel
         this.minLevelZ = ig.game.minLevelZ
         this._deferredVarChanged = ig.game._deferredVarChanged
+        this.size = ig.game.size
     }
 }
 
@@ -146,7 +233,11 @@ const setDataFromLevelData = async function (this: ig.Game, data: sc.MapModel.Ma
     this.levels.first = { maps: [] }
     for (let i = 0; i < data.levels.length; i++) {
         this.minLevelZ = Math.min(this.minLevelZ, data.levels[i].height)
-        this.levels['' + i] = { height: data.levels[i].height, collision: ig.MAP.Collision.staticNoCollision, maps: [] }
+        this.levels[i.toString()] = {
+            height: data.levels[i].height,
+            collision: ig.MAP.Collision.staticNoCollision,
+            maps: [],
+        }
     }
     this.levels.last = { maps: [] }
     this.levels.light = { maps: [] }
@@ -181,6 +272,7 @@ const setDataFromLevelData = async function (this: ig.Game, data: sc.MapModel.Ma
     }
     this.size.x = sizeX
     this.size.y = sizeY
+    // this.physics.mapCleared()
     this.physics.mapLoaded()
     for (let i = 0; i < data.entities.length; i++) {
         const entity = data.entities[i]
@@ -191,7 +283,51 @@ const setDataFromLevelData = async function (this: ig.Game, data: sc.MapModel.Ma
     // @ts-expect-error
     this.renderer.mapCleared()
 
-    const loader = new (this.mapLoader || ig.Loader)()
-    loader.load()
-    this.currentLoadingResource = loader
+    await new Promise<void>(resolve => {
+        const loader = new (this.mapLoader || ig.Loader)()
+        loader.onEnd = function (this: ig.Loader) {
+            /* this.finalize() */
+            this.prevResourcesCnt = ig.resources.length
+            ig.resources.length = 0
+            clearInterval(this._intervalId)
+
+            ig.ready = true
+            // ig.game.loadingComplete()
+
+            // @ts-expect-error
+            this._loadCallbackBound = null
+            ig.loading = false
+
+            clearInterval(id)
+            resolve()
+        }.bind(loader)
+
+        /* ughhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh todo */
+        const id = setTimeout(() => loader.onEnd(), 1e3)
+
+        loader.load()
+        this.currentLoadingResource = loader
+    })
+
+    /* stuff below from ig.Game#loadingComplete() */
+    if (!ig.multiplayer.headless) this.preDrawMaps()
+
+    let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
+    if (collisionLayer) collisionLayer.prepare()
+
+    for (let i = this.masterLevel + 1; i < this.maxLevel; i++) {
+        const level = this.levels[i]
+        if (!level.collision!.prepare) debugger
+        // if (level.collision!.prepare) {
+        level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i - 1].height!) / 16 : 0)
+        collisionLayer = level.collision
+        // } else collisionLayer = undefined
+    }
+    collisionLayer = this.levels[this.masterLevel].collision ? this.levels[this.masterLevel].collision : undefined
+    for (let i = this.masterLevel - 1; i >= 0; i--) {
+        const level = this.levels[i]
+        if (!level.collision!.prepare) debugger
+        level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i + 1].height!) / 16 : 0)
+        collisionLayer = level.collision
+    }
 }

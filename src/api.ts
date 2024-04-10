@@ -1,3 +1,7 @@
+export type InitialState = {
+    saveData: string
+}
+
 export type PlayerJoinResponse =
     | {
           usernameTaken: true
@@ -6,6 +10,7 @@ export type PlayerJoinResponse =
           usernameTaken?: false
           mapName: string
           serverSettings: ServerSettingsBase
+          state: InitialState
       }
 
 export namespace FromClientUpdatePacket {
@@ -71,6 +76,7 @@ export interface ServerSettingsBase {
         posTickInterval?: number
     }
     godmode?: boolean
+    unloadInactiveMapsMs?: number /* set to -1 to diable unloading inactive maps */
 }
 
 export function emptyGatherInput(): ig.ENTITY.Player.PlayerInput {

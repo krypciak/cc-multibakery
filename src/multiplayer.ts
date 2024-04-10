@@ -10,6 +10,7 @@ import {
     ToClientUpdatePacket,
 } from './api'
 import { UpdatePacketGather } from './update-packet-gather'
+import { teleportFix } from './teleport-fix'
 
 export const DEFAULT_PORT = 33405
 
@@ -52,10 +53,11 @@ export class Multiplayer {
         import('./game-loop')
         import('./update-loop')
         import('./dummy-player')
+        teleportFix()
     }
 
     appendServer(server: CCServer) {
-        ig.multiplayer.servers[server.s.name] = server
+        this.servers[server.s.name] = server
     }
 
     start() {
@@ -89,12 +91,12 @@ export class Multiplayer {
                 callback(data)
             })
             socket.on('leave', () => {
-                if (socket.data) {
+                if (socket.data && socket.data instanceof Player) {
                     this.kick(socket.data, 'left')
                 }
             })
             socket.on('update', packet => {
-                if (socket.data) {
+                if (socket.data && socket.data instanceof Player) {
                     this.server.playerUpdate(socket.data, packet)
                 }
             })
@@ -103,7 +105,7 @@ export class Multiplayer {
 
     private disconnectSocket(socket: Socket) {
         delete this.sockets[socket.id]
-        if (socket.data) {
+        if (socket.data && socket.data instanceof Player) {
             this.disconnectPlayer(socket.data)
         }
     }

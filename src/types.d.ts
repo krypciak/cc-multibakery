@@ -26,16 +26,11 @@ declare global {
         interface System {
             frame: number
         }
-
         namespace SaveSlot {
             interface Data {
                 saveName?: string /* from Named-Saves */
             }
         }
-        interface Game {
-            prepareNewLevelView(this: this, path: string): void
-        }
-
         var multiplayer: Multiplayer
     }
 }

@@ -29,7 +29,7 @@ export class UpdatePacketGather {
         for (const mapName in ig.multiplayer.server.maps) {
             const map = ig.multiplayer.server.maps[mapName]
             for (const player of map.players) {
-                if (s.posTickInterval && ig.system.frame % s.posTickInterval == 0) {
+                if (s.posTickInterval && ig.system.frame % s.posTickInterval == 0 && !player.isTeleporting) {
                     const state = (this.statePlayer[player.name] ??= {})
                     state.pos = Vec3.create(player.dummy.coll.pos)
                 }
