@@ -21,7 +21,7 @@ export function runUpdatePacket(player: Player, packet: FromClientUpdatePacket) 
         if (packet.gatherInput) {
             player.dummy.nextGatherInput = packet.gatherInput
         }
-        if (packet.relativeCursorPos) {
+        if (packet.relativeCursorPos && player.dummy.crosshairController) {
             player.dummy.crosshairController.relativeCursorPos = packet.relativeCursorPos
         }
     }

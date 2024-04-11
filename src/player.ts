@@ -1,5 +1,5 @@
 import { CCMap } from './ccmap'
-import { teleportPlayerToProperMarekr } from './teleport-fix'
+import { teleportPlayerToProperMarker } from './teleport-fix'
 
 export class Player {
     static async new(name: string): Promise<Player> {
@@ -29,9 +29,12 @@ export class Player {
         this.mapName = mapName
         map = await this.getMap()
         map.enter(this)
-        teleportPlayerToProperMarekr(this.dummy, marker, new ig.TeleportPosition(marker))
-        this.afterTeleport()
-        this.isTeleporting = false
+        map.scheduledFunctionsForUpdate.push(() => {
+            teleportPlayerToProperMarker(this.dummy, marker, new ig.TeleportPosition(marker))
+
+            this.afterTeleport()
+            this.isTeleporting = false
+        })
     }
 
     private afterTeleport() {

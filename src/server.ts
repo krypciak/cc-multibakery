@@ -2,7 +2,7 @@ import { PlayerJoinResponse, ServerSettingsBase, FromClientUpdatePacket } from '
 import { CCMap as CCMap } from './ccmap'
 import { getInitialState } from './initial-state'
 import { Player } from './player'
-import { teleportPlayerToProperMarekr } from './teleport-fix'
+import { teleportPlayerToProperMarker } from './teleport-fix'
 
 export interface ServerSettings extends ServerSettingsBase {
     slotName: string
@@ -43,6 +43,10 @@ export class CCServer {
     async start() {
         await this.loadSlot()
 
+        /* debug */
+        ig.game.mapName = 'rhombus-dng.room-1'
+        ig.game.marker = 'start'
+
         sc.model.enterGame()
         sc.model.enterRunning()
         this.prepareNewLevelView(ig.game.mapName, new ig.TeleportPosition(ig.game.marker))
@@ -73,7 +77,7 @@ export class CCServer {
         setTimeout(() => {
             const pos = ig.game.playerEntity.coll.pos
             player.dummy.setPos(pos.x, pos.y, pos.z)
-        }, 1000)
+        }, 500)
         console.log('join', player.name)
         return {
             mapName,
@@ -168,7 +172,7 @@ export class CCServer {
         /* modified ig.game.createPlayer() */
         ig.game.playerEntity = ig.game.spawnEntity(ig.ENTITY.Player, 0, 0, 0, {})
 
-        teleportPlayerToProperMarekr(ig.game.playerEntity, ig.game.marker, tpPos, true)
+        teleportPlayerToProperMarker(ig.game.playerEntity, ig.game.marker, tpPos, true)
 
         ig.ready = true
 

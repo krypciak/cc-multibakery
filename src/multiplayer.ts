@@ -32,7 +32,6 @@ function setIntervalWorkaround() {
         if (typeof id === 'number') {
             clearInterval(id)
         } else {
-            // @ts-expect-error
             clearInterval(id.id)
         }
     }

@@ -22,6 +22,18 @@ export type Mod1 = Mod & {
     )
 
 declare global {
+    interface Object {
+        keysT<K extends string | number | symbol, V>(object: Record<K, V>): K[]
+        entriesT<K extends string | number | symbol, V>(object: { [key in K]?: V }): [K, V][]
+        fromEntries<T, K extends string | number | symbol>(entries: [K, T][]): Record<K, T>
+    }
+
+    namespace NodeJS {
+        interface Timeout {
+            id: number
+        }
+    }
+
     namespace ig {
         interface System {
             frame: number
@@ -31,6 +43,7 @@ declare global {
                 saveName?: string /* from Named-Saves */
             }
         }
+
         var multiplayer: Multiplayer
     }
 }

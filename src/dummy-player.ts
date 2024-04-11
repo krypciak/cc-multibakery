@@ -150,8 +150,8 @@ ig.dummy.Input = ig.Input.extend({
     initAccelerometer() {},
 
     setInput(input) {
-        for (const key in input) {
-            const value = input[key as keyof UpdateInput]
+        for (const key of Object.keysT(input)) {
+            const value = input[key]
             if (typeof value === 'function') continue
             // @ts-expect-error
             this[key] = value

@@ -2,27 +2,73 @@ import { CCMap } from './ccmap'
 import { UpdatePacketGather } from './update-packet-gather'
 import { runUpdatePacket } from './update-packet-run'
 
-function runFilteredAddons(map: CCMap, addons: any[], func: string, filterList: any[]) {
-    const viewMap = ig.multiplayer?.server?.viewMap
-    for (const addon of addons) {
-        if (viewMap && map != viewMap && filterList.some(filter => addon instanceof filter)) {
-            continue
-        }
-        addon[func]()
+const addonRunnersFactory = () => {
+    type AddonOfString<K extends string> = { [P in K]: () => void }
+    type AddonMadnessBase<K extends string, T = AddonOfString<K>> = {
+        onlyOnce: (new (...args: any[]) => T)[]
+        ignore: (new (...args: any[]) => T)[]
+        additionalDynamic: () => T[]
+        key: keyof typeof ig.game.addons
     }
+
+    const addonConfigs = {
+        onPreUpdate: {
+            onlyOnce: [ig.GamepadManager, sc.GlobalInput, sc.InputForcer],
+            ignore: [],
+            additionalDynamic() {
+                return []
+            },
+            key: 'preUpdate',
+        },
+        onPostUpdate: {
+            onlyOnce: [ig.ScreenBlur, sc.MenuModel, ig.Camera, ig.Rumble, sc.GlobalInput, sc.BetaControls],
+            ignore: [],
+            additionalDynamic() {
+                return []
+            },
+            key: 'postUpdate',
+        },
+        onDeferredUpdate: {
+            // prettier-ignore
+            onlyOnce: [ig.GamepadManager, ig.Bgm, ig.Light, ig.Weather, ig.Overlay, ig.InteractManager, ig.EnvParticles, ig.MapSounds, sc.Detectors, sc.GameSense, ig.Gui],
+            ignore: [sc.BounceSwitchGroups],
+            additionalDynamic() {
+                return [sc.bounceSwitchGroups]
+            },
+            key: 'deferredUpdate',
+        },
+    } as const satisfies { [K in keyof ig.GameAddon]?: AddonMadnessBase<K> }
+
+    const runners: Record<keyof typeof addonConfigs, (ccmap: CCMap) => void> = {} as any
+    for (const [funcName, config] of Object.entriesT(addonConfigs)) {
+        const addons = ig.game.addons[config.key].filter(addon => !config.ignore.some(clazz => addon instanceof clazz))
+
+        runners[funcName] = (ccmap: CCMap) => {
+            const viewMap = ig.multiplayer.server?.viewMap
+            for (const addon of [
+                ...addons.filter(
+                    addon => !(viewMap && ccmap != viewMap && config.onlyOnce.some(filter => addon instanceof filter))
+                ),
+                ...config.additionalDynamic(),
+            ]) {
+                // @ts-expect-error
+                addon[funcName]()
+            }
+        }
+    }
+    return runners
 }
 
-const addonPreUpdateFilter: any[] = [ig.GamepadManager, sc.GlobalInput, sc.InputForcer]
-// @ts-expect-error
-// prettier-ignore
-const addonPostUpdateFilter: any[] = [ig.ScreenBlur, sc.MenuModel, ig.Camera, ig.Rumble, sc.GlobalInput, sc.BetaControls]
-// @ts-expect-error
-// prettier-ignore
-const addonDeferredUpdateFiler: any[] = [ig.GamepadManager, ig.Bgm, ig.Light, ig.Weather, ig.Overlay, ig.InteractManager, ig.EnvParticles, ig.MapSounds, sc.Detectors, sc.GameSense, ig.Gui]
+let addonRunners!: ReturnType<typeof addonRunnersFactory>
 
 const updatePacketGather = new UpdatePacketGather()
 
 ig.Game.inject({
+    init() {
+        this.parent()
+
+        addonRunners = addonRunnersFactory()
+    },
     update() {
         const s = ig.multiplayer.server
         if (!s) return
@@ -36,7 +82,7 @@ ig.Game.inject({
             for (const { packet, player } of map.scheduledPacketsForUpdate) runUpdatePacket(player, packet)
             map.scheduledPacketsForUpdate = []
 
-            runFilteredAddons(map, this.addons.preUpdate, 'onPreUpdate', addonPreUpdateFilter)
+            addonRunners.onPreUpdate(map)
 
             if (this._deferredVarChanged) {
                 this.varsChanged()
@@ -45,8 +91,9 @@ ig.Game.inject({
             if (!this.paused && !ig.loading) {
                 this.physics.update()
             }
-            ig.loading || this.events.update()
-            runFilteredAddons(map, this.addons.postUpdate, 'onPostUpdate', addonPostUpdateFilter)
+            if (!ig.loading) this.events.update()
+
+            addonRunners.onPostUpdate(map)
 
             ig.multiplayer.sendOutUpdatePackets(updatePacketGather.pop())
 
@@ -66,17 +113,14 @@ ig.Game.inject({
     deferredUpdate() {
         const s = ig.multiplayer.server
         if (!s) return
-        const orig = ig.system.tick
 
         for (const map of Object.values(s.maps)) {
             map.prepareForUpdate()
 
             this.deferredMapEntityUpdate()
-            runFilteredAddons(map, this.addons.deferredUpdate, 'onDeferredUpdate', addonDeferredUpdateFiler)
+            addonRunners.onDeferredUpdate(map)
 
             map.afterUpdate()
         }
-
-        if (ig.system.tick != orig) console.log('diff')
     },
 })

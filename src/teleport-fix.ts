@@ -1,4 +1,4 @@
-export function teleportPlayerToProperMarekr(
+export function teleportPlayerToProperMarker(
     player: ig.ENTITY.Player | undefined,
     inputMarker: Nullable<string> | undefined,
     tpPos: ig.TeleportPosition | undefined,

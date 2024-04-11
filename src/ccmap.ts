@@ -30,7 +30,7 @@ export class CCMap {
     /* vars under ig.vars.storage */
     private Vtmp: typeof ig.vars.storage.tmp
 
-    // private bounceSwitchGroups!: typeof sc.bounceSwitchGroups
+    private bounceSwitchGroups!: typeof sc.bounceSwitchGroups
 
     players!: Player[]
     private unloadTimeoutId!: NodeJS.Timeout
@@ -72,7 +72,7 @@ export class CCMap {
 
         this.Vtmp = {}
 
-        // this.bounceSwitchGroups = new sc.BounceSwitchGroups()
+        this.bounceSwitchGroups = new sc.BounceSwitchGroups()
     }
 
     public async readLevelData() {
@@ -154,7 +154,7 @@ export class CCMap {
                 e.coll._active = true
 
                 this.shownEntities[e.id] = null
-                this.freeEntityIds.push(e.id)
+                // this.freeEntityIds.push(e.id)
                 // e.id = 0
             }
             if (e.isPlayer && e instanceof ig.ENTITY.Player) {
@@ -201,14 +201,15 @@ export class CCMap {
         ig.game.mapName = this.mapName
 
         /* manual implementation of ig.vars.onLevelChange(this.mapName) */
-        ig.vars.currentLevelName = this.mapName
-        ig.vars.storage.map = ig.vars.storage.maps[this.mapName] ??= {}
+        const varMapName = this.mapName.toCamel().toPath('', '')
+        ig.vars.currentLevelName = varMapName
+        ig.vars.storage.map = ig.vars.storage.maps[varMapName] ??= {}
         ig.vars.storage.tmp = this.Vtmp
 
-        if (!ig.vars.storage.session.maps[this.mapName]) ig.vars.storage.session.maps[this.mapName] = {}
-        ig.vars.storage.session.map = ig.vars.storage.session.maps[this.mapName]
+        if (!ig.vars.storage.session.maps[varMapName]) ig.vars.storage.session.maps[varMapName] = {}
+        ig.vars.storage.session.map = ig.vars.storage.session.maps[varMapName]
 
-        // sc.bounceSwitchGroups = this.bounceSwitchGroups
+        sc.bounceSwitchGroups = this.bounceSwitchGroups
     }
 
     public afterUpdate() {
@@ -217,6 +218,16 @@ export class CCMap {
         this.minLevelZ = ig.game.minLevelZ
         this._deferredVarChanged = ig.game._deferredVarChanged
         this.size = ig.game.size
+
+        // @ts-expect-error
+        ig.game.events = {
+            callEvent(event, runType) {
+                console.log('callEvent', event, runType)
+                return {} as any
+            },
+        }
+        // @ts-expect-error
+        sc.bounceSwitchGroups = undefined
     }
 }
 
@@ -280,34 +291,24 @@ const setDataFromLevelData = async function (this: ig.Game, data: sc.MapModel.Ma
         ig.game.spawnEntity(entity.type, entity.x, entity.y, z, entity.settings)
     }
 
-    // @ts-expect-error
     this.renderer.mapCleared()
 
-    await new Promise<void>(resolve => {
-        const loader = new (this.mapLoader || ig.Loader)()
-        loader.onEnd = function (this: ig.Loader) {
-            /* this.finalize() */
-            this.prevResourcesCnt = ig.resources.length
-            ig.resources.length = 0
-            clearInterval(this._intervalId)
+    const loader = new (this.mapLoader || ig.Loader)()
+    loader.onEnd = function (this: ig.Loader) {
+        /* this.finalize() */
+        this.prevResourcesCnt = ig.resources.length
+        ig.resources.length = 0
+        clearInterval(this._intervalId)
 
-            ig.ready = true
-            // ig.game.loadingComplete()
+        ig.ready = true
+        // ig.game.loadingComplete()
 
-            // @ts-expect-error
-            this._loadCallbackBound = null
-            ig.loading = false
+        this._loadCallbackBound = null
+        ig.loading = false
+    }.bind(loader)
 
-            clearInterval(id)
-            resolve()
-        }.bind(loader)
-
-        /* ughhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh todo */
-        const id = setTimeout(() => loader.onEnd(), 1e3)
-
-        loader.load()
-        this.currentLoadingResource = loader
-    })
+    loader.load()
+    this.currentLoadingResource = loader
 
     /* stuff below from ig.Game#loadingComplete() */
     if (!ig.multiplayer.headless) this.preDrawMaps()
