@@ -15,8 +15,8 @@ export default class CCMultiplayerServer implements PluginClass {
     }
 
     async prestart() {
-        await import('./skip-title-screen')
-        await import('./godmode')
+        await import('./misc/skip-title-screen')
+        await import('./misc/godmode')
         ig.multiplayer = new Multiplayer()
     }
 
