@@ -3,9 +3,15 @@ declare global {
     namespace ig {
         var godmode: (model?: sc.PlayerModel) => void
     }
+
+    interface Object {
+        keysT<K extends string | number | symbol, V>(object: Record<K, V>): K[]
+    }
 }
 
 ig.godmode = (model: sc.PlayerModel = sc.model.player) => {
+    Object.keysT = Object.keys as any
+
     sc.stats.statsEnabled = true
 
     /* prettier-ignore  */
