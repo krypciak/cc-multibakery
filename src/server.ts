@@ -42,7 +42,7 @@ export class CCServer {
 
     getActiveMaps(): CCMap[] {
         return Object.values(this.maps).filter(
-            map => map.players.length > 0 || ig.multiplayer.server.currentMapViewName == map.mapName
+            map => map.players.length > 0 || ig.multiplayer.server.currentMapViewName == map.mapName || map.alwaysLoaded
         )
     }
 
