@@ -3,6 +3,8 @@ import { Mod1 } from './types'
 import { DEFAULT_PORT, Multiplayer } from './multiplayer'
 import { CCServer } from './server'
 
+import 'setimmediate'
+
 export default class CCMultiplayerServer implements PluginClass {
     static dir: string
     static mod: Mod1
