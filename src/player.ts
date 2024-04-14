@@ -13,7 +13,7 @@ export class Player {
         public name: string,
         public mapName: string
     ) {
-        this.dummy = new ig.dummy.DummyPlayer(name)
+        this.dummy = new ig.dummy.DummyPlayer(0, 0, 0, { username: name })
         if (ig.multiplayer.server.s.godmode) ig.godmode(this.dummy.model)
         this.afterTeleport()
     }
@@ -28,10 +28,9 @@ export class Player {
         map.leave(this)
         this.mapName = mapName
         map = await this.getMap()
-        map.enter(this)
+        await map.enter(this)
         map.scheduledFunctionsForUpdate.push(() => {
             teleportPlayerToProperMarker(this.dummy, marker, new ig.TeleportPosition(marker))
-
             this.afterTeleport()
             this.isTeleporting = false
         })

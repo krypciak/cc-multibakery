@@ -1,5 +1,8 @@
+import { EntityStateEntry, EntityStateUpdatePacketRecord } from './state/states'
+
 export type InitialState = {
     saveData: string
+    packet: ToClientUpdatePacket
 }
 
 export type PlayerJoinResponse =
@@ -16,11 +19,11 @@ export type PlayerJoinResponse =
 export namespace FromClientUpdatePacket {
     export interface Var {
         path: string
-        value: any /* possible RCE exploit???? */
+        value: any
     }
 }
 
-export interface UpdateInput {
+export interface DummyUpdateInput {
     isUsingMouse: boolean
     isUsingKeyboard: boolean
     isUsingAccelerometer: boolean
@@ -37,19 +40,8 @@ export interface UpdateInput {
 }
 
 export type FromClientUpdatePacket = {
-    element?: sc.ELEMENT
-} & (
-    | {
-          paused: true
-      }
-    | {
-          paused?: false
-          vars?: FromClientUpdatePacket.Var[]
-          input?: UpdateInput
-          gatherInput?: ig.ENTITY.Player.PlayerInput
-          relativeCursorPos?: Vec2
-      }
-)
+    paused?: boolean
+} & EntityStateEntry<'ig.dummy.DummyPlayer'>
 
 export interface ClientToServerEvents {
     getPlayerUsernames(callback: (usernames: string[]) => void): void
@@ -58,9 +50,11 @@ export interface ClientToServerEvents {
     update(packet: FromClientUpdatePacket): void
 }
 /* --------- */
+
 export interface ToClientUpdatePacket {
     vars?: FromClientUpdatePacket.Var[]
-    pos?: Vec3
+    entityStates?: EntityStateUpdatePacketRecord
+    playersLeft?: string[]
 }
 export interface ServerToClientEvents {
     update(packet: ToClientUpdatePacket): void
@@ -96,5 +90,23 @@ export function emptyGatherInput(): ig.ENTITY.Player.PlayerInput {
         lastMoveDir: Vec2.create(),
         switchMode: false,
         /* charging crashes */
+    }
+}
+
+export function getDummyUpdateInputFromIgInput(input: ig.Input): DummyUpdateInput {
+    return {
+        isUsingMouse: input.isUsingMouse,
+        isUsingKeyboard: input.isUsingKeyboard,
+        isUsingAccelerometer: input.isUsingAccelerometer,
+        ignoreKeyboard: input.ignoreKeyboard,
+        mouseGuiActive: input.mouseGuiActive,
+        mouse: input.mouse,
+        accel: input.accel,
+        presses: input.presses,
+        keyups: input.keyups,
+        locks: input.locks,
+        delayedKeyup: input.delayedKeyup,
+        currentDevice: input.currentDevice,
+        actions: input.actions,
     }
 }

@@ -1,11 +1,14 @@
-import { UpdateInput } from './api'
+import { DummyUpdateInput, getDummyUpdateInputFromIgInput } from './api'
 
 export {}
 declare global {
     namespace ig {
         namespace dummy {
             namespace DummyPlayer {
-                interface Settings {}
+                interface Settings extends ig.Entity.Settings {
+                    username: string
+                    ignoreInputForcer?: boolean
+                }
             }
             interface DummyPlayer extends ig.ENTITY.Player {
                 input: ig.dummy.Input
@@ -14,17 +17,21 @@ declare global {
                 username: string
                 usernameBox: sc.SmallEntityBox
                 cameraHandle: any
+                ignoreInputForcer: boolean
 
                 showUsernameBox(this: this): void
                 hideUsernameBox(this: this): void
             }
             interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
-                new (username: string): DummyPlayer
+                new (x: number, y: number, z: number, settings: ig.dummy.DummyPlayer.Settings): DummyPlayer
             }
             var DummyPlayer: DummyPlayerConstructor
 
             interface Input extends ig.Input {
-                setInput(this: this, input: UpdateInput): void
+                _lastInput: DummyUpdateInput
+
+                getInput(this: this): DummyUpdateInput
+                setInput(this: this, input: DummyUpdateInput): void
             }
             interface InputConstructor extends ImpactClass<Input> {
                 new (): Input
@@ -32,6 +39,7 @@ declare global {
             var Input: InputConstructor
 
             interface PlayerCrossHairController extends sc.PlayerCrossHairController {
+                input?: ig.dummy.Input
                 relativeCursorPos?: Vec2
             }
             interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
@@ -52,13 +60,19 @@ declare global {
             var PlayerModel: PlayerModelConstructor
         }
     }
+
+    interface EntityTypesInterface {
+        'ig.dummy.DummyPlayer': never
+    }
 }
 
 ig.dummy ??= {} as any
 
+/* todo cameahandle crash on eternal winter */
 ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
-    init(username) {
-        sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, {})
+    init(_x, _y, _z, settings) {
+        const rand = new Array(3).fill(null).map(_ => (Math.random() * 100).floor())
+        sc.PlayerBaseEntity.prototype.init.bind(this)(rand[0], rand[1], rand[2], {})
 
         this.levelUpNotifier = new sc.PlayerLevelNotifier()
         this.itemConsumer = new sc.ItemConsumption()
@@ -72,12 +86,13 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         this.charging.fx = new sc.CombatCharge(this, true)
         sc.combat.addActiveCombatant(this)
 
-        this.username = username
+        this.ignoreInputForcer = settings.ignoreInputForcer ?? true
+        this.username = settings.username
         this.input = new ig.dummy.Input()
     },
     update() {
         const blocking = sc.inputForcer.isBlocking()
-        if (blocking) sc.inputForcer.blocked = false
+        if (blocking && this.ignoreInputForcer) sc.inputForcer.blocked = false
 
         const inputBackup = ig.input
         ig.input = this.input
@@ -86,7 +101,7 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
 
         ig.input = inputBackup
 
-        sc.inputForcer.blocked = blocking
+        if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
     },
     gatherInput() {
         return this.nextGatherInput ?? this.parent()
@@ -98,6 +113,7 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         sc.PlayerCrossHairController = backup
 
         this.crosshairController = this.gui.crosshair.controller
+        this.crosshairController.input = this.input
     },
     showUsernameBox() {
         if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
@@ -124,32 +140,33 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
         sc.playerSkins = backup
     },
     onKill(_dontRespawn?: boolean) {
-        this.usernameBox.doStateTransition('HIDDEN')
+        this.usernameBox?.doStateTransition('HIDDEN')
         this.parent(true)
     },
     showChargeEffect(level) {
         /* prevent crashes */
-        this.cameraHandle = { setZoom() {} }
+        if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
         this.parent(level)
-        this.cameraHandle = undefined
+        if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
     },
     clearCharge() {
         /* prevent crashes */
-        this.cameraHandle = { setZoom() {} }
+        if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
         this.parent()
-        this.cameraHandle = undefined
+        if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
     },
 })
+ig.registerEntityPath(ig.dummy.DummyPlayer, 'ig.dummy.DummyPlayer')
 
 ig.dummy.Input = ig.Input.extend({
     init() {
         this.bindings = ig.input.bindings
     },
-    initMouse() {},
-    initKeyboard() {},
-    initAccelerometer() {},
-
+    getInput() {
+        return this._lastInput ?? getDummyUpdateInputFromIgInput(this)
+    },
     setInput(input) {
+        this._lastInput = input
         for (const key of Object.keysT(input)) {
             const value = input[key]
             if (typeof value === 'function') continue
@@ -160,8 +177,15 @@ ig.dummy.Input = ig.Input.extend({
 })
 
 ig.dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
+    isAiming() {
+        const inputBackup = ig.input
+        ig.input = this.input!
+        const ret = this.parent()
+        ig.input = inputBackup
+        return ret
+    },
     updatePos(crosshair) {
-        if (this.gamepadMode || !this.relativeCursorPos) return this.parent(crosshair)
+        if (!this.relativeCursorPos) return this.parent(crosshair)
         Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
     },
 })
@@ -187,4 +211,11 @@ ig.dummy.PlayerModel = sc.PlayerModel.extend({
     setElementMode(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
     // prettier-ignore
     onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+})
+
+ig.ENTITY.TouchTrigger.inject({
+    update() {
+        this.parent()
+        /* todo make dummies trigger this */
+    },
 })

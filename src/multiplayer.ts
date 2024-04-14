@@ -11,6 +11,7 @@ import {
 } from './api'
 import { UpdatePacketGather } from './update-packet-gather'
 import { teleportFix } from './teleport-fix'
+import { injectEntityStateDefinitions } from './state/states'
 
 export const DEFAULT_PORT = 33405
 
@@ -49,10 +50,14 @@ export class Multiplayer {
     usernameToSocketId!: Record<string, string>
 
     constructor() {
-        import('./game-loop')
-        import('./update-loop')
-        import('./dummy-player')
+        this.init()
+    }
+    private async init() {
+        await import('./game-loop')
+        await import('./update-loop')
+        await import('./dummy-player')
         teleportFix()
+        injectEntityStateDefinitions()
     }
 
     appendServer(server: CCServer) {
@@ -84,9 +89,10 @@ export class Multiplayer {
             })
             socket.on('join', async (username, callback) => {
                 const player = await Player.new(username)
-                const data: PlayerJoinResponse = await this.server.joinPlayer(player)
-                socket.data = player
                 this.usernameToSocketId[player.name] = socket.id
+                socket.data = player
+
+                const data: PlayerJoinResponse = await this.server.joinPlayer(player)
                 callback(data)
             })
             socket.on('leave', () => {
@@ -118,18 +124,17 @@ export class Multiplayer {
         this.disconnectPlayer(player)
     }
 
-    sendOutUpdatePackets(obj: ReturnType<UpdatePacketGather['pop']>) {
-        const { state, statePlayer } = obj
-        for (const mapName in this.server.maps) {
-            const map = this.server.maps[mapName]
+    sendOutUpdatePackets(state: ReturnType<UpdatePacketGather['pop']>) {
+        for (const map of this.server.getActiveMaps()) {
+            const mapName = map.mapName
             const mapPacket: ToClientUpdatePacket | undefined = state[mapName]
 
             for (const player of map.players) {
-                const playerPacket: ToClientUpdatePacket | undefined = statePlayer[player.name]
+                // const playerPacket: ToClientUpdatePacket | undefined = statePlayer[player.name]
 
                 let finalPacket: ToClientUpdatePacket | undefined = mapPacket
-                if (finalPacket && playerPacket) ig.merge(finalPacket, playerPacket)
-                if (!finalPacket) finalPacket = playerPacket
+                // if (finalPacket && playerPacket) ig.merge(finalPacket, playerPacket)
+                // if (!finalPacket) finalPacket = playerPacket
                 if (!finalPacket) continue
 
                 const socket = this.sockets[this.usernameToSocketId[player.name]]

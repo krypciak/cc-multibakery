@@ -34,11 +34,11 @@ ig.System.inject({
         this.running = true
     },
     run() {
-        // try {
-        runLoop()
-        // } catch (err) {
-        //     ig.system.error(err as Error)
-        // }
+        try {
+            runLoop()
+        } catch (err) {
+            ig.system.error(err as Error)
+        }
     },
 })
 

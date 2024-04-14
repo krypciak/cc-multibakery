@@ -73,8 +73,7 @@ ig.Game.inject({
         const s = ig.multiplayer.server
         if (!s) return
 
-        for (const map of Object.values(s.maps)) {
-            if (map.players.length == 0 && ig.multiplayer.server.currentMapViewName != map.mapName) continue
+        for (const map of s.getActiveMaps()) {
             map.prepareForUpdate()
 
             for (const func of map.scheduledFunctionsForUpdate) func()
@@ -114,7 +113,7 @@ ig.Game.inject({
         const s = ig.multiplayer.server
         if (!s) return
 
-        for (const map of Object.values(s.maps)) {
+        for (const map of s.getActiveMaps()) {
             map.prepareForUpdate()
 
             this.deferredMapEntityUpdate()

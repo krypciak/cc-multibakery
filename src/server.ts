@@ -1,6 +1,6 @@
 import { PlayerJoinResponse, ServerSettingsBase, FromClientUpdatePacket } from './api'
 import { CCMap as CCMap } from './ccmap'
-import { getInitialState } from './initial-state'
+import { getInitialState } from './state/initial'
 import { Player } from './player'
 import { teleportPlayerToProperMarker } from './teleport-fix'
 
@@ -40,6 +40,12 @@ export class CCServer {
         delete this.maps[map.mapName]
     }
 
+    getActiveMaps(): CCMap[] {
+        return Object.values(this.maps).filter(
+            map => map.players.length > 0 || ig.multiplayer.server.currentMapViewName == map.mapName
+        )
+    }
+
     async start() {
         await this.loadSlot()
 
@@ -57,7 +63,7 @@ export class CCServer {
 
     getPlayers(): Player[] {
         const players: Player[] = []
-        for (const map of Object.values(this.maps)) {
+        for (const map of this.getActiveMaps()) {
             players.push(...map.players)
         }
         return players
@@ -72,12 +78,10 @@ export class CCServer {
 
         const mapName = player.mapName
         const map = await this.getMap(mapName)
-        map.enter(player)
+        await map.enter(player)
         /* debug */
-        setTimeout(() => {
-            const pos = ig.game.playerEntity.coll.pos
-            player.dummy.setPos(pos.x, pos.y, pos.z)
-        }, 500)
+        const pos = ig.game.playerEntity.coll.pos
+        player.dummy.setPos(pos.x, pos.y, pos.z)
         console.log('join', player.name)
         return {
             mapName,
@@ -88,7 +92,7 @@ export class CCServer {
                 clientStateCorrection: this.s.clientStateCorrection,
                 godmode: this.s.godmode,
             },
-            state: getInitialState(),
+            state: getInitialState(map),
         }
     }
 

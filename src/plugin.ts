@@ -12,23 +12,11 @@ export default class CCMultiplayerServer implements PluginClass {
         CCMultiplayerServer.mod = mod
         CCMultiplayerServer.mod.isCCL3 = mod.findAllAssets ? true : false
         CCMultiplayerServer.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
-
-        Object.keysT = Object.keys as any
-        Object.entriesT = Object.entries as any
-        if (!Object.fromEntries) {
-            Object.fromEntries = function <T, K extends string | number | symbol>(entries: [K, T][]): Record<K, T> {
-                return entries.reduce(
-                    (acc: Record<K, T>, e: [K, T]) => {
-                        acc[e[0]] = e[1]
-                        return acc
-                    },
-                    {} as Record<K, T>
-                )
-            }
-        }
     }
 
     async prestart() {
+        await import('./misc/modify-prototypes')
+        await import('./misc/entity-uuid')
         await import('./misc/skip-title-screen')
         await import('./misc/godmode')
         ig.multiplayer = new Multiplayer()

@@ -23,6 +23,7 @@ export function teleportPlayerToProperMarker(
         }
     } else {
         if (!tpPos) throw new Error('advancedTeleportMarkerBs what')
+        console.log('what???;')
         marker = undefined
         player.coll.level = tpPos.level.toString()
         player.coll.baseZPos = tpPos.baseZPos

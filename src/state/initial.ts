@@ -1,6 +1,8 @@
-import { InitialState } from './api'
+import { InitialState } from '../api'
+import { CCMap } from '../ccmap'
+import { getFullEntityState } from './states'
 
-export function getInitialState(): InitialState {
+export function getInitialState(map: CCMap): InitialState {
     const saveSlotData: ig.SaveSlot.Data = {} as any
     ig.storage._saveState(saveSlotData)
     /* load from player state todo */
@@ -10,7 +12,12 @@ export function getInitialState(): InitialState {
 
     const saveSlot = new ig.SaveSlot(saveSlotData)
 
+    const entityStates = getFullEntityState(map.entities)
+
     return {
         saveData: saveSlot.getSrc(),
+        packet: {
+            entityStates,
+        },
     }
 }

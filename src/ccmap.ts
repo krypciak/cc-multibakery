@@ -1,5 +1,6 @@
 import { FromClientUpdatePacket } from './api'
 import { Player } from './player'
+import { UpdatePacketGather } from './update-packet-gather'
 
 export class CCMap {
     private _levelData!: sc.MapModel.Map
@@ -11,8 +12,9 @@ export class CCMap {
     private shownEntities!: typeof ig.game.shownEntities
     private namedEntities!: typeof ig.game.namedEntities
     private mapEntities!: typeof ig.game.mapEntities
-    private entities!: typeof ig.game.entities
+    entities!: typeof ig.game.entities
     private freeEntityIds!: typeof ig.game.freeEntityIds
+    private entitiesByUUID!: typeof ig.game.entitiesByUUID
 
     private renderer!: typeof ig.game.renderer
     private physics!: typeof ig.game.physics
@@ -33,6 +35,7 @@ export class CCMap {
     private bounceSwitchGroups!: typeof sc.bounceSwitchGroups
 
     players!: Player[]
+    playersThatJustLeft!: Player
     private unloadTimeoutId!: NodeJS.Timeout
 
     scheduledPacketsForUpdate!: { player: Player; packet: FromClientUpdatePacket }[]
@@ -53,6 +56,7 @@ export class CCMap {
         this.mapEntities = []
         this.entities = []
         this.freeEntityIds = []
+        this.entitiesByUUID = {}
 
         this.renderer = new ig.Renderer2d()
         this.physics = new ig.Physics()
@@ -93,43 +97,51 @@ export class CCMap {
         this.afterUpdate()
     }
 
-    public enter(player: Player) {
+    public async enter(player: Player): Promise<void> {
         player.mapName = this.mapName
         this.players.push(player)
         this.stopUnloadTimer()
 
-        this.enterEntity(player.dummy)
+        return this.enterEntity(player.dummy)
     }
 
     public leave(player: Player) {
         this.players.erase(player)
         this.killEntity(player.dummy)
 
+        const packet = (UpdatePacketGather.state[this.mapName] ??= {})
+        const playersLeft = (packet.playersLeft ??= [])
+        playersLeft.push(player.dummy.uuid)
+
         this.startUnloadTimer()
     }
 
-    private enterEntity(e: ig.Entity) {
-        this.scheduledFunctionsForUpdate.push(() => {
-            const oldColl = e.coll
-            e.coll = new ig.CollEntry(e)
-            Vec3.assign(e.coll.pos, oldColl.pos)
-            Vec3.assign(e.coll.size, oldColl.size)
+    private enterEntity(e: ig.Entity): Promise<void> {
+        return new Promise<void>(resolve => {
+            this.scheduledFunctionsForUpdate.push(() => {
+                const oldColl = e.coll
+                e.coll = new ig.CollEntry(e)
+                Vec3.assign(e.coll.pos, oldColl.pos)
+                Vec3.assign(e.coll.size, oldColl.size)
 
-            if (e.name) this.namedEntities[e.name] = e
-            this.entities.push(e)
-            if (e.mapId) this.mapEntities[e.mapId] = e
-            e._hidden = true
-            e.show()
+                if (e.name) this.namedEntities[e.name] = e
+                this.entities.push(e)
+                if (e.mapId) this.mapEntities[e.mapId] = e
+                e._hidden = true
+                e.show()
 
-            if (e.isPlayer && e instanceof ig.ENTITY.Player) {
-                this.enterEntity(e.gui.crosshair)
-            }
+                if (e.isPlayer && e instanceof ig.ENTITY.Player) {
+                    this.enterEntity(e.gui.crosshair)
+                }
+                resolve()
+            })
         })
     }
 
     public killEntity(e: ig.Entity) {
         this.scheduledFunctionsForUpdate.push(() => {
             this.entities.erase(e)
+            delete this.entitiesByUUID[e.uuid]
             e.clearEntityAttached()
 
             /* ig.game.removeEntity(e) */
@@ -185,6 +197,7 @@ export class CCMap {
         ig.game.mapEntities = this.mapEntities
         ig.game.entities = this.entities
         ig.game.freeEntityIds = this.freeEntityIds
+        ig.game.entitiesByUUID = this.entitiesByUUID
 
         ig.game.renderer = this.renderer
         ig.game.physics = this.physics
