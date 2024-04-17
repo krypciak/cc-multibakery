@@ -39,14 +39,28 @@ ig.System.inject({
     },
 })
 
+// let di = 0
+// let dd = Date.now()
+// let dc = 0
 function drawLoop() {
     if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && !ig.multiplayer.headless && ig.perf.draw) {
         ig.game.draw()
         ig.game.finalDraw()
     }
 
+    // di++
+    // if (di % 120 == 0) {
+    //     dc = (di / (Date.now() - dd)) * 1000
+    //     di = 0
+    //     dd = Date.now()
+    // }
+
     window.requestAnimationFrame(drawLoop)
 }
+
+// let pi = 0
+// let pd = Date.now()
+// let pc = 0
 
 let previousMusicTime = 0
 function runLoop() {
@@ -81,6 +95,14 @@ function runLoop() {
             ig.system.newGameClass = null
         }
     }
+
+    // pi++
+    // if (pi % 120 == 0) {
+    //     pc = (pi / (Date.now() - pd)) * 1000
+    //     pi = 0
+    //     pd = Date.now()
+    //     console.log('physics:', pc.floor(), 'draw:', dc.floor())
+    // }
 }
 
 ig.Game.inject({
