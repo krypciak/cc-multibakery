@@ -22,9 +22,7 @@ export default class CCMultiplayerServer implements PluginClass {
         await import('./misc/skip-title-screen')
         await import('./misc/godmode')
         ig.multiplayer = new Multiplayer()
-    }
 
-    async poststart() {
         new CCServer({
             name: 'example',
             slotName: 'example',
@@ -38,7 +36,9 @@ export default class CCMultiplayerServer implements PluginClass {
             godmode: true,
             unloadInactiveMapsMs: 0 /* todo doesnt work other than 0 */,
         })
+    }
 
+    async poststart() {
         ig.multiplayer.start()
     }
 }

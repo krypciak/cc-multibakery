@@ -62,10 +62,10 @@ export class Multiplayer {
 
     appendServer(server: CCServer) {
         this.servers[server.s.name] = server
+        this.server ??= server
     }
 
     start() {
-        this.server = Object.values(this.servers)[0]
         this.server.start()
 
         setIntervalWorkaround()
