@@ -44,7 +44,7 @@ const addonRunnersFactory = () => {
         const addons = ig.game.addons[config.key].filter(addon => !config.ignore.some(clazz => addon instanceof clazz))
 
         runners[funcName] = (ccmap: CCMap) => {
-            const viewMap = ig.multiplayer.server?.viewMap
+            const viewMap = server.server?.viewMap
             for (const addon of [
                 ...addons.filter(
                     addon => !(viewMap && ccmap != viewMap && config.onlyOnce.some(filter => addon instanceof filter))
@@ -70,7 +70,7 @@ ig.Game.inject({
         addonRunners = addonRunnersFactory()
     },
     update() {
-        const s = ig.multiplayer.server
+        const s = server.server
         if (!s) return
 
         for (const map of s.getActiveMaps()) {
@@ -94,13 +94,13 @@ ig.Game.inject({
 
             addonRunners.onPostUpdate(map)
 
-            ig.multiplayer.sendOutUpdatePackets(updatePacketGather.pop())
+            server.sendOutUpdatePackets(updatePacketGather.pop())
 
             map.afterUpdate()
         }
     },
     draw() {
-        const map = ig.multiplayer?.server?.viewMap
+        const map = server?.server?.viewMap
         if (!map) return
         map.prepareForUpdate()
         this.parent()
@@ -110,7 +110,7 @@ ig.Game.inject({
         // return this.parent(data, false, false)
     },
     deferredUpdate() {
-        const s = ig.multiplayer.server
+        const s = server.server
         if (!s) return
 
         for (const map of s.getActiveMaps()) {

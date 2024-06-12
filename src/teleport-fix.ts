@@ -64,7 +64,7 @@ export function teleportFix() {
             if (!player.isPlayer) throw new Error('that is just ridiculous ig.EVENT_STEP.TELEPORT')
             const tpPos = this.marker ? new ig.TeleportPosition(this.marker) : undefined
             if (player instanceof ig.dummy.DummyPlayer) {
-                const playerClass = ig.multiplayer.server.getPlayerByEntity(player)
+                const playerClass = server.server.getPlayerByEntity(player)
                 playerClass.isTeleporting = true
                 /* this is hacky but works */
                 /* ignore the above comment, this blocks client-side player movement for a brief moment after teleporting */
@@ -77,7 +77,7 @@ export function teleportFix() {
                 }, 500)
             } else {
                 ig.game.marker = tpPos?.marker
-                ig.multiplayer.server.prepareNewLevelView(this.map, tpPos)
+                server.server.prepareNewLevelView(this.map, tpPos)
             }
         },
     })

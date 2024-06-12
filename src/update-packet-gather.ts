@@ -23,7 +23,7 @@ export class UpdatePacketGather {
     }
 
     private entityStateUpdates() {
-        for (const map of ig.multiplayer.server.getActiveMaps()) {
+        for (const map of server.server.getActiveMaps()) {
             const entry = (UpdatePacketGather.state[map.mapName] ??= {})
             entry.entityStates = getDiffEntityState(map.entities)
         }

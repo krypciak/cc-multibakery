@@ -23,10 +23,10 @@ ig.System.inject({
     startRunLoop() {
         this.frame = 0
         this.stopRunLoop()
-        if (!ig.multiplayer.headless && window.requestAnimationFrame) {
+        if (!server.headless && window.requestAnimationFrame) {
             window.requestAnimationFrame(drawLoop)
         }
-        this.intervalId = setInterval(this.run.bind(this), 1e3 / ig.multiplayer.server.s.globalTps) as unknown as number
+        this.intervalId = setInterval(this.run.bind(this), 1e3 / server.server.s.globalTps) as unknown as number
 
         this.running = true
     },
@@ -43,7 +43,7 @@ ig.System.inject({
 // let dd = Date.now()
 // let dc = 0
 function drawLoop() {
-    if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && !ig.multiplayer.headless && ig.perf.draw) {
+    if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && !server.headless && ig.perf.draw) {
         ig.game.draw()
         ig.game.finalDraw()
     }
@@ -72,7 +72,7 @@ function runLoop() {
         if (ig.system.hasFocusLost()) ig.system.actualTick = 0
         ig.system.tick = ig.system.actualTick * ig.system.timeFactor
 
-        if (!ig.multiplayer.headless) {
+        if (!server.headless) {
             const currentMusicTime = ig.soundManager.context.getCurrentTimeRaw()
             ig.soundManager.context.timeOffset =
                 currentMusicTime == previousMusicTime ? ig.soundManager.context.timeOffset + ig.system.rawTick : 0
@@ -135,7 +135,7 @@ ig.Game.inject({
 
             ig.input.clearPressed()
 
-            if (!ig.multiplayer.headless) {
+            if (!server.headless) {
                 ig.soundManager.update()
             }
         }

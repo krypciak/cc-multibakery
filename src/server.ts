@@ -20,7 +20,7 @@ export class CCServer {
     }
 
     constructor(public s: ServerSettings) {
-        ig.multiplayer.appendServer(this)
+        server.appendServer(this)
     }
 
     async getMap(mapName: string): Promise<CCMap> {
@@ -42,7 +42,7 @@ export class CCServer {
 
     getActiveMaps(): CCMap[] {
         return Object.values(this.maps).filter(
-            map => map.players.length > 0 || ig.multiplayer.server.currentMapViewName == map.mapName || map.alwaysLoaded
+            map => map.players.length > 0 || server.server.currentMapViewName == map.mapName || map.alwaysLoaded
         )
     }
 

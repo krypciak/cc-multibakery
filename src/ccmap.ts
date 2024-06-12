@@ -176,14 +176,13 @@ export class CCMap {
     }
 
     public startUnloadTimer() {
-        if (this.alwaysLoaded || this.players.length != 0 || ig.multiplayer.server.currentMapViewName == this.mapName)
-            return
+        if (this.alwaysLoaded || this.players.length != 0 || server.server.currentMapViewName == this.mapName) return
 
-        const waitTime = ig.multiplayer.server.s.unloadInactiveMapsMs
+        const waitTime = server.server.s.unloadInactiveMapsMs
         if (waitTime === undefined || waitTime == -1) return
 
         this.unloadTimeoutId = setTimeout(() => {
-            ig.multiplayer.server.unloadMap(this)
+            server.server.unloadMap(this)
         }, waitTime)
     }
     public stopUnloadTimer() {
@@ -324,7 +323,7 @@ const setDataFromLevelData = async function (this: ig.Game, data: sc.MapModel.Ma
     this.currentLoadingResource = loader
 
     /* stuff below from ig.Game#loadingComplete() */
-    if (!ig.multiplayer.headless) this.preDrawMaps()
+    if (!server.headless) this.preDrawMaps()
 
     let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
     if (collisionLayer) collisionLayer.prepare()

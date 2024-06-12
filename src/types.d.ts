@@ -38,7 +38,7 @@ declare global {
         interface System {
             frame: number
         }
-
-        var multiplayer: Multiplayer
     }
+
+    var server: Multiplayer
 }

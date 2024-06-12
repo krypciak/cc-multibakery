@@ -3,7 +3,7 @@ import { teleportPlayerToProperMarker } from './teleport-fix'
 
 export class Player {
     static async new(name: string): Promise<Player> {
-        return new Player(name, ig.multiplayer.server.currentMapViewName)
+        return new Player(name, server.server.currentMapViewName)
     }
 
     dummy: ig.dummy.DummyPlayer
@@ -14,12 +14,12 @@ export class Player {
         public mapName: string
     ) {
         this.dummy = new ig.dummy.DummyPlayer(0, 0, 0, { username: name })
-        if (ig.multiplayer.server.s.godmode) ig.godmode(this.dummy.model)
+        if (server.server.s.godmode) ig.godmode(this.dummy.model)
         this.afterTeleport()
     }
 
     async getMap(): Promise<CCMap> {
-        return ig.multiplayer.server.getMap(this.mapName)
+        return server.server.getMap(this.mapName)
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
@@ -38,7 +38,7 @@ export class Player {
 
     private afterTeleport() {
         this.dummy.hideUsernameBox()
-        if (ig.multiplayer.server.currentMapViewName == this.mapName) {
+        if (server.server.currentMapViewName == this.mapName) {
             this.dummy.showUsernameBox()
         }
     }

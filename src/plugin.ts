@@ -21,7 +21,7 @@ export default class CCMultiplayerServer implements PluginClass {
         await import('./misc/entity-uuid')
         await import('./misc/skip-title-screen')
         await import('./misc/godmode')
-        ig.multiplayer = new Multiplayer()
+        window.server = new Multiplayer()
 
         new CCServer({
             name: 'example',
@@ -39,6 +39,6 @@ export default class CCMultiplayerServer implements PluginClass {
     }
 
     async poststart() {
-        ig.multiplayer.start()
+        server.start()
     }
 }
