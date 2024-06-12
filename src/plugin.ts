@@ -21,6 +21,7 @@ export default class CCMultiplayerServer implements PluginClass {
         await import('./misc/entity-uuid')
         await import('./misc/skip-title-screen')
         await import('./misc/godmode')
+        await import('./misc/gamepad-focus-fix')
         window.server = new Multiplayer()
 
         new CCServer({
