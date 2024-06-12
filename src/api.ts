@@ -39,6 +39,15 @@ export interface DummyUpdateInput {
     actions: ig.Input['actions']
 }
 
+export interface DummyUpdateGamepadInput {
+    buttonDeadzones: Record<ig.BUTTONS, boolean>
+    axesDeadzones: Record<ig.BUTTONS, boolean>
+    buttonStates: Record<ig.BUTTONS, boolean>
+    axesStates: Record<ig.BUTTONS, boolean>
+    pressedStates: Record<ig.BUTTONS, boolean>
+    releasedStates: Record<ig.BUTTONS, boolean>
+}
+
 export type FromClientUpdatePacket = {
     paused?: boolean
 } & EntityStateEntry<'ig.dummy.DummyPlayer'>
@@ -108,5 +117,20 @@ export function getDummyUpdateInputFromIgInput(input: ig.Input): DummyUpdateInpu
         delayedKeyup: input.delayedKeyup,
         currentDevice: input.currentDevice,
         actions: input.actions,
+    }
+}
+
+export function getDummyUpdateGamepadInputFromIgGamepadManager(
+    gamepadmanager: ig.GamepadManager
+): DummyUpdateGamepadInput | undefined {
+    const gp = gamepadmanager.activeGamepads[0]
+    if (!gp) return
+    return {
+        buttonDeadzones: gp.buttonDeadzones,
+        axesStates: gp.axesStates,
+        buttonStates: gp.buttonStates,
+        axesDeadzones: gp.axesDeadzones,
+        pressedStates: gp.pressedStates,
+        releasedStates: gp.releasedStates,
     }
 }

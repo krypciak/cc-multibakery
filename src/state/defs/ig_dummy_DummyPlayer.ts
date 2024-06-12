@@ -15,6 +15,7 @@ function getState(this: ig.dummy.DummyPlayer) {
         username: this.username,
         pos: this.coll.pos,
         input: this.input.getInput(),
+        gamepadInput: this.gamepadManager.getInput(),
         gatherInput: this.nextGatherInput,
         element: this.model.currentElementMode,
         relativeCursorPos: this.crosshairController.relativeCursorPos,
@@ -30,6 +31,9 @@ function setState(this: ig.dummy.DummyPlayer, state: Return) {
     }
     if (state.input) {
         this.input.setInput(state.input)
+    }
+    if (state.gamepadInput) {
+        this.gamepadManager.setInput(state.gamepadInput)
     }
     if (state.gatherInput) {
         this.nextGatherInput = state.gatherInput

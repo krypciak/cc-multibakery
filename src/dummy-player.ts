@@ -1,4 +1,9 @@
-import { DummyUpdateInput, getDummyUpdateInputFromIgInput } from './api'
+import {
+    DummyUpdateGamepadInput,
+    DummyUpdateInput,
+    getDummyUpdateGamepadInputFromIgGamepadManager,
+    getDummyUpdateInputFromIgInput as getDummyUpdateKeyboardInputFromIgInput,
+} from './api'
 
 export {}
 declare global {
@@ -13,6 +18,7 @@ declare global {
             interface DummyPlayer extends ig.ENTITY.Player {
                 input: ig.dummy.Input
                 nextGatherInput: ig.ENTITY.Player.PlayerInput
+                gamepadManager: ig.dummy.GamepadManager
                 crosshairController: ig.dummy.PlayerCrossHairController
                 username: string
                 usernameBox: sc.SmallEntityBox
@@ -38,8 +44,20 @@ declare global {
             }
             var Input: InputConstructor
 
+            interface GamepadManager extends ig.GamepadManager {
+                _lastInput: DummyUpdateGamepadInput
+
+                getInput(this: this): DummyUpdateGamepadInput
+                setInput(this: this, input: DummyUpdateGamepadInput): void
+            }
+            interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
+                new (): GamepadManager
+            }
+            var GamepadManager: GamepadManagerConstructor
+
             interface PlayerCrossHairController extends sc.PlayerCrossHairController {
                 input?: ig.dummy.Input
+                gamepadManager?: ig.dummy.GamepadManager
                 relativeCursorPos?: Vec2
             }
             interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
@@ -88,7 +106,9 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
 
         this.ignoreInputForcer = settings.ignoreInputForcer ?? true
         this.username = settings.username
+
         this.input = new ig.dummy.Input()
+        this.gamepadManager = new ig.dummy.GamepadManager()
     },
     update() {
         const blocking = sc.inputForcer.isBlocking()
@@ -96,10 +116,13 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
 
         const inputBackup = ig.input
         ig.input = this.input
+        const gamepadBackup = ig.gamepad
+        ig.gamepad = this.gamepadManager
 
         this.parent()
 
         ig.input = inputBackup
+        ig.gamepad = gamepadBackup
 
         if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
     },
@@ -114,6 +137,7 @@ ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
 
         this.crosshairController = this.gui.crosshair.controller
         this.crosshairController.input = this.input
+        this.crosshairController.gamepadManager = this.gamepadManager
     },
     showUsernameBox() {
         if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
@@ -163,7 +187,7 @@ ig.dummy.Input = ig.Input.extend({
         this.bindings = ig.input.bindings
     },
     getInput() {
-        return this._lastInput ?? getDummyUpdateInputFromIgInput(this)
+        return this._lastInput ?? getDummyUpdateKeyboardInputFromIgInput(this)
     },
     setInput(input) {
         this._lastInput = input
@@ -176,17 +200,61 @@ ig.dummy.Input = ig.Input.extend({
     },
 })
 
+ig.dummy.GamepadManager = ig.GamepadManager.extend({
+    init() {
+        this.activeGamepads = [
+            // @ts-expect-error
+            {
+                buttonDeadzones: [] as any,
+                axesDeadzones: [] as any,
+                buttonStates: [] as any,
+                axesStates: [] as any,
+                pressedStates: [] as any,
+                releasedStates: [] as any,
+            },
+        ]
+    },
+    getInput() {
+        return this._lastInput ?? getDummyUpdateGamepadInputFromIgGamepadManager(this)
+    },
+    setInput(input) {
+        this._lastInput = input
+        // @ts-expect-error
+        this.activeGamepads[0] = input
+    },
+    isSupported() {
+        return true
+    },
+})
+
 ig.dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
     isAiming() {
         const inputBackup = ig.input
         ig.input = this.input!
+        const gamepadBackup = ig.gamepad
+        ig.gamepad = this.gamepadManager!
+
         const ret = this.parent()
         ig.input = inputBackup
+        ig.gamepad = gamepadBackup
         return ret
     },
     updatePos(crosshair) {
-        if (!this.relativeCursorPos) return this.parent(crosshair)
-        Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
+        this.gamepadMode = this.input!.currentDevice == ig.INPUT_DEVICES.GAMEPAD
+        if (this.gamepadMode) {
+            const inputBackup = ig.input
+            ig.input = this.input!
+            const gamepadBackup = ig.gamepad
+            ig.gamepad = this.gamepadManager!
+
+            this.parent(crosshair)
+
+            ig.input = inputBackup
+            ig.gamepad = gamepadBackup
+        } else {
+            if (!this.relativeCursorPos) return this.parent(crosshair)
+            Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
+        }
     },
 })
 
