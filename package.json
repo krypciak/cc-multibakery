@@ -1,6 +1,12 @@
 {
     "name": "cc-multibakery",
     "version": "0.0.1",
+    "scripts": {
+        "start": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
+        "watch": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
+        "build": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js --minify-syntax --minify-whitespace src/plugin.ts",
+        "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line"
+    },
     "devDependencies": {
         "@types/jquery": "^3.5.30",
         "@types/node": "^11.15.54",
@@ -15,11 +21,5 @@
         "socket.io": "^4.7.5",
         "typescript": "^5.5.3",
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
-    },
-    "scripts": {
-        "start": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
-        "watch": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
-        "build": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js src/plugin.ts",
-        "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line"
     }
 }
