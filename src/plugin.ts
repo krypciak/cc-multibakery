@@ -1,45 +1,36 @@
-import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
-import { Mod1 } from './types'
-import { DEFAULT_PORT, Multiplayer } from './multiplayer'
-import { CCServer } from './server'
+import { Mod, PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 
-import 'setimmediate'
+export type Mod1 = Writable<Mod> & {
+    isCCModPacked: boolean
+    findAllAssets?(): void /* only there for ccl2, used to set isCCL3 */
+} & (
+        | {
+              isCCL3: true
+              id: string
+              findAllAssets(): void
+          }
+        | {
+              isCCL3: false
+              name: string
+              filemanager: {
+                  findFiles(dir: string, exts: string[]): Promise<string[]>
+              }
+              getAsset(path: string): string
+              runtimeAssets: Record<string, string>
+          }
+    )
 
-export default class CCMultiplayerServer implements PluginClass {
-    static dir: string
+export default class Test implements PluginClass {
     static mod: Mod1
 
     constructor(mod: Mod1) {
-        CCMultiplayerServer.dir = mod.baseDirectory
-        CCMultiplayerServer.mod = mod
-        CCMultiplayerServer.mod.isCCL3 = mod.findAllAssets ? true : false
-        CCMultiplayerServer.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
+        // Test.dir = mod.baseDirectory
+        Test.mod = mod
+        Test.mod.isCCL3 = mod.findAllAssets ? true : false
+        Test.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
     }
 
-    async prestart() {
-        await import('./misc/modify-prototypes')
-        await import('./misc/entity-uuid')
-        await import('./misc/skip-title-screen')
-        await import('./misc/godmode')
-        await import('./misc/gamepad-focus-fix')
-        window.server = new Multiplayer()
+    async prestart() {}
 
-        new CCServer({
-            name: 'example',
-            slotName: 'example',
-            host: 'localhost',
-            port: DEFAULT_PORT,
-            globalTps: 60,
-            rollback: false,
-            clientStateCorrection: {
-                posTickInterval: 3,
-            },
-            godmode: true,
-            unloadInactiveMapsMs: 0 /* todo doesnt work other than 0 */,
-        })
-    }
-
-    async poststart() {
-        server.start()
-    }
+    async poststart() {}
 }
