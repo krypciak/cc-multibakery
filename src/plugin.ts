@@ -1,41 +1,57 @@
-import { Mod, PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
+import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import type { CrossnodeTest } from 'crossnode/crossnode.d.ts'
+import { Mod1 } from './types'
+import { DEFAULT_PORT, Multiplayer } from './multiplayer'
 
-export type Mod1 = Writable<Mod> & {
-    isCCModPacked: boolean
-    findAllAssets?(): void /* only there for ccl2, used to set isCCL3 */
-} & (
-        | {
-              isCCL3: true
-              id: string
-              findAllAssets(): void
-          }
-        | {
-              isCCL3: false
-              name: string
-              filemanager: {
-                  findFiles(dir: string, exts: string[]): Promise<string[]>
-              }
-              getAsset(path: string): string
-              runtimeAssets: Record<string, string>
-          }
-    )
+import 'setimmediate'
+import { LocalServer } from './local-server'
 
-export default class Test implements PluginClass {
+import './misc/modify-prototypes'
+import './misc/entity-uuid'
+import './misc/skip-title-screen'
+import './misc/godmode'
+import './misc/gamepad-focus-fix'
+import './local-client'
+
+let prestartFunctions: (() => void | Promise<void>)[]
+export function prestart(func: () => void | Promise<void>) {
+    prestartFunctions ??= []
+    prestartFunctions.push(func)
+}
+
+export default class Multibakery implements PluginClass {
+    static dir: string
     static mod: Mod1
 
     constructor(mod: Mod1) {
-        // Test.dir = mod.baseDirectory
-        Test.mod = mod
-        Test.mod.isCCL3 = mod.findAllAssets ? true : false
-        Test.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
+        Multibakery.dir = mod.baseDirectory
+        Multibakery.mod = mod
+        Multibakery.mod.isCCL3 = mod.findAllAssets ? true : false
+        Multibakery.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
     }
 
     async prestart() {
-        if (window.crossnode) {
+        await Promise.all(prestartFunctions.map(f => f()))
+
+        window.multi = new Multiplayer()
+        if (window.crossnode) global.multi = window.multi
+
+        multi.setServer(
+            new LocalServer({
+                name: 'example',
+                slotName: 'example',
+                host: 'localhost',
+                port: DEFAULT_PORT,
+                globalTps: 60,
+                godmode: true,
+                unloadInactiveMapsMs: 0 /* todo doesnt work other than 0 */,
+            })
+        )
+
+        if (window.crossnode && window.crossnode.options.test) {
             let i = 0
             function genTest(): CrossnodeTest {
-                let finishFunc: any
+                let finishFunc: (success: boolean, msg?: string | undefined) => void
                 let myI = i
                 i++
                 return {
@@ -66,7 +82,7 @@ export default class Test implements PluginClass {
                                 finishFunc(true)
                             } else {
                                 function pv(v: Vec3) {
-                                    return `{ x: ${v.x}, y: ${v.y}, z: ${v.z} }`
+                                    return `{ x: ${v.x}, y: ${v.y.toString()}, z: ${v.z.toString()} }}`
                                 }
                                 finishFunc(
                                     false,
@@ -84,5 +100,20 @@ export default class Test implements PluginClass {
         }
     }
 
-    async poststart() {}
+    async poststart() {
+        // multi.nowServer = true
+        // VarBackup.backup()
+        //
+        // await multi.setClient(
+        //     new LocalClient({
+        //         username: 'local',
+        //         globalTps: 60,
+        //     })
+        // )
+        // multi.nowServer = false
+        //
+        // multi.nowClient = true
+        // VarBackup.restore()
+        // multi.nowClient = false
+    }
 }

@@ -25,7 +25,7 @@ importers:
         version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/e80a954a9c53f569563ef65f0966369664c4a32b
       crossnode:
         specifier: github:krypciak/crossnode
-        version: https://codeload.github.com/krypciak/crossnode/tar.gz/adbdc19c1af32937465cd18e176724cec879d3c6
+        version: https://codeload.github.com/krypciak/crossnode/tar.gz/9b0048c7b8634f8549082b8bf147ac2561026543
       esbuild:
         specifier: ^0.20.2
         version: 0.20.2
@@ -405,8 +405,8 @@ packages:
     resolution: {integrity: sha512-iRDPJKUPVEND7dHPO8rkbOnPpyDygcDFtWjpeWNCgy8WP2rXcxXL8TskReQl6OrB2G7+UJrags1q15Fudc7G6w==}
     engines: {node: '>= 8'}
 
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/adbdc19c1af32937465cd18e176724cec879d3c6:
-    resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/adbdc19c1af32937465cd18e176724cec879d3c6}
+  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/9b0048c7b8634f8549082b8bf147ac2561026543:
+    resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/9b0048c7b8634f8549082b8bf147ac2561026543}
     version: 1.0.0
 
   debug@4.3.5:
@@ -1136,7 +1136,7 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/adbdc19c1af32937465cd18e176724cec879d3c6: {}
+  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/9b0048c7b8634f8549082b8bf147ac2561026543: {}
 
   debug@4.3.5:
     dependencies:
