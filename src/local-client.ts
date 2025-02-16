@@ -3,11 +3,12 @@ import { assert } from './misc/assert'
 import { Player } from './player'
 import { prestart } from './plugin'
 
-import './misc/paused-virtual'
-import './local-update-packet-gather'
 import { popLocalUpdatePacket } from './local-client-update-packet-gather'
 import { EntityStateEntry } from './state/states'
 import { emptyGatherInput } from './dummy-player'
+
+import './misc/paused-virtual'
+import './local-client-update-packet-gather'
 
 export interface ClientSettings {
     username: string
@@ -22,16 +23,6 @@ export interface Client<T extends ClientSettings = ClientSettings> {
 }
 
 prestart(() => {
-    ig.System.inject({
-        run() {
-            assert(multi.nowServer, 'Called ig.System#run while multi.nowServer is true!')
-            assert(multi.nowClient, 'Called ig.System#run while multi.nowClient is true!')
-            multi.nowClient = true
-            this.parent()
-            multi.nowClient = false
-        },
-    })
-
     sc.CrossCode.inject({
         createPlayer() {
             if (multi.nowClient) return this.parent()

@@ -1,8 +1,10 @@
 import { LocalClient } from './local-client'
 import { Server } from './local-server'
 import { assert } from './misc/assert'
-import { injectEntityStateDefinitions } from './state/states'
 import type {} from 'crossnode/crossnode.d.ts'
+
+import './dummy-player'
+import './state/states'
 
 export const DEFAULT_PORT = 33405
 
@@ -21,11 +23,9 @@ export class Multiplayer {
     }
 
     private async init() {
-        // await import('./game-loop')
+        await import('./game-loop')
         // await import('./update-loop')
-        await import('./dummy-player')
         // teleportFix()
-        injectEntityStateDefinitions()
     }
 
     setServer(server: Server) {

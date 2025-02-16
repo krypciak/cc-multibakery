@@ -1,3 +1,5 @@
+import { prestart } from '../../plugin'
+
 export {}
 declare global {
     namespace ig.dummy {
@@ -46,6 +48,6 @@ function setState(this: ig.dummy.DummyPlayer, state: Return) {
     }
 }
 
-export function inject_ig_dummy_DummyPlayer() {
+prestart(() => {
     ig.dummy.DummyPlayer.inject({ getState, setState })
-}
+}, 2)

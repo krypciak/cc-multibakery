@@ -1,4 +1,5 @@
 import { DummyUpdateGamepadInput, DummyUpdateInput } from './api'
+import { prestart } from './plugin'
 
 export function emptyGatherInput(): ig.ENTITY.Player.PlayerInput {
     return {
@@ -131,206 +132,208 @@ declare global {
     }
 }
 
-ig.dummy ??= {} as any
+prestart(() => {
+    ig.dummy ??= {} as any
 
-/* todo cameahandle crash on eternal winter */
-ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
-    init(_x, _y, _z, settings) {
-        const rand = new Array(3).fill(null).map(_ => (Math.random() * 100).floor())
-        sc.PlayerBaseEntity.prototype.init.bind(this)(rand[0], rand[1], rand[2], {})
+    /* todo cameahandle crash on eternal winter */
+    ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
+        init(_x, _y, _z, settings) {
+            const rand = new Array(3).fill(null).map(_ => (Math.random() * 100).floor())
+            sc.PlayerBaseEntity.prototype.init.bind(this)(rand[0], rand[1], rand[2], {})
 
-        this.levelUpNotifier = new sc.PlayerLevelNotifier()
-        this.itemConsumer = new sc.ItemConsumption()
+            this.levelUpNotifier = new sc.PlayerLevelNotifier()
+            this.itemConsumer = new sc.ItemConsumption()
 
-        this.model = new ig.dummy.PlayerModel(this)
-        sc.Model.addObserver(this.model, this)
-        sc.Model.addObserver(sc.model, this)
-        this.initModel()
+            this.model = new ig.dummy.PlayerModel(this)
+            sc.Model.addObserver(this.model, this)
+            sc.Model.addObserver(sc.model, this)
+            this.initModel()
 
-        sc.Model.addObserver(sc.playerSkins, this)
-        this.charging.fx = new sc.CombatCharge(this, true)
-        sc.combat.addActiveCombatant(this)
+            sc.Model.addObserver(sc.playerSkins, this)
+            this.charging.fx = new sc.CombatCharge(this, true)
+            sc.combat.addActiveCombatant(this)
 
-        this.ignoreInputForcer = settings.ignoreInputForcer ?? true
-        this.username = settings.username
+            this.ignoreInputForcer = settings.ignoreInputForcer ?? true
+            this.username = settings.username
 
-        this.input = new ig.dummy.Input()
-        this.gamepadManager = new ig.dummy.GamepadManager()
-    },
-    update() {
-        const blocking = sc.inputForcer.isBlocking()
-        if (blocking && this.ignoreInputForcer) sc.inputForcer.blocked = false
+            this.input = new ig.dummy.Input()
+            this.gamepadManager = new ig.dummy.GamepadManager()
+        },
+        update() {
+            const blocking = sc.inputForcer.isBlocking()
+            if (blocking && this.ignoreInputForcer) sc.inputForcer.blocked = false
 
-        const inputBackup = ig.input
-        ig.input = this.input
-        const gamepadBackup = ig.gamepad
-        ig.gamepad = this.gamepadManager
+            const inputBackup = ig.input
+            ig.input = this.input
+            const gamepadBackup = ig.gamepad
+            ig.gamepad = this.gamepadManager
 
-        this.parent()
+            this.parent()
 
-        ig.input = inputBackup
-        ig.gamepad = gamepadBackup
+            ig.input = inputBackup
+            ig.gamepad = gamepadBackup
 
-        if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
-    },
-    gatherInput() {
-        return this.nextGatherInput ?? this.parent()
-    },
-    show() {
-        const backup = sc.PlayerCrossHairController
-        sc.PlayerCrossHairController = ig.dummy.PlayerCrossHairController
-        this.parent()
-        sc.PlayerCrossHairController = backup
+            if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
+        },
+        gatherInput() {
+            return this.nextGatherInput ?? this.parent()
+        },
+        show() {
+            const backup = sc.PlayerCrossHairController
+            sc.PlayerCrossHairController = ig.dummy.PlayerCrossHairController
+            this.parent()
+            sc.PlayerCrossHairController = backup
 
-        this.crosshairController = this.gui.crosshair.controller
-        this.crosshairController.input = this.input
-        this.crosshairController.gamepadManager = this.gamepadManager
-    },
-    showUsernameBox() {
-        if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
-        this.usernameBox = new sc.SmallEntityBox(this, this.username, 1e100)
-        // this.usernameBox.stopRumble()
-        ig.gui.addGuiElement(this.usernameBox)
-    },
-    hideUsernameBox() {
-        if (!this.usernameBox) return
-        this.usernameBox.doStateTransition('HIDDEN', false, true)
-    },
-    updateAnimSheet(updateFx) {
-        /* disable skins for dummy players */
-        const backup = sc.playerSkins
-        sc.playerSkins = {
+            this.crosshairController = this.gui.crosshair.controller
+            this.crosshairController.input = this.input
+            this.crosshairController.gamepadManager = this.gamepadManager
+        },
+        showUsernameBox() {
+            if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
+            this.usernameBox = new sc.SmallEntityBox(this, this.username, 1e100)
+            // this.usernameBox.stopRumble()
+            ig.gui.addGuiElement(this.usernameBox)
+        },
+        hideUsernameBox() {
+            if (!this.usernameBox) return
+            this.usernameBox.doStateTransition('HIDDEN', false, true)
+        },
+        updateAnimSheet(updateFx) {
+            /* disable skins for dummy players */
+            const backup = sc.playerSkins
+            sc.playerSkins = {
+                // @ts-expect-error
+                getCurrentSkin() {
+                    return null
+                },
+            }
+
+            this.parent(updateFx)
+
+            sc.playerSkins = backup
+        },
+        onKill(_dontRespawn?: boolean) {
+            this.usernameBox?.doStateTransition('HIDDEN')
+            this.parent(true)
+        },
+        showChargeEffect(level) {
+            /* prevent crashes */
+            if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
+            this.parent(level)
+            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
+        },
+        clearCharge() {
+            /* prevent crashes */
+            if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
+            this.parent()
+            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
+        },
+    })
+    ig.registerEntityPath(ig.dummy.DummyPlayer, 'ig.dummy.DummyPlayer')
+
+    ig.dummy.Input = ig.Input.extend({
+        init() {
+            this.bindings = ig.input.bindings
+        },
+        getInput() {
+            return this._lastInput ?? getDummyUpdateKeyboardInputFromIgInput(this)
+        },
+        setInput(input) {
+            this._lastInput = input
+            for (const key of Object.keysT(input)) {
+                const value = input[key]
+                if (typeof value === 'function') continue
+                // @ts-expect-error
+                this[key] = value
+            }
+        },
+    })
+
+    ig.dummy.GamepadManager = ig.GamepadManager.extend({
+        init() {
+            this.activeGamepads = [
+                // @ts-expect-error
+                {
+                    buttonDeadzones: [] as any,
+                    axesDeadzones: [] as any,
+                    buttonStates: [] as any,
+                    axesStates: [] as any,
+                    pressedStates: [] as any,
+                    releasedStates: [] as any,
+                },
+            ]
+        },
+        getInput() {
+            return this._lastInput ?? getDummyUpdateGamepadInputFromIgGamepadManager(this)
+        },
+        setInput(input) {
+            this._lastInput = input
             // @ts-expect-error
-            getCurrentSkin() {
-                return null
-            },
-        }
+            this.activeGamepads[0] = input
+        },
+        isSupported() {
+            return true
+        },
+    })
 
-        this.parent(updateFx)
-
-        sc.playerSkins = backup
-    },
-    onKill(_dontRespawn?: boolean) {
-        this.usernameBox?.doStateTransition('HIDDEN')
-        this.parent(true)
-    },
-    showChargeEffect(level) {
-        /* prevent crashes */
-        if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
-        this.parent(level)
-        if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
-    },
-    clearCharge() {
-        /* prevent crashes */
-        if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
-        this.parent()
-        if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
-    },
-})
-ig.registerEntityPath(ig.dummy.DummyPlayer, 'ig.dummy.DummyPlayer')
-
-ig.dummy.Input = ig.Input.extend({
-    init() {
-        this.bindings = ig.input.bindings
-    },
-    getInput() {
-        return this._lastInput ?? getDummyUpdateKeyboardInputFromIgInput(this)
-    },
-    setInput(input) {
-        this._lastInput = input
-        for (const key of Object.keysT(input)) {
-            const value = input[key]
-            if (typeof value === 'function') continue
-            // @ts-expect-error
-            this[key] = value
-        }
-    },
-})
-
-ig.dummy.GamepadManager = ig.GamepadManager.extend({
-    init() {
-        this.activeGamepads = [
-            // @ts-expect-error
-            {
-                buttonDeadzones: [] as any,
-                axesDeadzones: [] as any,
-                buttonStates: [] as any,
-                axesStates: [] as any,
-                pressedStates: [] as any,
-                releasedStates: [] as any,
-            },
-        ]
-    },
-    getInput() {
-        return this._lastInput ?? getDummyUpdateGamepadInputFromIgGamepadManager(this)
-    },
-    setInput(input) {
-        this._lastInput = input
-        // @ts-expect-error
-        this.activeGamepads[0] = input
-    },
-    isSupported() {
-        return true
-    },
-})
-
-ig.dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
-    isAiming() {
-        const inputBackup = ig.input
-        ig.input = this.input!
-        const gamepadBackup = ig.gamepad
-        ig.gamepad = this.gamepadManager!
-
-        const ret = this.parent()
-        ig.input = inputBackup
-        ig.gamepad = gamepadBackup
-        return ret
-    },
-    updatePos(crosshair) {
-        this.gamepadMode = this.input!.currentDevice == ig.INPUT_DEVICES.GAMEPAD
-        if (this.gamepadMode) {
+    ig.dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
+        isAiming() {
             const inputBackup = ig.input
             ig.input = this.input!
             const gamepadBackup = ig.gamepad
             ig.gamepad = this.gamepadManager!
 
-            this.parent(crosshair)
-
+            const ret = this.parent()
             ig.input = inputBackup
             ig.gamepad = gamepadBackup
-        } else {
-            if (!this.relativeCursorPos) return this.parent(crosshair)
-            Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
-        }
-    },
-})
+            return ret
+        },
+        updatePos(crosshair) {
+            this.gamepadMode = this.input!.currentDevice == ig.INPUT_DEVICES.GAMEPAD
+            if (this.gamepadMode) {
+                const inputBackup = ig.input
+                ig.input = this.input!
+                const gamepadBackup = ig.gamepad
+                ig.gamepad = this.gamepadManager!
 
-ig.dummy.PlayerModel = sc.PlayerModel.extend({
-    init(dummy) {
-        this.parent()
-        this.dummy = dummy
-        this.setConfig(sc.model.leaConfig)
-    },
-    playerBackup() {
-        this._playerBackup = ig.game.playerEntity
-        ig.game.playerEntity = this.dummy
-    },
-    playerRestore() {
-        ig.game.playerEntity = this._playerBackup
-    },
-    // prettier-ignore
-    updateLoop(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-    // prettier-ignore
-    enterElementalOverload(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-    // prettier-ignore
-    setElementMode(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-    // prettier-ignore
-    onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-})
+                this.parent(crosshair)
 
-ig.ENTITY.TouchTrigger.inject({
-    update() {
-        this.parent()
-        /* todo make dummies trigger this */
-    },
-})
+                ig.input = inputBackup
+                ig.gamepad = gamepadBackup
+            } else {
+                if (!this.relativeCursorPos) return this.parent(crosshair)
+                Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
+            }
+        },
+    })
+
+    ig.dummy.PlayerModel = sc.PlayerModel.extend({
+        init(dummy) {
+            this.parent()
+            this.dummy = dummy
+            this.setConfig(sc.model.leaConfig)
+        },
+        playerBackup() {
+            this._playerBackup = ig.game.playerEntity
+            ig.game.playerEntity = this.dummy
+        },
+        playerRestore() {
+            ig.game.playerEntity = this._playerBackup
+        },
+        // prettier-ignore
+        updateLoop(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+        // prettier-ignore
+        enterElementalOverload(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+        // prettier-ignore
+        setElementMode(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+        // prettier-ignore
+        onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+    })
+
+    ig.ENTITY.TouchTrigger.inject({
+        update() {
+            this.parent()
+            /* todo make dummies trigger this */
+        },
+    })
+}, 1)

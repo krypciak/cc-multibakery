@@ -1,5 +1,6 @@
 import { CCDeepType, EntityTypes } from '../misc/entity-uuid'
-import { inject_ig_dummy_DummyPlayer } from './defs/ig_dummy_DummyPlayer'
+
+import './defs/ig_dummy_DummyPlayer'
 
 interface StateEntityBase {
     getState(): object
@@ -17,10 +18,6 @@ export type EntityStateEntry<T extends StateEntityTypes> = {
 } & Partial<ReturnType<Filter<T>['getState']>>
 
 export type EntityStateUpdatePacketRecord = Record<string, EntityStateEntry<StateEntityTypes>>
-
-export function injectEntityStateDefinitions() {
-    inject_ig_dummy_DummyPlayer()
-}
 
 function isStateEntity(e: ig.Entity): e is StateEntityInstances {
     return 'getState' in e && 'setState' in e

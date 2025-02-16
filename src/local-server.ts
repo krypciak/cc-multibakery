@@ -2,6 +2,7 @@ import { ClientJoinResponse, FromClientUpdatePacket } from './api'
 import { CCMap as CCMap } from './ccmap'
 import { emptyGatherInput } from './dummy-player'
 import { Client } from './local-client'
+import { assert } from './misc/assert'
 import { getInitialState } from './state/initial'
 
 export interface ServerSettings {
@@ -16,6 +17,8 @@ export interface Server<T extends ServerSettings = ServerSettings> {
     joinClient(client: Client): Promise<ClientJoinResponse>
     getUsernames(): Promise<string[]>
 
+    update(): void
+    deferredUpdate(): void
     receiveDataFromClient(username: string, packet: FromClientUpdatePacket): void
 }
 
@@ -90,6 +93,16 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     async getUsernames(): Promise<string[]> {
         return Object.keys(this.clients)
+    }
+
+    update() {
+        assert(multi.nowServer)
+        ig.game.update()
+    }
+
+    deferredUpdate() {
+        assert(multi.nowServer)
+        ig.game.deferredUpdate()
     }
 
     receiveDataFromClient(username: string, packet: FromClientUpdatePacket) {

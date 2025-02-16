@@ -7,4 +7,5 @@ startCrossnode({
     ccloader2: true,
     modWhitelist: ['cc-multibakery'],
     extensionWhitelist: [],
+    writeImage: true,
 })

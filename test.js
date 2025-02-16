@@ -4,10 +4,9 @@ startCrossnode({
     test: true,
     determinism: true,
     ccloader2: true,
-    nukeImageStack: true,
-    
-    modWhitelist: ['cc-multibakery'],
+    writeImage: true,
+
+    modWhitelist: ['cc-multibakery', 'cc-determine', 'cc-instanceinator', 'ccmodmanager'],
     extensionWhitelist: [],
     modTestWhitelist: ['cc-multibakery'],
 })
-
