@@ -8,7 +8,7 @@ let state: FromClientUpdatePacket
 prestart(() => {
     sc.PlayerModel.inject({
         setElementMode(element, force, skipEffect) {
-            if (!multi.nowClient) return this.parent(element, force, skipEffect)
+            if (multi.server) return this.parent(element, force, skipEffect)
 
             if (multi.client.isExecutingUpdatePacketNow || this !== sc.model.player) {
                 return this.parent(element, force, skipEffect)

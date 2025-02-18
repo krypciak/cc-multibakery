@@ -1,3 +1,4 @@
+import { addonRunners } from './addon-runner'
 import { ClientJoinResponse, FromClientUpdatePacket } from './api'
 import { CCMap as CCMap } from './ccmap'
 import { emptyGatherInput } from './dummy-player'
@@ -13,6 +14,8 @@ export interface ServerSettings {
 
 export interface Server<T extends ServerSettings = ServerSettings> {
     s: T
+
+    start(): Promise<void>
 
     joinClient(client: Client): Promise<ClientJoinResponse>
     getUsernames(): Promise<string[]>
@@ -64,8 +67,8 @@ export class LocalServer implements Server<LocalServerSettings> {
         // ig.game.mapName = 'rhombus-dng.room-1'
         // ig.game.marker = 'start'
 
-        // sc.model.enterGame()
-        // sc.model.enterRunning()
+        sc.model.enterGame()
+        sc.model.enterRunning()
     }
 
     async joinClient(client: Client): Promise<ClientJoinResponse> {
@@ -97,12 +100,44 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     update() {
         assert(multi.nowServer)
-        ig.game.update()
+        for (const map of this.getActiveMaps()) {
+            map.prepareForUpdate()
+
+            for (const func of map.scheduledFunctionsForUpdate) func()
+            map.scheduledFunctionsForUpdate = []
+            // for (const { packet, player } of map.scheduledPacketsForUpdate) runUpdatePacket(player, packet)
+            map.scheduledPacketsForUpdate = []
+
+            addonRunners.onPreUpdate(map)
+
+            if (ig.game._deferredVarChanged) {
+                ig.game.varsChanged()
+                ig.game._deferredVarChanged = false
+            }
+            if (!ig.game.paused && !ig.loading) {
+                ig.game.physics.update()
+            }
+            if (!ig.loading) ig.game.events.update()
+
+            addonRunners.onPostUpdate(map)
+
+            // multi.sendOutUpdatePackets(updatePacketGather.pop())
+
+            map.afterUpdate()
+        }
     }
 
     deferredUpdate() {
         assert(multi.nowServer)
-        ig.game.deferredUpdate()
+
+        for (const map of this.getActiveMaps()) {
+            map.prepareForUpdate()
+
+            ig.game.deferredMapEntityUpdate()
+            addonRunners.onDeferredUpdate(map)
+
+            map.afterUpdate()
+        }
     }
 
     receiveDataFromClient(username: string, packet: FromClientUpdatePacket) {
@@ -144,14 +179,22 @@ export class LocalServer implements Server<LocalServerSettings> {
     }
 
     private async loadSlot() {
-        const slotIndex = this.findSlot()
+        let slotIndex = this.findSlot()
         if (slotIndex == -1) {
             await this.createSlot(true)
-        } else {
-            ig.storage.loadSlot(slotIndex)
+            slotIndex = this.findSlot()
+            assert(slotIndex != -1)
         }
+        this.loadSlotIndex(slotIndex)
+
         /* nuke interactables */
         ig.interact.entries.forEach(e => ig.interact.removeEntry(e))
+    }
+
+    private loadSlotIndex(slotIndex: number) {
+        const slot = ig.storage.slots[slotIndex]
+        ig.storage.currentLoadFile = ig.copy(slot)
+        ig.storage.checkPointSave = ig.copy(slot)
     }
 
     private async createSlot(

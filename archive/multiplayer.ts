@@ -14,7 +14,6 @@ export class Multiplayer {
     server!: Server
     client!: LocalClient
 
-    nowClient: boolean = false
     nowServer: boolean = false
 
     constructor() {
@@ -38,5 +37,6 @@ export class Multiplayer {
         this.client = client
         const res = await this.server.joinClient(client)
         console.log(res)
+        this.client.notifyJoin(res)
     }
 }

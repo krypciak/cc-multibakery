@@ -11,13 +11,20 @@ import './misc/entity-uuid'
 // import './misc/skip-title-screen'
 import './misc/godmode'
 import './misc/gamepad-focus-fix'
-import './local-client'
+// import './local-client'
 import { startGameLoop } from './game-loop'
+import { LocalClient } from './local-client'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
     prestartFunctions ??= []
     prestartFunctions.push([func, priority])
+}
+
+let poststartFunctions: [() => void | Promise<void>, number][]
+export function poststart(func: () => void | Promise<void>, priority: number = 100) {
+    poststartFunctions ??= []
+    poststartFunctions.push([func, priority])
 }
 
 export default class Multibakery implements PluginClass {
@@ -42,6 +49,8 @@ export default class Multibakery implements PluginClass {
     }
 
     async poststart() {
+        await Promise.all(poststartFunctions.sort((a, b) => a[1] - b[1]).map(([f]) => f()))
+
         multi.setServer(
             new LocalServer({
                 name: 'example',
@@ -55,19 +64,13 @@ export default class Multibakery implements PluginClass {
         )
         multi.nowServer = true
         startGameLoop()
-        multi.server.start()
+        await multi.server.start()
 
-        // VarBackup.backup()
-        //
-        // await multi.setClient(
-        //     new LocalClient({
-        //         username: 'local',
-        //         globalTps: 60,
-        //     })
-        // )
-        // multi.nowServer = false
-        // multi.nowClient = true
-        // VarBackup.restore()
-        // multi.nowClient = false
+        await multi.setClient(
+            new LocalClient({
+                username: 'local',
+                globalTps: 60,
+            })
+        )
     }
 }

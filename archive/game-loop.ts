@@ -51,7 +51,6 @@ prestart(() => {
             }
 
             assert(multi.nowServer, 'Called ig.System#run while multi.nowServer is false!')
-            assert(!multi.nowClient, 'Called ig.System#run while multi.nowClient is true!')
 
             try {
                 physicsLoop()

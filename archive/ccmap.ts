@@ -4,14 +4,6 @@ import { Player } from './player'
 import { UpdatePacketGather } from './update-packet-gather'
 
 export class VarBackup {
-    private static inst: VarBackup = new VarBackup()
-    public static backup() {
-        this.inst.backup()
-    }
-    public static restore() {
-        this.inst.restore()
-    }
-
     private mapName!: string
 
     private conditionalEntities!: typeof ig.game.conditionalEntities
@@ -43,7 +35,6 @@ export class VarBackup {
 
     public backup() {
         assert(this.restored, 'Backup called without restoring!')
-        assert(multi.nowServer, 'Backup called when multi.nowServer is false!')
         this.restored = false
 
         this.conditionalEntities = ig.game.conditionalEntities
@@ -75,7 +66,6 @@ export class VarBackup {
 
     public restore() {
         assert(!this.restored, 'Restore called without backing up!')
-        assert(multi.nowClient, 'Restore called when multi.nowClient is false!')
         this.restored = true
 
         ig.game.conditionalEntities = this.conditionalEntities
@@ -107,36 +97,6 @@ export class VarBackup {
 }
 
 export class CCMap {
-    private _levelData!: sc.MapModel.Map
-    get levelData(): sc.MapModel.Map {
-        return this._levelData
-    }
-
-    private conditionalEntities!: typeof ig.game.conditionalEntities
-    private shownEntities!: typeof ig.game.shownEntities
-    private namedEntities!: typeof ig.game.namedEntities
-    private mapEntities!: typeof ig.game.mapEntities
-    entities!: typeof ig.game.entities
-    private freeEntityIds!: typeof ig.game.freeEntityIds
-    private entitiesByUUID!: typeof ig.game.entitiesByUUID
-
-    private renderer!: typeof ig.game.renderer
-    private physics!: typeof ig.game.physics
-    private events!: typeof ig.game.events
-    private levels!: typeof ig.game.levels
-    private maps!: typeof ig.game.maps
-    private masterLevel!: typeof ig.game.masterLevel
-    private maxLevel!: typeof ig.game.maxLevel
-    private minLevelZ!: typeof ig.game.minLevelZ
-    private screen!: typeof ig.game.screen
-    private size!: typeof ig.game.size
-    private states!: typeof ig.game.states
-    private _deferredVarChanged!: typeof ig.game._deferredVarChanged
-
-    /* vars under ig.vars.storage */
-    private Vtmp: typeof ig.vars.storage.tmp
-
-    private bounceSwitchGroups!: typeof sc.bounceSwitchGroups
 
     players!: Player[]
     playersThatJustLeft!: Player
@@ -280,14 +240,15 @@ export class CCMap {
     }
 
     public startUnloadTimer() {
-        if (this.alwaysLoaded || this.players.length != 0) return
-
-        const waitTime = multi.server.s.unloadInactiveMapsMs
-        if (waitTime === undefined || waitTime == -1) return
-
-        this.unloadTimeoutId = setTimeout(() => {
-            multi.server.unloadMap(this)
-        }, waitTime)
+        return
+        // if (this.alwaysLoaded || this.players.length != 0) return
+        //
+        // const waitTime = multi.server.s.unloadInactiveMapsMs
+        // if (waitTime === undefined || waitTime == -1) return
+        //
+        // this.unloadTimeoutId = setTimeout(() => {
+        //     multi.server.unloadMap(this)
+        // }, waitTime)
     }
     public stopUnloadTimer() {
         if (this.unloadTimeoutId) clearTimeout(this.unloadTimeoutId)
