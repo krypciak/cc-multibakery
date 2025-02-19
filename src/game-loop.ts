@@ -47,7 +47,8 @@ prestart(() => {
         run() {
             if (!multi.server) return this.parent()
             if (multi.server instanceof LocalServer) {
-                multi.server.baseInst.apply()
+                if (!multi.server.serverInst) return
+                assert(instanceinator.instanceId == multi.server.serverInst.id)
             }
             // if (!this.running) {
             //     console.log('not running, return', instanceinator.instanceId)
@@ -74,6 +75,7 @@ function drawLoop() {
             ig.game.finalDraw()
         }
     }
+    if (multi.server instanceof LocalServer) multi.server.serverInst.apply()
 
     // di++
     // if (di % 120 == 0) {
@@ -135,7 +137,7 @@ prestart(() => {
     ig.Game.inject({
         run() {
             if (!multi.server) return this.parent()
-            if (multi.server instanceof LocalServer) assert(instanceinator.instanceId == multi.server.baseInst.id)
+            if (multi.server instanceof LocalServer) assert(instanceinator.instanceId == multi.server.serverInst.id)
 
             if (ig.system.hasFocusLost() && this.fullyStopped) {
                 ig.soundManager.update()
