@@ -1,14 +1,16 @@
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServer } from './local-server'
 import { assert } from '../misc/assert'
+import { prestart } from '../plugin'
 
 export class CCMap {
-    static displayMaps: boolean = true
     // players!: Player[]
     // playersThatJustLeft!: Player
     // private unloadTimeoutId!: NodeJS.Timeout
 
     inst!: InstanceinatorInstance
+    camera!: ig.Camera.TargetHandle
+    cameraTarget!: ig.Camera.PosTarget
 
     constructor(
         public name: string,
@@ -17,15 +19,23 @@ export class CCMap {
 
     async load() {
         assert(multi.server instanceof LocalServer)
+        const displayMaps = multi.server.s.displayMaps
+
         const levelDataPromise = this.readLevelData()
-        this.inst = await instanceinator.Instance.copy(multi.server.baseInst, `map-${this.name}`, CCMap.displayMaps)
+        this.inst = await instanceinator.Instance.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
         instanceinator.append(this.inst)
 
         const levelData = await levelDataPromise
         this.inst.ig.game.scheduledTasks.push(() => {
-            setDataFromLevelData.call(ig.game, levelData)
+            setDataFromLevelData.call(ig.game, this.name, levelData)
+
+            sc.model.enterNewGame()
+            sc.model.enterGame()
+
+            if (displayMaps) this.initCameraHandle()
         })
     }
+
     async unload() {}
 
     private async readLevelData() {
@@ -40,10 +50,12 @@ export class CCMap {
                 },
             })
         })
-        // this._levelData = data
-        // this.prepareForUpdate()
-        // await setDataFromLevelData.bind(ig.game)(data)
-        // this.afterUpdate()
+    }
+
+    private initCameraHandle() {
+        this.cameraTarget = new ig.Camera.PosTarget({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
+        this.camera = new ig.Camera.TargetHandle(this.cameraTarget, 0, 0)
+        ig.camera.pushTarget(this.camera)
     }
 
     // public async enter(player: Player): Promise<void> {
@@ -140,14 +152,37 @@ export class CCMap {
     // }
 }
 
+// camera movement
+prestart(() => {
+    ig.Camera.inject({
+        onPostUpdate() {
+            if (multi.server instanceof LocalServer && multi.server.s.displayMaps) {
+                const map = multi.server.mapsById[instanceinator.instanceId]
+                if (map) {
+                    const move = Vec2.create()
+                    sc.control.moveDir(move, 0, true)
+                    Vec2.mulC(move, 8)
+
+                    Vec2.add(map.cameraTarget.pos, move)
+                }
+            }
+            this.parent()
+        },
+    })
+})
+
 type Layer = keyof typeof ig.MAP
-const setDataFromLevelData = function (this: ig.Game, data: sc.MapModel.Map) {
+const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map) {
     /* mostly stolen from ig.Game#loadLevel */
+
+    ig.game.mapName = mapName
+    ig.game.marker = ''
+    for (const addon of this.addons.teleport) addon.onTeleport(mapName, new ig.TeleportPosition(), undefined)
 
     // this.currentLoadingResource = 'CREATING MAP:  ' + data.name
     ig.ready = false
 
-    // for (const addon of this.addons.levelLoadStart) addon.onLevelLoadStart(data)
+    for (const addon of this.addons.levelLoadStart) addon.onLevelLoadStart(data)
     this.minLevelZ = 1e5
     this.maxLevel = data.levels.length
     this.levels.first = { maps: [] }
@@ -204,16 +239,18 @@ const setDataFromLevelData = function (this: ig.Game, data: sc.MapModel.Map) {
 
     const loader = new (this.mapLoader || ig.Loader)()
     loader.onEnd = function (this: ig.Loader) {
-        /* this.finalize() */
-        this.prevResourcesCnt = ig.resources.length
-        ig.resources.length = 0
-        clearInterval(this._intervalId)
+        instanceinator.instances[this.instanceId].ig.game.scheduledTasks.push(() => {
+            /* this.finalize() */
+            this.prevResourcesCnt = ig.resources.length
+            ig.resources.length = 0
+            clearInterval(this._intervalId)
 
-        ig.ready = true
-        // ig.game.loadingComplete()
+            ig.ready = true
+            ig.game.loadingComplete()
 
-        this._loadCallbackBound = null
-        ig.loading = false
+            this._loadCallbackBound = null
+            ig.loading = false
+        })
     }.bind(loader)
 
     loader.load()

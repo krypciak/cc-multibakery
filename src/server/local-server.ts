@@ -1,5 +1,5 @@
 import { Client } from '../client/client'
-import { startGameLoop } from '../game-loop'
+import { copyTickInfo, startGameLoop } from '../game-loop'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { initConsoleDialog, openServerConsole } from './local-server-console'
@@ -10,12 +10,14 @@ export interface LocalServerSettings extends ServerSettings {
     slotName: string
     host: string
     port: number
+    displayMaps: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
 
 export class LocalServer implements Server<LocalServerSettings> {
     maps: Record<string, CCMap> = {}
+    mapsById: Record<number, CCMap> = {}
 
     baseInst!: InstanceinatorInstance
     serverInst!: InstanceinatorInstance
@@ -41,9 +43,9 @@ export class LocalServer implements Server<LocalServerSettings> {
         startGameLoop()
 
         initConsoleDialog()
-        setTimeout(() => this.serverInst.ig.game.scheduledTasks.push(() => openServerConsole()), 400)
+        openServerConsole()
 
-        this.loadMap('rhombus-dng.room-1')
+        await this.loadMap('rhombus-dng.room-1')
     }
 
     update() {
@@ -52,6 +54,7 @@ export class LocalServer implements Server<LocalServerSettings> {
         for (const name in this.maps) {
             const map = this.maps[name]
             if (!map.inst) continue
+            copyTickInfo(this.serverInst, map.inst)
             map.inst.apply()
             ig.game.update()
         }
@@ -59,21 +62,25 @@ export class LocalServer implements Server<LocalServerSettings> {
     }
     deferredUpdate() {
         ig.game.deferredUpdate()
-        ig.input.clearPressed()
 
         for (const name in this.maps) {
             const map = this.maps[name]
             if (!map.inst) continue
+            copyTickInfo(this.serverInst, map.inst)
             map.inst.apply()
             ig.game.deferredUpdate()
+            ig.input.clearPressed()
         }
+
         this.serverInst.apply()
+        ig.input.clearPressed()
     }
 
     async loadMap(name: string) {
         const map = new CCMap(name)
         this.maps[name] = map
         await map.load()
+        this.mapsById[map.inst.id] = map
     }
 }
 

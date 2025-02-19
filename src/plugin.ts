@@ -32,9 +32,9 @@ export default class Multibakery implements PluginClass {
         if (window.crossnode?.options.test) {
             // await import('./test/aoc2024d15')
         }
-        await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
-
         global.multi = window.multi = new Multiplayer()
+
+        await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
     }
 
     async poststart() {
@@ -48,6 +48,7 @@ export default class Multibakery implements PluginClass {
                 port: DEFAULT_PORT,
                 globalTps: 60,
                 godmode: true,
+                displayMaps: true,
             })
         )
         multi.server.start()
