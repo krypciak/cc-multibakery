@@ -60,12 +60,13 @@ prestart(() => {
             ig.entityPathToClass[path] = entityClass
             entityClass.prototype.type = path
         }
+        for (const key of Object.keysT(ig.ENTITY)) {
+            ig.registerEntityPath(ig.ENTITY[key], `ig.ENTITY.${key}`)
+        }
+        
         ig.Game.inject({
             init() {
                 this.parent()
-                for (const key of Object.keysT(ig.ENTITY)) {
-                    ig.registerEntityPath(ig.ENTITY[key], `ig.ENTITY.${key}`)
-                }
                 this.entitiesByUUID = {}
             },
             getEntityClassByPath(path) {
