@@ -3,6 +3,7 @@ import { copyTickInfo, startGameLoop } from '../game-loop'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { initConsoleDialog, openServerConsole } from './local-server-console'
+import { Player } from './player'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
@@ -45,7 +46,8 @@ export class LocalServer implements Server<LocalServerSettings> {
         initConsoleDialog()
         openServerConsole()
 
-        await this.loadMap('rhombus-dng.room-1')
+        const player = new Player('player1')
+        await player.teleport('rhombus-dng.room-1', undefined)
     }
 
     update() {
@@ -107,3 +109,12 @@ prestart(() => {
         },
     })
 })
+
+export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => void) {
+    return new Promise<void>(resolve => {
+        inst.ig.game.scheduledTasks.push(() => {
+            task()
+            resolve()
+        })
+    })
+}

@@ -45,6 +45,7 @@ type DeepType<T, P extends string> = P extends `${infer K}.${infer Rest}`
 export type CCDeepType<P extends string> =
       P extends `ig.${infer Rest}` ? DeepType<typeof ig, Rest>
     : P extends `sc.${infer Rest}` ? DeepType<typeof sc, Rest>
+    : P extends `dummy.${infer Rest}` ? DeepType<typeof dummy, Rest>
     : never
 
 type EntityClass = new (x: number, y: number, z: number, settings: any /*ig.Entity.Settings*/) => ig.Entity
@@ -63,7 +64,7 @@ prestart(() => {
         for (const key of Object.keysT(ig.ENTITY)) {
             ig.registerEntityPath(ig.ENTITY[key], `ig.ENTITY.${key}`)
         }
-        
+
         ig.Game.inject({
             init() {
                 this.parent()

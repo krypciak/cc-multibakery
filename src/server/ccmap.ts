@@ -1,10 +1,11 @@
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { LocalServer } from './local-server'
+import { LocalServer, waitForScheduledTask } from './local-server'
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
+import { Player } from './player'
 
 export class CCMap {
-    // players!: Player[]
+    players!: Player[]
     // playersThatJustLeft!: Player
     // private unloadTimeoutId!: NodeJS.Timeout
 
@@ -33,6 +34,7 @@ export class CCMap {
             sc.model.enterGame()
 
             if (displayMaps) this.initCameraHandle()
+            this.removeUnneededGuis()
         })
     }
 
@@ -58,84 +60,122 @@ export class CCMap {
         ig.camera.pushTarget(this.camera)
     }
 
-    // public async enter(player: Player): Promise<void> {
-    //     player.mapName = this.name
-    //     this.players.push(player)
-    //     this.stopUnloadTimer()
-    //
-    //     return this.enterEntity(player.dummy)
-    // }
-    //
-    // public leave(player: Player) {
-    //     this.players.erase(player)
-    //     this.killEntity(player.dummy)
-    //
-    //     const packet = (UpdatePacketGather.state[this.name] ??= {})
-    //     const playersLeft = (packet.playersLeft ??= [])
-    //     playersLeft.push(player.dummy.uuid)
-    //
-    //     this.startUnloadTimer()
-    // }
-    //
-    // private enterEntity(e: ig.Entity): Promise<void> {
-    //     return new Promise<void>(resolve => {
-    //         this.scheduledFunctionsForUpdate.push(() => {
-    //             const oldColl = e.coll
-    //             e.coll = new ig.CollEntry(e)
-    //             Vec3.assign(e.coll.pos, oldColl.pos)
-    //             Vec3.assign(e.coll.size, oldColl.size)
-    //
-    //             if (e.name) this.namedEntities[e.name] = e
-    //             this.entities.push(e)
-    //             if (e.mapId) this.mapEntities[e.mapId] = e
-    //             e._hidden = true
-    //             e.show()
-    //
-    //             if (e.isPlayer && e instanceof ig.ENTITY.Player) {
-    //                 this.enterEntity(e.gui.crosshair)
-    //             }
-    //             resolve()
-    //         })
-    //     })
-    // }
-    //
-    // public killEntity(e: ig.Entity) {
-    //     this.scheduledFunctionsForUpdate.push(() => {
-    //         this.entities.erase(e)
-    //         delete this.entitiesByUUID[e.uuid]
-    //         e.clearEntityAttached()
-    //
-    //         /* ig.game.removeEntity(e) */
-    //         e.name && delete this.namedEntities[e.name]
-    //
-    //         // e._killed = e.coll._killed = true
-    //
-    //         /* consequence of ig.game.detachEntity(e) */
-    //
-    //         if (e.id) {
-    //             this.physics.removeCollEntry(e.coll)
-    //             // this.physics.collEntryMap.forEach(a =>
-    //             //     a.forEach(a =>
-    //             //         a.forEach(c => {
-    //             //             if (c.entity === e) {
-    //             //                 a.erase(e.coll)
-    //             //             }
-    //             //         })
-    //             //     )
-    //             // )
-    //             /* reactivate it cuz removeCollEntry set it to false */
-    //             e.coll._active = true
-    //
-    //             this.shownEntities[e.id] = null
-    //             // this.freeEntityIds.push(e.id)
-    //             // e.id = 0
-    //         }
-    //         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
-    //             this.killEntity(e.gui.crosshair)
-    //         }
-    //     })
-    // }
-    //
+    private removeUnneededGuis() {
+        for (let i = ig.gui.guiHooks.length - 1; i >= 0; i--) {
+            const hook = ig.gui.guiHooks[i]
+            const gui = hook.gui
+            if (
+                gui instanceof sc.ElementalLoadOverlayGui ||
+                gui instanceof ig.GuiImageContainer ||
+                gui instanceof ig.OverlayCornerGui ||
+                gui instanceof ig.OverlayGui ||
+                gui instanceof sc.SpChangeHudGui ||
+                gui instanceof ig.MessageOverlayGui ||
+                gui instanceof sc.TopMsgHudGui ||
+                gui instanceof sc.CombatHudGui ||
+                gui instanceof sc.SideMessageHudGui ||
+                gui instanceof sc.QuickMenu ||
+                gui instanceof sc.ElementHudGui ||
+                gui instanceof sc.MainMenu ||
+                gui instanceof sc.StatusHudGui ||
+                gui instanceof sc.TitleScreenGui ||
+                gui instanceof sc.RightHudGui ||
+                gui instanceof sc.MasterOverlayGui
+            ) {
+                ig.gui.guiHooks.splice(i, 1)
+            }
+        }
+    }
+
+    async enter(player: Player) {
+        player.mapName = this.name
+        this.players.push(player)
+        // this.stopUnloadTimer()
+
+        return this.enterEntity(player.dummy)
+    }
+
+    async leave(player: Player) {
+        this.players.erase(player)
+
+        // const packet = (UpdatePacketGather.state[this.name] ??= {})
+        // const playersLeft = (packet.playersLeft ??= [])
+        // playersLeft.push(player.dummy.uuid)
+
+        // this.startUnloadTimer()
+        return this.killEntity(player.dummy)
+    }
+
+    private async enterEntity(e: ig.Entity) {
+        const promises: Promise<void>[] = []
+        promises.push(
+            waitForScheduledTask(this.inst, () => {
+                const oldColl = e.coll
+                e.coll = new ig.CollEntry(e)
+                Vec3.assign(e.coll.pos, oldColl.pos)
+                Vec3.assign(e.coll.size, oldColl.size)
+
+                if (e.name) {
+                    assert(!ig.game.namedEntities[e.mapId], 'map enterEntity namedEntities collision!')
+                    ig.game.namedEntities[e.name] = e
+                }
+                if (e.mapId) {
+                    assert(!ig.game.mapEntities[e.mapId], 'map enterEntity mapId collision!')
+                    ig.game.mapEntities[e.mapId] = e
+                }
+                ig.game.entities.push(e)
+                e._hidden = true
+                e.show()
+            })
+        )
+        if (e.isPlayer && e instanceof ig.ENTITY.Player) {
+            promises.push(this.enterEntity(e.gui.crosshair))
+        }
+        await Promise.all(promises)
+    }
+
+    private async killEntity(e: ig.Entity) {
+        const promises: Promise<void>[] = []
+        promises.push(
+            waitForScheduledTask(this.inst, () => {
+                ig.game.entities.erase(e)
+                delete ig.game.entitiesByUUID[e.uuid]
+                e.clearEntityAttached()
+
+                /* ig.game.removeEntity(e) */
+                e.name && delete ig.game.namedEntities[e.name]
+
+                // e._killed = e.coll._killed = true
+
+                /* consequence of ig.game.detachEntity(e) */
+
+                if (e.id) {
+                    ig.game.physics.removeCollEntry(e.coll)
+                    // this.physics.collEntryMap.forEach(a =>
+                    //     a.forEach(a =>
+                    //         a.forEach(c => {
+                    //             if (c.entity === e) {
+                    //                 a.erase(e.coll)
+                    //             }
+                    //         })
+                    //     )
+                    // )
+                    /* reactivate it cuz removeCollEntry set it to false */
+                    e.coll._active = true
+
+                    ig.game.shownEntities[e.id] = null
+                    // this.freeEntityIds.push(e.id)
+                    // e.id = 0
+                }
+            })
+        )
+
+        if (e.isPlayer && e instanceof ig.ENTITY.Player) {
+            promises.push(this.killEntity(e.gui.crosshair))
+        }
+        await Promise.all(promises)
+    }
+
     // public startUnloadTimer() {
     //     return
     //     // if (this.alwaysLoaded || this.players.length != 0) return
@@ -156,7 +196,7 @@ export class CCMap {
 prestart(() => {
     ig.Camera.inject({
         onPostUpdate() {
-            if (multi.server instanceof LocalServer && multi.server.s.displayMaps) {
+            if (!ig.game.paused && multi.server instanceof LocalServer && multi.server.s.displayMaps) {
                 const map = multi.server.mapsById[instanceinator.instanceId]
                 if (map) {
                     const move = Vec2.create()

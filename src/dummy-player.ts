@@ -55,88 +55,92 @@ export function getDummyUpdateGamepadInputFromIgGamepadManager(
 }
 
 declare global {
-    namespace ig {
-        namespace dummy {
-            namespace DummyPlayer {
-                interface Settings extends ig.Entity.Settings {
-                    username: string
-                    ignoreInputForcer?: boolean
-                }
-            }
-            interface DummyPlayer extends ig.ENTITY.Player {
-                input: ig.dummy.Input
-                nextGatherInput: ig.ENTITY.Player.PlayerInput
-                gamepadManager: ig.dummy.GamepadManager
-                crosshairController: ig.dummy.PlayerCrossHairController
+    namespace dummy {
+        namespace DummyPlayer {
+            interface Settings extends ig.Entity.Settings {
                 username: string
-                usernameBox: sc.SmallEntityBox
-                cameraHandle: any
-                ignoreInputForcer: boolean
+                ignoreInputForcer?: boolean
+            }
+        }
+        interface DummyPlayer extends ig.ENTITY.Player {
+            input: dummy.Input
+            nextGatherInput: ig.ENTITY.Player.PlayerInput
+            gamepadManager: dummy.GamepadManager
+            crosshairController: dummy.PlayerCrossHairController
+            username: string
+            usernameBox: sc.SmallEntityBox
+            cameraHandle: any
+            ignoreInputForcer: boolean
 
-                showUsernameBox(this: this): void
-                hideUsernameBox(this: this): void
-            }
-            interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
-                new (x: number, y: number, z: number, settings: ig.dummy.DummyPlayer.Settings): DummyPlayer
-            }
-            var DummyPlayer: DummyPlayerConstructor
+            showUsernameBox(this: this): void
+            hideUsernameBox(this: this): void
+        }
+        interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
+            new (x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): DummyPlayer
+        }
+        var DummyPlayer: DummyPlayerConstructor
 
-            interface Input extends ig.Input {
-                _lastInput: DummyUpdateInput
+        interface Input extends ig.Input {
+            _lastInput: DummyUpdateInput
 
-                getInput(this: this): DummyUpdateInput
-                setInput(this: this, input: DummyUpdateInput): void
-            }
-            interface InputConstructor extends ImpactClass<Input> {
-                new (): Input
-            }
-            var Input: InputConstructor
+            getInput(this: this): DummyUpdateInput
+            setInput(this: this, input: DummyUpdateInput): void
+        }
+        interface InputConstructor extends ImpactClass<Input> {
+            new (): Input
+        }
+        var Input: InputConstructor
 
-            interface GamepadManager extends ig.GamepadManager {
-                _lastInput: DummyUpdateGamepadInput
+        interface GamepadManager extends ig.GamepadManager {
+            _lastInput: DummyUpdateGamepadInput
 
-                getInput(this: this): DummyUpdateGamepadInput
-                setInput(this: this, input: DummyUpdateGamepadInput): void
-            }
-            interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
-                new (): GamepadManager
-            }
-            var GamepadManager: GamepadManagerConstructor
+            getInput(this: this): DummyUpdateGamepadInput
+            setInput(this: this, input: DummyUpdateGamepadInput): void
+        }
+        interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
+            new (): GamepadManager
+        }
+        var GamepadManager: GamepadManagerConstructor
 
-            interface PlayerCrossHairController extends sc.PlayerCrossHairController {
-                input?: ig.dummy.Input
-                gamepadManager?: ig.dummy.GamepadManager
-                relativeCursorPos?: Vec2
-            }
-            interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
-                new (): PlayerCrossHairController
-            }
-            var PlayerCrossHairController: PlayerCrossHairControllerConstructor
+        interface PlayerCrossHairController extends sc.PlayerCrossHairController {
+            input?: dummy.Input
+            gamepadManager?: dummy.GamepadManager
+            relativeCursorPos?: Vec2
+        }
+        interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
+            new (): PlayerCrossHairController
+        }
+        var PlayerCrossHairController: PlayerCrossHairControllerConstructor
 
-            interface PlayerModel extends sc.PlayerModel {
-                dummy: ig.dummy.DummyPlayer
-                _playerBackup: ig.ENTITY.Player
+        interface PlayerModel extends sc.PlayerModel {
+            dummy: dummy.DummyPlayer
+            _playerBackup: ig.ENTITY.Player
 
-                playerBackup(this: this): void
-                playerRestore(this: this): void
-            }
-            interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
-                new (dummy: ig.dummy.DummyPlayer): PlayerModel
-            }
-            var PlayerModel: PlayerModelConstructor
+            playerBackup(this: this): void
+            playerRestore(this: this): void
+        }
+        interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
+            new (dummy: dummy.DummyPlayer): PlayerModel
+        }
+        var PlayerModel: PlayerModelConstructor
+    }
+
+    namespace NodeJS {
+        interface Global {
+            dummy: typeof dummy
         }
     }
 
     interface EntityTypesInterface {
-        'ig.dummy.DummyPlayer': never
+        'dummy.DummyPlayer': never
     }
 }
 
 prestart(() => {
-    ig.dummy ??= {} as any
+    global.dummy = window.dummy ??= {} as any
 
     /* todo cameahandle crash on eternal winter */
-    ig.dummy.DummyPlayer = ig.ENTITY.Player.extend({
+    dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
             const rand = new Array(3).fill(null).map(_ => (Math.random() * 100).floor())
             sc.PlayerBaseEntity.prototype.init.bind(this)(rand[0], rand[1], rand[2], {})
@@ -144,7 +148,7 @@ prestart(() => {
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
             this.itemConsumer = new sc.ItemConsumption()
 
-            this.model = new ig.dummy.PlayerModel(this)
+            this.model = new dummy.PlayerModel(this)
             sc.Model.addObserver(this.model, this)
             sc.Model.addObserver(sc.model, this)
             this.initModel()
@@ -156,8 +160,8 @@ prestart(() => {
             this.ignoreInputForcer = settings.ignoreInputForcer ?? true
             this.username = settings.username
 
-            this.input = new ig.dummy.Input()
-            this.gamepadManager = new ig.dummy.GamepadManager()
+            this.input = new dummy.Input()
+            this.gamepadManager = new dummy.GamepadManager()
         },
         update() {
             const blocking = sc.inputForcer.isBlocking()
@@ -180,7 +184,7 @@ prestart(() => {
         },
         show() {
             const backup = sc.PlayerCrossHairController
-            sc.PlayerCrossHairController = ig.dummy.PlayerCrossHairController
+            sc.PlayerCrossHairController = dummy.PlayerCrossHairController
             this.parent()
             sc.PlayerCrossHairController = backup
 
@@ -229,9 +233,9 @@ prestart(() => {
             if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
         },
     })
-    ig.registerEntityPath(ig.dummy.DummyPlayer, 'ig.dummy.DummyPlayer')
+    ig.registerEntityPath(dummy.DummyPlayer, 'dummy.DummyPlayer')
 
-    ig.dummy.Input = ig.Input.extend({
+    dummy.Input = ig.Input.extend({
         init() {
             this.bindings = ig.input.bindings
         },
@@ -249,7 +253,7 @@ prestart(() => {
         },
     })
 
-    ig.dummy.GamepadManager = ig.GamepadManager.extend({
+    dummy.GamepadManager = ig.GamepadManager.extend({
         init() {
             this.activeGamepads = [
                 // @ts-expect-error
@@ -276,7 +280,7 @@ prestart(() => {
         },
     })
 
-    ig.dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
+    dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
         isAiming() {
             const inputBackup = ig.input
             ig.input = this.input!
@@ -307,7 +311,7 @@ prestart(() => {
         },
     })
 
-    ig.dummy.PlayerModel = sc.PlayerModel.extend({
+    dummy.PlayerModel = sc.PlayerModel.extend({
         init(dummy) {
             this.parent()
             this.dummy = dummy
