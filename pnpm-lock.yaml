@@ -22,7 +22,7 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.3)
       cc-determine:
         specifier: github:krypciak/cc-determine
-        version: https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98
+        version: https://codeload.github.com/krypciak/cc-determine/tar.gz/0287bd3ce8eefcee4cbd57924cb5c7351afc45b0
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7
@@ -381,8 +381,8 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98}
+  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/0287bd3ce8eefcee4cbd57924cb5c7351afc45b0:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-determine/tar.gz/0287bd3ce8eefcee4cbd57924cb5c7351afc45b0}
     version: 0.0.1
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7:
@@ -1122,7 +1122,7 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98: {}
+  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/0287bd3ce8eefcee4cbd57924cb5c7351afc45b0: {}
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7: {}
 

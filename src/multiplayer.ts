@@ -1,5 +1,4 @@
 import { Server } from './server/server'
-import { assert } from './misc/assert'
 
 // import 'setimmediate'
 
@@ -23,7 +22,9 @@ export class Multiplayer {
     }
 
     setServer(server: Server) {
-        assert(!this.server, 'Server already set!')
+        if (this.server) {
+            this.server.destroy()
+        }
         this.server = server
     }
 }

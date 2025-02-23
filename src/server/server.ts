@@ -15,4 +15,6 @@ export interface Server<T extends ServerSettings = ServerSettings> {
     update(): void
     deferredUpdate(): void
     // receiveDataFromClient(username: string, packet: FromClientUpdatePacket): void
+
+    destroy(): void
 }

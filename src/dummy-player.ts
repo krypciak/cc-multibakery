@@ -142,8 +142,7 @@ prestart(() => {
     /* todo cameahandle crash on eternal winter */
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
-            const rand = new Array(3).fill(null).map(_ => (Math.random() * 100).floor())
-            sc.PlayerBaseEntity.prototype.init.bind(this)(rand[0], rand[1], rand[2], {})
+            sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, {})
 
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
             this.itemConsumer = new sc.ItemConsumption()

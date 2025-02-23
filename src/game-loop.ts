@@ -1,4 +1,4 @@
-import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from './misc/assert'
 import { prestart } from './plugin'
 import { LocalServer } from './server/local-server'

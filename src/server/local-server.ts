@@ -1,3 +1,4 @@
+import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { Client } from '../client/client'
 import { copyTickInfo, startGameLoop } from '../game-loop'
 import { prestart } from '../plugin'
@@ -22,6 +23,7 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     baseInst!: InstanceinatorInstance
     serverInst!: InstanceinatorInstance
+    serverDeterminism!: DeterMineInstance
 
     consoleDialog!: modmanager.gui.MultiPageButtonBoxGui
 
@@ -37,6 +39,8 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.serverInst = await instanceinator.Instance.copy(this.baseInst, 'server', !multi.headless)
         instanceinator.append(this.serverInst)
         this.serverInst.apply()
+        this.serverDeterminism = new determine.Instance('cross the codes')
+        determine.apply(this.serverDeterminism)
 
         if (!multi.headless) /* update tiling */ sc.options._setDisplaySize()
 
@@ -59,10 +63,13 @@ export class LocalServer implements Server<LocalServerSettings> {
             if (!map.inst) continue
             copyTickInfo(this.serverInst, map.inst)
             map.inst.apply()
+            determine.apply(map.determinism)
             ig.game.update()
         }
         this.serverInst.apply()
+        determine.apply(this.serverDeterminism)
     }
+
     deferredUpdate() {
         ig.game.deferredUpdate()
 
@@ -71,11 +78,13 @@ export class LocalServer implements Server<LocalServerSettings> {
             if (!map.inst) continue
             copyTickInfo(this.serverInst, map.inst)
             map.inst.apply()
+            determine.apply(map.determinism)
             ig.game.deferredUpdate()
             ig.input.clearPressed()
         }
 
         this.serverInst.apply()
+        determine.apply(this.serverDeterminism)
         ig.input.clearPressed()
     }
 
@@ -84,6 +93,14 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.maps[name] = map
         await map.load()
         this.mapsById[map.inst.id] = map
+    }
+
+    destroy() {
+        for (const map of Object.values(this.maps)) {
+            map.destroy()
+        }
+        instanceinator.delete(this.serverInst)
+        determine.delete(this.serverDeterminism)
     }
 }
 
