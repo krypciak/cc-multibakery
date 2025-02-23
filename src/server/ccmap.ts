@@ -1,22 +1,24 @@
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServer, waitForScheduledTask } from './local-server'
 import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
 import { Player } from './player'
+import { indent } from './local-server-console'
+import { CCMapDisplay } from './ccmap-display'
 
 export class CCMap {
-    players!: Player[]
+    players: Player[] = []
     // playersThatJustLeft!: Player
     // private unloadTimeoutId!: NodeJS.Timeout
 
     inst!: InstanceinatorInstance
-    camera!: ig.Camera.TargetHandle
-    cameraTarget!: ig.Camera.PosTarget
+    display: CCMapDisplay
 
     constructor(
         public name: string,
         public alwaysLoaded: boolean = false
-    ) {}
+    ) {
+        this.display = new CCMapDisplay(this)
+    }
 
     async load() {
         assert(multi.server instanceof LocalServer)
@@ -33,8 +35,8 @@ export class CCMap {
             sc.model.enterNewGame()
             sc.model.enterGame()
 
-            if (displayMaps) this.initCameraHandle()
-            this.removeUnneededGuis()
+            this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
+            this.display.removeUnneededGuis()
         })
     }
 
@@ -54,45 +56,15 @@ export class CCMap {
         })
     }
 
-    private initCameraHandle() {
-        this.cameraTarget = new ig.Camera.PosTarget({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
-        this.camera = new ig.Camera.TargetHandle(this.cameraTarget, 0, 0)
-        ig.camera.pushTarget(this.camera)
-    }
-
-    private removeUnneededGuis() {
-        for (let i = ig.gui.guiHooks.length - 1; i >= 0; i--) {
-            const hook = ig.gui.guiHooks[i]
-            const gui = hook.gui
-            if (
-                gui instanceof sc.ElementalLoadOverlayGui ||
-                gui instanceof ig.GuiImageContainer ||
-                gui instanceof ig.OverlayCornerGui ||
-                gui instanceof ig.OverlayGui ||
-                gui instanceof sc.SpChangeHudGui ||
-                gui instanceof ig.MessageOverlayGui ||
-                gui instanceof sc.TopMsgHudGui ||
-                gui instanceof sc.CombatHudGui ||
-                gui instanceof sc.SideMessageHudGui ||
-                gui instanceof sc.QuickMenu ||
-                gui instanceof sc.ElementHudGui ||
-                gui instanceof sc.MainMenu ||
-                gui instanceof sc.StatusHudGui ||
-                gui instanceof sc.TitleScreenGui ||
-                gui instanceof sc.RightHudGui ||
-                gui instanceof sc.MasterOverlayGui
-            ) {
-                ig.gui.guiHooks.splice(i, 1)
-            }
-        }
-    }
-
     async enter(player: Player) {
         player.mapName = this.name
         this.players.push(player)
         // this.stopUnloadTimer()
 
-        return this.enterEntity(player.dummy)
+        await this.enterEntity(player.dummy)
+
+        assert(multi.server instanceof LocalServer)
+        this.display.onPlayerCountChange(true)
     }
 
     async leave(player: Player) {
@@ -103,7 +75,8 @@ export class CCMap {
         // playersLeft.push(player.dummy.uuid)
 
         // this.startUnloadTimer()
-        return this.killEntity(player.dummy)
+        await this.killEntity(player.dummy)
+        this.display.onPlayerCountChange(false)
     }
 
     private async enterEntity(e: ig.Entity) {
@@ -128,7 +101,7 @@ export class CCMap {
                 e.show()
             })
         )
-        if (e.isPlayer && e instanceof ig.ENTITY.Player) {
+        if (e.isPlayer && e instanceof ig.ENTITY.Player && e.gui.crosshair) {
             promises.push(this.enterEntity(e.gui.crosshair))
         }
         await Promise.all(promises)
@@ -190,26 +163,18 @@ export class CCMap {
     // public stopUnloadTimer() {
     //     if (this.unloadTimeoutId) clearTimeout(this.unloadTimeoutId)
     // }
+
+    toConsoleString(i: number = 0): string {
+        let str = ''
+        str += indent(i) + `map ${this.name}: {\n`
+        if (this.display.cameraTarget) str += indent(i + 1) + this.display.toConsoleString()
+        str += indent(i + 1) + `players: [\n`
+        for (const player of this.players) str += player.toConsoleString(i + 2)
+        str += indent(i + 1) + `]\n`
+        str += indent(i) + `}\n`
+        return str
+    }
 }
-
-// camera movement
-prestart(() => {
-    ig.Camera.inject({
-        onPostUpdate() {
-            if (!ig.game.paused && multi.server instanceof LocalServer && multi.server.s.displayMaps) {
-                const map = multi.server.mapsById[instanceinator.instanceId]
-                if (map) {
-                    const move = Vec2.create()
-                    sc.control.moveDir(move, 0, true)
-                    Vec2.mulC(move, 8)
-
-                    Vec2.add(map.cameraTarget.pos, move)
-                }
-            }
-            this.parent()
-        },
-    })
-})
 
 type Layer = keyof typeof ig.MAP
 const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map) {

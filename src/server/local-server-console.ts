@@ -1,3 +1,8 @@
+import { LocalServer } from './local-server'
+
+export function indent(indent: number) {
+    return '  '.repeat(indent)
+}
 function insertButton(name: string, onPress: () => void) {
     const title = ig.gui.guiHooks.find(a => a.gui instanceof sc.TitleScreenGui)!.gui as sc.TitleScreenGui
     const but = title.buttons
@@ -20,16 +25,36 @@ function updateContent() {
     str += `server name: \\c[3]${multi.server.s.name}\\c[0]\n`
     str += `globalTps: \\c[3]${multi.server.s.globalTps}\\c[0]\n`
     str += `godmode: \\c[3]${multi.server.s.godmode}\\c[0]\n`
+    if (multi.server instanceof LocalServer) {
+        str += `maps: {\n`
+        for (const map of Object.values(multi.server.maps)) {
+            str += map.toConsoleString(1)
+        }
+        str += `}\n`
+    }
     consoleDialog.setContent('Console', [
         {
             title: 'Console',
             content: [str],
         },
-    ])
+    ], false)
+    consoleDialog.refreshPage()
 }
+let intervalId: NodeJS.Timeout | undefined
 export function openServerConsole() {
     updateContent()
     consoleDialog.openMenu()
+    if (intervalId) {
+        clearInterval(intervalId)
+        intervalId = undefined
+    }
+    intervalId = setInterval(() => {
+        if (!consoleDialog.isVisible() && intervalId) {
+            clearInterval(intervalId)
+            intervalId = undefined
+        }
+        updateContent()
+    }, 300)
 }
 
 let consoleDialog: modmanager.gui.MultiPageButtonBoxGui

@@ -9,6 +9,7 @@ import './game-loop'
 import './misc/godmode'
 import './misc/gamepad-focus-fix'
 import './dummy-player'
+import './teleport-fix'
 
 export const DEFAULT_PORT = 33405
 

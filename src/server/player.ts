@@ -1,5 +1,7 @@
 import { assert } from '../misc/assert'
+import { teleportPlayerToProperMarker } from '../teleport-fix'
 import { LocalServer, waitForScheduledTask } from './local-server'
+import { indent } from './local-server-console'
 
 export class Player {
     dummy: dummy.DummyPlayer
@@ -28,7 +30,7 @@ export class Player {
         }
         await map.enter(this)
         await waitForScheduledTask(map.inst, () => {
-            teleportPlayerToProperMarker(this.dummy, marker, new ig.TeleportPosition(marker))
+            teleportPlayerToProperMarker(this.dummy, marker, undefined, !marker)
             this.isTeleporting = false
         })
     }
@@ -38,4 +40,10 @@ export class Player {
     //     map.leave(this)
     //     this.dummy.kill()
     // }
+
+    toConsoleString(i: number = 0): string {
+        let str = ''
+        str += indent(i) + `player { name: ${this.name}; map: ${this.mapName} }\n`
+        return str
+    }
 }
