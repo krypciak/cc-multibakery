@@ -34,20 +34,21 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.baseInst = instanceinator.Instance.currentReference('base', false)
         instanceinator.append(this.baseInst)
 
-        this.serverInst = await instanceinator.Instance.copy(this.baseInst, 'server', true)
+        this.serverInst = await instanceinator.Instance.copy(this.baseInst, 'server', !multi.headless)
         instanceinator.append(this.serverInst)
         this.serverInst.apply()
 
-        /* update tiling */
-        sc.options._setDisplaySize()
+        if (!multi.headless) /* update tiling */ sc.options._setDisplaySize()
 
         startGameLoop()
 
         initConsoleDialog()
         openServerConsole()
 
-        const player = new Player('player1')
-        await player.teleport('rhombus-dng.room-1', undefined)
+        if (!window.crossnode?.options.test) {
+            const player = new Player('player1')
+            await player.teleport('rhombus-dng.room-1', undefined)
+        }
     }
 
     update() {

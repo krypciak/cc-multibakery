@@ -62,8 +62,6 @@ export class CCMap {
         // this.stopUnloadTimer()
 
         await this.enterEntity(player.dummy)
-
-        assert(multi.server instanceof LocalServer)
         this.display.onPlayerCountChange(true)
     }
 

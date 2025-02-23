@@ -22,10 +22,10 @@ importers:
         version: 7.16.0(eslint@8.57.0)(typescript@5.5.3)
       cc-determine:
         specifier: github:krypciak/cc-determine
-        version: https://codeload.github.com/krypciak/cc-determine/tar.gz/ab12308bc9a8e42f2275086ca7851e21c0a8f331
+        version: https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/b6ced493f4dda643465817f791ae5307d203c529
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7
       ccmodmanager:
         specifier: github:CCDirectLink/CCModManager
         version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/e80a954a9c53f569563ef65f0966369664c4a32b
@@ -381,12 +381,12 @@ packages:
     resolution: {integrity: sha512-P8BjAsXvZS+VIDUI11hHCQEv74YT67YUi5JJFNWIqL235sBmjX4+qx9Muvls5ivyNENctx46xQLQ3aTuE7ssaQ==}
     engines: {node: '>=6'}
 
-  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/ab12308bc9a8e42f2275086ca7851e21c0a8f331:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-determine/tar.gz/ab12308bc9a8e42f2275086ca7851e21c0a8f331}
+  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98}
     version: 0.0.1
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/b6ced493f4dda643465817f791ae5307d203c529:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/b6ced493f4dda643465817f791ae5307d203c529}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7}
     version: 0.0.1
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/e80a954a9c53f569563ef65f0966369664c4a32b:
@@ -1122,9 +1122,9 @@ snapshots:
 
   callsites@3.1.0: {}
 
-  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/ab12308bc9a8e42f2275086ca7851e21c0a8f331: {}
+  cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/1b56d58e5ce1979082d265aaeedfec835570ef98: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/b6ced493f4dda643465817f791ae5307d203c529: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/e0938fc4d71baa02d3bfe173d4e54b1fd6a6a0b7: {}
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/e80a954a9c53f569563ef65f0966369664c4a32b: {}
 
