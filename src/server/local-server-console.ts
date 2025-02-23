@@ -20,54 +20,66 @@ function insertButton(name: string, onPress: () => void) {
     but.buttonGroup.addFocusGui(b, 1, lastI + 1)
     but.addChildGui(b)
 }
-function updateContent() {
-    let str = ''
-    str += `server name: \\c[3]${multi.server.s.name}\\c[0]\n`
-    str += `globalTps: \\c[3]${multi.server.s.globalTps}\\c[0]\n`
-    str += `godmode: \\c[3]${multi.server.s.godmode}\\c[0]\n`
-    if (multi.server instanceof LocalServer) {
-        str += `maps: {\n`
-        for (const map of Object.values(multi.server.maps)) {
-            str += map.toConsoleString(1)
-        }
-        str += `}\n`
-    }
-    consoleDialog.setContent('Console', [
-        {
-            title: 'Console',
-            content: [str],
-        },
-    ], false)
-    consoleDialog.refreshPage()
-}
-let intervalId: NodeJS.Timeout | undefined
-export function openServerConsole() {
-    updateContent()
-    consoleDialog.openMenu()
-    if (intervalId) {
-        clearInterval(intervalId)
-        intervalId = undefined
-    }
-    intervalId = setInterval(() => {
-        if (!consoleDialog.isVisible() && intervalId) {
-            clearInterval(intervalId)
-            intervalId = undefined
-        }
-        updateContent()
-    }, 300)
-}
 
-let consoleDialog: modmanager.gui.MultiPageButtonBoxGui
-export function initConsoleDialog() {
-    consoleDialog = new modmanager.gui.MultiPageButtonBoxGui(undefined, undefined, [
-        {
-            name: 'Close',
-            onPress: () => {
-                consoleDialog.closeMenu()
+export class LocalServerConsoleDialog {
+    intervalId: NodeJS.Timeout | undefined
+    consoleDialog: modmanager.gui.MultiPageButtonBoxGui
+
+    constructor() {
+        this.consoleDialog = new modmanager.gui.MultiPageButtonBoxGui(undefined, undefined, [
+            {
+                name: 'Close',
+                onPress: () => {
+                    this.consoleDialog.closeMenu()
+                },
             },
-        },
-    ])
-    insertButton('Server console', () => {
-        openServerConsole()
-    })
+        ])
+        insertButton('Server console', () => {
+            this.openServerConsole()
+        })
+    }
+
+    private updateContent() {
+        let str = ''
+        str += `server name: \\c[3]${multi.server.s.name}\\c[0]\n`
+        str += `globalTps: \\c[3]${multi.server.s.globalTps}\\c[0]\n`
+        str += `godmode: \\c[3]${multi.server.s.godmode}\\c[0]\n`
+        if (multi.server instanceof LocalServer) {
+            str += `maps: {\n`
+            for (const map of Object.values(multi.server.maps)) {
+                str += map.toConsoleString(1)
+            }
+            str += `}\n`
+        }
+        this.consoleDialog.setContent(
+            'Console',
+            [
+                {
+                    title: 'Console',
+                    content: [str],
+                },
+            ],
+            false
+        )
+        this.consoleDialog.refreshPage()
+    }
+    openServerConsole() {
+        this.updateContent()
+        this.consoleDialog.openMenu()
+        if (this.intervalId) {
+            clearInterval(this.intervalId)
+            this.intervalId = undefined
+        }
+        this.intervalId = setInterval(() => {
+            if (!this.consoleDialog.isVisible() && this.intervalId) {
+                clearInterval(this.intervalId)
+                this.intervalId = undefined
+            }
+            this.updateContent()
+        }, 300)
+    }
+
+    destroy() {
+        if (this.intervalId) clearInterval(this.intervalId)
+    }
 }

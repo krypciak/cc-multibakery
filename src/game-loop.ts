@@ -18,7 +18,7 @@ export function startGameLoop() {
     ig.system.frame = 0
 
     if (window.crossnode?.options.test) {
-        console.log('crossnode, start your game loop now!!')
+        // console.log('crossnode, start your game loop now!!')
         return
     }
 
@@ -57,6 +57,7 @@ prestart(() => {
 
             try {
                 physicsLoop()
+                if (window.crossnode) draw()
             } catch (err) {
                 ig.system.error(err as Error)
             }
@@ -64,10 +65,7 @@ prestart(() => {
     })
 })
 
-// let di = 0
-// let dd = Date.now()
-// let dc = 0
-function drawLoop() {
+function draw() {
     for (const inst of Object.values(instanceinator.instances).filter(i => i.display)) {
         inst.apply()
         if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && ig.perf.draw) {
@@ -76,7 +74,12 @@ function drawLoop() {
         }
     }
     if (multi.server instanceof LocalServer) multi.server.serverInst.apply()
-
+}
+// let di = 0
+// let dd = Date.now()
+// let dc = 0
+function drawLoop() {
+    draw()
     // di++
     // if (di % 120 == 0) {
     //     dc = (di / (Date.now() - dd)) * 1000

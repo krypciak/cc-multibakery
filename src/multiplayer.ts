@@ -22,9 +22,12 @@ export class Multiplayer {
     }
 
     setServer(server: Server) {
-        if (this.server) {
-            this.server.destroy()
-        }
+        if (this.server) this.destroy()
         this.server = server
+    }
+
+    destroy() {
+        this.server.destroy()
+        this.server = undefined as any
     }
 }

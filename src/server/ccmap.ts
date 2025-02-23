@@ -25,7 +25,7 @@ export class CCMap {
         assert(multi.server instanceof LocalServer)
 
         this.display = new CCMapDisplay(this)
-        this.determinism = new determine.Instance('cross the codes')
+        this.determinism = new determine.Instance('welcome to hell', false, true)
 
         const displayMaps = multi.server.s.displayMaps
 
@@ -35,18 +35,21 @@ export class CCMap {
         determine.append(this.determinism)
 
         const levelData = await levelDataPromise
-        this.inst.ig.game.scheduledTasks.push(() => {
-            setDataFromLevelData.call(ig.game, this.name, levelData)
+        await new Promise<void>(resolve => {
+            waitForScheduledTask(this.inst, async () => {
+                setDataFromLevelData.call(ig.game, this.name, levelData).then(() => {
+                    waitForScheduledTask(this.inst, () => {
+                        sc.model.enterNewGame()
+                        sc.model.enterGame()
 
-            sc.model.enterNewGame()
-            sc.model.enterGame()
-
-            this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
-            this.display.removeUnneededGuis()
+                        this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
+                        this.display.removeUnneededGuis()
+                        resolve()
+                    })
+                })
+            })
         })
     }
-
-    async unload() {}
 
     private async readLevelData() {
         return new Promise<sc.MapModel.Map>(resolve => {
@@ -169,6 +172,7 @@ export class CCMap {
     // }
 
     destroy() {
+        assert(instanceinator.instanceId != this.inst.id)
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
     }

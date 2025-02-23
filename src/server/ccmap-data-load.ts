@@ -1,5 +1,7 @@
+import { waitForScheduledTask } from './local-server'
+
 type Layer = keyof typeof ig.MAP
-export const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map) {
+export const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
     /* mostly stolen from ig.Game#loadLevel */
 
     ig.game.mapName = mapName
@@ -56,17 +58,19 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
     this.size.y = sizeY
     // this.physics.mapCleared()
     this.physics.mapLoaded()
-    for (let i = 0; i < data.entities.length; i++) {
-        const entity = data.entities[i]
-        const z = this.getHeightFromLevelOffset(entity.level)
+
+    for (const entity of data.entities) {
+        const z = ig.game.getHeightFromLevelOffset(entity.level)
         ig.game.spawnEntity(entity.type, entity.x, entity.y, z, entity.settings)
     }
-
     this.renderer.mapCleared()
+
+    let resolve: () => void
+    const promise = new Promise<void>(res => (resolve = res))
 
     const loader = new (this.mapLoader || ig.Loader)()
     loader.onEnd = function (this: ig.Loader) {
-        instanceinator.instances[this.instanceId].ig.game.scheduledTasks.push(() => {
+        waitForScheduledTask(instanceinator.instances[this.instanceId], () => {
             /* this.finalize() */
             this.prevResourcesCnt = ig.resources.length
             ig.resources.length = 0
@@ -77,6 +81,8 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
 
             this._loadCallbackBound = null
             ig.loading = false
+
+            resolve()
         })
     }.bind(loader)
 
@@ -104,4 +110,6 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
         level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i + 1].height!) / 16 : 0)
         collisionLayer = level.collision
     }
+
+    return promise
 }

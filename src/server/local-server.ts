@@ -3,16 +3,16 @@ import { Client } from '../client/client'
 import { copyTickInfo, startGameLoop } from '../game-loop'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
-import { initConsoleDialog, openServerConsole } from './local-server-console'
 import { Player } from './player'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { LocalServerConsoleDialog } from './local-server-console'
 
 export interface LocalServerSettings extends ServerSettings {
-    slotName: string
-    host: string
-    port: number
-    displayMaps: boolean
+    slotName?: string
+    host?: string
+    port?: number
+    displayMaps?: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
@@ -25,7 +25,7 @@ export class LocalServer implements Server<LocalServerSettings> {
     serverInst!: InstanceinatorInstance
     serverDeterminism!: DeterMineInstance
 
-    consoleDialog!: modmanager.gui.MultiPageButtonBoxGui
+    consoleDialog!: LocalServerConsoleDialog
 
     clients: Record<string, Client> = {}
 
@@ -36,18 +36,18 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.baseInst = instanceinator.Instance.currentReference('base', false)
         instanceinator.append(this.baseInst)
 
-        this.serverInst = await instanceinator.Instance.copy(this.baseInst, 'server', !multi.headless)
+        this.serverInst = await instanceinator.Instance.copy(this.baseInst, 'server', this.s.displayMaps)
         instanceinator.append(this.serverInst)
         this.serverInst.apply()
-        this.serverDeterminism = new determine.Instance('cross the codes')
+        this.serverDeterminism = new determine.Instance('welcome to hell')
         determine.apply(this.serverDeterminism)
 
         if (!multi.headless) /* update tiling */ sc.options._setDisplaySize()
 
         startGameLoop()
 
-        initConsoleDialog()
-        openServerConsole()
+        this.consoleDialog = new LocalServerConsoleDialog()
+        this.consoleDialog.openServerConsole()
 
         if (!window.crossnode?.options.test) {
             const player = new Player('player1')
@@ -89,6 +89,7 @@ export class LocalServer implements Server<LocalServerSettings> {
     }
 
     async loadMap(name: string) {
+        if (this.maps[name]) this.maps[name].destroy()
         const map = new CCMap(name)
         this.maps[name] = map
         await map.load()
@@ -96,11 +97,16 @@ export class LocalServer implements Server<LocalServerSettings> {
     }
 
     destroy() {
+        this.consoleDialog.destroy()
         for (const map of Object.values(this.maps)) {
             map.destroy()
         }
         instanceinator.delete(this.serverInst)
+        this.baseInst.apply()
+        instanceinator.delete(this.baseInst)
+
         determine.delete(this.serverDeterminism)
+        determine.apply(determine.instances[0])
     }
 }
 
