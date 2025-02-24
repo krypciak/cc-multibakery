@@ -31,7 +31,7 @@ export default class Multibakery implements PluginClass {
     async prestart() {
         await import('./server/test/aoc2024d15')
         if (window.crossnode?.options.test) {
-            await import('./server/test/mouse-simple')
+            // await import('./server/test/mouse-simple')
         }
         global.multi = window.multi = new Multiplayer()
 

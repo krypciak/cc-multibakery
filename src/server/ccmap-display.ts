@@ -101,11 +101,11 @@ prestart(() => {
                         if (ig.input.pressed('special') && map.players.length > 0) {
                             map.display.currentPlayerI = 0
                             map.display.setPlayerCameraHandle(map.players[0])
-                        } else {
+                        } else if (!multi.server.s.disableMapDisplayCameraMovement) {
                             Vec2.add(map.display.cameraTarget.pos, move)
                         }
                     } else if (map.display.cameraTarget instanceof ig.Camera.EntityTarget) {
-                        if (Vec2.isZero(move)) {
+                        if (multi.server.s.displayMaps || Vec2.isZero(move)) {
                             if (ig.input.pressed('special')) {
                                 map.display.currentPlayerI++
                                 if (map.display.currentPlayerI > map.players.length) map.display.currentPlayerI = 0

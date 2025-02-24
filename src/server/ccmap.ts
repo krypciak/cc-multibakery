@@ -6,6 +6,7 @@ import { indent } from './local-server-console'
 import { CCMapDisplay } from './ccmap-display'
 import { setDataFromLevelData } from './ccmap-data-load'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
+import { prestart } from '../plugin'
 
 export class CCMap {
     players: Player[] = []
@@ -92,6 +93,13 @@ export class CCMap {
             waitForScheduledTask(this.inst, () => {
                 const oldColl = e.coll
                 e.coll = new ig.CollEntry(e)
+                e.coll.setType(oldColl.type)
+                e.coll.weight = oldColl.weight
+                e.coll.friction = oldColl.friction
+                e.coll.accelSpeed = oldColl.accelSpeed
+                e.coll.maxVel = oldColl.maxVel
+                e.coll.float = oldColl.float
+                e.coll.shadow = oldColl.shadow
                 Vec3.assign(e.coll.pos, oldColl.pos)
                 Vec3.assign(e.coll.size, oldColl.size)
 
@@ -196,3 +204,11 @@ export class CCMap {
         return str
     }
 }
+
+prestart(() => {
+    const backup = ig.CollTools.isInScreen
+    ig.CollTools.isInScreen = function (e: ig.Entity, x?: number, y?: number) {
+        if (multi.server instanceof LocalServer) return true
+        return backup(e, x, y)
+    }
+})

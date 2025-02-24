@@ -13,6 +13,7 @@ export interface LocalServerSettings extends ServerSettings {
     host?: string
     port?: number
     displayMaps?: boolean
+    disableMapDisplayCameraMovement?: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
@@ -97,12 +98,14 @@ export class LocalServer implements Server<LocalServerSettings> {
     }
 
     destroy() {
+        this.baseInst.apply()
+
+        determine.apply(determine.instances[0])
         this.consoleDialog.destroy()
         for (const map of Object.values(this.maps)) {
             map.destroy()
         }
         instanceinator.delete(this.serverInst)
-        this.baseInst.apply()
         instanceinator.delete(this.baseInst)
 
         determine.delete(this.serverDeterminism)
@@ -134,10 +137,11 @@ prestart(() => {
     })
 })
 
-export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => void) {
+// TODO: change
+export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => Promise<void> | void) {
     return new Promise<void>(resolve => {
-        inst.ig.game.scheduledTasks.push(() => {
-            task()
+        inst.ig.game.scheduledTasks.push(async () => {
+            await task()
             resolve()
         })
     })

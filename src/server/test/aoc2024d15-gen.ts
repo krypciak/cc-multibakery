@@ -1,4 +1,5 @@
 import * as fs from 'fs'
+import { assert } from '../../misc/assert'
 ;(async () => {
     const map = `
 ########
@@ -10,17 +11,17 @@ import * as fs from 'fs'
 #......#
 ########
 `.trim()
-    // const moves = `<^^>>>vv<v>>v<<`
-
     const mapSp = map.split('\n')
     const boardSize = { x: mapSp[0].length, y: mapSp.length }
 
     let baseMap: sc.MapModel.Map
+    let path: string
     if (boardSize.x == 8 && boardSize.y == 8) {
-        baseMap = JSON.parse(
-            await fs.promises.readFile('../../../assets/data/maps/multibakery/test/aoc8x8base.json', 'utf-8')
-        )
+        path = '../../../assets/data/maps/multibakery/test/aoc8x8base.json'
+    } else if (boardSize.x == 50 && boardSize.y == 50) {
+        path = '../../../assets/data/maps/multibakery/test/aoc50x50base.json'
     } else throw new Error('unsupported map size')
+    baseMap = JSON.parse(await fs.promises.readFile(path, 'utf-8'))
 
     const startX = 1
     const startY = 8
@@ -32,8 +33,8 @@ import * as fs from 'fs'
     function addMarker(mx: number, my: number) {
         entities.push({
             type: 'Marker',
-            x: mx * 16 - 8,
-            y: my * 16 - 8,
+            x: mx * 16,
+            y: my * 16,
             level: 0,
             settings: { size: { x: 16, y: 16 }, mapId: 2, dir: 'NORTH', name: 'start' },
         })
@@ -42,7 +43,7 @@ import * as fs from 'fs'
     function addBox(mx: number, my: number) {
         mapId++
         entities.push({
-            type: 'WavePushPullBlock',
+            type: 'AocBox',
             x: mx * 16,
             y: my * 16,
             level: 0,
@@ -71,5 +72,8 @@ import * as fs from 'fs'
         }
     }
 
-    await fs.promises.writeFile('../../../assets/data/maps/multibakery/test/aoc8x8-1.json', JSON.stringify(baseMap))
+    if (boardSize.x == 8) path = '../../../assets/data/maps/multibakery/test/aoc8x8-1.json'
+    else if (boardSize.x == 50) path = '../../../assets/data/maps/multibakery/test/aoc50x50-1.json'
+    else assert(false)
+    await fs.promises.writeFile(path, JSON.stringify(baseMap))
 })()
