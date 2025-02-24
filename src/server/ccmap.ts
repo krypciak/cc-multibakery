@@ -106,9 +106,13 @@ export class CCMap {
                 ig.game.entities.push(e)
                 e._hidden = true
                 e.show()
+
+                if (e instanceof dummy.DummyPlayer) {
+                    e.showUsernameBox()
+                }
             })
         )
-        if (e.isPlayer && e instanceof ig.ENTITY.Player && e.gui.crosshair) {
+        if (e.isPlayer && e instanceof dummy.DummyPlayer && e.gui.crosshair) {
             promises.push(this.enterEntity(e.gui.crosshair))
         }
         await Promise.all(promises)
@@ -146,6 +150,10 @@ export class CCMap {
                     ig.game.shownEntities[e.id] = null
                     // this.freeEntityIds.push(e.id)
                     // e.id = 0
+                }
+
+                if (e instanceof dummy.DummyPlayer) {
+                    e.hideUsernameBox()
                 }
             })
         )
