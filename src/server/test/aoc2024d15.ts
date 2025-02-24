@@ -1,4 +1,4 @@
-import Multibakery from '../plugin'
+import Multibakery from "../../plugin"
 
 declare global {
     namespace ig.ENTITY {
@@ -41,24 +41,25 @@ ig.ENTITY.AocBox1 = ig.ActorEntity.extend({
     },
 })
 
-window.crossnode.registerTest<{}>({
-    fps: 60,
-    skipFrameWait: true,
-    timeoutSeconds: 5,
+if (window.crossnode)
+    window.crossnode.registerTest<{}>({
+        fps: 60,
+        skipFrameWait: true,
+        timeoutSeconds: 5,
 
-    modId: Multibakery.mod.id,
-    name: `aoc2024d15 :)`,
-    async setup() {
-        ig.interact.entries.forEach(e => ig.interact.removeEntry(e))
+        modId: Multibakery.mod.id,
+        name: `aoc2024d15 :)`,
+        async setup() {
+            ig.interact.entries.forEach(e => ig.interact.removeEntry(e))
 
-        sc.model.enterNewGame()
-        sc.model.enterGame()
-        ig.game.reset()
-        ig.game.setPaused(false)
+            sc.model.enterNewGame()
+            sc.model.enterGame()
+            ig.game.reset()
+            ig.game.setPaused(false)
 
-        // await generateMap()
+            // await generateMap()
 
-        await window.crossnode.testUtil.loadLevel('multibakery/test/aoc8x8-1')
-    },
-    update() {},
-})
+            await window.crossnode.testUtil.loadLevel('multibakery/test/aoc8x8-1')
+        },
+        update() {},
+    })

@@ -18,15 +18,15 @@ import * as fs from 'fs'
     let baseMap: sc.MapModel.Map
     if (boardSize.x == 8 && boardSize.y == 8) {
         baseMap = JSON.parse(
-            await fs.promises.readFile('../../assets/data/maps/multibakery/test/aoc8x8base.json', 'utf-8')
+            await fs.promises.readFile('../../../assets/data/maps/multibakery/test/aoc8x8base.json', 'utf-8')
         )
     } else throw new Error('unsupported map size')
 
-    const startX = 6
-    const startY = 6
-    const wallTile = 194
-    const coll = baseMap.layer[0].data
-    const wall = baseMap.layer[2].data
+    const startX = 1
+    const startY = 8
+    const coll = baseMap.layer[2].data
+    const bg = baseMap.layer[0].data
+    const wall = baseMap.layer[4].data
     const entities = baseMap.entities
 
     function addMarker(mx: number, my: number) {
@@ -42,7 +42,7 @@ import * as fs from 'fs'
     function addBox(mx: number, my: number) {
         mapId++
         entities.push({
-            type: 'AocBox1',
+            type: 'WavePushPullBlock',
             x: mx * 16,
             y: my * 16,
             level: 0,
@@ -50,14 +50,19 @@ import * as fs from 'fs'
         })
     }
 
-    for (let y = 0; y < boardSize.y; y++) {
-        for (let x = 0; x < boardSize.x; x++) {
+    for (let y = 1; y < boardSize.y - 1; y++) {
+        for (let x = 1; x < boardSize.x - 1; x++) {
             let c = mapSp[y][x]
-            let mx = x + startX
-            let my = y + startY
+            let mx = (x - 1) * 2 + startX
+            let my = (y - 1) * 2 + startY
             if (c == '#') {
-                coll[my][mx] = 2
-                wall[my][mx] = wallTile
+                coll[my][mx] = coll[my + 1][mx] = coll[my][mx + 1] = coll[my + 1][mx + 1] = 2
+                wall[my - 1][mx] = 257
+                bg[my][mx] = 321
+                bg[my + 1][mx] = 353
+                wall[my - 1][mx + 1] = 259
+                bg[my][mx + 1] = 323
+                bg[my + 1][mx + 1] = 355
             } else if (c == 'O') {
                 addBox(mx, my)
             } else if (c == '@') {
@@ -66,5 +71,5 @@ import * as fs from 'fs'
         }
     }
 
-    await fs.promises.writeFile('../../assets/data/maps/multibakery/test/aoc8x8-1.json', JSON.stringify(baseMap))
+    await fs.promises.writeFile('../../../assets/data/maps/multibakery/test/aoc8x8-1.json', JSON.stringify(baseMap))
 })()
