@@ -9,25 +9,34 @@ import { DummyUpdateInput } from '../../api'
 declare global {
     namespace ig.ENTITY {
         namespace AocBox {
-            interface Settings extends ig.Entity.Settings {}
+            interface Settings extends ig.Entity.Settings {
+                wide: boolean
+                linked?: ig.ENTITY.AocBox
+            }
         }
-        interface AocBox1 extends ig.ENTITY.PushPullBlock {
+        interface AocBox extends ig.ENTITY.PushPullBlock {
+            pushPullable: sc.AocPushPullable
+            linked?: ig.ENTITY.AocBox
+            motherLinked?: boolean
+
             moveBox(this: this, vx: number, vy: number): void
         }
-        interface AocBox1Constructor extends ImpactClass<AocBox1> {
-            new (x: number, y: number, z: number, settings: ig.ENTITY.AocBox.Settings): AocBox1
+        interface AocBoxConstructor extends ImpactClass<AocBox> {
+            new (x: number, y: number, z: number, settings: ig.ENTITY.AocBox.Settings): AocBox
         }
-        var AocBox: AocBox1Constructor
+        var AocBox: AocBoxConstructor
     }
     namespace sc {
-        interface AocPushPullable extends sc.PushPullable {}
+        interface AocPushPullable extends sc.PushPullable {
+            entity: ig.ENTITY.AocBox
+        }
         interface AocPushPullableConstructor extends ImpactClass<AocPushPullable> {
             new (entity: PullableEntity): AocPushPullable
         }
         var AocPushPullable: AocPushPullableConstructor
     }
 }
-const fps = 30
+const fps = 60
 
 function traceMap(
     res: ig.Physics.TraceResult,
@@ -63,8 +72,9 @@ function recursiveMoveCheck(
     vx: number,
     vy: number,
     isPulling: boolean,
-    parentUuid: string,
-    depth: number
+    previous: Set<string>,
+    depth: number,
+    checkLinked: boolean
 ): sc.AocPushPullable[] {
     const player = ig.game.playerEntity
 
@@ -91,16 +101,31 @@ function recursiveMoveCheck(
     const retList: sc.AocPushPullable[] = [this]
 
     if (depth > 100) throw new Error('oopsie daisy depth')
-    // console.log('rec depth:', depth, ', uuid:', this.entity.uuid, 'isPushingBlocked:', isPushingBlocked)
-    collList = collList.filter(coll => coll.entity.uuid != this.entity.uuid && coll.entity.uuid != parentUuid)
+    //console.log('rec depth:', depth, ', uuid:', this.entity.uuid, 'isPushingBlocked:', isPushingBlocked)
+    collList = collList.filter(coll => coll.entity.uuid != this.entity.uuid)
     if (collList.some(coll => !(coll.entity instanceof ig.ENTITY.AocBox))) return []
     if (collList.length == 0 && isPushingBlocked) return []
+    const prevLen = collList.length
+    collList = collList.filter(coll => !previous.has(coll.entity.uuid))
+
+    previous.add(this.entity.uuid)
+    if (checkLinked && this.entity.linked && !previous.has(this.entity.linked.uuid)) {
+        if (!isPulling || vx == 0) {
+            //console.log('adding linked coll')
+            collList.push(this.entity.linked.coll)
+        }
+        //console.log('adding linked: ', this.entity.linked.uuid, 'isPulling:', isPulling, 'vx:', vx, 'vy:', vy)
+        previous.add(this.entity.linked.uuid)
+        retList.push(this.entity.linked.pushPullable)
+    }
+    if (checkLinked && isPushingBlocked && prevLen > 0 && collList.length == 0) return retList
 
     if (collList.length > 0) {
         for (const coll of collList) {
-            const box = coll.entity as ig.ENTITY.AocBox1
+            const box = coll.entity as ig.ENTITY.AocBox
+            if (box.uuid != this.entity.linked?.uuid && previous.has(box.uuid)) continue
 
-            const ret = recursiveMoveCheck.call(box.pushPullable, vx, vy, isPulling, this.entity.uuid, depth + 1)
+            const ret = recursiveMoveCheck.call(box.pushPullable, vx, vy, isPulling, previous, depth + 1, checkLinked)
             if (ret.length == 0) return []
             retList.push(...ret)
         }
@@ -135,6 +160,7 @@ function moveBox(this: sc.AocPushPullable, vx: number, vy: number, isPulling: bo
     // this.targetPos.x = Math.round(this.targetPos.x / 4) * 4
     // this.targetPos.y = Math.round(this.targetPos.y / 4) * 4
 }
+
 sc.AocPushPullable = sc.PushPullable.extend({
     init(entity) {
         this.parent(entity)
@@ -145,8 +171,11 @@ sc.AocPushPullable = sc.PushPullable.extend({
             ? (this.gripDir == 'EAST' && vx < 0) || (this.gripDir == 'WEST' && vx > 0)
             : !!vy && ((this.gripDir == 'NORTH' && vy > 0) || (this.gripDir == 'SOUTH' && vy < 0))
 
-        const list = recursiveMoveCheck.call(this, vx, vy, isPulling, '', 0)
+        //console.log('\n')
+        const checkLinked = !!this.entity.linked && (this.gripDir == 'NORTH' || this.gripDir == 'SOUTH' || isPulling)
+        const list = recursiveMoveCheck.call(this, vx, vy, isPulling, new Set(), 0, checkLinked)
         list.reverse()
+        //console.log('\n')
 
         for (const box of list) moveBox.call(box, vx, vy, isPulling)
     },
@@ -158,9 +187,20 @@ sc.AocPushPullable = sc.PushPullable.extend({
 })
 
 ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
-    init(x, y, z, _settings) {
+    init(x, y, z, settings) {
         this.parent(x, y, z, { pushPullType: 'Large' })
         this.pushPullable = new sc.AocPushPullable(this)
+        if (settings.wide) {
+            if (settings.linked) {
+                this.linked = settings.linked
+            } else {
+                this.motherLinked = true
+                this.linked = ig.game.spawnEntity(ig.ENTITY.AocBox, x + 32, y, z, {
+                    wide: true,
+                    linked: this,
+                })
+            }
+        }
     },
 })
 
@@ -189,14 +229,13 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
 
     await waitForScheduledTask(inst, () => {
         ig.input.currentDevice = ig.INPUT_DEVICES.GAMEPAD
+        ig.input = e.input
     })
-
-    const frameMul = fps / 60
 
     e.nextGatherInput = playerInp
     // e.input.setInput(inp)
     let collided: string = 'none'
-    for (let frame = 0; collided == 'none' && frame < 10 * frameMul; frame++) {
+    for (let frame = 0; collided == 'none' && frame < 10; frame++) {
         await waitForScheduledTask(inst, () => {
             if (e.coll._collData.collided) {
                 const entities = ig.game.getEntitiesInCircle(
@@ -220,17 +259,17 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     e.nextGatherInput = emptyGatherInput()
 
     if (collided == 'box') {
+        for (let i = 0; i < 8; i++) await waitForScheduledTask(inst, () => {})
         const holdTime = 20
-        const pushTime = 30
-        for (let frame = 0; frame < (pushTime + holdTime) * frameMul; frame++) {
+        const pushTime = 23
+        for (let frame = 0; frame < pushTime + holdTime; frame++) {
             await waitForScheduledTask(inst, () => {
-                ig.input = e.input
                 if (frame == 0) {
                     inp.presses['aim'] = true
                 } else {
                     inp.actions['aim'] = true
                 }
-                if (frame >= holdTime * frameMul) {
+                if (frame >= holdTime) {
                     inp.actions[dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'] = true
                 }
                 e.input.setInput(inp)
@@ -238,51 +277,45 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         }
     }
     e.input.setInput(emptyInput)
-    for (let frame = 0; frame < 8 * frameMul; frame++) {
+    for (let frame = 0; frame < 8; frame++) {
         await waitForScheduledTask(inst, () => {})
     }
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)
         e.nextGatherInput = playerInp
-        for (let frame = 0; frame < 3 * frameMul; frame++) {
+        for (let frame = 0; frame < 3; frame++) {
             await waitForScheduledTask(inst, () => {})
         }
         e.nextGatherInput = emptyGatherInput()
-        for (let frame = 0; frame < 8 * frameMul; frame++) {
+        for (let frame = 0; frame < 8; frame++) {
             await waitForScheduledTask(inst, () => {})
         }
         // const x = e.coll.pos.x
-        // const xo = 1*16 + 8
+        // const xo = 1 * 16 + 8
         // const nx = Math.round((x - xo) / 32) * 32 + xo
         // const y = e.coll.pos.y
-        // const yo = 8*16 + 8
+        // const yo = 8 * 16 + 8
         // const ny = Math.round((y - yo) / 32) * 32 + yo
-        // const nvec = { x: nx, y: ny }
+        // const nvec = { x: nx, y: ny, z: e.coll.pos.z }
+        // Vec3.assign(e.coll.pos, nvec)
         // Vec2.sub(nvec, e.coll.pos)
         // console.log("diff from ideal:", nvec)
     }
 }
 
-function genTest(name: string, moves: string, map: string, expected: number) {
+function genTest(name: string, moves: string, map: string, expected: number, part2: boolean = false) {
     window.crossnode.registerTest<{
-        map: string
-        moves: string
-        expected: number
         moveI: number
         moveDone: boolean
         sum: number
     }>({
         fps,
-        timeoutSeconds: 121,
-        // skipFrameWait: true,
+        timeoutSeconds: 400,
+        skipFrameWait: true,
         flushPromises: true,
 
         modId: Multibakery.mod.id,
         name,
-
-        map,
-        moves,
-        expected,
 
         moveI: -1,
         moveDone: true,
@@ -302,38 +335,40 @@ function genTest(name: string, moves: string, map: string, expected: number) {
             assert(multi.server instanceof LocalServer)
 
             const player = new Player('aoc')
-            await player.teleport(this.map, undefined)
-            const map = multi.server.maps[this.map]
-            await waitForScheduledTask(map.inst, () => {
+            await player.teleport(map, undefined)
+            const ccmap = multi.server.maps[map]
+            await waitForScheduledTask(ccmap.inst, () => {
                 /* so that sc.MapInteract works at all */
                 ig.game.playerEntity = player.dummy
             })
         },
         update() {
             assert(multi.server instanceof LocalServer)
-            const map = multi.server.maps[this.map]
-            const p = map.players[0].dummy
+            const ccmap = multi.server.maps[map]
+            const p = ccmap.players[0].dummy
 
-            // waitForScheduledTask(map.inst, () => {
+            // waitForScheduledTask(ccmap.inst, () => {
             //     const path = `/home/krypek/Temp/frames/${frame.toString().padStart(5, '0')}.png`
             //     const data = ig.system.canvas.toDataURL().split(',')[1]
             //     require('fs').promises.writeFile(path, Buffer.from(data, 'base64'))
             // })
-            if (this.moveI == this.moves.length) {
-                if (this.sum == this.expected) {
+            if (this.moveI == moves.length) {
+                if (this.sum == expected) {
                     this.finish(true)
                 } else {
-                    this.finish(false, `sum is equal ${this.sum}, expected ${this.expected}`)
+                    this.finish(false, `sum is equal ${this.sum}, expected ${expected}`)
                 }
             } else if (this.moveDone) {
                 do {
                     this.moveI++
-                } while (this.moveI < this.moves.length && this.moves[this.moveI].trim().length == 0)
-                if (this.moveI == this.moves.length) {
-                    waitForScheduledTask(map.inst, () => {
-                        const boxes = ig.game.getEntitiesByType(ig.ENTITY.AocBox)
+                } while (this.moveI < moves.length && moves[this.moveI].trim().length == 0)
+                if (this.moveI == moves.length) {
+                    waitForScheduledTask(ccmap.inst, () => {
+                        const boxes = ig.game
+                            .getEntitiesByType(ig.ENTITY.AocBox)
+                            .filter(box => !box.linked || box.motherLinked)
                         const positions = boxes.map(b => ({
-                            x: b.coll.pos.x / 32 + 0.5,
+                            x: b.coll.pos.x / 32 + 0.5 + (part2 ? 1 : 0),
                             y: b.coll.pos.y / 32 - 3,
                         }))
                         for (const { x, y } of positions) {
@@ -344,13 +379,13 @@ function genTest(name: string, moves: string, map: string, expected: number) {
                     })
                 } else {
                     this.moveDone = false
-                    const move = this.moves[this.moveI]
+                    const move = moves[this.moveI]
                     let dir!: Vec2
                     if (move == '>') dir = { x: 1, y: 0 }
                     else if (move == '<') dir = { x: -1, y: 0 }
                     else if (move == 'v') dir = { x: 0, y: 1 }
                     else if (move == '^') dir = { x: 0, y: -1 }
-                    moveDummy(p, map.inst, dir, move == this.moves[this.moveI + 1]).then(() => {
+                    moveDummy(p, ccmap.inst, dir, move == moves[this.moveI + 1]).then(() => {
                         this.moveDone = true
                     })
                 }
@@ -363,9 +398,28 @@ function genTest(name: string, moves: string, map: string, expected: number) {
 }
 
 if (window.crossnode) {
-    genTest(`aoc2024d15 easy :)`, `<^^>>>vv<v>>v<<`, 'multibakery/test/aoc8x8-1', 2028)
+    genTest(`aoc2024d15 p1 easy :)`, `<^^>>>vv<v>>v<<`, 'multibakery/test/aoc8x8-1', 2028)
+
     //     genTest(
-    //         `aoc2024d15 ...what`,
+    //         `aoc2024d15 p2 medium`,
+    //         `
+    // <vv>^<v^>v>^vv^v>v<>v^v<v<^vv<<<^><<><>>v<vvv<>^v^>^<<<><<v<<<v^vv^v>^
+    // vvv<<^>^v^^><<>>><>^<<><^vv^^<>vvv<>><^^v>^>vv<>v<<<<v<^v>^<^^>>>^<v<v
+    // ><>vv>v^v^<>><>>>><^^>vv>v<^^^>>v^v^<^^>v^^>v^<^v>v<>>v^v^<v>v^^<^^vv<
+    // <<v<^>>^^^^>>>v^<>vvv^><v<<<>^^^vv^<vvv>^>v<^^^^v<>^>vvvv><>>v^<<^^^^^
+    // ^><^><>>><>^^<<^^v>>><^<v>^<vv>>v>>>^v><>^v><<<<v>>v<v<v>vvv>^<><<>^><
+    // ^>><>^v<><^vvv<^^<><v<<<<<><^v<<<><<<^^<v<^^^><^>>^<v^><<<^>>^v<v^v<v^
+    // >^>>^v>vv>^<<^v<>><<><<v<<v><>v<^vv<<<>^^v^>^^>>><<^v>>v^v><^^>>^<>vv^
+    // <><^^>^^^<><vvvvv^v<v<<>^v<v>v<<^><<><<><<<^^<<<^<<>><<><^^^>^^<>^>v<>
+    // ^^>vv<^v^v<vv>^<><v<^v>^^^>>>^^vvv^>vvv<>>>^<^>>>>>^<<^v>^vvv<>^<><<v>
+    // v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^`,
+    //         'multibakery/test/aoc20x10-2',
+    //         9021,
+    //         true
+    //     )
+
+    //     genTest(
+    //         `aoc2024d15 p1 ...what`,
     //         `
     // <><v>^vv<^<v<>^>^^<^^>>^>><vv^>^>^<v<>>^^>>v^>^<v><v><v>>^<^<<^^>^>^<<v^<<^^v><<><v>v^>^^<v<<<>v<>^>^^^><v<><v^<><vv^v>^>^>><^<vv<^>^<^<<<<<^<^vv><v>^v^^><<>>v<v>vvv^<>v<>v><<<v^<^<^vv<^v<>v<<<<<>v<^<<<^<^v^<^>^>>vv>>^^<>^^<^v<^v<<vv<vvv^<^^<>v^^><^^^v^>^>^^<<<^<v<^<><v^<^v^<>>v><^^v^vv><vv>^v>>^vv>v><v<>>>^>>^v>v^^<vv^<v>vv<^<>^>>^v^v><^v^>>^>^<<<<<><v<v<vvv><><^^v^^^<>v<>vv>v^>>>^<>>^^^><v<^<>v<^>^<vvv^>^>vvv>>v<>v<>v<><><<^vv>^<^<<>^^<v<^^>v^v<v<>>^^><>^>>>^v^<>^^^<>><v><>v><>v>^<>vvv>>><><v<><>v^vv^>v^^>>v<^<^<v^>>>^^>>v<<<v^vvvv>^^v>^v<^>^vv^v^v<^^>v>^vv<<v^^^v^<v<^v^<v><v>^^v<^^><^^<^vvv<v<<><>v^<>><<<^vv<^^<<>^^<^<^>^<><v><^>v>><><v^vv<<>>^^>vvv^><<^v<<^>^<^<<><^<>^<>vv>><v>^^<v<v>v^v^^<<>^>>^^v>>v>^^>^<><^>v<vvv>^>v<><vv<><^v>>^<^^<<<<<>^vv<<<v>^<><^<v>v^<v<v<v^<v^<>^v<vv^vv>v^^>v^>^^<v^<<v>^^v>v><<<<<^vv><v>>v><^^^v<^^vvv^^>^^^>vv<>v^<>><><<><^>^^^v^<v>>>v<>vv>vvvv^>>v<<<^vv>>>^v^v><<^vvv^<<>v<><^v><>^v>>v>^^<<>v^vvv><^^<>>^<<<<>>^>>v^^<>>>>vv>v<v^>^<^v>v>>^^>v^^v<^vv><^<^^<vv
     // <<^<><v<^vvv<<vv<vv<><v^v><>><<v^<>^>>^>>^^^<^^v<vvv^v>v<>^>><^v>^^vvv^<>>>v>>vvv><^^v>vvv<vv<><v>>vv^^<>^^<^>v^<v>vv^<><v<^<>^vv>^^><>^>^v^<vvv><>^>><^<^>v>v>><v<<vv^^^>^v^vvv>>vv^^<^^<>>v<<vvv^<^<^>>v>>v<<v^<^v><v^><^>v^<v<vvvvv>>>^^v><<^^>v><<<^^<<<^><^<<^v<>^<>v<<<v>v<v<<<^v^^^<v<^^^<^<vv<>>^<^<>v^>>v^v><^vvv>^>>v><<^<<v>v>v>^v<v^<v^^v>^>>^<v^v<>^v><<>>>>>^>^<v<v>>^^v<><><<v>vv><^<>><v>>>v^v<>^><v^v^><<v<^^<vvv<v>^>vvv<>^>>v>^v<^^^v>v>v<>>^<><^<^<<v^<^>vv^v^>v^^^^^v^v><>v<><<<v^vv^>v<v<><>>^^<^<v<>^><>v^^>^^><>v>v^^>v<>>^>^^<v<^^^<<^^>^^>vv<^<^><>^^^v^^^>>^>>v<<^v^^v^<^^^v<^^>>^>^<v<>>^^>><vvv>v<v<>^<vv<v^v>^<v>v>v<>v<v<<<><<<^>>>^>^v>vv>>v^vv^<vv>><<>>v^>^^>>^v>^^v^v^<^<v><><v>v><^^^>^><v>vv<><<^^^<v<^^vv<><v<v>vv^^><><^v^<^v>v<<v>>v<vvv<<^<<v<vvv>>vv<<^<vv><>>v><vv<<>v<vv^><><^v<^<><<>>v<>v^v^<v<><v>^>v>v^vv>v<<v^>>><<<v<^v<v^^v^^>v^v>vvv>v<^v<^<<^>v>><<<v<>>vv>v><vvvvv>vv>v^<^^^<v<v^v<<v^v<^^>>v<vvv<>v>>^<v>^<v^<>^^>>^>vv^<>v^v^<vv^<>>v^^^v^^^^>^v><v<>^>v<v><>>><><^v><^^v<>v^v^>
