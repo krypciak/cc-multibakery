@@ -137,7 +137,6 @@ prestart(() => {
     })
 })
 
-// TODO: change
 export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => Promise<void> | void) {
     return new Promise<void>(resolve => {
         inst.ig.game.scheduledTasks.push(async () => {

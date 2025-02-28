@@ -36,7 +36,6 @@ declare global {
         var AocPushPullable: AocPushPullableConstructor
     }
 }
-const fps = 60
 
 function traceMap(
     res: ig.Physics.TraceResult,
@@ -205,6 +204,11 @@ ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
 })
 
 async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir: Vec2, nextSame: boolean) {
+    async function waitFrames(count: number) {
+        for (let frame = 0; frame < count; frame++) {
+            await waitForScheduledTask(inst, () => {})
+        }
+    }
     const emptyInput: DummyUpdateInput = {
         isUsingMouse: false,
         isUsingKeyboard: false,
@@ -259,7 +263,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     e.nextGatherInput = emptyGatherInput()
 
     if (collided == 'box') {
-        for (let i = 0; i < 8; i++) await waitForScheduledTask(inst, () => {})
+        waitFrames(8)
         const holdTime = 20
         const pushTime = 23
         for (let frame = 0; frame < pushTime + holdTime; frame++) {
@@ -277,19 +281,12 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         }
     }
     e.input.setInput(emptyInput)
-    for (let frame = 0; frame < 8; frame++) {
-        await waitForScheduledTask(inst, () => {})
-    }
+    waitFrames(8)
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)
         e.nextGatherInput = playerInp
-        for (let frame = 0; frame < 3; frame++) {
-            await waitForScheduledTask(inst, () => {})
-        }
         e.nextGatherInput = emptyGatherInput()
-        for (let frame = 0; frame < 8; frame++) {
-            await waitForScheduledTask(inst, () => {})
-        }
+        waitFrames(8)
         // const x = e.coll.pos.x
         // const xo = 1 * 16 + 8
         // const nx = Math.round((x - xo) / 32) * 32 + xo
@@ -309,7 +306,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         moveDone: boolean
         sum: number
     }>({
-        fps,
+        fps: 60,
         timeoutSeconds: 400,
         skipFrameWait: true,
         flushPromises: true,

@@ -36,18 +36,14 @@ export class CCMap {
         determine.append(this.determinism)
 
         const levelData = await levelDataPromise
-        await new Promise<void>(resolve => {
-            waitForScheduledTask(this.inst, async () => {
-                setDataFromLevelData.call(ig.game, this.name, levelData).then(() => {
-                    waitForScheduledTask(this.inst, () => {
-                        sc.model.enterNewGame()
-                        sc.model.enterGame()
+        await waitForScheduledTask(this.inst, async () => {
+            await setDataFromLevelData.call(ig.game, this.name, levelData)
+            await waitForScheduledTask(this.inst, () => {
+                sc.model.enterNewGame()
+                sc.model.enterGame()
 
-                        this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
-                        this.display.removeUnneededGuis()
-                        resolve()
-                    })
-                })
+                this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
+                this.display.removeUnneededGuis()
             })
         })
     }
@@ -88,88 +84,82 @@ export class CCMap {
     }
 
     private async enterEntity(e: ig.Entity) {
-        const promises: Promise<void>[] = []
-        promises.push(
-            waitForScheduledTask(this.inst, () => {
-                const oldColl = e.coll
-                e.coll = new ig.CollEntry(e)
-                e.coll.setType(oldColl.type)
-                e.coll.weight = oldColl.weight
-                e.coll.friction = oldColl.friction
-                e.coll.accelSpeed = oldColl.accelSpeed
-                e.coll.maxVel = oldColl.maxVel
-                e.coll.float = oldColl.float
-                e.coll.shadow = oldColl.shadow
-                Vec3.assign(e.coll.pos, oldColl.pos)
-                Vec3.assign(e.coll.size, oldColl.size)
-
-                if (e.name) {
-                    assert(!ig.game.namedEntities[e.mapId], 'map enterEntity namedEntities collision!')
-                    ig.game.namedEntities[e.name] = e
-                }
-                if (e.mapId) {
-                    assert(!ig.game.mapEntities[e.mapId], 'map enterEntity mapId collision!')
-                    ig.game.mapEntities[e.mapId] = e
-                }
-                ig.game.entities.push(e)
-                e._hidden = true
-                e.show()
-
-                if (e instanceof dummy.DummyPlayer) {
-                    e.showUsernameBox()
-                }
-            })
-        )
         if (e.isPlayer && e instanceof dummy.DummyPlayer && e.gui.crosshair) {
-            promises.push(this.enterEntity(e.gui.crosshair))
+            /* this promise will finish by the end of this function, so there's no need to await it */
+            this.enterEntity(e.gui.crosshair)
         }
-        await Promise.all(promises)
+        await waitForScheduledTask(this.inst, () => {
+            const oldColl = e.coll
+            e.coll = new ig.CollEntry(e)
+            e.coll.setType(oldColl.type)
+            e.coll.weight = oldColl.weight
+            e.coll.friction = oldColl.friction
+            e.coll.accelSpeed = oldColl.accelSpeed
+            e.coll.maxVel = oldColl.maxVel
+            e.coll.float = oldColl.float
+            e.coll.shadow = oldColl.shadow
+            Vec3.assign(e.coll.pos, oldColl.pos)
+            Vec3.assign(e.coll.size, oldColl.size)
+
+            if (e.name) {
+                assert(!ig.game.namedEntities[e.mapId], 'map enterEntity namedEntities collision!')
+                ig.game.namedEntities[e.name] = e
+            }
+            if (e.mapId) {
+                assert(!ig.game.mapEntities[e.mapId], 'map enterEntity mapId collision!')
+                ig.game.mapEntities[e.mapId] = e
+            }
+            ig.game.entities.push(e)
+            e._hidden = true
+            e.show()
+
+            if (e instanceof dummy.DummyPlayer) {
+                e.showUsernameBox()
+            }
+        })
     }
 
     private async killEntity(e: ig.Entity) {
-        const promises: Promise<void>[] = []
-        promises.push(
-            waitForScheduledTask(this.inst, () => {
-                ig.game.entities.erase(e)
-                delete ig.game.entitiesByUUID[e.uuid]
-                e.clearEntityAttached()
-
-                /* ig.game.removeEntity(e) */
-                e.name && delete ig.game.namedEntities[e.name]
-
-                // e._killed = e.coll._killed = true
-
-                /* consequence of ig.game.detachEntity(e) */
-
-                if (e.id) {
-                    ig.game.physics.removeCollEntry(e.coll)
-                    // this.physics.collEntryMap.forEach(a =>
-                    //     a.forEach(a =>
-                    //         a.forEach(c => {
-                    //             if (c.entity === e) {
-                    //                 a.erase(e.coll)
-                    //             }
-                    //         })
-                    //     )
-                    // )
-                    /* reactivate it cuz removeCollEntry set it to false */
-                    e.coll._active = true
-
-                    ig.game.shownEntities[e.id] = null
-                    // this.freeEntityIds.push(e.id)
-                    // e.id = 0
-                }
-
-                if (e instanceof dummy.DummyPlayer) {
-                    e.hideUsernameBox()
-                }
-            })
-        )
-
         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
-            promises.push(this.killEntity(e.gui.crosshair))
+            /* this promise will finish by the end of this function, so there's no need to await it */
+            this.killEntity(e.gui.crosshair)
         }
-        await Promise.all(promises)
+
+        await waitForScheduledTask(this.inst, () => {
+            ig.game.entities.erase(e)
+            delete ig.game.entitiesByUUID[e.uuid]
+            e.clearEntityAttached()
+
+            /* ig.game.removeEntity(e) */
+            e.name && delete ig.game.namedEntities[e.name]
+
+            // e._killed = e.coll._killed = true
+
+            /* consequence of ig.game.detachEntity(e) */
+
+            if (e.id) {
+                ig.game.physics.removeCollEntry(e.coll)
+                // this.physics.collEntryMap.forEach(a =>
+                //     a.forEach(a =>
+                //         a.forEach(c => {
+                //             if (c.entity === e) {
+                //                 a.erase(e.coll)
+                //             }
+                //         })
+                //     )
+                // )
+                /* reactivate it cuz removeCollEntry set it to false */
+                e.coll._active = true
+
+                ig.game.shownEntities[e.id] = null
+                // this.freeEntityIds.push(e.id)
+                // e.id = 0
+            }
+
+            if (e instanceof dummy.DummyPlayer) {
+                e.hideUsernameBox()
+            }
+        })
     }
 
     // public startUnloadTimer() {
