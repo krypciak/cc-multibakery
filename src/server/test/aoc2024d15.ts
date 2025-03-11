@@ -2,9 +2,9 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
 import { LocalServer, waitForScheduledTask } from '../local-server'
-import { Player } from '../player'
 import { emptyGatherInput } from '../../dummy-player'
 import { DummyUpdateInput } from '../../api'
+import { LocalDummyClient } from '../../client/local-dummy-client'
 
 declare global {
     namespace ig.ENTITY {
@@ -331,12 +331,13 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         async postSetup() {
             assert(multi.server instanceof LocalServer)
 
-            const player = new Player('aoc')
-            await player.teleport(map, undefined)
+            const client = new LocalDummyClient({ username: 'aoc' })
+            client.player.mapName = map
+            await multi.server.joinClient(client)
             const ccmap = multi.server.maps[map]
             await waitForScheduledTask(ccmap.inst, () => {
                 /* so that sc.MapInteract works at all */
-                ig.game.playerEntity = player.dummy
+                ig.game.playerEntity = client.player.dummy
             })
         },
         update() {

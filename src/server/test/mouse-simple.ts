@@ -1,7 +1,7 @@
 import Multibakery from '../../plugin'
 import { LocalServer } from '../local-server'
 import { assert } from '../../misc/assert'
-import { Player } from '../player'
+import { ServerPlayer } from '../server-player'
 
 for (let i = 0; i < 2; i++) {
     window.crossnode.registerTest<{ map: string }>({
@@ -31,7 +31,7 @@ for (let i = 0; i < 2; i++) {
                 await multi.server.loadMap(this.map)
             }
 
-            const player = new Player('player1')
+            const player = new ServerPlayer('player1')
             await player.teleport(this.map, undefined)
             const map = multi.server.maps[this.map]
             map.inst.ig.game.playerEntity = player.dummy

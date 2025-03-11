@@ -1,7 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServer, waitForScheduledTask } from './local-server'
 import { assert } from '../misc/assert'
-import { Player } from './player'
+import { ServerPlayer } from './server-player'
 import { indent } from './local-server-console'
 import { CCMapDisplay } from './ccmap-display'
 import { setDataFromLevelData } from './ccmap-data-load'
@@ -9,7 +9,7 @@ import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { prestart } from '../plugin'
 
 export class CCMap {
-    players: Player[] = []
+    players: ServerPlayer[] = []
     // playersThatJustLeft!: Player
     // private unloadTimeoutId!: NodeJS.Timeout
 
@@ -17,10 +17,7 @@ export class CCMap {
     display!: CCMapDisplay
     determinism!: DeterMineInstance
 
-    constructor(
-        public name: string,
-        public alwaysLoaded: boolean = false
-    ) {}
+    constructor(public name: string) {}
 
     async load() {
         assert(multi.server instanceof LocalServer)
@@ -62,7 +59,7 @@ export class CCMap {
         })
     }
 
-    async enter(player: Player) {
+    async enter(player: ServerPlayer) {
         player.mapName = this.name
         this.players.push(player)
         // this.stopUnloadTimer()
@@ -71,7 +68,7 @@ export class CCMap {
         this.display.onPlayerCountChange(true)
     }
 
-    async leave(player: Player) {
+    async leave(player: ServerPlayer) {
         this.players.erase(player)
 
         // const packet = (UpdatePacketGather.state[this.name] ??= {})
@@ -79,7 +76,7 @@ export class CCMap {
         // playersLeft.push(player.dummy.uuid)
 
         // this.startUnloadTimer()
-        await this.killEntity(player.dummy)
+        await this.leaveEntity(player.dummy)
         this.display.onPlayerCountChange(false)
     }
 
@@ -119,10 +116,10 @@ export class CCMap {
         })
     }
 
-    private async killEntity(e: ig.Entity) {
+    private async leaveEntity(e: ig.Entity) {
         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
             /* this promise will finish by the end of this function, so there's no need to await it */
-            this.killEntity(e.gui.crosshair)
+            this.leaveEntity(e.gui.crosshair)
         }
 
         await waitForScheduledTask(this.inst, () => {

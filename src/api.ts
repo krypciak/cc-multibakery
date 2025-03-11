@@ -1,22 +1,22 @@
 // import { EntityStateEntry, EntityStateUpdatePacketRecord } from './state/states'
 
-import { ServerSettings } from './server/server'
+// import { ServerSettings } from './server/server'
 
 // export type InitialState = {
 //     saveData: string
 //     packet: ToClientUpdatePacket
 // }
 
-export type ClientJoinResponse =
-    | {
-          usernameTaken: true
-      }
-    | {
-          usernameTaken?: false
-          mapName: string
-          serverSettings: ServerSettings
-          // state: InitialState
-      }
+// export type ClientJoinResponse =
+//     | {
+//           usernameTaken: true
+//       }
+//     | {
+//           usernameTaken?: false
+//           mapName: string
+//           serverSettings: ServerSettings
+//           // state: InitialState
+//       }
 
 // export namespace FromClientUpdatePacket {
 //     export interface Var {

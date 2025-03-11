@@ -3,7 +3,7 @@ import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { LocalServer, waitForScheduledTask } from './local-server'
 import { indent } from './local-server-console'
-import { Player } from './player'
+import { ServerPlayer } from './server-player'
 
 export class CCMapDisplay {
     camera!: ig.Camera.TargetHandle
@@ -60,7 +60,7 @@ export class CCMapDisplay {
         })
     }
 
-    async setPlayerCameraHandle(player: Player) {
+    async setPlayerCameraHandle(player: ServerPlayer) {
         await this.setEntityCameraHandle(player.dummy)
     }
 
@@ -105,10 +105,10 @@ prestart(() => {
                             Vec2.add(map.display.cameraTarget.pos, move)
                         }
                     } else if (map.display.cameraTarget instanceof ig.Camera.EntityTarget) {
-                        if (multi.server.s.displayMaps || Vec2.isZero(move)) {
+                        if (Vec2.isZero(move)) {
                             if (ig.input.pressed('special')) {
                                 map.display.currentPlayerI++
-                                if (map.display.currentPlayerI > map.players.length) map.display.currentPlayerI = 0
+                                if (map.display.currentPlayerI >= map.players.length) map.display.currentPlayerI = 0
                                 map.display.setPlayerCameraHandle(map.players[map.display.currentPlayerI])
                             }
                         } else {

@@ -3,10 +3,10 @@ import { Client } from '../client/client'
 import { copyTickInfo, startGameLoop } from '../game-loop'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
-import { Player } from './player'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServerConsoleDialog } from './local-server-console'
+import { LocalDummyClient } from '../client/local-dummy-client'
 
 export interface LocalServerSettings extends ServerSettings {
     slotName?: string
@@ -17,6 +17,8 @@ export interface LocalServerSettings extends ServerSettings {
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
+
+export type ServerSideClients = LocalDummyClient /* RemoteClient */
 
 export class LocalServer implements Server<LocalServerSettings> {
     maps: Record<string, CCMap> = {}
@@ -51,8 +53,11 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.consoleDialog.openServerConsole()
 
         if (!window.crossnode?.options.test) {
-            const player = new Player('player1')
-            await player.teleport('rhombus-dng.room-1', undefined)
+            const client = new LocalDummyClient({
+                username: 'player1',
+            })
+            client.player.mapName = 'rhombus-dng.room-1'
+            await this.joinClient(client)
         }
     }
 
@@ -95,6 +100,11 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.maps[name] = map
         await map.load()
         this.mapsById[map.inst.id] = map
+    }
+
+    async joinClient(client: ServerSideClients) {
+        this.clients[client.player.username] = client
+        await client.player.teleport(client.player.mapName, client.player.marker)
     }
 
     destroy() {

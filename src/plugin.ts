@@ -29,8 +29,8 @@ export default class Multibakery implements PluginClass {
     }
 
     async prestart() {
-        await import('./server/test/aoc2024d15')
         if (window.crossnode?.options.test) {
+            await import('./server/test/aoc2024d15')
             // await import('./server/test/mouse-simple')
         }
         global.multi = window.multi = new Multiplayer()
@@ -41,7 +41,7 @@ export default class Multibakery implements PluginClass {
     async poststart() {
         await Promise.all((poststartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
 
-        return
+        // return
         if (window.crossnode?.options.test) return
         multi.setServer(
             new LocalServer({
