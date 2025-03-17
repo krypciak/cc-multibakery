@@ -72,7 +72,9 @@ export class CCMap {
     }
 
     async leave(player: ServerPlayer) {
+        const prevLen = this.players.length
         this.players.erase(player)
+        if (prevLen == this.players.length) return
 
         // const packet = (UpdatePacketGather.state[this.name] ??= {})
         // const playersLeft = (packet.playersLeft ??= [])

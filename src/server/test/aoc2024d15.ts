@@ -2,7 +2,6 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
 import { LocalServer, waitForScheduledTask } from '../local-server'
-import { emptyGatherInput } from '../../dummy-player'
 import { DummyUpdateInput } from '../../api'
 import { LocalDummyClient } from '../../client/local-dummy-client'
 
@@ -204,6 +203,9 @@ ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
 })
 
 async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir: Vec2, nextSame: boolean) {
+    const input = e.inputManager
+    assert(input instanceof dummy.inputManagers.Puppet.InputManager)
+
     async function waitFrames(count: number) {
         for (let frame = 0; frame < count; frame++) {
             await waitForScheduledTask(inst, () => {})
@@ -226,17 +228,17 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     }
     const inp: DummyUpdateInput = ig.copy(emptyInput)
 
-    const playerInp = emptyGatherInput()
+    const playerInp = dummy.inputManagers.Puppet.InputManager.emptyGatherInput()
     playerInp.lastMoveDir = dir
     playerInp.moveDir = dir
     playerInp.relativeVel = 1
 
     await waitForScheduledTask(inst, () => {
         ig.input.currentDevice = ig.INPUT_DEVICES.GAMEPAD
-        ig.input = e.input
+        ig.input = input.input
     })
 
-    e.nextGatherInput = playerInp
+    input.nextGatherInput = playerInp
     // e.input.setInput(inp)
     let collided: string = 'none'
     for (let frame = 0; collided == 'none' && frame < 10; frame++) {
@@ -260,7 +262,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             }
         })
     }
-    e.nextGatherInput = emptyGatherInput()
+    input.nextGatherInput = dummy.inputManagers.Puppet.InputManager.emptyGatherInput()
 
     if (collided == 'box') {
         waitFrames(8)
@@ -276,16 +278,16 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
                 if (frame >= holdTime) {
                     inp.actions[dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'] = true
                 }
-                e.input.setInput(inp)
+                input.input.setInput(inp)
             })
         }
     }
-    e.input.setInput(emptyInput)
+    input.input.setInput(emptyInput)
     waitFrames(8)
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)
-        e.nextGatherInput = playerInp
-        e.nextGatherInput = emptyGatherInput()
+        input.nextGatherInput = playerInp
+        input.nextGatherInput = dummy.inputManagers.Puppet.InputManager.emptyGatherInput()
         waitFrames(8)
         // const x = e.coll.pos.x
         // const xo = 1 * 16 + 8

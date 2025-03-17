@@ -1,66 +1,16 @@
-import { DummyUpdateGamepadInput, DummyUpdateInput } from './api'
-import { prestart } from './plugin'
+import { assert } from '../misc/assert'
+import { prestart } from '../plugin'
 
-export function emptyGatherInput(): ig.ENTITY.Player.PlayerInput {
-    return {
-        thrown: false,
-        melee: false,
-        aimStart: false,
-        aim: false,
-        attack: false,
-        autoThrow: false,
-        charge: false,
-        dashX: 0,
-        dashY: 0,
-        guard: false,
-        relativeVel: 0,
-        moveDir: Vec2.create(),
-        lastMoveDir: Vec2.create(),
-        switchMode: false,
-        /* charging crashes */
-    }
-}
-
-export function getDummyUpdateKeyboardInputFromIgInput(input: ig.Input): DummyUpdateInput {
-    return {
-        isUsingMouse: input.isUsingMouse,
-        isUsingKeyboard: input.isUsingKeyboard,
-        isUsingAccelerometer: input.isUsingAccelerometer,
-        ignoreKeyboard: input.ignoreKeyboard,
-        mouseGuiActive: input.mouseGuiActive,
-        mouse: input.mouse,
-        accel: input.accel,
-        presses: input.presses,
-        keyups: input.keyups,
-        locks: input.locks,
-        delayedKeyup: input.delayedKeyup,
-        currentDevice: input.currentDevice,
-        actions: input.actions,
-    }
-}
-
-export function getDummyUpdateGamepadInputFromIgGamepadManager(
-    gamepadmanager: ig.GamepadManager
-): DummyUpdateGamepadInput | undefined {
-    const gp = gamepadmanager.activeGamepads[0]
-    if (!gp) return
-    return {
-        buttonDeadzones: gp.buttonDeadzones,
-        axesStates: gp.axesStates,
-        buttonStates: gp.buttonStates,
-        axesDeadzones: gp.axesDeadzones,
-        pressedStates: gp.pressedStates,
-        releasedStates: gp.releasedStates,
-    }
-}
+import * as inputBackup from './dummy-input'
 
 declare global {
-    namespace dummy {
-        interface InputManager {
-            input: ig.Input
-            gatherInput: () => ig.ENTITY.Player.PlayerInput | undefined
-            gamepadManager: dummy.GamepadManager
+    namespace NodeJS {
+        interface Global {
+            dummy: typeof dummy
         }
+    }
+
+    namespace dummy {
         namespace DummyPlayer {
             interface Settings extends ig.Entity.Settings {
                 username: string
@@ -83,56 +33,6 @@ declare global {
             new (x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): DummyPlayer
         }
         var DummyPlayer: DummyPlayerConstructor
-
-        interface Input extends ig.Input {
-            _lastInput: DummyUpdateInput
-
-            getInput(this: this): DummyUpdateInput
-            setInput(this: this, input: DummyUpdateInput): void
-        }
-        interface InputConstructor extends ImpactClass<Input> {
-            new (): Input
-        }
-        var Input: InputConstructor
-
-        interface GamepadManager extends ig.GamepadManager {
-            _lastInput: DummyUpdateGamepadInput
-
-            getInput(this: this): DummyUpdateGamepadInput
-            setInput(this: this, input: DummyUpdateGamepadInput): void
-        }
-        interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
-            new (): GamepadManager
-        }
-        var GamepadManager: GamepadManagerConstructor
-
-        interface PlayerCrossHairController extends sc.PlayerCrossHairController {
-            input?: ig.Input
-            gamepadManager?: ig.GamepadManager
-            relativeCursorPos?: Vec2
-        }
-        interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
-            new (): PlayerCrossHairController
-        }
-        var PlayerCrossHairController: PlayerCrossHairControllerConstructor
-
-        interface PlayerModel extends sc.PlayerModel {
-            dummy: dummy.DummyPlayer
-            _playerBackup: ig.ENTITY.Player
-
-            playerBackup(this: this): void
-            playerRestore(this: this): void
-        }
-        interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
-            new (dummy: dummy.DummyPlayer): PlayerModel
-        }
-        var PlayerModel: PlayerModelConstructor
-    }
-
-    namespace NodeJS {
-        interface Global {
-            dummy: typeof dummy
-        }
     }
 
     interface EntityTypesInterface {
@@ -140,13 +40,16 @@ declare global {
     }
 }
 
+global.dummy = window.dummy ??= {} as any
 prestart(() => {
-    global.dummy = window.dummy ??= {} as any
-
     /* todo cameahandle crash on eternal winter */
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
             sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, {})
+
+            assert(settings.inputManager)
+            this.inputManager = settings.inputManager
+            this.inputManager.player = this
 
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
             this.itemConsumer = new sc.ItemConsumption()
@@ -167,15 +70,9 @@ prestart(() => {
             const blocking = sc.inputForcer.isBlocking()
             if (blocking && this.ignoreInputForcer) sc.inputForcer.blocked = false
 
-            const inputBackup = ig.input
-            ig.input = this.inputManager.input
-            const gamepadBackup = ig.gamepad
-            ig.gamepad = this.inputManager.gamepadManager
-
+            inputBackup.apply(this.inputManager)
             this.parent()
-
-            ig.input = inputBackup
-            ig.gamepad = gamepadBackup
+            inputBackup.restore()
 
             if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
         },
@@ -189,8 +86,7 @@ prestart(() => {
             sc.PlayerCrossHairController = backup
 
             this.crosshairController = this.gui.crosshair.controller
-            this.crosshairController.input = this.inputManager.input
-            this.crosshairController.gamepadManager = this.inputManager.gamepadManager
+            this.crosshairController.inputManager = this.inputManager
         },
         showUsernameBox() {
             if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
@@ -234,83 +130,51 @@ prestart(() => {
         },
     })
     ig.registerEntityPath(dummy.DummyPlayer, 'dummy.DummyPlayer')
+}, 1)
 
-    dummy.Input = ig.Input.extend({
-        init() {
-            this.bindings = ig.input.bindings
-        },
-        getInput() {
-            return this._lastInput ?? getDummyUpdateKeyboardInputFromIgInput(this)
-        },
-        setInput(input) {
-            this._lastInput = input
-            for (const key of Object.keysT(input)) {
-                const value = input[key]
-                if (typeof value === 'function') continue
-                // @ts-expect-error
-                this[key] = value
-            }
-        },
-    })
-
-    dummy.GamepadManager = ig.GamepadManager.extend({
-        init() {
-            this.activeGamepads = [
-                // @ts-expect-error
-                {
-                    buttonDeadzones: [] as any,
-                    axesDeadzones: [] as any,
-                    buttonStates: [] as any,
-                    axesStates: [] as any,
-                    pressedStates: [] as any,
-                    releasedStates: [] as any,
-                },
-            ]
-        },
-        getInput() {
-            return this._lastInput ?? getDummyUpdateGamepadInputFromIgGamepadManager(this)
-        },
-        setInput(input) {
-            this._lastInput = input
-            // @ts-expect-error
-            this.activeGamepads[0] = input
-        },
-        isSupported() {
-            return true
-        },
-    })
-
+declare global {
+    namespace dummy {
+        interface PlayerCrossHairController extends sc.PlayerCrossHairController {
+            inputManager?: dummy.InputManager
+            relativeCursorPos?: Vec2
+        }
+        interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
+            new (): PlayerCrossHairController
+        }
+        var PlayerCrossHairController: PlayerCrossHairControllerConstructor
+    }
+}
+prestart(() => {
     dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
-        isAiming() {
-            const inputBackup = ig.input
-            ig.input = this.input!
-            const gamepadBackup = ig.gamepad
-            ig.gamepad = this.gamepadManager!
-
-            const ret = this.parent()
-            ig.input = inputBackup
-            ig.gamepad = gamepadBackup
-            return ret
-        },
         updatePos(crosshair) {
-            this.gamepadMode = this.input!.currentDevice == ig.INPUT_DEVICES.GAMEPAD
-            if (this.gamepadMode) {
-                const inputBackup = ig.input
-                ig.input = this.input!
-                const gamepadBackup = ig.gamepad
-                ig.gamepad = this.gamepadManager!
-
+            this.gamepadMode = this.inputManager!.input.currentDevice == ig.INPUT_DEVICES.GAMEPAD
+            if (this.gamepadMode || !this.relativeCursorPos) {
+                inputBackup.apply(this.inputManager!)
                 this.parent(crosshair)
-
-                ig.input = inputBackup
-                ig.gamepad = gamepadBackup
+                inputBackup.restore()
             } else {
-                if (!this.relativeCursorPos) return this.parent(crosshair)
                 Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
             }
         },
     })
+}, 2)
 
+declare global {
+    namespace dummy {
+        interface PlayerModel extends sc.PlayerModel {
+            dummy: dummy.DummyPlayer
+            _playerBackup: ig.ENTITY.Player
+
+            playerBackup(this: this): void
+            playerRestore(this: this): void
+        }
+        interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
+            new (dummy: dummy.DummyPlayer): PlayerModel
+        }
+        var PlayerModel: PlayerModelConstructor
+    }
+}
+prestart(() => {
     dummy.PlayerModel = sc.PlayerModel.extend({
         init(dummy) {
             this.parent()
@@ -333,11 +197,13 @@ prestart(() => {
         // prettier-ignore
         onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
     })
+}, 2)
 
+prestart(() => {
     ig.ENTITY.TouchTrigger.inject({
         update() {
             this.parent()
             /* todo make dummies trigger this */
         },
     })
-}, 1)
+}, 2)

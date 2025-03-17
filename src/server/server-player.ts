@@ -10,10 +10,10 @@ export class ServerPlayer {
 
     constructor(
         public username: string,
-        public mapName: string = ''
+        public mapName: string = '',
+        inputManager: dummy.InputManager = new dummy.inputManagers.Puppet.InputManager()
     ) {
-        const inputManager = 
-        this.dummy = new dummy.DummyPlayer(0, 0, 0, { username: username })
+        this.dummy = new dummy.DummyPlayer(0, 0, 0, { username: username, inputManager })
         if (multi.server.s.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here
         if (!this.mapName) {

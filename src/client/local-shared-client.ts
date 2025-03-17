@@ -3,23 +3,22 @@ import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { ServerPlayer } from '../server/server-player'
 import { assert } from '../misc/assert'
 import { LocalServer, waitForScheduledTask } from '../server/local-server'
-import { LocalDummyClient, LocalDummyClientSettings } from './local-dummy-client'
+import { LocalDummyClientSettings } from './local-dummy-client'
 import { CCMap } from '../server/ccmap'
 import { prestart } from '../plugin'
-import { getDummyUpdateKeyboardInputFromIgInput } from '../dummy-player'
+import { Client, ClientSettings } from './client'
+import * as inputBackup from '../dummy/dummy-input'
 
-export interface LocalSharedClientSettings extends LocalDummyClientSettings {
+export interface LocalSharedClientSettings extends ClientSettings {
     baseInst: InstanceinatorInstance
 }
 
-export class LocalSharedClient extends LocalDummyClient {
+export class LocalSharedClient implements Client<LocalDummyClientSettings> {
     player!: ServerPlayer
     inst!: InstanceinatorInstance
     determinism!: DeterMineInstance /* determinism is only used for visuals */
 
-    constructor(public s: LocalSharedClientSettings) {
-        super(s)
-    }
+    constructor(public s: LocalSharedClientSettings) {}
 
     async init() {
         assert(multi.server instanceof LocalServer)
@@ -31,18 +30,23 @@ export class LocalSharedClient extends LocalDummyClient {
         instanceinator.append(this.inst)
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
+
+        // if (!multi.headless) /* update tiling */ sc.options._setDisplaySize()
+        // why no work???
+
+        const inputManager = new dummy.inputManagers.Clone.InputManager(this.inst.ig.input)
+        this.player = new ServerPlayer(this.s.username, undefined, inputManager)
     }
 
     async teleport() {
         assert(multi.server instanceof LocalServer)
+
         await this.player.teleport(this.player.mapName, this.player.marker)
         const map = multi.server.maps[this.player.mapName]
         await this.linkMapToInstance(map)
     }
 
     async linkMapToInstance(map: CCMap) {
-        // await new Promise<void>(res => setTimeout(res, 1000))
-        console.log('link', map)
         const cig = this.inst.ig
         const mig = map.inst.ig
 
@@ -65,12 +69,11 @@ export class LocalSharedClient extends LocalDummyClient {
         cig.vars = mig.vars
 
         cig.game.playerEntity = this.player.dummy
-        // this.player.dummy.input = new DummyInputAdapter(cig.input)
 
         const csc = this.inst.sc
-        const msc = map.inst.sc
+        // const msc = map.inst.sc
 
-        csc.model.player = msc.model.player
+        csc.model.player = this.player.dummy.model
 
         await waitForScheduledTask(this.inst, () => {
             sc.model.enterNewGame()
@@ -88,21 +91,55 @@ export class LocalSharedClient extends LocalDummyClient {
             const camera = new ig.Camera.TargetHandle(cameraTarget, 0, 0)
             ig.camera.replaceTarget(ig.camera.targets[0], camera)
         })
+        await waitForScheduledTask(map.inst, () => {
+            this.player.dummy.model.updateStats()
+        })
     }
 }
 
+function getInp(): dummy.inputManagers.Clone.InputManager | undefined {
+    if (multi.server instanceof LocalServer) {
+        const client = multi.server.localSharedClientById[instanceinator.instanceId]
+        if (client) {
+            return client.player.dummy.inputManager as dummy.inputManagers.Clone.InputManager
+        }
+    }
+}
 prestart(() => {
     ig.Physics.inject({
         update() {
-            if (multi.server instanceof LocalServer) {
-                const client = multi.server.localSharedClientById[instanceinator.instanceId]
-                if (client) {
-                    return
-                }
-            }
+            if (getInp()) return
             this.parent()
         },
     })
+    ig.Game.inject({
+        deferredMapEntityUpdate() {
+            if (getInp()) return
+            this.parent()
+        },
+    })
+    ig.EventManager.inject({
+        update() {
+            if (getInp()) return
+            this.parent()
+        },
+    })
+    sc.GlobalInput.inject({
+        onPostUpdate() {
+            const inp = getInp()
+            if (inp) inputBackup.apply(inp)
+            this.parent()
+            if (inp) inputBackup.restore()
+        },
+    })
+    ig.Camera.inject({
+        onPostUpdate() {
+            this.parent()
+            const inp = getInp()
+            if (inp) Vec2.assign(inp.screen, ig.game.screen)
+        },
+    })
+
     sc.Model.notifyObserver = function (model: sc.Model, message: number, data?: unknown) {
         for (const _o of model.observers) {
             const o = _o as sc.Model.Observer & ig.Class
@@ -111,52 +148,10 @@ prestart(() => {
                 // waitForScheduledTask(inst, () => {
                 //     o.modelChanged(model, message, data)
                 // })
-                // console.log('unknown model! blocked cross-insetance notifyObserver call', model, message, data)
+                // console.log('blocked cross-insetance notifyObserver call', model, message, data)
                 continue
             }
             o.modelChanged(model, message, data)
         }
     }
 })
-
-interface DummyInputAdapter extends dummy.Input {
-    realInput: ig.Input
-}
-interface DummyInputAdapterConstructor extends ImpactClass<DummyInputAdapter> {
-    new (realInput: ig.Input): DummyInputAdapter
-}
-let DummyInputAdapter!: DummyInputAdapterConstructor
-
-prestart(() => {
-    DummyInputAdapter = dummy.Input.extend({
-        init(realInput) {
-            this.parent()
-            this.realInput = realInput
-
-            this.actions = realInput.actions
-            this.presses = realInput.presses
-            this.keyups = realInput.keyups
-            // this.locks = realInput.locks
-            // tis.delayedKeyup = realInput.delayedKeyup
-            //
-            // currentDevice/*: ig.INPUT_DEVICES*/: null,
-            // isUsingMouse/*: boolean*/: false,
-            // isUsingKeyboard/*: boolean*/: false,
-            // isUsingAccelerometer/*: boolean*/: false,
-            // mouse/*: Vec2*/: { x: 0, y: 0 },
-            // accel/*: Vec3*/: { x: 0, y: 0, z: 0 },
-            // mouseGuiActive/*: boolean*/: true,
-            // lastMousePos/*: Vec2*/: { x: 0, y: 0 },
-            // ignoreKeyboard/*: boolean*/: false,
-        },
-        clearPressed() {
-            this.parent()
-        },
-        getInput() {
-            return getDummyUpdateKeyboardInputFromIgInput(this.realInput)
-        },
-        setInput(_input) {
-            throw new Error('Called setInput on DummyInputAdapter!')
-        },
-    })
-}, 2)
