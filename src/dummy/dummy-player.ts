@@ -56,16 +56,20 @@ export function getDummyUpdateGamepadInputFromIgGamepadManager(
 
 declare global {
     namespace dummy {
+        interface InputManager {
+            input: ig.Input
+            gatherInput: () => ig.ENTITY.Player.PlayerInput | undefined
+            gamepadManager: dummy.GamepadManager
+        }
         namespace DummyPlayer {
             interface Settings extends ig.Entity.Settings {
                 username: string
                 ignoreInputForcer?: boolean
+                inputManager: dummy.InputManager
             }
         }
         interface DummyPlayer extends ig.ENTITY.Player {
-            input: dummy.Input
-            nextGatherInput: ig.ENTITY.Player.PlayerInput
-            gamepadManager: dummy.GamepadManager
+            inputManager: dummy.InputManager
             crosshairController: dummy.PlayerCrossHairController
             username: string
             usernameBox: sc.SmallEntityBox
@@ -103,8 +107,8 @@ declare global {
         var GamepadManager: GamepadManagerConstructor
 
         interface PlayerCrossHairController extends sc.PlayerCrossHairController {
-            input?: dummy.Input
-            gamepadManager?: dummy.GamepadManager
+            input?: ig.Input
+            gamepadManager?: ig.GamepadManager
             relativeCursorPos?: Vec2
         }
         interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
@@ -158,18 +162,15 @@ prestart(() => {
 
             this.ignoreInputForcer = settings.ignoreInputForcer ?? true
             this.username = settings.username
-
-            this.input = new dummy.Input()
-            this.gamepadManager = new dummy.GamepadManager()
         },
         update() {
             const blocking = sc.inputForcer.isBlocking()
             if (blocking && this.ignoreInputForcer) sc.inputForcer.blocked = false
 
             const inputBackup = ig.input
-            ig.input = this.input
+            ig.input = this.inputManager.input
             const gamepadBackup = ig.gamepad
-            ig.gamepad = this.gamepadManager
+            ig.gamepad = this.inputManager.gamepadManager
 
             this.parent()
 
@@ -179,7 +180,7 @@ prestart(() => {
             if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
         },
         gatherInput() {
-            return this.nextGatherInput ?? this.parent()
+            return this.inputManager.gatherInput() ?? this.parent()
         },
         show() {
             const backup = sc.PlayerCrossHairController
@@ -188,8 +189,8 @@ prestart(() => {
             sc.PlayerCrossHairController = backup
 
             this.crosshairController = this.gui.crosshair.controller
-            this.crosshairController.input = this.input
-            this.crosshairController.gamepadManager = this.gamepadManager
+            this.crosshairController.input = this.inputManager.input
+            this.crosshairController.gamepadManager = this.inputManager.gamepadManager
         },
         showUsernameBox() {
             if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)

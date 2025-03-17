@@ -12,9 +12,13 @@ export class ServerPlayer {
         public username: string,
         public mapName: string = ''
     ) {
+        const inputManager = 
         this.dummy = new dummy.DummyPlayer(0, 0, 0, { username: username })
         if (multi.server.s.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here
+        if (!this.mapName) {
+            this.mapName = 'rhombus-dng/room-1'
+        }
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {

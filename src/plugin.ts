@@ -51,7 +51,9 @@ export default class Multibakery implements PluginClass {
                 port: DEFAULT_PORT,
                 globalTps: 60,
                 godmode: true,
+                displayServerInstance: false,
                 displayMaps: true,
+                displayLocalClientMaps: true,
             })
         )
         multi.server.start()

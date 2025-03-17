@@ -1,4 +1,5 @@
-import { LocalServer } from './local-server'
+import { assert } from '../misc/assert'
+import { LocalServer, waitForScheduledTask } from './local-server'
 
 export function indent(indent: number) {
     return '  '.repeat(indent)
@@ -75,7 +76,11 @@ export class LocalServerConsoleDialog {
                 clearInterval(this.intervalId)
                 this.intervalId = undefined
             }
-            this.updateContent()
+
+            assert(multi.server instanceof LocalServer)
+            waitForScheduledTask(multi.server.serverInst, () => {
+                this.updateContent()
+            })
         }, 300)
     }
 

@@ -9,6 +9,8 @@ import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { prestart } from '../plugin'
 
 export class CCMap {
+    rawLevelData!: sc.MapModel.Map
+
     players: ServerPlayer[] = []
     // playersThatJustLeft!: Player
     // private unloadTimeoutId!: NodeJS.Timeout
@@ -33,6 +35,7 @@ export class CCMap {
         determine.append(this.determinism)
 
         const levelData = await levelDataPromise
+        this.rawLevelData = levelData
         await waitForScheduledTask(this.inst, async () => {
             await setDataFromLevelData.call(ig.game, this.name, levelData)
             await waitForScheduledTask(this.inst, () => {
