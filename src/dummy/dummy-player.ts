@@ -2,6 +2,7 @@ import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 
 import * as inputBackup from './dummy-input'
+import './dummy-username-box'
 
 declare global {
     namespace NodeJS {
@@ -13,7 +14,7 @@ declare global {
     namespace dummy {
         namespace DummyPlayer {
             interface Settings extends ig.Entity.Settings {
-                username: string
+                name: string
                 ignoreInputForcer?: boolean
                 inputManager: dummy.InputManager
             }
@@ -22,12 +23,8 @@ declare global {
             inputManager: dummy.InputManager
             crosshairController: dummy.PlayerCrossHairController
             username: string
-            usernameBox: sc.SmallEntityBox
             cameraHandle: any
             ignoreInputForcer: boolean
-
-            showUsernameBox(this: this): void
-            hideUsernameBox(this: this): void
         }
         interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
             new (x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): DummyPlayer
@@ -45,7 +42,7 @@ prestart(() => {
     /* todo cameahandle crash on eternal winter */
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
-            sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, {})
+            sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, settings)
 
             assert(settings.inputManager)
             this.inputManager = settings.inputManager
@@ -64,7 +61,7 @@ prestart(() => {
             sc.combat.addActiveCombatant(this)
 
             this.ignoreInputForcer = settings.ignoreInputForcer ?? true
-            this.username = settings.username
+            this.username = settings.name
         },
         update() {
             const blocking = sc.inputForcer.isBlocking()
@@ -88,16 +85,6 @@ prestart(() => {
             this.crosshairController = this.gui.crosshair.controller
             this.crosshairController.inputManager = this.inputManager
         },
-        showUsernameBox() {
-            if (this.usernameBox) ig.gui.removeGuiElement(this.usernameBox)
-            this.usernameBox = new sc.SmallEntityBox(this, this.username, 1e100)
-            // this.usernameBox.stopRumble()
-            ig.gui.addGuiElement(this.usernameBox)
-        },
-        hideUsernameBox() {
-            if (!this.usernameBox) return
-            this.usernameBox.doStateTransition('HIDDEN', false, true)
-        },
         updateAnimSheet(updateFx) {
             /* disable skins for dummy players */
             const backup = sc.playerSkins
@@ -113,7 +100,6 @@ prestart(() => {
             sc.playerSkins = backup
         },
         onKill(_dontRespawn?: boolean) {
-            this.usernameBox?.doStateTransition('HIDDEN')
             this.parent(true)
         },
         showChargeEffect(level) {

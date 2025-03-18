@@ -51,6 +51,10 @@ export class CCMapDisplay {
         })
     }
 
+    addDummyUsernameBoxes() {
+        new dummy.UsernameGuiAddon(ig.game)
+    }
+
     private async setEntityCameraHandle(e: ig.Entity) {
         await waitForScheduledTask(this.map.inst, () => {
             const prev = this.camera

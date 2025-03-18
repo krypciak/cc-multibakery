@@ -36,12 +36,13 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
 
         const inputManager = new dummy.inputManagers.Clone.InputManager(this.inst.ig.input)
         this.player = new ServerPlayer(this.s.username, undefined, inputManager)
+
+        new dummy.UsernameGuiAddon(this.inst.ig.game)
     }
 
     async teleport() {
         assert(multi.server instanceof LocalServer)
 
-        await this.player.teleport(this.player.mapName, this.player.marker)
         const map = multi.server.maps[this.player.mapName]
         await this.linkMapToInstance(map)
     }

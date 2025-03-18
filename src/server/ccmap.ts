@@ -44,6 +44,7 @@ export class CCMap {
 
                 this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
                 this.display.removeUnneededGuis()
+                this.display.addDummyUsernameBoxes()
             })
         })
     }
@@ -114,10 +115,6 @@ export class CCMap {
             ig.game.entities.push(e)
             e._hidden = true
             e.show()
-
-            if (e instanceof dummy.DummyPlayer) {
-                e.showUsernameBox()
-            }
         })
     }
 
@@ -156,10 +153,6 @@ export class CCMap {
                 ig.game.shownEntities[e.id] = null
                 // this.freeEntityIds.push(e.id)
                 // e.id = 0
-            }
-
-            if (e instanceof dummy.DummyPlayer) {
-                e.hideUsernameBox()
             }
         })
     }
