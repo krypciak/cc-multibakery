@@ -7,6 +7,7 @@ import './misc/godmode'
 import './dummy/dummy-player'
 import './teleport-fix'
 import './state/states'
+import './misc/paused-virtual'
 
 export const DEFAULT_PORT = 33405
 
