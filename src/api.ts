@@ -1,6 +1,7 @@
 // import { EntityStateEntry, EntityStateUpdatePacketRecord } from './state/states'
-
 // import { ServerSettings } from './server/server'
+
+import { EntityStateEntry } from './state/states'
 
 // export type InitialState = {
 //     saveData: string
@@ -50,9 +51,9 @@ export interface DummyUpdateGamepadInput {
     releasedStates: Record<ig.BUTTONS, boolean>
 }
 
-// export type FromClientUpdatePacket = {
-//     paused?: boolean
-// } & EntityStateEntry<'ig.dummy.DummyPlayer'>
+export type FromClientUpdatePacket = {
+    paused?: boolean
+} & EntityStateEntry<'dummy.DummyPlayer'>
 
 // export interface ClientToServerEvents {
 //     getPlayerUsernames(callback: (usernames: string[]) => void): void

@@ -40,7 +40,7 @@ prestart(() => {
         },
         addFor(player) {
             assert(!this.guiRefs[player.uuid])
-            const gui = new sc.SmallEntityBox(player, player.username, 1e100)
+            const gui = new sc.SmallEntityBox(player, player.data.username, 1e100)
             this.guiRefs[player.uuid] = gui
             ig.gui.addGuiElement(gui)
         },

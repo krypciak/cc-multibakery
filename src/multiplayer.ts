@@ -1,14 +1,12 @@
 import { Server } from './server/server'
 
-// import 'setimmediate'
-
 // import './misc/skip-title-screen'
 import './misc/entity-uuid'
 import './game-loop'
 import './misc/godmode'
-import './misc/gamepad-focus-fix'
 import './dummy/dummy-player'
 import './teleport-fix'
+import './state/states'
 
 export const DEFAULT_PORT = 33405
 

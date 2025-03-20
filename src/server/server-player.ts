@@ -13,7 +13,7 @@ export class ServerPlayer {
         public mapName: string = '',
         inputManager: dummy.InputManager = new dummy.inputManagers.Puppet.InputManager()
     ) {
-        this.dummy = new dummy.DummyPlayer(0, 0, 0, { name: username, inputManager })
+        this.dummy = new dummy.DummyPlayer(0, 0, 0, { inputManager, data: { username } })
         if (multi.server.s.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here
         if (!this.mapName) {

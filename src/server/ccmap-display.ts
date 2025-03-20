@@ -82,7 +82,7 @@ export class CCMapDisplay {
         if (this.cameraTarget instanceof ig.Camera.PosTarget) str += 'pos'
         else if (this.cameraTarget instanceof ig.Camera.EntityTarget) {
             if (this.cameraTarget.entity instanceof dummy.DummyPlayer)
-                str += `player ${this.cameraTarget.entity.username}`
+                str += `player ${this.cameraTarget.entity.data.username}`
             else str += `entity ${this.cameraTarget.entity.type}`
         } else assert(false)
         str += '\n'

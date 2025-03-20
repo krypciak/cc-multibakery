@@ -14,17 +14,20 @@ declare global {
     namespace dummy {
         namespace DummyPlayer {
             interface Settings extends ig.Entity.Settings {
-                name: string
                 ignoreInputForcer?: boolean
                 inputManager: dummy.InputManager
+                data: dummy.DummyPlayer.Data
+            }
+            interface Data {
+                username: string
             }
         }
         interface DummyPlayer extends ig.ENTITY.Player {
             inputManager: dummy.InputManager
             crosshairController: dummy.PlayerCrossHairController
-            username: string
             cameraHandle: any
             ignoreInputForcer: boolean
+            data: dummy.DummyPlayer.Data
         }
         interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
             new (x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): DummyPlayer
@@ -42,11 +45,14 @@ prestart(() => {
     /* todo cameahandle crash on eternal winter */
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
+            settings.name = settings.data.username
             sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, settings)
 
             assert(settings.inputManager)
             this.inputManager = settings.inputManager
             this.inputManager.player = this
+
+            this.data = settings.data
 
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
             this.itemConsumer = new sc.ItemConsumption()
@@ -61,7 +67,6 @@ prestart(() => {
             sc.combat.addActiveCombatant(this)
 
             this.ignoreInputForcer = settings.ignoreInputForcer ?? true
-            this.username = settings.name
         },
         update() {
             const blocking = sc.inputForcer.isBlocking()

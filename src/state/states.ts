@@ -1,6 +1,6 @@
 import { CCDeepType, EntityTypes } from '../misc/entity-uuid'
 
-import './defs/ig_dummy_DummyPlayer'
+import './defs/dummy_DummyPlayer'
 
 interface StateEntityBase {
     getState(): object
