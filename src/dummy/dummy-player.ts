@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 
 import * as inputBackup from './dummy-input'
-import './dummy-username-box'
+import './dummy-box-impl'
 
 declare global {
     namespace NodeJS {

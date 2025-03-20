@@ -14,6 +14,7 @@ declare global {
 type Return = Partial<ReturnType<typeof getState>>
 function getState(this: dummy.DummyPlayer) {
     return {
+        data: this.data,
         // username: this.username,
         // pos: this.coll.pos,
         // input: this.input.getInput(),
@@ -23,7 +24,7 @@ function getState(this: dummy.DummyPlayer) {
         // relativeCursorPos: this.crosshairController.relativeCursorPos,
     }
 }
-function setState(this: dummy.DummyPlayer, state: Return) {
+function setState(this: dummy.DummyPlayer, _state: Return) {
     // if (state.pos) {
     //     const p1 = this.coll.pos
     //     const p2 = state.pos

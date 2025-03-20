@@ -5,9 +5,10 @@ declare global {
         interface InputManager {
             input: ig.Input
             gamepadManager: ig.GamepadManager
-            gatherInput(): ig.ENTITY.Player.PlayerInput | undefined
             screen: Vec2
             player: dummy.DummyPlayer
+
+            gatherInput(): ig.ENTITY.Player.PlayerInput | undefined
         }
     }
 }

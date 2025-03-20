@@ -92,6 +92,8 @@ export class CCMap {
             this.enterEntity(e.gui.crosshair)
         }
         await waitForScheduledTask(this.inst, () => {
+            ig.game.entitiesByUUID[e.uuid] = e
+
             const oldColl = e.coll
             e.coll = new ig.CollEntry(e)
             e.coll.setType(oldColl.type)

@@ -52,7 +52,8 @@ export class CCMapDisplay {
     }
 
     addDummyUsernameBoxes() {
-        new dummy.UsernameGuiAddon(ig.game)
+        new dummy.BoxGuiAddon.Username(ig.game)
+        new dummy.BoxGuiAddon.Menu(ig.game)
     }
 
     private async setEntityCameraHandle(e: ig.Entity) {

@@ -7,7 +7,6 @@ import { LocalDummyClientSettings } from './local-dummy-client'
 import { CCMap } from '../server/ccmap'
 import { prestart } from '../plugin'
 import { Client, ClientSettings } from './client'
-import * as inputBackup from '../dummy/dummy-input'
 
 export interface LocalSharedClientSettings extends ClientSettings {
     baseInst: InstanceinatorInstance
@@ -37,7 +36,8 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         const inputManager = new dummy.inputManagers.Clone.InputManager(this.inst.ig.input)
         this.player = new ServerPlayer(this.s.username, undefined, inputManager)
 
-        new dummy.UsernameGuiAddon(this.inst.ig.game)
+        new dummy.BoxGuiAddon.Username(this.inst.ig.game)
+        new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
     }
 
     async teleport() {
@@ -54,6 +54,7 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         cig.game.size = mig.game.size
         cig.game.mapName = mig.game.mapName
         cig.game.entities = mig.game.entities
+        cig.game.entitiesByUUID = mig.game.entitiesByUUID
         cig.game.mapEntities = mig.game.mapEntities
         cig.game.shownEntities = mig.game.shownEntities
         cig.game.freeEntityIds = mig.game.freeEntityIds
@@ -106,6 +107,7 @@ function getInp(): dummy.inputManagers.Clone.InputManager | undefined {
         }
     }
 }
+
 prestart(() => {
     ig.Physics.inject({
         update() {
@@ -123,14 +125,6 @@ prestart(() => {
         update() {
             if (getInp()) return
             this.parent()
-        },
-    })
-    sc.GlobalInput.inject({
-        onPostUpdate() {
-            const inp = getInp()
-            if (inp) inputBackup.apply(inp)
-            this.parent()
-            if (inp) inputBackup.restore()
         },
     })
     ig.Camera.inject({
@@ -155,4 +149,26 @@ prestart(() => {
             o.modelChanged(model, message, data)
         }
     }
+})
+
+declare global {
+    namespace dummy.DummyPlayer {
+        interface Data {
+            currentMenu?: sc.MENU_SUBMENU
+            currentSubState?: sc.GAME_MODEL_SUBSTATE
+        }
+    }
+}
+prestart(() => {
+    ig.Game.inject({
+        deferredUpdate() {
+            this.parent()
+            const inp = getInp()
+            if (!inp) return
+            inp.player.data.currentMenu = sc.menu.currentMenu
+            const subState = inp.player.data.currentSubState = sc.model.currentSubState
+
+            inp.ignoreInput = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
+        },
+    })
 })
