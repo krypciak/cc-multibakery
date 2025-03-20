@@ -40,16 +40,14 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     async start() {
         instanceinator.displayId = true
+        instanceinator.instances[0].display = false
 
         this.baseInst = instanceinator.instances[0]
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.s.displayServerInstance)
-        instanceinator.append(this.serverInst)
         this.serverInst.apply()
         this.serverDeterminism = new determine.Instance('welcome to hell')
         determine.append(this.serverDeterminism)
         determine.apply(this.serverDeterminism)
-
-        if (!multi.headless) /* update tiling */ sc.options._setDisplaySize()
 
         startGameLoop()
 

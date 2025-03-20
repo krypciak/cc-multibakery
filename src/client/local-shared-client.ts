@@ -26,12 +26,8 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
             'localclient-' + this.s.username,
             multi.server.s.displayLocalClientMaps
         )
-        instanceinator.append(this.inst)
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
-
-        // if (!multi.headless) /* update tiling */ sc.options._setDisplaySize()
-        // why no work???
 
         const inputManager = new dummy.inputManagers.Clone.InputManager(this.inst.ig.input)
         this.player = new ServerPlayer(this.s.username, undefined, inputManager)

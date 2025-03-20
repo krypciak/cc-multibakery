@@ -12,7 +12,7 @@ prestart(() => {
         init(...args) {
             this.parent(...args)
 
-            const gui = new sc.TextGui(`cc-multibakery v${Multibakery.mod.version?.toString()}`, {
+            const gui = new sc.TextGui(`multibakery v${Multibakery.mod.version?.toString()}`, {
                 font: sc.fontsystem.tinyFont,
             })
             gui.setAlign(this.versionGui.hook.align.x, this.versionGui.hook.align.y)
