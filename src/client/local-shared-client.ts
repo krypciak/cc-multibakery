@@ -7,6 +7,7 @@ import { LocalDummyClientSettings } from './local-dummy-client'
 import { CCMap } from '../server/ccmap'
 import { prestart } from '../plugin'
 import { Client, ClientSettings } from './client'
+import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 
 export interface LocalSharedClientSettings extends ClientSettings {
     baseInst: InstanceinatorInstance
@@ -66,6 +67,14 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         cig.game.events = mig.game.events
         cig.vars = mig.vars
 
+        removeAddon(cig.light, cig.game)
+        cig.light = mig.light
+        addAddon(cig.light, cig.game)
+
+        removeAddon(cig.screenBlur, cig.game)
+        cig.screenBlur = mig.screenBlur
+        addAddon(cig.screenBlur, cig.game)
+
         cig.game.playerEntity = this.player.dummy
 
         const csc = this.inst.sc
@@ -84,10 +93,6 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
             const loader = new ig.Loader()
             loader.load()
             ig.game.currentLoadingResource = loader
-
-            const cameraTarget = new ig.Camera.EntityTarget(this.player.dummy)
-            const camera = new ig.Camera.TargetHandle(cameraTarget, 0, 0)
-            ig.camera.replaceTarget(ig.camera.targets[0], camera)
         })
         await waitForScheduledTask(map.inst, () => {
             this.player.dummy.model.updateStats()
@@ -102,6 +107,13 @@ function getInp(): dummy.inputManagers.Clone.InputManager | undefined {
             return client.player.dummy.inputManager as dummy.inputManagers.Clone.InputManager
         }
     }
+}
+function getClient(username: string): LocalSharedClient | undefined {
+    if (!(multi.server instanceof LocalServer)) return
+    const client = multi.server.clients[username]
+    assert(client)
+    if (!(client instanceof LocalSharedClient)) return
+    return client
 }
 
 prestart(() => {
@@ -128,6 +140,17 @@ prestart(() => {
             this.parent()
             const inp = getInp()
             if (inp) Vec2.assign(inp.screen, ig.game.screen)
+        },
+    })
+    dummy.DummyPlayer.inject({
+        update() {
+            const client = getClient(this.data.username)
+            if (!client) return this.parent()
+
+            const camera = ig.camera
+            ig.camera = client.inst.ig.camera
+            this.parent()
+            ig.camera = camera
         },
     })
 
