@@ -30,7 +30,7 @@ export class CCMap {
         const displayMaps = multi.server.s.displayMaps
 
         const levelDataPromise = this.readLevelData()
-        this.inst = await instanceinator.Instance.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
+        this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
         instanceinator.append(this.inst)
         determine.append(this.determinism)
 
@@ -175,7 +175,7 @@ export class CCMap {
     // }
 
     destroy() {
-        assert(instanceinator.instanceId != this.inst.id)
+        assert(instanceinator.id != this.inst.id)
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
     }

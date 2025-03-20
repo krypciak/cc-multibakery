@@ -39,11 +39,10 @@ export class LocalServer implements Server<LocalServerSettings> {
     constructor(public s: LocalServerSettings) {}
 
     async start() {
-        instanceinator.Instance.resetInstanceIdCounter()
-        this.baseInst = instanceinator.Instance.currentReference('base', false)
-        instanceinator.append(this.baseInst)
+        instanceinator.displayId = true
 
-        this.serverInst = await instanceinator.Instance.copy(this.baseInst, 'server', this.s.displayServerInstance)
+        this.baseInst = instanceinator.instances[0]
+        this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.s.displayServerInstance)
         instanceinator.append(this.serverInst)
         this.serverInst.apply()
         this.serverDeterminism = new determine.Instance('welcome to hell')
@@ -159,7 +158,7 @@ export class LocalServer implements Server<LocalServerSettings> {
 prestart(() => {
     ig.Game.inject({
         draw() {
-            if (!(multi.server instanceof LocalServer) || instanceinator.instanceId != multi.server.serverInst.id)
+            if (!(multi.server instanceof LocalServer) || instanceinator.id != multi.server.serverInst.id)
                 return this.parent()
 
             // for (var b in this.levels)

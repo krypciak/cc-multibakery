@@ -96,7 +96,7 @@ prestart(() => {
     ig.Camera.inject({
         onPostUpdate() {
             if (!ig.game.paused && multi.server instanceof LocalServer && multi.server.s.displayMaps) {
-                const map = multi.server.mapsById[instanceinator.instanceId]
+                const map = multi.server.mapsById[instanceinator.id]
                 if (map) {
                     const move = Vec2.create()
                     sc.control.moveDir(move, 0, true)

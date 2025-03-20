@@ -21,7 +21,7 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
 
     async init() {
         assert(multi.server instanceof LocalServer)
-        this.inst = await instanceinator.Instance.copy(
+        this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.s.username,
             multi.server.s.displayLocalClientMaps
@@ -101,7 +101,7 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
 
 function getInp(): dummy.inputManagers.Clone.InputManager | undefined {
     if (multi.server instanceof LocalServer) {
-        const client = multi.server.localSharedClientById[instanceinator.instanceId]
+        const client = multi.server.localSharedClientById[instanceinator.id]
         if (client) {
             return client.player.dummy.inputManager as dummy.inputManagers.Clone.InputManager
         }
@@ -138,7 +138,7 @@ prestart(() => {
     sc.Model.notifyObserver = function (model: sc.Model, message: number, data?: unknown) {
         for (const _o of model.observers) {
             const o = _o as sc.Model.Observer & ig.Class
-            if (o._instanceId != instanceinator.instanceId) {
+            if (o._instanceId != instanceinator.id) {
                 // const inst = instanceinator.instances[o._instanceId]
                 // waitForScheduledTask(inst, () => {
                 //     o.modelChanged(model, message, data)
@@ -166,7 +166,7 @@ prestart(() => {
             const inp = getInp()
             if (!inp) return
             inp.player.data.currentMenu = sc.menu.currentMenu
-            const subState = inp.player.data.currentSubState = sc.model.currentSubState
+            const subState = (inp.player.data.currentSubState = sc.model.currentSubState)
 
             inp.ignoreInput = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
         },
