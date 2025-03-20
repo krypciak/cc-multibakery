@@ -8,6 +8,7 @@ import './dummy/dummy-player'
 import './teleport-fix'
 import './state/states'
 import './misc/paused-virtual'
+import './misc/pause-screen-version-display'
 
 export const DEFAULT_PORT = 33405
 
