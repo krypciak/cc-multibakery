@@ -100,7 +100,14 @@ let previousMusicTime = 0
 function physicsLoop() {
     ig.system.frame++
     if (ig.system.frame % ig.system.frameSkip == 0) {
-        ig.Timer.step()
+        if (multi.server.s.forceConsistentTickTimes) {
+            const time = ig.Timer._last + 1000 / multi.server.s.globalTps
+            ig.Timer.time =
+                ig.Timer.time + Math.min((time - ig.Timer._last) / 1e3, ig.Timer.maxStep) * ig.Timer.timeScale
+            ig.Timer._last = time
+        } else {
+            ig.Timer.step()
+        }
         ig.system.rawTick = ig.system.actualTick =
             Math.min(ig.Timer.maxStep, ig.system.clock.tick()) * ig.system.totalTimeFactor
         if (ig.system.hasFocusLost()) ig.system.actualTick = 0

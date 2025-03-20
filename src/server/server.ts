@@ -2,6 +2,7 @@ export interface ServerSettings {
     name: string
     globalTps: number
     godmode?: boolean
+    forceConsistentTickTimes?: boolean
 }
 
 export interface Server<T extends ServerSettings = ServerSettings> {
