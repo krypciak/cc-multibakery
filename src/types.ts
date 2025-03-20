@@ -27,5 +27,7 @@ declare global {
         }
     }
 
+    function findClassName(id: any): string
+
     var multi: Multiplayer
 }

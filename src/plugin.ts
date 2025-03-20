@@ -42,6 +42,7 @@ export default class Multibakery implements PluginClass {
         await Promise.all((poststartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
 
         if (window.crossnode?.options.test) return
+
         multi.setServer(
             new LocalServer({
                 name: 'example',

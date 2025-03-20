@@ -17,7 +17,8 @@ export class ServerPlayer {
         if (multi.server.s.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here
         if (!this.mapName) {
-            this.mapName = 'rhombus-dng/room-1'
+            this.mapName = 'crossedeyes/test' //'rhombus-dng/room-1'
+            // this.mapName = 'rhombus-dng/room-1'
         }
     }
 

@@ -35,6 +35,7 @@ export class CCMap {
 
         const levelData = await levelDataPromise
         this.rawLevelData = levelData
+
         await waitForScheduledTask(this.inst, async () => {
             await setDataFromLevelData.call(ig.game, this.name, levelData)
             await waitForScheduledTask(this.inst, () => {
@@ -197,4 +198,17 @@ prestart(() => {
         if (multi.server instanceof LocalServer) return true
         return backup(e, x, y)
     }
+
+    sc.Combat.inject({
+        getPartyHpFactor(party) {
+            if (!(multi.server instanceof LocalServer)) return this.parent(party)
+            const map = multi.server.mapsById[instanceinator.id]
+            assert(map)
+
+            ig.game.playerEntity = map.players[0].dummy
+            const ret = this.parent(party)
+            ig.game.playerEntity = undefined as any
+            return ret
+        },
+    })
 })

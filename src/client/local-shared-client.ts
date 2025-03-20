@@ -1,4 +1,4 @@
-import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { ServerPlayer } from '../server/server-player'
 import { assert } from '../misc/assert'
@@ -80,6 +80,8 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         const csc = this.inst.sc
         // const msc = map.inst.sc
 
+        rehookObservers(csc.model.player.params, this.player.dummy.model.params)
+        rehookObservers(csc.model.player, this.player.dummy.model)
         csc.model.player = this.player.dummy.model
 
         await waitForScheduledTask(this.inst, () => {
@@ -98,6 +100,10 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
             this.player.dummy.model.updateStats()
         })
     }
+}
+
+function rehookObservers(from: sc.Model, to: sc.Model) {
+    to.observers.push(...from.observers)
 }
 
 function getInp(): dummy.inputManagers.Clone.InputManager | undefined {
@@ -128,6 +134,10 @@ prestart(() => {
             if (getInp()) return
             this.parent()
         },
+        varsChanged() {
+            if (getInp()) return
+            this.parent()
+        },
     })
     ig.EventManager.inject({
         update() {
@@ -155,19 +165,39 @@ prestart(() => {
     })
 
     sc.Model.notifyObserver = function (model: sc.Model, message: number, data?: unknown) {
+        // function rev<K extends string | number, V extends string | number>(rec: Record<K, V>): Record<V, K> {
+        //     return Object.fromEntries(Object.entries(rec).map(([a, b]) => [b as V, a as K]))
+        // }
+
         for (const _o of model.observers) {
             const o = _o as sc.Model.Observer & ig.Class
             if (o._instanceId != instanceinator.id) {
-                // const inst = instanceinator.instances[o._instanceId]
-                // waitForScheduledTask(inst, () => {
-                //     o.modelChanged(model, message, data)
-                // })
-                // console.log('blocked cross-insetance notifyObserver call', model, message, data)
+                // let msg: string = message.toString()
+                // if (model instanceof sc.PlayerModel)
+                //     msg = 'sc.PLAYER_MSG.' + rev(sc.PLAYER_MSG)[message as sc.PLAYER_MSG]
+                // if (model instanceof sc.CombatParams)
+                //     msg = 'sc.COMBAT_PARAM_MSG.' + rev(sc.COMBAT_PARAM_MSG)[message as sc.COMBAT_PARAM_MSG]
+                // console.log('passing ', findClassName(model), msg, data)
+                const inst = instanceinator.instances[o._instanceId]
+                waitForScheduledTask(inst, () => {
+                    o.modelChanged(model, message, data)
+                })
+
                 continue
             }
             o.modelChanged(model, message, data)
         }
     }
+
+    ig.GuiHook.inject({
+        onAttach(hook) {
+            if (this._instanceId != hook!._instanceId) {
+                console.warn('a sin has been commited', this._instanceId, hook!._instanceId)
+                debugger
+            }
+            this.parent(hook)
+        },
+    })
 })
 
 declare global {

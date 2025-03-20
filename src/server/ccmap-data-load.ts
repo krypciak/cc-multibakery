@@ -1,7 +1,8 @@
 import { waitForScheduledTask } from './local-server'
+import { prestart } from '../plugin'
 
 type Layer = keyof typeof ig.MAP
-export const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
+export const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<unknown> {
     /* mostly stolen from ig.Game#loadLevel */
 
     ig.game.mapName = mapName
@@ -70,19 +71,20 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
 
     const loader = new (this.mapLoader || ig.Loader)()
     loader.onEnd = function (this: ig.Loader) {
-        waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
-            /* this.finalize() */
-            this.prevResourcesCnt = ig.resources.length
-            ig.resources.length = 0
-            clearInterval(this._intervalId)
+            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+                /* this.finalize() */
+                this.prevResourcesCnt = ig.resources.length
+                ig.resources.length = 0
+                clearInterval(this._intervalId)
 
-            ig.ready = true
-            ig.game.loadingComplete()
+                ig.ready = true
 
-            this._loadCallbackBound = null
-            ig.loading = false
+                ig.game.loadingComplete()
 
-            resolve()
+                this._loadCallbackBound = null
+                ig.loading = false
+
+                resolve()
         })
     }.bind(loader)
 
@@ -113,3 +115,19 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
 
     return promise
 }
+
+prestart(() => {
+    ig.Loadable.inject({
+        loadingFinished(success) {
+            if (
+                this._instanceId == instanceinator.id ||
+                !(this instanceof sc.Character || this instanceof ig.PropSheet)
+            ) {
+                return this.parent(success)
+            }
+            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+                this.loadingFinished(success)
+            })
+        },
+    })
+})
