@@ -199,6 +199,22 @@ prestart(() => {
             this.parent(hook)
         },
     })
+
+    ig.SlowMotion.inject({
+        /* fix slow motion (by disabling it) */
+        add(factor, timer, name) {
+            const handle = new ig.SlowMotionHandle(factor, timer, name)
+            // this.slowMotions.push(b)
+            if (name) {
+                if (this.namedSlowMotions[name]) {
+                    this.namedSlowMotions[name].clear()
+                    this.namedSlowMotions[name].name = null
+                }
+                this.namedSlowMotions[name] = handle
+            }
+            return handle
+        },
+    })
 })
 
 declare global {
