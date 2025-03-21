@@ -98,6 +98,7 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         })
         await waitForScheduledTask(map.inst, () => {
             this.player.dummy.model.updateStats()
+            sc.Model.notifyObserver(this.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
         })
     }
 }
