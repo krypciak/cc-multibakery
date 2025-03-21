@@ -101,8 +101,13 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
             ig.game.currentLoadingResource = loader
         })
         await waitForScheduledTask(map.inst, () => {
-            this.player.dummy.model.updateStats()
-            sc.Model.notifyObserver(this.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
+            assert(multi.server instanceof LocalServer)
+            for (const client of Object.values(multi.server.clients)) {
+                if (client instanceof LocalSharedClient) {
+                    client.player.dummy.model.updateStats()
+                    sc.Model.notifyObserver(client.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
+                }
+            }
 
             if (!enemySet) {
                 this.player.dummy.party = sc.COMBATANT_PARTY.ENEMY

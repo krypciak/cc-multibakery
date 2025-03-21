@@ -14,6 +14,10 @@ export class ServerPlayer {
         inputManager: dummy.InputManager = new dummy.inputManagers.Puppet.InputManager()
     ) {
         this.dummy = new dummy.DummyPlayer(0, 0, 0, { inputManager, data: { username } })
+        if (username.includes('luke')) {
+            this.dummy.model.setConfig(sc.party.models['Luke'].config)
+        }
+
         if (multi.server.s.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here
         if (!this.mapName) {

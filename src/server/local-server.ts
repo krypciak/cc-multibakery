@@ -54,13 +54,14 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.consoleDialog = new LocalServerConsoleDialog()
         this.consoleDialog.openServerConsole()
 
-        if (!window.crossnode?.options.test) {
-            for (let i = 0; i < 2; i++) {
-                await this.createAndJoinLocalSharedClient({
-                    username: `player${i}`,
-                })
-            }
-        }
+        if (window.crossnode?.options.test) return
+
+        await this.createAndJoinLocalSharedClient({
+            username: `lea_1`,
+        })
+        await this.createAndJoinLocalSharedClient({
+            username: `luke_1`,
+        })
     }
 
     update() {
