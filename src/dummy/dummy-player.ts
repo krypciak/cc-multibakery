@@ -140,12 +140,20 @@ prestart(() => {
         updatePos(crosshair) {
             this.gamepadMode = this.inputManager!.input.currentDevice == ig.INPUT_DEVICES.GAMEPAD
             if (this.gamepadMode || !this.relativeCursorPos) {
-                inputBackup.apply(this.inputManager!)
                 this.parent(crosshair)
-                inputBackup.restore()
             } else {
                 Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
             }
+        },
+    })
+
+    ig.ENTITY.Crosshair.inject({
+        deferredUpdate() {
+            if (!(this.thrower instanceof dummy.DummyPlayer)) return this.parent()
+
+            inputBackup.apply(this.thrower.inputManager)
+            this.parent()
+            inputBackup.restore()
         },
     })
 }, 2)

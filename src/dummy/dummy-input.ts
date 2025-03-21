@@ -24,6 +24,7 @@ let backupPlayerModel!: sc.PlayerModel
 
 let applied: boolean = false
 export function apply(inp: dummy.InputManager) {
+    assert(!applied)
     applied = true
 
     backupInput = ig.input
