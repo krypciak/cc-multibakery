@@ -55,7 +55,7 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.consoleDialog.openServerConsole()
 
         if (!window.crossnode?.options.test) {
-            for (let i = 0; i < 1; i++) {
+            for (let i = 0; i < 2; i++) {
                 await this.createAndJoinLocalSharedClient({
                     username: `player${i}`,
                 })
@@ -159,17 +159,7 @@ prestart(() => {
             if (!(multi.server instanceof LocalServer) || instanceinator.id != multi.server.serverInst.id)
                 return this.parent()
 
-            // for (var b in this.levels)
-            //     for (var a = 0; a < this.levels[b].maps.length; a++)
-            //         this.levels[b].maps[a].setScreenPos(this.screen.x, this.screen.y)
-
-            // for (const addon of this.addons.preDraw) addon.onPreDraw()
-            // ig.system.startZoomedDraw()
             this.renderer.prepareDraw([])
-            // this.renderer.drawLayers()
-            // for (const addon of this.addons.midDraw) addon.onMidDraw()
-            // this.renderer.drawPostLayerSprites()
-            // ig.system.endZoomedDraw()
             for (const addon of this.addons.postDraw) addon.onPostDraw()
 
             multi.server.serverInst.drawLabel()

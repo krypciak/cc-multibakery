@@ -103,9 +103,15 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         await waitForScheduledTask(map.inst, () => {
             this.player.dummy.model.updateStats()
             sc.Model.notifyObserver(this.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
+
+            if (!enemySet) {
+                this.player.dummy.party = sc.COMBATANT_PARTY.ENEMY
+                enemySet = true
+            }
         })
     }
 }
+let enemySet = false
 
 function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
@@ -207,6 +213,8 @@ prestart(() => {
     ig.SlowMotion.inject({
         /* fix slow motion (by disabling it) */
         add(factor, timer, name) {
+            if (!multi.server) return this.parent(factor, timer, name)
+
             const handle = new ig.SlowMotionHandle(factor, timer, name)
             // this.slowMotions.push(b)
             if (name) {
@@ -217,6 +225,47 @@ prestart(() => {
                 this.namedSlowMotions[name] = handle
             }
             return handle
+        },
+    })
+    // @ts-expect-error
+    ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({
+        start() {
+            if (!multi.server) return this.parent()
+            assert(ig.game.playerEntity == undefined)
+            ig.game.playerEntity = {
+                // @ts-expect-error
+                hasCameraTarget: () => true,
+            }
+            this.parent()
+            ig.game.playerEntity = undefined as any
+        },
+    })
+
+    dummy.DummyPlayer.inject({
+        kill(_levelChange) {},
+        _onDeathHit(a) {
+            if (!multi.server || !(this instanceof dummy.DummyPlayer)) return this.parent(a)
+
+            if (this.dying == sc.DYING_STATE.ALIVE) {
+                this.dying = sc.DYING_STATE.KILL_HIT
+                // sc.combat.onCombatantDeathHit(a, this)
+                ig.EffectTools.clearEffects(this)
+
+                if (!this.skipRumble) {
+                    const effect = new ig.Rumble.RumbleHandle('RANDOM', 'STRONG', 'FASTER', 0.3, false, true)
+                    ig.rumble.addRumble(effect)
+                }
+                if (!sc.pvp.isCombatantInPvP(this)) {
+                    this.effects.death.spawnOnTarget('pre_die', this, { duration: -1 })
+                    this.coll.type = ig.COLLTYPE.IGNORE
+                }
+
+                this.dying = sc.DYING_STATE.ALIVE
+                this.params.revive()
+
+                ig.EffectTools.clearEffects(this)
+                this.resetStunData()
+            }
         },
     })
 })

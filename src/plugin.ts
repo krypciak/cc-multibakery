@@ -52,7 +52,7 @@ export default class Multibakery implements PluginClass {
                 globalTps: 60,
                 godmode: true,
                 displayServerInstance: false,
-                displayMaps: true,
+                displayMaps: false,
                 displayLocalClientMaps: true,
                 forceConsistentTickTimes: false,
             })
