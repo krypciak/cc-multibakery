@@ -75,6 +75,10 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         cig.screenBlur = mig.screenBlur
         addAddon(cig.screenBlur, cig.game)
 
+        removeAddon(cig.rumble, cig.game)
+        cig.rumble = mig.rumble
+        addAddon(cig.rumble, cig.game)
+
         cig.game.playerEntity = this.player.dummy
 
         const csc = this.inst.sc
