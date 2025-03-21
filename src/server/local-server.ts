@@ -147,7 +147,6 @@ export class LocalServer implements Server<LocalServerSettings> {
             map.destroy()
         }
         instanceinator.delete(this.serverInst)
-        instanceinator.delete(this.baseInst)
 
         determine.delete(this.serverDeterminism)
         determine.apply(determine.instances[0])
