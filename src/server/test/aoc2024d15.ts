@@ -204,7 +204,7 @@ ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
 
 async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir: Vec2, nextSame: boolean) {
     const input = e.inputManager
-    assert(input instanceof dummy.inputManagers.Puppet.InputManager)
+    assert(input instanceof dummy.input.Puppet.InputManager)
 
     async function waitFrames(count: number) {
         for (let frame = 0; frame < count; frame++) {
@@ -228,7 +228,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     }
     const inp: DummyUpdateInput = ig.copy(emptyInput)
 
-    const playerInp = dummy.inputManagers.Puppet.InputManager.emptyGatherInput()
+    const playerInp = dummy.input.Puppet.InputManager.emptyGatherInput()
     playerInp.lastMoveDir = dir
     playerInp.moveDir = dir
     playerInp.relativeVel = 1
@@ -262,7 +262,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             }
         })
     }
-    input.nextGatherInput = dummy.inputManagers.Puppet.InputManager.emptyGatherInput()
+    input.nextGatherInput = dummy.input.Puppet.InputManager.emptyGatherInput()
 
     if (collided == 'box') {
         waitFrames(8)
@@ -287,7 +287,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)
         input.nextGatherInput = playerInp
-        input.nextGatherInput = dummy.inputManagers.Puppet.InputManager.emptyGatherInput()
+        input.nextGatherInput = dummy.input.Puppet.InputManager.emptyGatherInput()
         waitFrames(8)
         // const x = e.coll.pos.x
         // const xo = 1 * 16 + 8

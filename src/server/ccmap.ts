@@ -7,6 +7,7 @@ import { CCMapDisplay } from './ccmap-display'
 import { setDataFromLevelData } from './ccmap-data-load'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { prestart } from '../plugin'
+import { forceConditionalLightOnInst } from '../client/conditional-light'
 
 export class CCMap {
     rawLevelData!: sc.MapModel.Map
@@ -32,6 +33,7 @@ export class CCMap {
         const levelDataPromise = this.readLevelData()
         this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
         determine.append(this.determinism)
+        forceConditionalLightOnInst(this.inst.id)
 
         const levelData = await levelDataPromise
         this.rawLevelData = levelData

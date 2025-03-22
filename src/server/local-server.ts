@@ -8,6 +8,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServerConsoleDialog } from './local-server-console'
 import { LocalSharedClient, LocalSharedClientSettings } from '../client/local-shared-client'
 import { LocalDummyClient } from '../client/local-dummy-client'
+import { removeAddon } from '../dummy/dummy-box-addon'
 
 export interface LocalServerSettings extends ServerSettings {
     slotName?: string
@@ -49,10 +50,15 @@ export class LocalServer implements Server<LocalServerSettings> {
         determine.append(this.serverDeterminism)
         determine.apply(this.serverDeterminism)
 
+        removeAddon(this.serverInst.ig.gamepad, this.serverInst.ig.game)
+        this.serverInst.ig.gamepad = new dummy.input.Clone.SingleGamepadManager()
+
         startGameLoop()
 
         this.consoleDialog = new LocalServerConsoleDialog()
         this.consoleDialog.openServerConsole()
+
+        dummy.input.Clone.gamepadAssigner.initialize()
 
         if (window.crossnode?.options.test) return
 
@@ -61,10 +67,17 @@ export class LocalServer implements Server<LocalServerSettings> {
         })
         await this.createAndJoinLocalSharedClient({
             username: `luke_1`,
+            forceInputType: ig.INPUT_DEVICES.GAMEPAD,
         })
+        // await this.createAndJoinLocalSharedClient({
+        //     username: `luke_2`,
+        //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+        // })
     }
 
     update() {
+        dummy.input.Clone.gamepadAssigner.onPreUpdate()
+
         ig.game.update()
 
         const run = ({ inst, determinism }: { inst: InstanceinatorInstance; determinism: DeterMineInstance }) => {

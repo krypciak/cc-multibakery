@@ -11,12 +11,12 @@ export class ServerPlayer {
     constructor(
         public username: string,
         public mapName: string = '',
-        inputManager: dummy.InputManager = new dummy.inputManagers.Puppet.InputManager()
+        inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager()
     ) {
         this.dummy = new dummy.DummyPlayer(0, 0, 0, { inputManager, data: { username } })
-        if (username.includes('luke')) {
-            this.dummy.model.setConfig(sc.party.models['Luke'].config)
-        }
+        // if (username.includes('luke')) {
+        //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
+        // }
 
         if (multi.server.s.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here

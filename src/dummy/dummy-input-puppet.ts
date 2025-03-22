@@ -56,15 +56,15 @@ class InputManagerClazz implements dummy.InputManager {
     }
 
     player!: dummy.DummyPlayer
-    input: dummy.inputManagers.Puppet.Input
-    gamepadManager: dummy.inputManagers.Puppet.GamepadManager
+    input: dummy.input.Puppet.Input
+    gamepadManager: dummy.input.Puppet.GamepadManager
     screen: Vec2 = { x: 0, y: 0 }
 
     nextGatherInput?: ig.ENTITY.Player.PlayerInput
 
     constructor() {
-        this.input = new dummy.inputManagers.Puppet.Input()
-        this.gamepadManager = new dummy.inputManagers.Puppet.GamepadManager()
+        this.input = new dummy.input.Puppet.Input()
+        this.gamepadManager = new dummy.input.Puppet.GamepadManager()
     }
 
     gatherInput() {
@@ -74,7 +74,7 @@ class InputManagerClazz implements dummy.InputManager {
 
 declare global {
     namespace dummy {
-        namespace inputManagers {
+        namespace input {
             namespace Puppet {
                 let InputManager: typeof InputManagerClazz
             }
@@ -82,14 +82,14 @@ declare global {
     }
 }
 prestart(() => {
-    dummy.inputManagers ??= {} as any
-    dummy.inputManagers.Puppet = {} as any
+    dummy.input ??= {} as any
+    dummy.input.Puppet = {} as any
 
-    dummy.inputManagers.Puppet.InputManager = InputManagerClazz
+    dummy.input.Puppet.InputManager = InputManagerClazz
 }, 2)
 
 declare global {
-    namespace dummy.inputManagers.Puppet {
+    namespace dummy.input.Puppet {
         interface Input extends ig.Input {
             _lastInput: DummyUpdateInput
 
@@ -103,13 +103,13 @@ declare global {
     }
 }
 prestart(() => {
-    dummy.inputManagers.Puppet.Input = ig.Input.extend({
+    dummy.input.Puppet.Input = ig.Input.extend({
         init() {
             this.bindings = ig.input.bindings
         },
         getInput() {
             return (
-                this._lastInput ?? dummy.inputManagers.Puppet.InputManager.getDummyUpdateKeyboardInputFromIgInput(this)
+                this._lastInput ?? dummy.input.Puppet.InputManager.getDummyUpdateKeyboardInputFromIgInput(this)
             )
         },
         setInput(input) {
@@ -125,7 +125,7 @@ prestart(() => {
 }, 3)
 
 declare global {
-    namespace dummy.inputManagers.Puppet {
+    namespace dummy.input.Puppet {
         interface GamepadManager extends ig.GamepadManager {
             _lastInput: DummyUpdateGamepadInput
 
@@ -139,7 +139,7 @@ declare global {
     }
 }
 prestart(() => {
-    dummy.inputManagers.Puppet.GamepadManager = ig.GamepadManager.extend({
+    dummy.input.Puppet.GamepadManager = ig.GamepadManager.extend({
         init() {
             this.activeGamepads = [
                 // @ts-expect-error
@@ -156,7 +156,7 @@ prestart(() => {
         getInput() {
             return (
                 this._lastInput ??
-                dummy.inputManagers.Puppet.InputManager.getDummyUpdateGamepadInputFromIgGamepadManager(this)
+                dummy.input.Puppet.InputManager.getDummyUpdateGamepadInputFromIgGamepadManager(this)
             )
         },
         setInput(input) {

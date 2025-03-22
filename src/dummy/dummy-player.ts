@@ -14,7 +14,6 @@ declare global {
     namespace dummy {
         namespace DummyPlayer {
             interface Settings extends ig.Entity.Settings {
-                ignoreInputForcer?: boolean
                 inputManager: dummy.InputManager
                 data: dummy.DummyPlayer.Data
             }
@@ -26,7 +25,6 @@ declare global {
             inputManager: dummy.InputManager
             crosshairController: dummy.PlayerCrossHairController
             cameraHandle: any
-            ignoreInputForcer: boolean
             data: dummy.DummyPlayer.Data
         }
         interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
@@ -65,18 +63,11 @@ prestart(() => {
             sc.Model.addObserver(sc.playerSkins, this)
             this.charging.fx = new sc.CombatCharge(this, true)
             sc.combat.addActiveCombatant(this)
-
-            this.ignoreInputForcer = settings.ignoreInputForcer ?? true
         },
         update() {
-            const blocking = sc.inputForcer.isBlocking()
-            if (blocking && this.ignoreInputForcer) sc.inputForcer.blocked = false
-
             inputBackup.apply(this.inputManager)
             this.parent()
             inputBackup.restore()
-
-            if (this.ignoreInputForcer) sc.inputForcer.blocked = blocking
         },
         gatherInput() {
             return this.inputManager.gatherInput() ?? this.parent()
@@ -139,6 +130,7 @@ prestart(() => {
     dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
         updatePos(crosshair) {
             this.gamepadMode = this.inputManager!.input.currentDevice == ig.INPUT_DEVICES.GAMEPAD
+            this.parent(crosshair)
             if (this.gamepadMode || !this.relativeCursorPos) {
                 this.parent(crosshair)
             } else {

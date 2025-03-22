@@ -8,9 +8,11 @@ import { CCMap } from '../server/ccmap'
 import { prestart } from '../plugin'
 import { Client, ClientSettings } from './client'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
+import { forceGamepad } from './force-gamepad'
 
 export interface LocalSharedClientSettings extends ClientSettings {
     baseInst: InstanceinatorInstance
+    forceInputType?: ig.INPUT_DEVICES
 }
 
 export class LocalSharedClient implements Client<LocalDummyClientSettings> {
@@ -30,7 +32,14 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
 
-        const inputManager = new dummy.inputManagers.Clone.InputManager(this.inst.ig.input)
+        removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
+        this.inst.ig.gamepad = new dummy.input.Clone.SingleGamepadManager()
+        addAddon(this.inst.ig.gamepad, this.inst.ig.game)
+        const inputManager = new dummy.input.Clone.InputManager(
+            this.inst.ig.input,
+            this.inst.ig.gamepad,
+            this.s.forceInputType
+        )
         this.player = new ServerPlayer(this.s.username, undefined, inputManager)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
@@ -114,6 +123,8 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
                 enemySet = true
             }
         })
+
+        if (this.s.forceInputType == ig.INPUT_DEVICES.GAMEPAD) forceGamepad(this)
     }
 }
 let enemySet = false
@@ -122,11 +133,11 @@ function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
 }
 
-function getInp(): dummy.inputManagers.Clone.InputManager | undefined {
+function getInp(): dummy.input.Clone.InputManager | undefined {
     if (multi.server instanceof LocalServer) {
         const client = multi.server.localSharedClientById[instanceinator.id]
         if (client) {
-            return client.player.dummy.inputManager as dummy.inputManagers.Clone.InputManager
+            return client.player.dummy.inputManager as dummy.input.Clone.InputManager
         }
     }
 }
@@ -292,7 +303,13 @@ prestart(() => {
             inp.player.data.currentMenu = sc.menu.currentMenu
             const subState = (inp.player.data.currentSubState = sc.model.currentSubState)
 
-            inp.ignoreInput = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
+            if (subState == sc.GAME_MODEL_SUBSTATE.RUNNING) {
+                inp.ignoreKeyboardInput.delete('PAUSED')
+                inp.ignoreGamepadInput.delete('PAUSED')
+            } else {
+                inp.ignoreKeyboardInput.add('PAUSED')
+                inp.ignoreGamepadInput.add('PAUSED')
+            }
         },
     })
 })
