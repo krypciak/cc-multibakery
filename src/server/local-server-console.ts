@@ -84,7 +84,7 @@ export class LocalServerConsoleDialog {
         }, 300)
     }
 
-    destroy() {
+    async destroy() {
         if (this.intervalId) clearInterval(this.intervalId)
     }
 }

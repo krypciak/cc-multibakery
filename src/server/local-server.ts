@@ -9,6 +9,7 @@ import { LocalServerConsoleDialog } from './local-server-console'
 import { LocalSharedClient, LocalSharedClientSettings } from '../client/local-shared-client'
 import { LocalDummyClient } from '../client/local-dummy-client'
 import { removeAddon } from '../dummy/dummy-box-addon'
+import { assert } from '../misc/assert'
 
 export interface LocalServerSettings extends ServerSettings {
     slotName?: string
@@ -69,10 +70,10 @@ export class LocalServer implements Server<LocalServerSettings> {
             username: `luke_1`,
             forceInputType: ig.INPUT_DEVICES.GAMEPAD,
         })
-        // await this.createAndJoinLocalSharedClient({
-        //     username: `luke_2`,
-        //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
-        // })
+        await this.createAndJoinLocalSharedClient({
+            username: `luke_2`,
+            forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+        })
     }
 
     update() {
@@ -151,13 +152,23 @@ export class LocalServer implements Server<LocalServerSettings> {
         await client.teleport()
     }
 
-    destroy() {
+    leaveClient(id: number): void {
+        assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
+        const client = this.localSharedClientById[id]
+        assert(client)
+        client.destroy()
+    }
+
+    async destroy() {
         this.baseInst.apply()
 
         determine.apply(determine.instances[0])
-        this.consoleDialog.destroy()
+        await this.consoleDialog.destroy()
+        for (const client of Object.values(this.localSharedClientById)) {
+            await client.destroy()
+        }
         for (const map of Object.values(this.maps)) {
-            map.destroy()
+            await map.destroy()
         }
         instanceinator.delete(this.serverInst)
 

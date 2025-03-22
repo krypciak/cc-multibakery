@@ -10,4 +10,8 @@ export class LocalDummyClient implements Client<LocalDummyClientSettings> {
     constructor(public s: LocalDummyClientSettings) {
         this.player = new ServerPlayer(s.username)
     }
+
+    async destroy() {
+        this.player.destroy()
+    }
 }

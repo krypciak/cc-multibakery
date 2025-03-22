@@ -4,6 +4,8 @@ import { LocalServer, waitForScheduledTask } from './local-server'
 import { indent } from './local-server-console'
 
 export class ServerPlayer {
+    private destroyed: boolean = false
+
     dummy: dummy.DummyPlayer
     marker: string | undefined = undefined
     ready: boolean = false
@@ -50,6 +52,16 @@ export class ServerPlayer {
     //     map.leave(this)
     //     this.dummy.kill()
     // }
+
+    async destroy() {
+        assert(multi.server instanceof LocalServer)
+        assert(!this.destroyed)
+        const map = multi.server.maps[this.mapName]
+        if (map) {
+            await map.leave(this)
+        }
+        this.destroyed = true
+    }
 
     toConsoleString(i: number = 0): string {
         let str = ''

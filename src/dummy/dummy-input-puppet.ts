@@ -108,9 +108,7 @@ prestart(() => {
             this.bindings = ig.input.bindings
         },
         getInput() {
-            return (
-                this._lastInput ?? dummy.input.Puppet.InputManager.getDummyUpdateKeyboardInputFromIgInput(this)
-            )
+            return this._lastInput ?? dummy.input.Puppet.InputManager.getDummyUpdateKeyboardInputFromIgInput(this)
         },
         setInput(input) {
             this._lastInput = input
@@ -155,8 +153,7 @@ prestart(() => {
         },
         getInput() {
             return (
-                this._lastInput ??
-                dummy.input.Puppet.InputManager.getDummyUpdateGamepadInputFromIgGamepadManager(this)
+                this._lastInput ?? dummy.input.Puppet.InputManager.getDummyUpdateGamepadInputFromIgGamepadManager(this)
             )
         },
         setInput(input) {

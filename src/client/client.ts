@@ -7,4 +7,6 @@ export interface Client<T extends ClientSettings = ClientSettings> {
 
     // notifyJoin(server: ClientJoinResponse): Promise<void>
     // update(packet: FromClientUpdatePacket): void
+
+    destroy(): Promise<void>
 }

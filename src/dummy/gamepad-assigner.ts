@@ -18,14 +18,22 @@ class GamepadAssigner {
     initialize() {
         if (!navigator.getGamepads) return
 
+        const newId = (id: string) => {
+            const gamepad = this.gamepads[id]
+            if (this.requestsPromiseResolves.length > 0) {
+                this.requestsPromiseResolves[0].resolve(gamepad)
+                this.requestsPromiseResolves.splice(0, 1)
+            } else {
+                this.freeGamepads.push(id)
+            }
+        }
         this.handler = new Html5GamepadHandler(
             id => {
-                if (this.requestsPromiseResolves.length > 0) {
-                    this.requestsPromiseResolves[0].resolve(this.gamepads[id])
-                    this.requestsPromiseResolves.splice(0, 1)
-                } else {
-                    this.freeGamepads.push(id)
+                const gamepad = this.gamepads[id]
+                gamepad.destroy = async () => {
+                    newId(id)
                 }
+                newId(id)
             },
             id => {
                 const gamepad = this.gamepads[id]
@@ -107,3 +115,23 @@ prestart(() => {
         },
     })
 }, 3)
+
+declare global {
+    namespace ig {
+        interface GamepadManager {
+            destroy(this: this): Promise<void>
+        }
+        interface Gamepad {
+            destroy?(this: this): Promise<void>
+        }
+    }
+}
+prestart(() => {
+    ig.GamepadManager.inject({
+        destroy() {
+            return Promise.all(
+                this.activeGamepads.map(gamepad => gamepad.destroy && gamepad.destroy())
+            ) as unknown as Promise<void>
+        },
+    })
+})

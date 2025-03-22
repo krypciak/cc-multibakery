@@ -126,6 +126,15 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
 
         if (this.s.forceInputType == ig.INPUT_DEVICES.GAMEPAD) forceGamepad(this)
     }
+
+    async destroy() {
+        if (this.inst.ig.gamepad.destroy) {
+            await this.inst.ig.gamepad.destroy()
+        }
+        await this.player.destroy()
+        instanceinator.delete(this.inst)
+        determine.delete(this.determinism)
+    }
 }
 let enemySet = false
 

@@ -176,7 +176,8 @@ export class CCMap {
     //     if (this.unloadTimeoutId) clearTimeout(this.unloadTimeoutId)
     // }
 
-    destroy() {
+    async destroy() {
+        for (const player of this.players) await player.destroy()
         assert(instanceinator.id != this.inst.id)
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
