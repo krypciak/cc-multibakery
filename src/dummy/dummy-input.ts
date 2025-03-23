@@ -22,10 +22,13 @@ let backupPlayer!: ig.ENTITY.Player
 let backupScreen!: Vec2
 let backupPlayerModel!: sc.PlayerModel
 
-let applied: boolean = false
+let appliedTimes = 0
+let inpApplied: dummy.InputManager | undefined
 export function apply(inp: dummy.InputManager) {
-    assert(!applied)
-    applied = true
+    appliedTimes++
+    if (inpApplied == inp) return
+    else assert(appliedTimes == 1)
+    inpApplied = inp
 
     backupInput = ig.input
     backupGamepad = ig.gamepad
@@ -41,8 +44,10 @@ export function apply(inp: dummy.InputManager) {
 }
 
 export function restore() {
-    assert(applied)
-    applied = false
+    assert(appliedTimes > 0)
+    appliedTimes--
+    if (appliedTimes > 0) return
+    inpApplied = undefined
 
     ig.input = backupInput
     ig.gamepad = backupGamepad

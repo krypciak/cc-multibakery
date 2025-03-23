@@ -4,7 +4,7 @@ import { waitForScheduledTask } from '../server/local-server'
 import { LocalSharedClient } from './local-shared-client'
 
 export function forceGamepad(client: LocalSharedClient) {
-    const input = client.player.dummy.inputManager
+    const input = client.player.inputManager
     const gamepadManager = client.inst.ig.gamepad
     if (!(input instanceof dummy.input.Clone.InputManager)) return
     assert(gamepadManager instanceof dummy.input.Clone.SingleGamepadManager)

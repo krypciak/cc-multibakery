@@ -8,6 +8,7 @@ import { setDataFromLevelData } from './ccmap-data-load'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { prestart } from '../plugin'
 import { forceConditionalLightOnInst } from '../client/conditional-light'
+import * as inputBackup from '../dummy/dummy-input'
 
 export class CCMap {
     rawLevelData!: sc.MapModel.Map
@@ -161,6 +162,10 @@ export class CCMap {
         })
     }
 
+    preUpdate() {
+        for (const player of this.players) player.preUpdate()
+    }
+
     // public startUnloadTimer() {
     //     return
     //     // if (this.alwaysLoaded || this.players.length != 0) return
@@ -212,6 +217,104 @@ prestart(() => {
             const ret = this.parent(party)
             ig.game.playerEntity = undefined as any
             return ret
+        },
+    })
+
+    // @ts-expect-error
+    ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({
+        start() {
+            if (!multi.server) return this.parent()
+            assert(ig.game.playerEntity == undefined)
+            ig.game.playerEntity = {
+                // @ts-expect-error
+                hasCameraTarget: () => true,
+            }
+            this.parent()
+            ig.game.playerEntity = undefined as any
+        },
+    })
+
+    ig.SlowMotion.inject({
+        /* fix slow motion (by disabling it) */
+        add(factor, timer, name) {
+            if (!multi.server) return this.parent(factor, timer, name)
+
+            const handle = new ig.SlowMotionHandle(factor, timer, name)
+            // this.slowMotions.push(b)
+            if (name) {
+                if (this.namedSlowMotions[name]) {
+                    this.namedSlowMotions[name].clear()
+                    this.namedSlowMotions[name].name = null
+                }
+                this.namedSlowMotions[name] = handle
+            }
+            return handle
+        },
+    })
+
+    function getMap(assertMap = false) {
+        if (!(multi.server instanceof LocalServer)) return
+        const map = multi.server.mapsById[instanceinator.id]
+        if (assertMap) assert(map)
+        return map
+    }
+
+    sc.EnemyType.inject({
+        resolveItemDrops(enemyEntity) {
+            const map = getMap(true)
+            if (!map) return this.parent(enemyEntity)
+            assert(!ig.game.playerEntity)
+            ig.game.playerEntity = map.players[0].dummy
+            this.parent(enemyEntity)
+            ig.game.playerEntity = undefined as any
+        },
+    })
+
+    dummy.DummyPlayer.inject({
+        kill(_levelChange) {},
+        _onDeathHit(a) {
+            if (!multi.server || !(this instanceof dummy.DummyPlayer)) return this.parent(a)
+
+            if (this.dying == sc.DYING_STATE.ALIVE) {
+                this.dying = sc.DYING_STATE.KILL_HIT
+                // sc.combat.onCombatantDeathHit(a, this)
+                ig.EffectTools.clearEffects(this)
+
+                if (!this.skipRumble) {
+                    const effect = new ig.Rumble.RumbleHandle('RANDOM', 'STRONG', 'FASTER', 0.3, false, true)
+                    ig.rumble.addRumble(effect)
+                }
+                if (!sc.pvp.isCombatantInPvP(this)) {
+                    this.effects.death.spawnOnTarget('pre_die', this, { duration: -1 })
+                    this.coll.type = ig.COLLTYPE.IGNORE
+                }
+
+                this.dying = sc.DYING_STATE.ALIVE
+                this.params.revive()
+
+                ig.EffectTools.clearEffects(this)
+                this.resetStunData()
+            }
+        },
+    })
+
+    sc.MapInteract.inject({
+        onPreUpdate() {
+            if (this instanceof sc.MapInteractServerPlayer) return this.parent()
+            const map = getMap()
+            if (!map) return this.parent()
+        },
+    })
+
+    sc.ItemDropEntity.inject({
+        onKill() {
+            const map = getMap(true)
+            if (!map) return this.parent()
+            assert(!ig.game.playerEntity)
+            assert(this.target instanceof dummy.DummyPlayer)
+            inputBackup.apply(this.target.inputManager)
+            this.parent()
+            inputBackup.restore()
         },
     })
 })

@@ -26,6 +26,7 @@ declare global {
             crosshairController: dummy.PlayerCrossHairController
             cameraHandle: any
             data: dummy.DummyPlayer.Data
+            itemConsumer: dummy.ItemConsumption
         }
         interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
             new (x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): DummyPlayer
@@ -40,7 +41,6 @@ declare global {
 
 global.dummy = window.dummy ??= {} as any
 prestart(() => {
-    /* todo cameahandle crash on eternal winter */
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
             settings.name = settings.data.username
@@ -53,7 +53,7 @@ prestart(() => {
             this.data = settings.data
 
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
-            this.itemConsumer = new sc.ItemConsumption()
+            this.itemConsumer = new dummy.ItemConsumption(this)
 
             this.model = new dummy.PlayerModel(this)
             sc.Model.addObserver(this.model, this)
@@ -187,6 +187,36 @@ prestart(() => {
         setElementMode(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
         // prettier-ignore
         onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+    })
+}, 2)
+
+declare global {
+    namespace dummy {
+        interface ItemConsumption extends sc.ItemConsumption {
+            player: dummy.DummyPlayer
+        }
+        interface ItemConsumptionConstructor extends ImpactClass<ItemConsumption> {
+            new (player: dummy.DummyPlayer): ItemConsumption
+        }
+        var ItemConsumption: ItemConsumptionConstructor
+    }
+}
+prestart(() => {
+    function replace(this: dummy.ItemConsumption, ...args: unknown[]) {
+        inputBackup.apply(this.player.inputManager)
+        // @ts-expect-error
+        const ret = this.parent(...args)
+        inputBackup.restore()
+        return ret
+    }
+    dummy.ItemConsumption = sc.ItemConsumption.extend({
+        init(player) {
+            this.parent()
+            this.player = player
+        },
+        runItemUseAction: replace,
+        runHealChange: replace,
+        runStatChange: replace,
     })
 }, 2)
 

@@ -47,6 +47,8 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.baseInst = instanceinator.instances[0]
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.s.displayServerInstance)
         this.serverInst.apply()
+        this.safeguardServerInstance()
+
         this.serverDeterminism = new determine.Instance('welcome to hell')
         determine.append(this.serverDeterminism)
         determine.apply(this.serverDeterminism)
@@ -68,12 +70,10 @@ export class LocalServer implements Server<LocalServerSettings> {
         })
         await this.createAndJoinLocalSharedClient({
             username: `luke_1`,
-            forceInputType: ig.INPUT_DEVICES.GAMEPAD,
         })
-        await this.createAndJoinLocalSharedClient({
-            username: `luke_2`,
-            forceInputType: ig.INPUT_DEVICES.GAMEPAD,
-        })
+        // await this.createAndJoinLocalSharedClient({
+        //     username: `luke_2`,
+        // })
     }
 
     update() {
@@ -81,11 +81,12 @@ export class LocalServer implements Server<LocalServerSettings> {
 
         ig.game.update()
 
-        const run = ({ inst, determinism }: { inst: InstanceinatorInstance; determinism: DeterMineInstance }) => {
-            if (!inst) return
-            copyTickInfo(this.serverInst, inst)
-            inst.apply()
-            determine.apply(determinism)
+        const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; preUpdate?(): void }) => {
+            if (!obj.inst) return
+            copyTickInfo(this.serverInst, obj.inst)
+            obj.inst.apply()
+            determine.apply(obj.determinism)
+            if (obj.preUpdate) obj.preUpdate()
             ig.game.update()
         }
 
@@ -157,6 +158,16 @@ export class LocalServer implements Server<LocalServerSettings> {
         const client = this.localSharedClientById[id]
         assert(client)
         client.destroy()
+    }
+
+    private safeguardServerInstance() {
+        Object.defineProperty(this.serverInst.ig.game.entities, 'push', {
+            get() {
+                console.warn('push on server entities!', instanceinator.id)
+                debugger
+                return () => {}
+            },
+        })
     }
 
     async destroy() {

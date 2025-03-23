@@ -117,11 +117,7 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
                     sc.Model.notifyObserver(client.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
                 }
             }
-
-            if (!enemySet) {
-                this.player.dummy.party = sc.COMBATANT_PARTY.ENEMY
-                enemySet = true
-            }
+            this.player.dummy.party = this.inst.id + 2
         })
 
         if (this.s.forceInputType == ig.INPUT_DEVICES.GAMEPAD) forceGamepad(this)
@@ -136,7 +132,6 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
         determine.delete(this.determinism)
     }
 }
-let enemySet = false
 
 function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
@@ -146,7 +141,7 @@ function getInp(): dummy.input.Clone.InputManager | undefined {
     if (multi.server instanceof LocalServer) {
         const client = multi.server.localSharedClientById[instanceinator.id]
         if (client) {
-            return client.player.dummy.inputManager as dummy.input.Clone.InputManager
+            return client.player.inputManager as dummy.input.Clone.InputManager
         }
     }
 }
@@ -200,7 +195,8 @@ prestart(() => {
         },
     })
 
-    sc.Model.notifyObserver = function (model: sc.Model, message: number, data?: unknown) {
+    // @ts-expect-error
+    sc.Model.notifyObserver = function (model: sc.Model & ig.Class, message: number, data?: unknown) {
         // function rev<K extends string | number, V extends string | number>(rec: Record<K, V>): Record<V, K> {
         //     return Object.fromEntries(Object.entries(rec).map(([a, b]) => [b as V, a as K]))
         // }
@@ -234,77 +230,6 @@ prestart(() => {
             this.parent(hook)
         },
     })
-
-    ig.SlowMotion.inject({
-        /* fix slow motion (by disabling it) */
-        add(factor, timer, name) {
-            if (!multi.server) return this.parent(factor, timer, name)
-
-            const handle = new ig.SlowMotionHandle(factor, timer, name)
-            // this.slowMotions.push(b)
-            if (name) {
-                if (this.namedSlowMotions[name]) {
-                    this.namedSlowMotions[name].clear()
-                    this.namedSlowMotions[name].name = null
-                }
-                this.namedSlowMotions[name] = handle
-            }
-            return handle
-        },
-    })
-    // @ts-expect-error
-    ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({
-        start() {
-            if (!multi.server) return this.parent()
-            assert(ig.game.playerEntity == undefined)
-            ig.game.playerEntity = {
-                // @ts-expect-error
-                hasCameraTarget: () => true,
-            }
-            this.parent()
-            ig.game.playerEntity = undefined as any
-        },
-    })
-
-    sc.EnemyType.inject({
-        resolveItemDrops(enemyEntity) {
-            if (!(multi.server instanceof LocalServer)) return this.parent(enemyEntity)
-            const map = multi.server.mapsById[instanceinator.id]
-            assert(map)
-            assert(!ig.game.playerEntity)
-            ig.game.playerEntity = map.players[0].dummy
-            this.parent(enemyEntity)
-            ig.game.playerEntity = undefined as any
-        },
-    })
-
-    dummy.DummyPlayer.inject({
-        kill(_levelChange) {},
-        _onDeathHit(a) {
-            if (!multi.server || !(this instanceof dummy.DummyPlayer)) return this.parent(a)
-
-            if (this.dying == sc.DYING_STATE.ALIVE) {
-                this.dying = sc.DYING_STATE.KILL_HIT
-                // sc.combat.onCombatantDeathHit(a, this)
-                ig.EffectTools.clearEffects(this)
-
-                if (!this.skipRumble) {
-                    const effect = new ig.Rumble.RumbleHandle('RANDOM', 'STRONG', 'FASTER', 0.3, false, true)
-                    ig.rumble.addRumble(effect)
-                }
-                if (!sc.pvp.isCombatantInPvP(this)) {
-                    this.effects.death.spawnOnTarget('pre_die', this, { duration: -1 })
-                    this.coll.type = ig.COLLTYPE.IGNORE
-                }
-
-                this.dying = sc.DYING_STATE.ALIVE
-                this.params.revive()
-
-                ig.EffectTools.clearEffects(this)
-                this.resetStunData()
-            }
-        },
-    })
 })
 
 declare global {
@@ -321,8 +246,11 @@ prestart(() => {
             this.parent()
             const inp = getInp()
             if (!inp) return
-            inp.player.data.currentMenu = sc.menu.currentMenu
-            const subState = (inp.player.data.currentSubState = sc.model.currentSubState)
+            if (inp.player) {
+                inp.player.data.currentMenu = sc.menu.currentMenu
+                inp.player.data.currentSubState = sc.model.currentSubState
+            }
+            const subState = sc.model.currentSubState
 
             if (subState == sc.GAME_MODEL_SUBSTATE.RUNNING) {
                 inp.ignoreKeyboardInput.delete('PAUSED')
