@@ -266,6 +266,18 @@ prestart(() => {
         },
     })
 
+    sc.EnemyType.inject({
+        resolveItemDrops(enemyEntity) {
+            if (!(multi.server instanceof LocalServer)) return this.parent(enemyEntity)
+            const map = multi.server.mapsById[instanceinator.id]
+            assert(map)
+            assert(!ig.game.playerEntity)
+            ig.game.playerEntity = map.players[0].dummy
+            this.parent(enemyEntity)
+            ig.game.playerEntity = undefined as any
+        },
+    })
+
     dummy.DummyPlayer.inject({
         kill(_levelChange) {},
         _onDeathHit(a) {
