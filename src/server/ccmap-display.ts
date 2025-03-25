@@ -2,7 +2,6 @@ import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { LocalServer, waitForScheduledTask } from './local-server'
-import { indent } from './local-server-console'
 import { ServerPlayer } from './server-player'
 
 export class CCMapDisplay {
@@ -76,18 +75,6 @@ export class CCMapDisplay {
         if (enter && this.map.players.length == 1) {
             this.setPlayerCameraHandle(this.map.players[0])
         }
-    }
-
-    toConsoleString(i: number = 0) {
-        let str = indent(i) + 'cameraTarget: '
-        if (this.cameraTarget instanceof ig.Camera.PosTarget) str += 'pos'
-        else if (this.cameraTarget instanceof ig.Camera.EntityTarget) {
-            if (this.cameraTarget.entity instanceof dummy.DummyPlayer)
-                str += `player ${this.cameraTarget.entity.data.username}`
-            else str += `entity ${this.cameraTarget.entity.type}`
-        } else assert(false)
-        str += '\n'
-        return str
     }
 }
 

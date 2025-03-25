@@ -2,7 +2,6 @@ import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { teleportPlayerToProperMarker } from '../teleport-fix'
 import { LocalServer, waitForScheduledTask } from './local-server'
-import { indent } from './local-server-console'
 import * as inputBackup from '../dummy/dummy-input'
 
 export class ServerPlayer {
@@ -84,12 +83,6 @@ export class ServerPlayer {
             await map.leave(this)
         }
         this.destroyed = true
-    }
-
-    toConsoleString(i: number = 0): string {
-        let str = ''
-        str += indent(i) + `player { name: ${this.username}; map: ${this.mapName} }\n`
-        return str
     }
 }
 

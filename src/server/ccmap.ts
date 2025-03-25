@@ -2,7 +2,6 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServer, waitForScheduledTask } from './local-server'
 import { assert } from '../misc/assert'
 import { ServerPlayer } from './server-player'
-import { indent } from './local-server-console'
 import { CCMapDisplay } from './ccmap-display'
 import { setDataFromLevelData } from './ccmap-data-load'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
@@ -193,17 +192,6 @@ export class CCMap {
         assert(instanceinator.id != this.inst.id)
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
-    }
-
-    toConsoleString(i: number = 0): string {
-        let str = ''
-        str += indent(i) + `map ${this.name}: {\n`
-        if (this.display.cameraTarget) str += indent(i + 1) + this.display.toConsoleString()
-        str += indent(i + 1) + `players: [\n`
-        for (const player of this.players) str += player.toConsoleString(i + 2)
-        str += indent(i + 1) + `]\n`
-        str += indent(i) + `}\n`
-        return str
     }
 }
 

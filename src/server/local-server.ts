@@ -5,7 +5,6 @@ import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { LocalServerConsoleDialog } from './local-server-console'
 import { LocalSharedClient, LocalSharedClientSettings } from '../client/local-shared-client/local-shared-client'
 import { LocalDummyClient } from '../client/local-dummy-client'
 import { removeAddon } from '../dummy/dummy-box-addon'
@@ -34,9 +33,6 @@ export class LocalServer implements Server<LocalServerSettings> {
     serverInst!: InstanceinatorInstance
     serverDeterminism!: DeterMineInstance
 
-    // TODO: delete console dialog
-    consoleDialog!: LocalServerConsoleDialog
-
     clients: Record<string, Client> = {}
 
     constructor(public s: LocalServerSettings) {}
@@ -58,9 +54,6 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.serverInst.ig.gamepad = new dummy.input.Clone.SingleGamepadManager()
 
         startGameLoop()
-
-        this.consoleDialog = new LocalServerConsoleDialog()
-        this.consoleDialog.openServerConsole()
 
         dummy.input.Clone.gamepadAssigner.initialize()
 
@@ -175,7 +168,6 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.baseInst.apply()
 
         determine.apply(determine.instances[0])
-        await this.consoleDialog.destroy()
         for (const client of Object.values(this.localSharedClientById)) {
             await client.destroy()
         }
