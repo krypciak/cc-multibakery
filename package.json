@@ -12,22 +12,21 @@
         "server-cont": "export NODE_NO_WARNINGS=1; sh -c 'while true; do clear; node --enable-source-maps server.js; done'"
     },
     "devDependencies": {
-        "@types/jquery": "^3.5.30",
+        "@types/jquery": "^3.5.32",
         "@types/node": "^11.15.54",
-        "@typescript-eslint/eslint-plugin": "^7.16.0",
-        "@typescript-eslint/parser": "^7.16.0",
+        "@typescript-eslint/eslint-plugin": "^7.18.0",
+        "@typescript-eslint/parser": "^7.18.0",
         "cc-determine": "github:krypciak/cc-determine",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "ccmodmanager": "github:CCDirectLink/CCModManager",
         "crossnode": "github:krypciak/crossnode",
         "esbuild": "^0.20.2",
-        "eslint": "^8.57.0",
+        "eslint": "^8.57.1",
         "eslint-config-prettier": "^9.1.0",
-        "node": "^22.0.0",
+        "node": "^22.14.0",
         "prettier": "3.2.5",
         "setimmediate": "^1.0.5",
-        "socket.io": "^4.7.5",
-        "typescript": "^5.5.3",
+        "typescript": "^5.8.2",
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
     }
 }
