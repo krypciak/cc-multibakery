@@ -1,6 +1,6 @@
-import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
-import { waitForScheduledTask } from '../server/local-server'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../plugin'
+import { waitForScheduledTask } from '../../server/local-server'
 import { LocalSharedClient } from './local-shared-client'
 
 export function forceGamepad(client: LocalSharedClient) {

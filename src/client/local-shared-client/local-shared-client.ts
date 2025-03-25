@@ -1,20 +1,26 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
-import { ServerPlayer } from '../server/server-player'
-import { assert } from '../misc/assert'
-import { LocalServer, waitForScheduledTask } from '../server/local-server'
-import { LocalDummyClientSettings } from './local-dummy-client'
-import { CCMap } from '../server/ccmap'
-import { prestart } from '../plugin'
-import { Client, ClientSettings } from './client'
-import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
+import { ServerPlayer } from '../../server/server-player'
+import { assert } from '../../misc/assert'
+import { LocalServer, waitForScheduledTask } from '../../server/local-server'
+import { LocalDummyClientSettings } from '../local-dummy-client'
+import { CCMap } from '../../server/ccmap'
+import { prestart } from '../../plugin'
+import { Client, ClientSettings } from '../client'
+import { addAddon, removeAddon } from '../../dummy/dummy-box-addon'
 import { forceGamepad } from './force-gamepad'
+import { initMapInteractEntries } from './map-interact'
 
 export interface LocalSharedClientSettings extends ClientSettings {
     baseInst: InstanceinatorInstance
     forceInputType?: ig.INPUT_DEVICES
 }
 
+declare global {
+    namespace ig {
+        var localSharedClient: LocalSharedClient | undefined
+    }
+}
 export class LocalSharedClient implements Client<LocalDummyClientSettings> {
     player!: ServerPlayer
     inst!: InstanceinatorInstance
@@ -29,6 +35,7 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
             'localclient-' + this.s.username,
             multi.server.s.displayLocalClientMaps
         )
+        this.inst.ig.localSharedClient = this
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
 
@@ -108,6 +115,8 @@ export class LocalSharedClient implements Client<LocalDummyClientSettings> {
             const loader = new ig.Loader()
             loader.load()
             ig.game.currentLoadingResource = loader
+
+            initMapInteractEntries(map.inst)
         })
         await waitForScheduledTask(map.inst, () => {
             assert(multi.server instanceof LocalServer)
@@ -137,14 +146,6 @@ function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
 }
 
-function getInp(): dummy.input.Clone.InputManager | undefined {
-    if (multi.server instanceof LocalServer) {
-        const client = multi.server.localSharedClientById[instanceinator.id]
-        if (client) {
-            return client.player.inputManager as dummy.input.Clone.InputManager
-        }
-    }
-}
 function getClient(username: string): LocalSharedClient | undefined {
     if (!(multi.server instanceof LocalServer)) return
     const client = multi.server.clients[username]
@@ -156,30 +157,30 @@ function getClient(username: string): LocalSharedClient | undefined {
 prestart(() => {
     ig.Physics.inject({
         update() {
-            if (getInp()) return
+            if (ig.localSharedClient) return
             this.parent()
         },
     })
     ig.Game.inject({
         deferredMapEntityUpdate() {
-            if (getInp()) return
+            if (ig.localSharedClient) return
             this.parent()
         },
         varsChanged() {
-            if (getInp()) return
+            if (ig.localSharedClient) return
             this.parent()
         },
     })
     ig.EventManager.inject({
         update() {
-            if (getInp()) return
+            if (ig.localSharedClient) return
             this.parent()
         },
     })
     ig.Camera.inject({
         onPostUpdate() {
             this.parent()
-            const inp = getInp()
+            const inp = ig.localSharedClient?.player?.inputManager
             if (inp) Vec2.assign(inp.screen, ig.game.screen)
         },
     })
@@ -244,12 +245,13 @@ prestart(() => {
     ig.Game.inject({
         deferredUpdate() {
             this.parent()
-            const inp = getInp()
+            const inp = ig.localSharedClient?.player?.inputManager
             if (!inp) return
             if (inp.player) {
                 inp.player.data.currentMenu = sc.menu.currentMenu
                 inp.player.data.currentSubState = sc.model.currentSubState
             }
+            if (!(inp instanceof dummy.input.Clone.InputManager)) return
             const subState = sc.model.currentSubState
 
             if (subState == sc.GAME_MODEL_SUBSTATE.RUNNING) {

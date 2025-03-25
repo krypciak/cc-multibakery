@@ -6,7 +6,7 @@ import { CCMap } from './ccmap'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { LocalServerConsoleDialog } from './local-server-console'
-import { LocalSharedClient, LocalSharedClientSettings } from '../client/local-shared-client'
+import { LocalSharedClient, LocalSharedClientSettings } from '../client/local-shared-client/local-shared-client'
 import { LocalDummyClient } from '../client/local-dummy-client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
@@ -34,6 +34,7 @@ export class LocalServer implements Server<LocalServerSettings> {
     serverInst!: InstanceinatorInstance
     serverDeterminism!: DeterMineInstance
 
+    // TODO: delete console dialog
     consoleDialog!: LocalServerConsoleDialog
 
     clients: Record<string, Client> = {}

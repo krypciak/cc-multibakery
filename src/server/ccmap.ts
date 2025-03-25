@@ -10,6 +10,12 @@ import { prestart } from '../plugin'
 import { forceConditionalLightOnInst } from '../client/conditional-light'
 import * as inputBackup from '../dummy/dummy-input'
 
+declare global {
+    namespace ig {
+        var ccmap: CCMap | undefined
+    }
+}
+
 export class CCMap {
     rawLevelData!: sc.MapModel.Map
 
@@ -33,6 +39,7 @@ export class CCMap {
 
         const levelDataPromise = this.readLevelData()
         this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
+        this.inst.ig.ccmap = this
         determine.append(this.determinism)
         forceConditionalLightOnInst(this.inst.id)
 
@@ -210,10 +217,9 @@ prestart(() => {
     sc.Combat.inject({
         getPartyHpFactor(party) {
             if (!(multi.server instanceof LocalServer)) return this.parent(party)
-            const map = multi.server.mapsById[instanceinator.id]
-            assert(map)
 
-            ig.game.playerEntity = map.players[0].dummy
+            assert(ig.ccmap)
+            ig.game.playerEntity = ig.ccmap.players[0].dummy
             const ret = this.parent(party)
             ig.game.playerEntity = undefined as any
             return ret
@@ -252,19 +258,11 @@ prestart(() => {
         },
     })
 
-    function getMap(assertMap = false) {
-        if (!(multi.server instanceof LocalServer)) return
-        const map = multi.server.mapsById[instanceinator.id]
-        if (assertMap) assert(map)
-        return map
-    }
-
     sc.EnemyType.inject({
         resolveItemDrops(enemyEntity) {
-            const map = getMap(true)
-            if (!map) return this.parent(enemyEntity)
+            if (!ig.ccmap) return this.parent(enemyEntity)
             assert(!ig.game.playerEntity)
-            ig.game.playerEntity = map.players[0].dummy
+            ig.game.playerEntity = ig.ccmap.players[0].dummy
             this.parent(enemyEntity)
             ig.game.playerEntity = undefined as any
         },
@@ -298,23 +296,48 @@ prestart(() => {
         },
     })
 
-    sc.MapInteract.inject({
-        onPreUpdate() {
-            if (this instanceof sc.MapInteractServerPlayer) return this.parent()
-            const map = getMap()
-            if (!map) return this.parent()
-        },
-    })
-
     sc.ItemDropEntity.inject({
         onKill() {
-            const map = getMap(true)
-            if (!map) return this.parent()
+            if (!ig.ccmap) return this.parent()
             assert(!ig.game.playerEntity)
             assert(this.target instanceof dummy.DummyPlayer)
             inputBackup.apply(this.target.inputManager)
             this.parent()
             inputBackup.restore()
+        },
+    })
+})
+
+declare global {
+    namespace sc {
+        interface MapInteractEntry {
+            thisTickState?: sc.INTERACT_ENTRY_STATE
+        }
+    }
+}
+prestart(() => {
+    sc.MapInteractEntry.inject({
+        setState(state) {
+            if (!ig.ccmap) return this.parent(state)
+            if (
+                state == sc.INTERACT_ENTRY_STATE.FOCUS ||
+                (this.thisTickState != sc.INTERACT_ENTRY_STATE.FOCUS &&
+                    state != sc.INTERACT_ENTRY_STATE.HIDDEN &&
+                    state != sc.INTERACT_ENTRY_STATE.AWAY)
+            ) {
+                this.thisTickState = state
+            }
+            this.parent(state)
+        },
+    })
+    sc.MapInteract.inject({
+        onPreUpdate() {
+            if (this instanceof sc.MapInteractServerPlayer || !ig.ccmap) return this.parent()
+
+            for (const entry of this.entries) {
+                if (entry.thisTickState) entry.setState(entry.thisTickState)
+                entry.thisTickState = undefined
+            }
         },
     })
 })
