@@ -24,5 +24,10 @@
         "setimmediate": "^1.0.5",
         "typescript": "^5.8.2",
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
+    },
+    "pnpm": {
+        "overrides": {
+            "ultimate-crosscode-typedefs": "link:../../../../../../../../.local/share/pnpm/global/5/node_modules/ultimate-crosscode-typedefs"
+        }
     }
 }

@@ -22,15 +22,39 @@ function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui
     Vec2.assign(gui.hook.pos, subGui.hook.pos)
     return gui
 }
+
+function cloneTradeIconGui(subGui: sc.TradeIconGui): sc.TradeIconGui {
+    const traderObj = Object.entries(sc.trade.traders).find(([_, obj]) => obj == subGui.tradeInfo)
+    assert(traderObj)
+    const trader: string = traderObj[0]
+    const gui = new sc.TradeIconGui(trader)
+    return gui
+}
+
+function cloneXenoDialogIcon(e: sc.XenoDialogIcon): sc.XenoDialogIcon {
+    const gui = new sc.XenoDialogIcon()
+    gui.setText(e.textGui.text, e.xenoDialog)
+    gui.show()
+    return gui
+}
+
 function cloneMapInteractEntry(e: sc.MapInteractEntry): sc.MapInteractEntry {
     // TODO elevator ruining my day, it makes double icons
     const ne = new sc.MapInteractEntry(e.entity, e.handler, e.icon, e.zCondition, e.interrupting)
     ne.gui.offset = Vec2.create(e.gui.offset)
 
     const subGui = e.gui.subGui
+    let newSubSui: typeof subGui | undefined
     if (subGui instanceof sc.IconHoverTextGui) {
-        ne.setSubGui(cloneIconHoverTextGui(subGui))
-    } else if (subGui) assert(false, 'subGui type not supported ' + window.findClassName ? findClassName(subGui) : '')
+        newSubSui = cloneIconHoverTextGui(subGui)
+    } else if (subGui instanceof sc.TradeIconGui) {
+        newSubSui = cloneTradeIconGui(subGui)
+    } else if (subGui instanceof sc.XenoDialogIcon) {
+        newSubSui = cloneXenoDialogIcon(subGui)
+    } else if (subGui)
+        assert(false, 'subGui type not supported ' + (window['findClassName'] ? findClassName(subGui) : ''))
+
+    if (newSubSui) ne.setSubGui(newSubSui)
     return ne
 }
 
@@ -74,6 +98,41 @@ prestart(() => {
                     sc.mapInteract.removeEntry(clientEntry)
                 })
             }
+        },
+    })
+})
+
+prestart(() => {
+    ig.ENTITY.XenoDialog.inject({
+        _isInRange(range, noIgnoreZ) {
+            if (!multi.server) return this.parent(range, noIgnoreZ)
+            assert(ig.ccmap)
+            return ig.ccmap.players.some(player => {
+                assert(!ig.game.playerEntity)
+                ig.game.playerEntity = player.dummy
+                const ret = this.parent(range, noIgnoreZ)
+                ig.game.playerEntity = undefined as any
+                return ret
+            })
+        },
+    })
+    sc.XenoDialogIcon.inject({
+        onSkipInteract(msg) {
+            if (!multi.server || ig.ccmap || !(multi.server instanceof LocalServer)) return this.parent(msg)
+            assert(ig.localSharedClient)
+            const map = multi.server.maps[ig.localSharedClient.player.mapName]
+            assert(map)
+
+            if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {
+                if (this.textGui.textBlock.isFinished()) {
+                    waitForScheduledTask(map.inst, () => {
+                        this.xenoDialog._showNextMessage()
+                    })
+                } else {
+                    this.textGui.finish()
+                }
+            }
+            this.updateSkipIcon()
         },
     })
 })

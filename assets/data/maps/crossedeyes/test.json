@@ -1029,6 +1029,86 @@
             "settings": { "size": { "x": 16, "y": 16 }, "mapId": 114, "panelType": "NORTH", "jumpDistance": "48" }
         },
         {
+            "type": "XenoDialog",
+            "x": 617,
+            "y": 156,
+            "level": 2,
+            "settings": {
+                "name": "XenoQuest",
+                "dialog": [
+                    {
+                        "entity": { "global": true, "name": "henry" },
+                        "text": "F-F-Finally everything ready..."
+                    },
+                    {
+                        "entity": { "global": true, "name": "henry" },
+                        "text": "Now I only n-n-need someone to cross-the-codes...",
+                        "event": [
+                            {
+                                "entity": { "player": true },
+                                "action": [
+                                    {
+                                        "target": { "x": 616, "y": 234, "lvl": "2" },
+                                        "maxTime": 0,
+                                        "distance": 0,
+                                        "precise": false,
+                                        "planOnly": false,
+                                        "type": "NAVIGATE_TO_POINT"
+                                    },
+                                    { "face": "NORTH", "rotate": true, "rotateSpeed": 3, "type": "SET_FACE" }
+                                ],
+                                "repeating": false,
+                                "wait": false,
+                                "keepState": false,
+                                "type": "DO_ACTION"
+                            },
+                            {
+                                "side": "LEFT",
+                                "order": 0,
+                                "clearSide": false,
+                                "type": "ADD_MSG_PERSON",
+                                "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
+                            },
+                            {
+                                "side": "RIGHT",
+                                "order": 0,
+                                "clearSide": false,
+                                "type": "ADD_MSG_PERSON",
+                                "person": { "person": "main.lea", "expression": "DEFAULT" }
+                            },
+                            {
+                                "message": { "en_US": "Oh! W-Why hello S-S-Seeker!" },
+                                "autoContinue": false,
+                                "type": "SHOW_MSG",
+                                "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
+                            },
+                            {
+                                "message": { "en_US": "Hi!" },
+                                "autoContinue": false,
+                                "type": "SHOW_MSG",
+                                "person": { "person": "main.lea", "expression": "EXCITED" }
+                            },
+                            {
+                                "message": { "en_US": "After all this years, I have finally found a way to cross-the-codes!" },
+                                "autoContinue": false,
+                                "type": "SHOW_MSG",
+                                "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
+                            },
+                            {
+                                "message": { "en_US": "...?" },
+                                "autoContinue": false,
+                                "type": "SHOW_MSG",
+                                "person": { "person": "main.lea", "expression": "SURPRISED_TOWARD" }
+                            },
+                            { "side": "ALL", "type": "CLEAR_MSG" }
+                        ]
+                    }
+                ],
+                "mapId": 122,
+                "spawnCondition": "true"
+            }
+        },
+        {
             "type": "Destructible",
             "x": 510,
             "y": 476,
@@ -1041,13 +1121,6 @@
             "y": 517,
             "level": 2,
             "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 }
-        },
-        {
-            "type": "Destructible",
-            "x": 510,
-            "y": 441,
-            "level": 2,
-            "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 }
         },
         {
             "type": "ScalableProp",
@@ -1130,29 +1203,25 @@
             }
         },
         {
-            "type": "Prop",
-            "x": 256,
-            "y": 330,
+            "type": "NPC",
+            "x": 663,
+            "y": 205,
             "level": 2,
             "settings": {
-                "name": "beltSign",
-                "interact": {
-                    "icon": "INFO",
-                    "hoverText": {
-                        "en_US": "Equip Consciousness",
-                        "de_DE": "",
-                        "fr_FR": "",
-                        "langUid": 0,
-                        "zh_CN": "",
-                        "ja_JP": "",
-                        "ko_KR": "",
-                        "zh_TW": ""
+                "name": "trader-trade_sets",
+                "characterName": "cross-worlds.pentafist-male-dark",
+                "npcStates": [
+                    {
+                        "reactType": "FIXED_POS",
+                        "face": "SOUTH",
+                        "action": [],
+                        "hidden": false,
+                        "condition": "",
+                        "config": "normal",
+                        "event": { "trade": { "trader": "autumnSets" } }
                     }
-                },
-                "mapId": 84,
-                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
-                "propAnim": "unsolved",
-                "spawnCondition": ""
+                ],
+                "mapId": 115
             }
         },
         {
@@ -1241,192 +1310,94 @@
                                 "type": "SHOW_MSG"
                             }
                         ]
-                    },
-                    {
-                        "reactType": "PUSHABLE",
-                        "face": "NORTH",
-                        "action": [],
-                        "hidden": true,
-                        "condition": "plot.line >= 500",
-                        "config": "normal",
-                        "event": []
-                    },
-                    {
-                        "position": { "x": 2440, "y": 1256, "lvl": "1" },
-                        "reactType": "FIXED_POS",
-                        "face": "SOUTH",
-                        "action": [
-                            {
-                                "followUp": null,
-                                "wait": false,
-                                "viaWalkConfig": false,
-                                "anim": "person2Folded",
-                                "type": "SHOW_ANIMATION"
-                            },
-                            { "time": 1, "type": "WAIT" }
-                        ],
-                        "hidden": false,
-                        "condition": "plot.line >= 40000",
-                        "config": "normal",
-                        "event": [
-                            {
-                                "side": "LEFT",
-                                "order": 0,
-                                "clearSide": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "ADD_MSG_PERSON"
-                            },
-                            {
-                                "side": "RIGHT",
-                                "order": 0,
-                                "clearSide": false,
-                                "person": { "person": "main.lea", "expression": "DEFAULT" },
-                                "type": "ADD_MSG_PERSON"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "Hi!",
-                                    "de_DE": "Hi!",
-                                    "zh_CN": "你好！<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "哦，看看誰來了。\\.你一定就是那位虛擬人物，對吧？<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "やぁ！<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "안녕!<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1022
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "main.lea", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "Ah!\\. Long time no see!",
-                                    "de_DE": "Ah!\\. Lang nicht gesehen!",
-                                    "zh_CN": "啊！\\.好久不见！<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "お！\\.久しぶりだな！<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "아!\\. 오랜만이군!<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1023
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "Are they letting avatars back on the ship now?",
-                                    "de_DE": "Lassen sie die Avatare jetzt wieder auf das Schiff?",
-                                    "zh_CN": "现在他们允许虚拟人物上船了？<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "アバターが船に戻れるように\nなっているのか？<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "이제 이 배에 아바타들이 돌아와도 되는 건가?<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1024
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "[nods]",
-                                    "de_DE": "[nickt]",
-                                    "zh_CN": "[点头]<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "[うなずく]<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "[끄덕]<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1025
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "main.lea", "expression": "NOD" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "That's a bit surprising.\\. You left behind such a mess the first time you visited us.",
-                                    "de_DE": "Das überrascht mich ein bisschen.\\. Du hast nämlich ein ganz schönes Durcheinander hinterlassen, als du uns das erste Mal besucht hast.",
-                                    "zh_CN": "这可真没想到。\\.你第一次来的时候留下的烂摊子可不小呢。<<A<<[CHANGED 2021/03/05]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/03/05]",
-                                    "ja_JP": "ちょっと驚きだな。\\.最初にお前さんが\n来たときあんな面倒を起こしたのに。<<A<<[CHANGED 2021/03/05]",
-                                    "ko_KR": "조금 놀랍군.\\. 처음 왔을 때 그렇게 난장판을 만들어 놨는데.<<A<<[CHANGED 2021/03/05]",
-                                    "langUid": 1026
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "...",
-                                    "de_DE": "...",
-                                    "zh_CN": "...<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "...<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "...<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1027
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "main.lea", "expression": "SCARED" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "Sorry...",
-                                    "de_DE": "Sorry...",
-                                    "zh_CN": "对不起...<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "すいません...<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "미안해...<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1028
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "main.lea", "expression": "EXHAUSTED" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "Well...\\. To be frank, most of it was that flying blue-orange person.",
-                                    "de_DE": "Wobei...\\. Das meiste davon hat eigentlich dieser fliegende Holländer in Blau-Orange fabriziert.",
-                                    "zh_CN": "嗯...\\.老实说主要是那个橙色飞人的锅。<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "まぁ...\\.実際は、ほぼあの青と\nオレンジ色の空飛ぶヤツの仕業だがな。<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "뭐...\\. 사실은 그 날아다니는 파랗고 주황색인 녀석 잘못이 컸지.<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1029
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "Still, I could have sworn our captain strictly banned any running instant matter on deck ever since.",
-                                    "de_DE": "Trotzdem hätte ich schwören können, dass unser Kapitän seitdem nie wieder laufende Instant-Materie an Bord haben wollte.<<A<<[CHANGED 2021/05/22]",
-                                    "zh_CN": "不过之后船长也确实严格禁止了一切瞬时物质上船。<<A<<[CHANGED 2021/05/22]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/05/22]",
-                                    "ja_JP": "船長はこれまでどんな\nインスタントマターも、\nデッキをウロウロすることを\n厳しく取り締まってきた。<<A<<[CHANGED 2021/05/22]",
-                                    "ko_KR": "그때 이후로 우리 선장이 배 위에서 뛰어다니는 즉석 물질이 없도록 엄격히 금지했지.<<A<<[CHANGED 2021/05/07]",
-                                    "langUid": 1030
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "en_US": "But I suppose he changed his mind!",
-                                    "de_DE": "Dann hat er wohl seine Meinung geändert!",
-                                    "zh_CN": "他可能是改主意了吧！<<A<<[CHANGED 2021/01/12]",
-                                    "zh_TW": "嗯，歡迎來到M.S.太陽號！<<A<<[CHANGED 2021/01/12]",
-                                    "ja_JP": "だが船長の気持ちが変わったんだろうよ。<<A<<[CHANGED 2021/01/12]",
-                                    "ko_KR": "지금은 마음이 바뀌었기를 바라지만!<<A<<[CHANGED 2021/01/12]",
-                                    "langUid": 1031
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            }
-                        ]
                     }
                 ],
                 "mapId": 35
+            }
+        },
+        {
+            "type": "NPC",
+            "x": 619,
+            "y": 205,
+            "level": 2,
+            "settings": {
+                "name": "henry",
+                "characterName": "misc.henry-researcher",
+                "mapId": 123,
+                "npcStates": [
+                    {
+                        "reactType": "FIXED_FACE",
+                        "face": "SOUTH",
+                        "action": [],
+                        "hidden": false,
+                        "condition": "true",
+                        "config": "sit"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Destructible",
+            "x": 510,
+            "y": 441,
+            "level": 2,
+            "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 }
+        },
+        {
+            "type": "Prop",
+            "x": 256,
+            "y": 330,
+            "level": 2,
+            "settings": {
+                "name": "beltSign",
+                "interact": {
+                    "icon": "INFO",
+                    "hoverText": {
+                        "en_US": "Equip Consciousness",
+                        "de_DE": "",
+                        "fr_FR": "",
+                        "langUid": 0,
+                        "zh_CN": "",
+                        "ja_JP": "",
+                        "ko_KR": "",
+                        "zh_TW": ""
+                    }
+                },
+                "mapId": 84,
+                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
+                "propAnim": "unsolved",
+                "spawnCondition": ""
+            }
+        },
+        {
+            "type": "Prop",
+            "x": 648,
+            "y": 218,
+            "level": 2,
+            "settings": {
+                "name": "",
+                "propType": { "sheet": "trading-autumn", "name": "boothNoChair" },
+                "propAnim": "trade",
+                "spawnCondition": null,
+                "mapId": 116
+            }
+        },
+        {
+            "type": "Enemy",
+            "x": 1315,
+            "y": 233,
+            "level": 2,
+            "settings": {
+                "size": { "x": 16, "y": 16 },
+                "mapId": 51,
+                "enemyInfo": {
+                    "party": "ENEMY",
+                    "level": 1,
+                    "face": "SOUTH",
+                    "state": "IDLE",
+                    "type": "meerkat-alt",
+                    "group": "cage"
+                }
             }
         },
         {
@@ -1491,24 +1462,6 @@
                 "spawnCondition": null,
                 "enemyType": "target-bot",
                 "mapId": 20
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1315,
-            "y": 233,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 51,
-                "enemyInfo": {
-                    "party": "ENEMY",
-                    "level": 1,
-                    "face": "SOUTH",
-                    "state": "IDLE",
-                    "type": "meerkat-alt",
-                    "group": "cage"
-                }
             }
         },
         {

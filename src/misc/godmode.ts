@@ -43,20 +43,20 @@ prestart(() => {
         model.updateStats()
 
         /* unlock all areas */
-        // for (const area in sc.map.areas) sc.map.updateVisitedArea(area)
-        // /* unlock cargo ship area */
-        // sc.map.areas['cargo-ship'].condition = 'true'
+        for (const area in sc.map.areas) sc.map.updateVisitedArea(area)
+        /* unlock cargo ship area */
+        sc.map.areas['cargo-ship'].condition = 'true'
 
         /* unlock all maps */
-        // for (const areaName in sc.map.areas) {
-        //     const area = new sc.AreaLoadable(areaName)
-        //     area.load(() => {
-        //         for (const floor of area.data.floors) {
-        //             for (const map of floor.maps) {
-        //                 ig.vars.set(`maps.${map.path.toCamel().toPath('', '')}`, {})
-        //             }
-        //         }
-        //     })
-        // }
+        for (const areaName in sc.map.areas) {
+            const area = new sc.AreaLoadable(areaName)
+            area.load(() => {
+                for (const floor of area.data.floors) {
+                    for (const map of floor.maps) {
+                        ig.vars.set(`maps.${map.path.toCamel().toPath('', '')}`, {})
+                    }
+                }
+            })
+        }
     }
-}, 0)
+})
