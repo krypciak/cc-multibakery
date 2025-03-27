@@ -233,9 +233,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     playerInp.moveDir = dir
     playerInp.relativeVel = 1
 
-    await waitForScheduledTask(inst, () => {
-        ig.input.currentDevice = ig.INPUT_DEVICES.GAMEPAD
-    })
+    await waitFrames(1)
 
     input.nextGatherInput = playerInp
     // e.input.setInput(inp)
@@ -275,7 +273,8 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
                     inp.actions['aim'] = true
                 }
                 if (frame >= holdTime) {
-                    inp.actions[dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'] = true
+                    const action = dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'
+                    inp.actions[action] = true
                 }
                 input.input.setInput(inp)
             })
@@ -309,7 +308,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
     }>({
         fps: 60,
         timeoutSeconds: 400,
-        skipFrameWait: false,
+        skipFrameWait: true,
         flushPromises: true,
 
         modId: Multibakery.mod.id,
@@ -361,7 +360,6 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                     this.finish(false, `sum is equal ${this.sum}, expected ${expected}`)
                 }
             } else if (this.moveDone) {
-                console.log(this.moveI, '/', moves.length)
                 do {
                     this.moveI++
                 } while (this.moveI < moves.length && moves[this.moveI].trim().length == 0)
@@ -375,8 +373,8 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                             y: b.coll.pos.y / 32 - 3,
                         }))
                         for (const { x, y } of positions) {
-                            assert(x % 1 == 0)
-                            assert(y % 1 == 0)
+                            assert(x % 1 == 0, 'misalligned box!')
+                            assert(y % 1 == 0, 'misalligned box!')
                             this.sum += y * 100 + x
                         }
                     })

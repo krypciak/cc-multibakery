@@ -103,6 +103,12 @@ prestart(() => {
                 })
             }
         },
+        onPreUpdate() {
+            if (!multi.server || ig.ccmap || !ig.client || !ig.client.player.dummy) return this.parent()
+            inputBackup.apply(ig.client.player.dummy.inputManager)
+            this.parent()
+            inputBackup.restore()
+        },
     })
 })
 
