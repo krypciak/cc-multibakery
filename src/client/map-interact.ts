@@ -70,7 +70,7 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
 }
 
 prestart(() => {
-    function getLocalSharedClients(): Client[] {
+    function getClients(): Client[] {
         if (!(multi.server instanceof LocalServer) || !ig.ccmap) return []
         return ig.ccmap.players
             .map(player => player.username)
@@ -81,7 +81,7 @@ prestart(() => {
         addEntry(entry) {
             this.parent(entry)
 
-            for (const client of getLocalSharedClients()) {
+            for (const client of getClients()) {
                 waitForScheduledTask(client.inst, () => {
                     const newEntry = cloneMapInteractEntry(entry)
                     if (newEntry) sc.mapInteract.addEntry(newEntry)
@@ -89,9 +89,11 @@ prestart(() => {
             }
         },
         removeEntry(entry) {
+            if (this.entries.indexOf(entry) == -1) return
             this.parent(entry)
 
-            for (const client of getLocalSharedClients()) {
+            for (const client of getClients()) {
+                assert(ig.ccmap)
                 waitForScheduledTask(client.inst, () => {
                     const clientEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
                     assert(clientEntry)
@@ -115,13 +117,20 @@ prestart(() => {
                 return ret
             })
         },
-        // onEventEnd() {
-        //     if (this._instanceId == instanceinator.id) return this.parent()
-        //
-        //     waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
-        //         this.onEventEnd()
-        //     })
-        // },
+        onEventStart() {
+            if (this._instanceId == instanceinator.id) return this.parent()
+
+            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+                this.onEventEnd()
+            })
+        },
+        onEventEnd() {
+            if (this._instanceId == instanceinator.id) return this.parent()
+
+            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+                this.onEventEnd()
+            })
+        },
     })
     sc.XenoDialogIcon.inject({
         onSkipInteract(msg) {
@@ -140,6 +149,14 @@ prestart(() => {
                 }
             }
             this.updateSkipIcon()
+        },
+    })
+    ig.ENTITY.NPC.inject({
+        updateNpcState(...args) {
+            if (instanceinator.id == this._instanceId) return this.parent(...args)
+            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+                this.updateNpcState(...args)
+            })
         },
     })
 })

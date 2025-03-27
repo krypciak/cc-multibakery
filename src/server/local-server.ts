@@ -25,7 +25,7 @@ export type ServerPlayerClient = Client
 export class LocalServer implements Server<LocalServerSettings> {
     maps: Record<string, CCMap> = {}
     mapsById: Record<number, CCMap> = {}
-    localSharedClientById: Record<number, Client> = {}
+    clientsById: Record<number, Client> = {}
 
     baseInst!: InstanceinatorInstance
     serverInst!: InstanceinatorInstance
@@ -57,13 +57,13 @@ export class LocalServer implements Server<LocalServerSettings> {
 
         if (window.crossnode?.options.test) return
 
-        await this.createAndJoinLocalSharedClient({
+        await this.createAndJoinClient({
             username: `lea_1`,
         })
-        // await this.createAndJoinLocalSharedClient({
-        //     username: `luke_1`,
-        // })
-        // await this.createAndJoinLocalSharedClient({
+        await this.createAndJoinClient({
+            username: `luke_1`,
+        })
+        // await this.createAndJoinClient({
         //     username: `luke_2`,
         // })
     }
@@ -134,20 +134,20 @@ export class LocalServer implements Server<LocalServerSettings> {
         await client.player.teleport(client.player.mapName, client.player.marker)
     }
 
-    async createAndJoinLocalSharedClient(settings: Omit<ClientSettings, 'baseInst'>) {
+    async createAndJoinClient(settings: Omit<ClientSettings, 'baseInst'>) {
         const s = Object.assign(settings, {
             baseInst: this.baseInst,
         })
         const client = new Client(s)
         await client.init()
-        this.localSharedClientById[client.inst.id] = client
+        this.clientsById[client.inst.id] = client
         await this.joinClient(client)
         await client.teleport()
     }
 
     leaveClient(id: number): void {
         assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
-        const client = this.localSharedClientById[id]
+        const client = this.clientsById[id]
         assert(client)
         client.destroy()
     }
@@ -166,7 +166,7 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.baseInst.apply()
 
         determine.apply(determine.instances[0])
-        for (const client of Object.values(this.localSharedClientById)) {
+        for (const client of Object.values(this.clientsById)) {
             await client.destroy()
         }
         for (const map of Object.values(this.maps)) {
@@ -189,6 +189,12 @@ prestart(() => {
             for (const addon of this.addons.postDraw) addon.onPostDraw()
 
             multi.server.serverInst.drawLabel()
+        },
+    })
+    sc.ButtonGui.inject({
+        focusGained() {
+            this.parent()
+            console.log(instanceinator.id, this._instanceId)
         },
     })
 })

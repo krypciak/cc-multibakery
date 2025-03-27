@@ -19,6 +19,8 @@ declare global {
             }
             interface Data {
                 username: string
+                isControlBlocked?: boolean
+                inCutscene?: boolean
             }
         }
         interface DummyPlayer extends ig.ENTITY.Player {
@@ -109,6 +111,9 @@ prestart(() => {
             if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
             this.parent()
             if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
+        },
+        isControlBlocked() {
+            return this.data.isControlBlocked || this.data.inCutscene || this.parent()
         },
     })
     ig.registerEntityPath(dummy.DummyPlayer, 'dummy.DummyPlayer')

@@ -151,7 +151,6 @@ function getClient(username: string): Client | undefined {
     if (!(multi.server instanceof LocalServer)) return
     const client = multi.server.clients[username]
     assert(client)
-    if (!(client instanceof Client)) return
     return client
 }
 
@@ -242,19 +241,23 @@ prestart(() => {
             this.parent()
             const inp = ig.client?.player?.inputManager
             if (!inp) return
+            const menu = sc.menu.currentMenu
+            const subState = sc.model.currentSubState
             if (inp.player) {
-                inp.player.data.currentMenu = sc.menu.currentMenu
-                inp.player.data.currentSubState = sc.model.currentSubState
+                inp.player.data.currentMenu = menu
+                inp.player.data.currentSubState = subState
+                inp.player.data.isControlBlocked = subState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU
+                inp.player.data.inCutscene = ig.client!.inst.ig.game.isControlBlocked()
             }
             if (!(inp instanceof dummy.input.Clone.InputManager)) return
-            const subState = sc.model.currentSubState
 
-            if (subState == sc.GAME_MODEL_SUBSTATE.RUNNING) {
-                inp.ignoreKeyboardInput.delete('PAUSED')
-                inp.ignoreGamepadInput.delete('PAUSED')
-            } else {
+            const inMenu = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
+            if (inMenu) {
                 inp.ignoreKeyboardInput.add('PAUSED')
                 inp.ignoreGamepadInput.add('PAUSED')
+            } else {
+                inp.ignoreKeyboardInput.delete('PAUSED')
+                inp.ignoreGamepadInput.delete('PAUSED')
             }
         },
     })

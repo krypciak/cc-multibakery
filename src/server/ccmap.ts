@@ -172,21 +172,6 @@ export class CCMap {
         for (const player of this.players) player.update()
     }
 
-    // public startUnloadTimer() {
-    //     return
-    //     // if (this.alwaysLoaded || this.players.length != 0) return
-    //     //
-    //     // const waitTime = multi.server.s.unloadInactiveMapsMs
-    //     // if (waitTime === undefined || waitTime == -1) return
-    //     //
-    //     // this.unloadTimeoutId = setTimeout(() => {
-    //     //     multi.server.unloadMap(this)
-    //     // }, waitTime)
-    // }
-    // public stopUnloadTimer() {
-    //     if (this.unloadTimeoutId) clearTimeout(this.unloadTimeoutId)
-    // }
-
     async destroy() {
         for (const player of this.players) await player.destroy()
         assert(instanceinator.id != this.inst.id)
@@ -335,35 +320,6 @@ prestart(() => {
         onInteraction() {
             if (!ig.ccmap) return this.parent()
             return
-
-            // if (this.xenoDialog?.getCallbackEvent) {
-            //     const event = this.xenoDialog.getCallbackEvent()
-            //     waitForScheduledTask(instanceinator.instances[window.das ?? 2], () => {
-            //         console.log('calling event')
-            //         this.eventCall = ig.game.events.callEvent(
-            //             event,
-            //             ig.EventRunType.BLOCKING,
-            //             this.onEventStart.bind(this),
-            //             this.onEventEnd.bind(this),
-            //             null,
-            //             this,
-            //             { character: this.characterName }
-            //         )
-            //     })
-            //     return
-            // }
-
-            // const backup = ig.game.events
-            // ig.game.events = { callEvent() {} } as any
-            // const ret = this.parent()
-            // ig.game.events = backup
-            // return ret
         },
-        // updateNpcState(...args) {
-        //     if (instanceinator.id == this._instanceId) return this.parent(...args)
-        //     waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
-        //         this.updateNpcState(...args)
-        //     })
-        // },
     })
 })
