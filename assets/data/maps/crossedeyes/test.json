@@ -1036,10 +1036,7 @@
             "settings": {
                 "name": "XenoQuest",
                 "dialog": [
-                    {
-                        "entity": { "global": true, "name": "henry" },
-                        "text": "F-F-Finally everything ready..."
-                    },
+                    { "entity": { "global": true, "name": "henry" }, "text": "F-F-Finally everything ready..." },
                     {
                         "entity": { "global": true, "name": "henry" },
                         "text": "Now I only n-n-need someone to cross-the-codes...",
@@ -1089,7 +1086,9 @@
                                 "person": { "person": "main.lea", "expression": "EXCITED" }
                             },
                             {
-                                "message": { "en_US": "After all this years, I have finally found a way to cross-the-codes!" },
+                                "message": {
+                                    "en_US": "After all this years, I have finally found a way to cross-the-codes!"
+                                },
                                 "autoContinue": false,
                                 "type": "SHOW_MSG",
                                 "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
@@ -1121,6 +1120,13 @@
             "y": 517,
             "level": 2,
             "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 }
+        },
+        {
+            "type": "Destructible",
+            "x": 510,
+            "y": 441,
+            "level": 2,
+            "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 }
         },
         {
             "type": "ScalableProp",
@@ -1226,6 +1232,66 @@
         },
         {
             "type": "NPC",
+            "x": 619,
+            "y": 205,
+            "level": 2,
+            "settings": {
+                "name": "henry",
+                "characterName": "misc.henry-researcher",
+                "mapId": 123,
+                "npcStates": [
+                    {
+                        "reactType": "FIXED_FACE",
+                        "face": "SOUTH",
+                        "action": [],
+                        "hidden": false,
+                        "condition": "true",
+                        "config": "sit"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Prop",
+            "x": 256,
+            "y": 330,
+            "level": 2,
+            "settings": {
+                "name": "beltSign",
+                "interact": {
+                    "icon": "INFO",
+                    "hoverText": {
+                        "en_US": "Equip Consciousness",
+                        "de_DE": "",
+                        "fr_FR": "",
+                        "langUid": 0,
+                        "zh_CN": "",
+                        "ja_JP": "",
+                        "ko_KR": "",
+                        "zh_TW": ""
+                    }
+                },
+                "mapId": 84,
+                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
+                "propAnim": "unsolved",
+                "spawnCondition": ""
+            }
+        },
+        {
+            "type": "Prop",
+            "x": 648,
+            "y": 218,
+            "level": 2,
+            "settings": {
+                "name": "",
+                "propType": { "sheet": "trading-autumn", "name": "boothNoChair" },
+                "propAnim": "trade",
+                "spawnCondition": null,
+                "mapId": 116
+            }
+        },
+        {
+            "type": "NPC",
             "x": 707,
             "y": 207,
             "level": 2,
@@ -1313,73 +1379,6 @@
                     }
                 ],
                 "mapId": 35
-            }
-        },
-        {
-            "type": "NPC",
-            "x": 619,
-            "y": 205,
-            "level": 2,
-            "settings": {
-                "name": "henry",
-                "characterName": "misc.henry-researcher",
-                "mapId": 123,
-                "npcStates": [
-                    {
-                        "reactType": "FIXED_FACE",
-                        "face": "SOUTH",
-                        "action": [],
-                        "hidden": false,
-                        "condition": "true",
-                        "config": "sit"
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Destructible",
-            "x": 510,
-            "y": 441,
-            "level": 2,
-            "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 }
-        },
-        {
-            "type": "Prop",
-            "x": 256,
-            "y": 330,
-            "level": 2,
-            "settings": {
-                "name": "beltSign",
-                "interact": {
-                    "icon": "INFO",
-                    "hoverText": {
-                        "en_US": "Equip Consciousness",
-                        "de_DE": "",
-                        "fr_FR": "",
-                        "langUid": 0,
-                        "zh_CN": "",
-                        "ja_JP": "",
-                        "ko_KR": "",
-                        "zh_TW": ""
-                    }
-                },
-                "mapId": 84,
-                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
-                "propAnim": "unsolved",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Prop",
-            "x": 648,
-            "y": 218,
-            "level": 2,
-            "settings": {
-                "name": "",
-                "propType": { "sheet": "trading-autumn", "name": "boothNoChair" },
-                "propAnim": "trade",
-                "spawnCondition": null,
-                "mapId": 116
             }
         },
         {
@@ -1498,6 +1497,13 @@
                     "group": "cage"
                 }
             }
+        },
+        {
+            "type": "PushPullBlock",
+            "x": 619,
+            "y": 331,
+            "level": 2,
+            "settings": { "name": "", "pushPullType": "Large", "mapId": 124 }
         }
     ],
     "layer": [

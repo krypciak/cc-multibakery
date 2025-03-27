@@ -322,4 +322,10 @@ prestart(() => {
             return
         },
     })
+    sc.PushPullable.inject({
+        onInteraction() {
+            if (!ig.ccmap) return this.parent()
+            return
+        },
+    })
 })

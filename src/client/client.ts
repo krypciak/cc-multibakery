@@ -17,8 +17,8 @@ declare global {
 
 export interface ClientSettings {
     username: string
-    baseInst: InstanceinatorInstance
     forceInputType?: ig.INPUT_DEVICES
+    createInputManager?: (client: Client) => dummy.InputManager
 }
 
 export class Client {
@@ -26,13 +26,13 @@ export class Client {
     inst!: InstanceinatorInstance
     determinism!: DeterMineInstance /* determinism is only used for visuals */
 
-    constructor(public s: ClientSettings) {}
+    constructor(public settings: ClientSettings) {}
 
     async init() {
         assert(multi.server instanceof LocalServer)
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
-            'localclient-' + this.s.username,
+            'localclient-' + this.settings.username,
             multi.server.s.displayLocalClientMaps
         )
         this.inst.ig.client = this
@@ -42,12 +42,17 @@ export class Client {
         removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
         this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
         addAddon(this.inst.ig.gamepad, this.inst.ig.game)
-        const inputManager = new dummy.input.Clone.InputManager(
-            this.inst.ig.input,
-            this.inst.ig.gamepad,
-            this.s.forceInputType
-        )
-        this.player = new ServerPlayer(this.s.username, undefined, inputManager)
+        let inputManager: dummy.InputManager
+        if (this.settings.createInputManager) {
+            inputManager = this.settings.createInputManager(this)
+        } else {
+            inputManager = new dummy.input.Clone.InputManager(
+                this.inst.ig.input,
+                this.inst.ig.gamepad,
+                this.settings.forceInputType
+            )
+        }
+        this.player = new ServerPlayer(this.settings.username, undefined, inputManager)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
@@ -130,7 +135,7 @@ export class Client {
             this.player.dummy.party = this.inst.id + 2
         })
 
-        if (this.s.forceInputType == ig.INPUT_DEVICES.GAMEPAD) forceGamepad(this)
+        if (this.settings.forceInputType == ig.INPUT_DEVICES.GAMEPAD) forceGamepad(this)
     }
 
     async destroy() {

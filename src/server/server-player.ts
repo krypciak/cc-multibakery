@@ -60,7 +60,7 @@ export class ServerPlayer {
         await waitForScheduledTask(map.inst, () => {
             this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
 
-            teleportPlayerToProperMarker(this.dummy, marker, undefined, !marker)
+            teleportPlayerToProperMarker(this.dummy, marker, undefined, true)
             this.ready = true
         })
     }

@@ -60,9 +60,9 @@ export class LocalServer implements Server<LocalServerSettings> {
         await this.createAndJoinClient({
             username: `lea_1`,
         })
-        await this.createAndJoinClient({
-            username: `luke_1`,
-        })
+        // await this.createAndJoinClient({
+        //     username: `luke_1`,
+        // })
         // await this.createAndJoinClient({
         //     username: `luke_2`,
         // })
@@ -131,16 +131,13 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     async joinClient(client: ServerPlayerClient) {
         this.clients[client.player.username] = client
+        this.clientsById[client.inst.id] = client
         await client.player.teleport(client.player.mapName, client.player.marker)
     }
 
-    async createAndJoinClient(settings: Omit<ClientSettings, 'baseInst'>) {
-        const s = Object.assign(settings, {
-            baseInst: this.baseInst,
-        })
-        const client = new Client(s)
+    async createAndJoinClient(settings: ClientSettings) {
+        const client = new Client(settings)
         await client.init()
-        this.clientsById[client.inst.id] = client
         await this.joinClient(client)
         await client.teleport()
     }
@@ -163,9 +160,6 @@ export class LocalServer implements Server<LocalServerSettings> {
     }
 
     async destroy() {
-        this.baseInst.apply()
-
-        determine.apply(determine.instances[0])
         for (const client of Object.values(this.clientsById)) {
             await client.destroy()
         }
@@ -173,9 +167,10 @@ export class LocalServer implements Server<LocalServerSettings> {
             await map.destroy()
         }
         instanceinator.delete(this.serverInst)
-
         determine.delete(this.serverDeterminism)
+
         determine.apply(determine.instances[0])
+        this.baseInst.apply()
     }
 }
 
@@ -189,12 +184,6 @@ prestart(() => {
             for (const addon of this.addons.postDraw) addon.onPostDraw()
 
             multi.server.serverInst.drawLabel()
-        },
-    })
-    sc.ButtonGui.inject({
-        focusGained() {
-            this.parent()
-            console.log(instanceinator.id, this._instanceId)
         },
     })
 })

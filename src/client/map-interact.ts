@@ -4,6 +4,8 @@ import { LocalServer, waitForScheduledTask } from '../server/local-server'
 import { Client } from './client'
 import { prestart } from '../plugin'
 
+import * as inputBackup from '../dummy/dummy-input'
+
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
     let textGui: ig.GuiElementBase
@@ -157,6 +159,49 @@ prestart(() => {
             waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
                 this.updateNpcState(...args)
             })
+        },
+    })
+})
+
+declare global {
+    namespace sc {
+        interface PushPullable {
+            player?: dummy.DummyPlayer
+        }
+    }
+}
+prestart(() => {
+    sc.PushPullable.inject({
+        onInteraction() {
+            if (!ig.client || !(multi.server instanceof LocalServer)) return this.parent()
+            if (this.player) return
+
+            assert(ig.game.playerEntity instanceof dummy.DummyPlayer)
+            this.player = ig.game.playerEntity
+            this.parent()
+        },
+        onUpdate() {
+            if (!multi.server) return this.parent()
+            assert(ig.ccmap)
+            assert(!ig.game.playerEntity)
+            if (this.gripDir) assert(this.player)
+            const apply = !!this.player
+            if (apply) inputBackup.apply(this.player!.inputManager)
+            this.parent()
+            if (apply) inputBackup.restore()
+        },
+        onDeferredUpdate() {
+            if (!multi.server) return this.parent()
+            assert(ig.ccmap)
+            assert(!ig.game.playerEntity)
+            if (this.gripDir) assert(this.player)
+            ig.game.playerEntity = this.player!
+            this.parent()
+            ig.game.playerEntity = undefined as any
+        },
+        cancelGrip() {
+            this.parent()
+            this.player = undefined
         },
     })
 })
