@@ -88,6 +88,7 @@ prestart(() => {
                     const move = Vec2.create()
                     sc.control.moveDir(move, 0, true)
                     Vec2.mulC(move, 8)
+                    if (ig.gamepad.isLeftStickDown()) Vec2.assignC(move, 0, 0)
 
                     if (map.display.cameraTarget instanceof ig.Camera.PosTarget) {
                         if (ig.input.pressed('special') && map.players.length > 0) {
