@@ -1,13 +1,14 @@
-import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
-import { waitForScheduledTask } from '../../server/local-server'
-import { LocalSharedClient } from './local-shared-client'
+import { assert } from '../misc/assert'
+import { prestart } from '../plugin'
+import { waitForScheduledTask } from '../server/local-server'
+import { Client } from './client'
 
-export function forceGamepad(client: LocalSharedClient) {
+export function forceGamepad(client: Client) {
     const input = client.player.inputManager
-    const gamepadManager = client.inst.ig.gamepad
     if (!(input instanceof dummy.input.Clone.InputManager)) return
-    assert(gamepadManager instanceof dummy.input.Clone.SingleGamepadManager)
+
+    const gamepadManager = client.inst.ig.gamepad
+    assert(gamepadManager instanceof multi.class.SingleGamepadManager)
 
     const clearGamepad = () => {
         gamepadManager.clearSingleGamepad()
@@ -18,7 +19,7 @@ export function forceGamepad(client: LocalSharedClient) {
         waitForScheduledTask(client.inst, () => {
             sc.inputForcer.setEntry('WAIT_FOR_GAMEPAD', 'Waiting for gamepad', ' ', ' ')
         })
-        dummy.input.Clone.gamepadAssigner
+        multi.class.gamepadAssigner
             .requestGamepad(client.inst.id, () => {
                 clearGamepad()
             })

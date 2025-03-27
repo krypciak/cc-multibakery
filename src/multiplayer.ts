@@ -10,24 +10,31 @@ import './state/states'
 import './misc/paused-virtual'
 import './misc/pause-screen'
 
-export const DEFAULT_PORT = 33405
-
-export class Multiplayer {
-    headless: boolean = false
-
-    server!: Server
-
-    constructor() {
-        this.headless = !!window.crossnode
+declare global {
+    namespace multi {
+        var headless: boolean
+        var server: Server
+        function setServer(server: Server): void
+        function destroy(): Promise<void>
     }
-
-    setServer(server: Server) {
-        if (this.server) this.destroy()
-        this.server = server
+    namespace NodeJS {
+        interface Global {
+            multi: typeof window.multi
+        }
     }
+}
 
-    destroy() {
-        this.server.destroy()
-        this.server = undefined as any
+export function initMultiplayer() {
+    return {
+        headless: false,
+        server: undefined as any,
+        class: {} as any,
+        setServer(server: Server) {
+            this.server = server
+        },
+        async destroy() {
+            await this.server.destroy()
+            this.server = undefined as any
+        },
     }
 }

@@ -1,8 +1,8 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { assert } from '../../misc/assert'
-import { LocalServer, waitForScheduledTask } from '../../server/local-server'
-import { LocalSharedClient } from './local-shared-client'
-import { prestart } from '../../plugin'
+import { assert } from '../misc/assert'
+import { LocalServer, waitForScheduledTask } from '../server/local-server'
+import { Client } from './client'
+import { prestart } from '../plugin'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -70,12 +70,12 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
 }
 
 prestart(() => {
-    function getLocalSharedClients(): LocalSharedClient[] {
+    function getLocalSharedClients(): Client[] {
         if (!(multi.server instanceof LocalServer) || !ig.ccmap) return []
         return ig.ccmap.players
             .map(player => player.username)
             .map(username => (multi.server as LocalServer).clients[username])
-            .filter(client => client instanceof LocalSharedClient)
+            .filter(client => client instanceof Client)
     }
     sc.MapInteract.inject({
         addEntry(entry) {
@@ -115,12 +115,19 @@ prestart(() => {
                 return ret
             })
         },
+        // onEventEnd() {
+        //     if (this._instanceId == instanceinator.id) return this.parent()
+        //
+        //     waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+        //         this.onEventEnd()
+        //     })
+        // },
     })
     sc.XenoDialogIcon.inject({
         onSkipInteract(msg) {
             if (!multi.server || ig.ccmap || !(multi.server instanceof LocalServer)) return this.parent(msg)
-            assert(ig.localSharedClient)
-            const map = multi.server.maps[ig.localSharedClient.player.mapName]
+            assert(ig.client)
+            const map = multi.server.maps[ig.client.player.mapName]
             assert(map)
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {

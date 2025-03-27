@@ -43,7 +43,7 @@ class GamepadAssigner {
         )
     }
 
-    onPreUpdate() {
+    update() {
         if (!this.handler) return
         this.handler.update(this.gamepads)
     }
@@ -71,17 +71,17 @@ class GamepadAssigner {
     }
 }
 declare global {
-    namespace dummy.input.Clone {
+    namespace multi.class {
         var gamepadAssigner: GamepadAssigner
     }
 }
 prestart(() => {
-    dummy.input.Clone.gamepadAssigner = new GamepadAssigner()
+    multi.class.gamepadAssigner = new GamepadAssigner()
     /* initiaize needs to be called in local-server.ts */
 })
 
 declare global {
-    namespace dummy.input.Clone {
+    namespace multi.class {
         interface SingleGamepadManager extends ig.GamepadManager {
             setSingleGamepad(this: this, gamepad: ig.Gamepad): void
             clearSingleGamepad(this: this): void
@@ -93,7 +93,7 @@ declare global {
     }
 }
 prestart(() => {
-    dummy.input.Clone.SingleGamepadManager = ig.GamepadManager.extend({
+    multi.class.SingleGamepadManager = ig.GamepadManager.extend({
         init() {
             this.activeGamepads = []
             this.clearSingleGamepad()

@@ -168,8 +168,8 @@ export class CCMap {
         })
     }
 
-    preUpdate() {
-        for (const player of this.players) player.preUpdate()
+    update() {
+        for (const player of this.players) player.update()
     }
 
     // public startUnloadTimer() {
@@ -320,12 +320,50 @@ prestart(() => {
     })
     sc.MapInteract.inject({
         onPreUpdate() {
-            if (this instanceof sc.MapInteractServerPlayer || !ig.ccmap) return this.parent()
+            if (this instanceof multi.class.ServerPlayer.MapInteract || !ig.ccmap) return this.parent()
 
             for (const entry of this.entries) {
                 if (entry.thisTickState) entry.setState(entry.thisTickState)
                 entry.thisTickState = undefined
             }
         },
+    })
+})
+
+prestart(() => {
+    ig.ENTITY.NPC.inject({
+        onInteraction() {
+            if (!ig.ccmap) return this.parent()
+            return
+
+            // if (this.xenoDialog?.getCallbackEvent) {
+            //     const event = this.xenoDialog.getCallbackEvent()
+            //     waitForScheduledTask(instanceinator.instances[window.das ?? 2], () => {
+            //         console.log('calling event')
+            //         this.eventCall = ig.game.events.callEvent(
+            //             event,
+            //             ig.EventRunType.BLOCKING,
+            //             this.onEventStart.bind(this),
+            //             this.onEventEnd.bind(this),
+            //             null,
+            //             this,
+            //             { character: this.characterName }
+            //         )
+            //     })
+            //     return
+            // }
+
+            // const backup = ig.game.events
+            // ig.game.events = { callEvent() {} } as any
+            // const ret = this.parent()
+            // ig.game.events = backup
+            // return ret
+        },
+        // updateNpcState(...args) {
+        //     if (instanceinator.id == this._instanceId) return this.parent(...args)
+        //     waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+        //         this.updateNpcState(...args)
+        //     })
+        // },
     })
 })

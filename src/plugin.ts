@@ -1,6 +1,6 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import { Mod1 } from 'cc-determine/src/types'
-import { DEFAULT_PORT, Multiplayer } from './multiplayer'
+import { initMultiplayer } from './multiplayer'
 import './misc/modify-prototypes'
 import { LocalServer } from './server/local-server'
 
@@ -33,7 +33,7 @@ export default class Multibakery implements PluginClass {
             await import('./server/test/aoc2024d15')
             // await import('./server/test/mouse-simple')
         }
-        global.multi = window.multi = new Multiplayer()
+        global.multi = window.multi = initMultiplayer()
 
         await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
     }
@@ -47,8 +47,6 @@ export default class Multibakery implements PluginClass {
             new LocalServer({
                 name: 'example',
                 slotName: 'example',
-                host: 'localhost',
-                port: DEFAULT_PORT,
                 globalTps: 60,
                 godmode: true,
                 displayServerInstance: false,

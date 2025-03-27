@@ -11,7 +11,7 @@ export class ServerPlayer {
     marker: string | undefined = undefined
     ready: boolean = false
 
-    mapInteract!: sc.MapInteract
+    mapInteract!: multi.class.ServerPlayer.MapInteract
     private dummySettings: dummy.DummyPlayer.Settings
 
     constructor(
@@ -58,20 +58,14 @@ export class ServerPlayer {
         })
         await map.enter(this)
         await waitForScheduledTask(map.inst, () => {
-            this.mapInteract = new sc.MapInteractServerPlayer(this, map.inst.sc.mapInteract)
+            this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
 
             teleportPlayerToProperMarker(this.dummy, marker, undefined, !marker)
             this.ready = true
         })
     }
 
-    // async disconnect() {
-    //     const map = await this.getMap()
-    //     map.leave(this)
-    //     this.dummy.kill()
-    // }
-
-    preUpdate() {
+    update() {
         this.mapInteract?.onPreUpdate()
     }
 
@@ -86,20 +80,23 @@ export class ServerPlayer {
     }
 }
 
+prestart(() => {
+    multi.class.ServerPlayer = {} as any
+}, 0)
 declare global {
-    namespace sc {
-        interface MapInteractServerPlayer extends sc.MapInteract {
+    namespace multi.class.ServerPlayer {
+        interface MapInteract extends sc.MapInteract {
             player: ServerPlayer
             origMapInteract: sc.MapInteract
         }
-        interface MapInteractServerPlayerConstructor extends ImpactClass<MapInteractServerPlayer> {
-            new (player: ServerPlayer, origMapInteract: sc.MapInteract): MapInteractServerPlayer
+        interface MapInteractConstructor extends ImpactClass<MapInteract> {
+            new (player: ServerPlayer, origMapInteract: sc.MapInteract): MapInteract
         }
-        var MapInteractServerPlayer: MapInteractServerPlayerConstructor
+        var MapInteract: MapInteractConstructor
     }
 }
 prestart(() => {
-    sc.MapInteractServerPlayer = sc.MapInteract.extend({
+    multi.class.ServerPlayer.MapInteract = sc.MapInteract.extend({
         init(player, origMapInteract) {
             this.parent()
             this.origMapInteract = origMapInteract

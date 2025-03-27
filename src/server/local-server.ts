@@ -1,19 +1,17 @@
 import { DeterMineInstance } from 'cc-determine/src/instance'
-import { Client } from '../client/client'
 import { copyTickInfo, startGameLoop } from '../game-loop'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { LocalSharedClient, LocalSharedClientSettings } from '../client/local-shared-client/local-shared-client'
-import { LocalDummyClient } from '../client/local-dummy-client'
+import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
 
 export interface LocalServerSettings extends ServerSettings {
     slotName?: string
-    host?: string
-    port?: number
+    // host?: string
+    // port?: number
     displayServerInstance?: boolean
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
@@ -22,12 +20,12 @@ export interface LocalServerSettings extends ServerSettings {
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
 
-export type ServerPlayerClient = LocalDummyClient
+export type ServerPlayerClient = Client
 
 export class LocalServer implements Server<LocalServerSettings> {
     maps: Record<string, CCMap> = {}
     mapsById: Record<number, CCMap> = {}
-    localSharedClientById: Record<number, LocalSharedClient> = {}
+    localSharedClientById: Record<number, Client> = {}
 
     baseInst!: InstanceinatorInstance
     serverInst!: InstanceinatorInstance
@@ -51,36 +49,36 @@ export class LocalServer implements Server<LocalServerSettings> {
         determine.apply(this.serverDeterminism)
 
         removeAddon(this.serverInst.ig.gamepad, this.serverInst.ig.game)
-        this.serverInst.ig.gamepad = new dummy.input.Clone.SingleGamepadManager()
+        this.serverInst.ig.gamepad = new multi.class.SingleGamepadManager()
 
         startGameLoop()
 
-        dummy.input.Clone.gamepadAssigner.initialize()
+        multi.class.gamepadAssigner.initialize()
 
         if (window.crossnode?.options.test) return
 
         await this.createAndJoinLocalSharedClient({
             username: `lea_1`,
         })
-        await this.createAndJoinLocalSharedClient({
-            username: `luke_1`,
-        })
+        // await this.createAndJoinLocalSharedClient({
+        //     username: `luke_1`,
+        // })
         // await this.createAndJoinLocalSharedClient({
         //     username: `luke_2`,
         // })
     }
 
     update() {
-        dummy.input.Clone.gamepadAssigner.onPreUpdate()
+        multi.class.gamepadAssigner.update()
 
         ig.game.update()
 
-        const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; preUpdate?(): void }) => {
+        const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; update?(): void }) => {
             if (!obj.inst) return
             copyTickInfo(this.serverInst, obj.inst)
             obj.inst.apply()
             determine.apply(obj.determinism)
-            if (obj.preUpdate) obj.preUpdate()
+            if (obj.update) obj.update()
             ig.game.update()
         }
 
@@ -90,7 +88,7 @@ export class LocalServer implements Server<LocalServerSettings> {
         }
         for (const clientId in this.clients) {
             const client = this.clients[clientId]
-            if (client instanceof LocalSharedClient) run(client)
+            run(client)
         }
 
         this.serverInst.apply()
@@ -100,11 +98,11 @@ export class LocalServer implements Server<LocalServerSettings> {
     deferredUpdate() {
         ig.game.deferredUpdate()
 
-        const run = ({ inst, determinism }: { inst: InstanceinatorInstance; determinism: DeterMineInstance }) => {
-            if (!inst) return
-            copyTickInfo(this.serverInst, inst)
-            inst.apply()
-            determine.apply(determinism)
+        const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; update?(): void }) => {
+            if (!obj.inst) return
+            copyTickInfo(this.serverInst, obj.inst)
+            obj.inst.apply()
+            determine.apply(obj.determinism)
             ig.game.deferredUpdate()
             ig.input.clearPressed()
         }
@@ -115,7 +113,7 @@ export class LocalServer implements Server<LocalServerSettings> {
         }
         for (const clientId in this.clients) {
             const client = this.clients[clientId]
-            if (client instanceof LocalSharedClient) run(client)
+            run(client)
         }
 
         this.serverInst.apply()
@@ -136,11 +134,11 @@ export class LocalServer implements Server<LocalServerSettings> {
         await client.player.teleport(client.player.mapName, client.player.marker)
     }
 
-    async createAndJoinLocalSharedClient(settings: Omit<LocalSharedClientSettings, 'baseInst'>) {
+    async createAndJoinLocalSharedClient(settings: Omit<ClientSettings, 'baseInst'>) {
         const s = Object.assign(settings, {
             baseInst: this.baseInst,
         })
-        const client = new LocalSharedClient(s)
+        const client = new Client(s)
         await client.init()
         this.localSharedClientById[client.inst.id] = client
         await this.joinClient(client)
