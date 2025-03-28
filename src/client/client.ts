@@ -19,6 +19,8 @@ export interface ClientSettings {
     username: string
     forceInputType?: ig.INPUT_DEVICES
     createInputManager?: (client: Client) => dummy.InputManager
+    noShowInstance?: boolean
+    forceDraw?: boolean
 }
 
 export class Client {
@@ -33,9 +35,11 @@ export class Client {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.settings.username,
-            multi.server.s.displayLocalClientMaps
+            multi.server.s.displayLocalClientMaps && !this.settings.noShowInstance,
+            this.settings.forceDraw,
         )
         this.inst.ig.client = this
+
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
 

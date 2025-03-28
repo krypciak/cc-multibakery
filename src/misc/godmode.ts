@@ -27,10 +27,14 @@ prestart(() => {
         sc.newgame.setActive(true)
         if (!sc.newgame.get('infinite-sp')) sc.newgame.toggle('infinite-sp')
         model.setLevel(99)
-        model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
+        // model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
 
         model.skillPoints.fill(200)
-        for (let i = 0; i < 400; i++) model.learnSkill(i)
+        for (let i = 0; i < 400; i++) {
+            // @ts-expect-error
+            if (sc.skilltree.skills[i].statType == 'SPIKE_DMG') continue
+            model.learnSkill(i)
+        }
         model.skillPoints.fill(0)
 
         /* filter out circuit override givers */

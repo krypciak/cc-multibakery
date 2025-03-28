@@ -1,6 +1,5 @@
 import { DeterMineInstance } from 'cc-determine/src/instance'
 import { copyTickInfo, startGameLoop } from '../game-loop'
-import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
 import { Server, ServerSettings } from './server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
@@ -58,14 +57,21 @@ export class LocalServer implements Server<LocalServerSettings> {
         if (window.crossnode?.options.test) return
 
         await this.createAndJoinClient({
-            username: `lea_1`,
+            username: `lea_${1}`,
         })
-        // await this.createAndJoinClient({
-        //     username: `luke_1`,
-        // })
-        // await this.createAndJoinClient({
-        //     username: `luke_2`,
-        // })
+        await this.createAndJoinClient({
+            username: `lea_${2}`,
+        })
+        // let promises = []
+        // for (let i = 2; i <= 20; i++) {
+        //     promises.push(
+        //         this.createAndJoinClient({
+        //             username: `lea_${i}`,
+        //             noShowInstance: true,
+        //         })
+        //     )
+        // }
+        // await Promise.all(promises)
     }
 
     update() {
@@ -173,20 +179,6 @@ export class LocalServer implements Server<LocalServerSettings> {
         this.baseInst.apply()
     }
 }
-
-prestart(() => {
-    ig.Game.inject({
-        draw() {
-            if (!(multi.server instanceof LocalServer) || instanceinator.id != multi.server.serverInst.id)
-                return this.parent()
-
-            this.renderer.prepareDraw([])
-            for (const addon of this.addons.postDraw) addon.onPostDraw()
-
-            multi.server.serverInst.drawLabel()
-        },
-    })
-})
 
 export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => Promise<void> | void) {
     return new Promise<void>(resolve => {

@@ -24,10 +24,6 @@ export function startGameLoop() {
 
     ig.system.stopRunLoop()
 
-    if (!multi.headless && ig.perf.draw && window.requestAnimationFrame) {
-        window.requestAnimationFrame(drawLoop)
-    }
-
     const tps = 1e3 / multi.server.s.globalTps
     ig.system.intervalId = setInterval(() => {
         ig.system.run()
@@ -57,7 +53,7 @@ prestart(() => {
 
             try {
                 physicsLoop()
-                if (window.crossnode) draw()
+                draw()
             } catch (err) {
                 ig.system.error(err as Error)
             }
@@ -66,7 +62,7 @@ prestart(() => {
 })
 
 function draw() {
-    for (const inst of Object.values(instanceinator.instances).filter(i => i.display)) {
+    for (const inst of Object.values(instanceinator.instances)) {
         inst.apply()
         if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && ig.perf.draw) {
             ig.game.draw()
@@ -74,22 +70,6 @@ function draw() {
         }
     }
     if (multi.server instanceof LocalServer) multi.server.serverInst.apply()
-}
-// let di = 0
-// let dd = Date.now()
-// let dc = 0
-function drawLoop() {
-    draw()
-    // di++
-    // if (di % 120 == 0) {
-    //     dc = (di / (Date.now() - dd)) * 1000
-    //     di = 0
-    //     dd = Date.now()
-    //     console.log(dc)
-    // }
-    if (ig.system.fps >= 60 && window.requestAnimationFrame) {
-        ig.system.animationFrameRequestId = window.requestAnimationFrame(drawLoop)
-    }
 }
 
 // let pi = 0
