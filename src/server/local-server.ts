@@ -36,6 +36,7 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     async start() {
         instanceinator.displayId = true
+        instanceinator.displayFps = false
         instanceinator.instances[0].display = false
 
         this.baseInst = instanceinator.instances[0]

@@ -1,5 +1,5 @@
 #!/bin/node
-import { startCrossnode } from '../crossnode/crossnode.js'
+import { startCrossnode } from '../../crossnode/crossnode.js'
 startCrossnode({
     test: true,
     ccloader2: true,

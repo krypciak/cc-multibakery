@@ -7,9 +7,8 @@
         "watch": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
         "build": "npx esbuild --target=es2018 --format=esm --platform=node --bundle --outfile=plugin.js --minify-syntax --minify-whitespace src/plugin.ts",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line",
-        "test": "NODE_NO_WARNINGS=1 node --enable-source-maps test.js",
-        "server": "NODE_NO_WARNINGS=1 node --enable-source-maps server.js",
-        "server-cont": "export NODE_NO_WARNINGS=1; sh -c 'while true; do clear; node --enable-source-maps server.js; done'"
+        "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
+        "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"
     },
     "devDependencies": {
         "@types/jquery": "^3.5.32",
@@ -19,7 +18,7 @@
         "ccmodmanager": "github:CCDirectLink/CCModManager",
         "crossnode": "github:krypciak/crossnode",
         "esbuild": "^0.20.2",
-        "node": "^22.14.0",
+        "node": "^22.0.0",
         "prettier": "3.2.5",
         "setimmediate": "^1.0.5",
         "typescript": "^5.8.2",
@@ -28,6 +27,9 @@
     "pnpm": {
         "overrides": {
             "ultimate-crosscode-typedefs": "link:../../../../../../../../.local/share/pnpm/global/5/node_modules/ultimate-crosscode-typedefs"
-        }
+        },
+        "onlyBuiltDependencies": [
+            "node"
+        ]
     }
 }
