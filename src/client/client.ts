@@ -17,8 +17,8 @@ declare global {
 
 export interface ClientSettings {
     username: string
+    inputType?: 'puppet' | 'clone'
     forceInputType?: ig.INPUT_DEVICES
-    createInputManager?: (client: Client) => dummy.InputManager
     noShowInstance?: boolean
     forceDraw?: boolean
 }
@@ -36,7 +36,7 @@ export class Client {
             multi.server.baseInst,
             'localclient-' + this.settings.username,
             multi.server.s.displayLocalClientMaps && !this.settings.noShowInstance,
-            this.settings.forceDraw,
+            this.settings.forceDraw
         )
         this.inst.ig.client = this
 
@@ -47,15 +47,16 @@ export class Client {
         this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
         addAddon(this.inst.ig.gamepad, this.inst.ig.game)
         let inputManager: dummy.InputManager
-        if (this.settings.createInputManager) {
-            inputManager = this.settings.createInputManager(this)
-        } else {
+        if (this.settings.inputType == 'puppet') {
+            inputManager = new dummy.input.Puppet.InputManager()
+            this.inst.ig.input = inputManager.input
+        } else if (this.settings.inputType == 'clone' || this.settings.inputType === undefined) {
             inputManager = new dummy.input.Clone.InputManager(
                 this.inst.ig.input,
                 this.inst.ig.gamepad,
                 this.settings.forceInputType
             )
-        }
+        } else assert(false)
         this.player = new ServerPlayer(this.settings.username, undefined, inputManager)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)

@@ -28,7 +28,7 @@ importers:
         version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/b9a8aa88be6c12d977b007f7938320bf50348a53
       crossnode:
         specifier: github:krypciak/crossnode
-        version: https://codeload.github.com/krypciak/crossnode/tar.gz/cb10b431d6ca34b872ef6db347413ca6ced671cb
+        version: https://codeload.github.com/krypciak/crossnode/tar.gz/e5b86988e0220735a1223700c7c4227fa2de5d36
       esbuild:
         specifier: ^0.20.2
         version: 0.20.2
@@ -209,8 +209,8 @@ packages:
     resolution: {tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/b9a8aa88be6c12d977b007f7938320bf50348a53}
     version: 1.0.3
 
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/cb10b431d6ca34b872ef6db347413ca6ced671cb:
-    resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/cb10b431d6ca34b872ef6db347413ca6ced671cb}
+  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/e5b86988e0220735a1223700c7c4227fa2de5d36:
+    resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/e5b86988e0220735a1223700c7c4227fa2de5d36}
     version: 1.0.0
 
   esbuild@0.20.2:
@@ -324,7 +324,7 @@ snapshots:
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/b9a8aa88be6c12d977b007f7938320bf50348a53: {}
 
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/cb10b431d6ca34b872ef6db347413ca6ced671cb: {}
+  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/e5b86988e0220735a1223700c7c4227fa2de5d36: {}
 
   esbuild@0.20.2:
     optionalDependencies:

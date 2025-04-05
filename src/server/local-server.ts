@@ -36,7 +36,7 @@ export class LocalServer implements Server<LocalServerSettings> {
 
     async start() {
         instanceinator.displayId = true
-        instanceinator.displayFps = false
+        instanceinator.displayFps = true
         instanceinator.instances[0].display = false
 
         this.baseInst = instanceinator.instances[0]
@@ -62,6 +62,7 @@ export class LocalServer implements Server<LocalServerSettings> {
         })
         await this.createAndJoinClient({
             username: `lea_${2}`,
+            inputType: 'puppet',
         })
         // let promises = []
         // for (let i = 2; i <= 20; i++) {
