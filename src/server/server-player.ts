@@ -76,7 +76,6 @@ export class ServerPlayer {
         if (map) {
             await map.leave(this)
         }
-        // TODO: leaving on remoteCanvas
         this.destroyed = true
     }
 }

@@ -12,8 +12,7 @@
     "dependencies": {
         "crosscode": ">=1.4.0",
         "cc-determine": ">=0.0.1",
-        "cc-instanceinator": ">=0.0.1",
-        "cc-canvas-server": ">=0.0.1"
+        "cc-instanceinator": ">=0.0.1"
     },
     "plugin": "plugin.js"
 }

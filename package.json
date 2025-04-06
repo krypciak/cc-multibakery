@@ -13,7 +13,6 @@
     "devDependencies": {
         "@types/jquery": "^3.5.32",
         "@types/node": "^11.15.54",
-        "cc-canvas-server": "github:krypciak/cc-canvas-server",
         "cc-determine": "github:krypciak/cc-determine",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "ccmodmanager": "github:CCDirectLink/CCModManager",

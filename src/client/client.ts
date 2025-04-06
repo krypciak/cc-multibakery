@@ -26,7 +26,6 @@ export type ClientSettings = {
       }
     | {
           inputType: 'puppet'
-          canvasServer?: boolean
       }
 )
 
@@ -163,10 +162,6 @@ export class Client {
             await this.inst.ig.gamepad.destroy()
         }
         await this.player.destroy()
-        if (this.settings.inputType == 'puppet' && this.settings.canvasServer) {
-            const conn = this.inst.ig.canvasDataConnection
-            if (conn) conn.close()
-        }
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
     }

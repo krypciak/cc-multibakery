@@ -6,7 +6,6 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
-import { startCanvasServer } from '../client/canvas-server'
 
 export interface LocalServerSettings extends ServerSettings {
     slotName?: string
@@ -16,7 +15,6 @@ export interface LocalServerSettings extends ServerSettings {
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
     displayLocalClientMaps?: boolean
-    startCanvasServer?: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
@@ -56,10 +54,6 @@ export class LocalServer implements Server<LocalServerSettings> {
         startGameLoop()
 
         multi.class.gamepadAssigner.initialize()
-
-        if (this.s.startCanvasServer) {
-            startCanvasServer()
-        }
 
         if (window.crossnode?.options.test) return
 
