@@ -15,18 +15,27 @@ declare global {
     }
 }
 
-export interface ClientSettings {
+export type ClientSettings = {
     username: string
-    inputType?: 'puppet' | 'clone'
-    forceInputType?: ig.INPUT_DEVICES
     noShowInstance?: boolean
     forceDraw?: boolean
-}
+} & (
+    | {
+          inputType?: 'clone'
+          forceInputType?: ig.INPUT_DEVICES
+      }
+    | {
+          inputType: 'puppet'
+          canvasServer?: boolean
+      }
+)
 
 export class Client {
     player!: ServerPlayer
     inst!: InstanceinatorInstance
     determinism!: DeterMineInstance /* determinism is only used for visuals */
+
+    private destroyed = false
 
     constructor(public settings: ClientSettings) {}
 
@@ -140,14 +149,24 @@ export class Client {
             this.player.dummy.party = this.inst.id + 2
         })
 
-        if (this.settings.forceInputType == ig.INPUT_DEVICES.GAMEPAD) forceGamepad(this)
+        if (this.settings.inputType == 'clone' && this.settings.forceInputType == ig.INPUT_DEVICES.GAMEPAD)
+            forceGamepad(this)
     }
 
     async destroy() {
+        if (this.destroyed) return
+        this.destroyed = true
+        assert(multi.server instanceof LocalServer)
+        await multi.server.leaveClient(this.inst.id)
+
         if (this.inst.ig.gamepad.destroy) {
             await this.inst.ig.gamepad.destroy()
         }
         await this.player.destroy()
+        if (this.settings.inputType == 'puppet' && this.settings.canvasServer) {
+            const conn = this.inst.ig.canvasDataConnection
+            if (conn) conn.close()
+        }
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
     }
@@ -216,9 +235,11 @@ prestart(() => {
                 //     msg = 'sc.COMBAT_PARAM_MSG.' + rev(sc.COMBAT_PARAM_MSG)[message as sc.COMBAT_PARAM_MSG]
                 // console.log('passing ', findClassName(model), msg, data)
                 const inst = instanceinator.instances[o._instanceId]
-                waitForScheduledTask(inst, () => {
-                    o.modelChanged(model, message, data)
-                })
+                if (inst) {
+                    waitForScheduledTask(inst, () => {
+                        o.modelChanged(model, message, data)
+                    })
+                } else model.observers.erase(o)
 
                 continue
             }

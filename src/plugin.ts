@@ -53,6 +53,7 @@ export default class Multibakery implements PluginClass {
                 displayMaps: false,
                 displayLocalClientMaps: true,
                 forceConsistentTickTimes: false,
+                startCanvasServer: true,
             })
         )
         multi.server.start()

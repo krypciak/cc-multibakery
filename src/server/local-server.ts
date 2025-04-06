@@ -6,6 +6,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
+import { startCanvasServer } from '../client/canvas-server'
 
 export interface LocalServerSettings extends ServerSettings {
     slotName?: string
@@ -15,6 +16,7 @@ export interface LocalServerSettings extends ServerSettings {
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
     displayLocalClientMaps?: boolean
+    startCanvasServer?: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
@@ -55,15 +57,19 @@ export class LocalServer implements Server<LocalServerSettings> {
 
         multi.class.gamepadAssigner.initialize()
 
+        if (this.s.startCanvasServer) {
+            startCanvasServer()
+        }
+
         if (window.crossnode?.options.test) return
 
         await this.createAndJoinClient({
             username: `lea_${1}`,
         })
-        await this.createAndJoinClient({
-            username: `lea_${2}`,
-            inputType: 'puppet',
-        })
+        // await this.createAndJoinClient({
+        //     username: `lea_${2}`,
+        //     inputType: 'puppet',
+        // })
         // let promises = []
         // for (let i = 2; i <= 20; i++) {
         //     promises.push(
@@ -148,13 +154,16 @@ export class LocalServer implements Server<LocalServerSettings> {
         await client.init()
         await this.joinClient(client)
         await client.teleport()
+        return client
     }
 
-    leaveClient(id: number): void {
+    async leaveClient(id: number) {
         assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
         const client = this.clientsById[id]
         assert(client)
-        client.destroy()
+        delete this.clientsById[id]
+        delete this.clients[client.player.username]
+        await client.destroy()
     }
 
     private safeguardServerInstance() {
