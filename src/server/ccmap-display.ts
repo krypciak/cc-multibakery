@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { CCMap } from './ccmap'
-import { LocalServer, waitForScheduledTask } from './local-server'
+import { Server, waitForScheduledTask } from './server'
 import { ServerPlayer } from './server-player'
 
 export class CCMapDisplay {
@@ -39,8 +39,8 @@ export class CCMapDisplay {
     }
 
     async setPosCameraHandle(pos: Vec2) {
-        assert(multi.server instanceof LocalServer)
-        if (!multi.server.s.displayMaps) return
+        assert(multi.server instanceof Server)
+        if (!multi.server.settings.displayMaps) return
 
         await waitForScheduledTask(this.map.inst, () => {
             const prev = this.camera
@@ -69,8 +69,8 @@ export class CCMapDisplay {
     }
 
     async onPlayerCountChange(enter: boolean) {
-        assert(multi.server instanceof LocalServer)
-        if (!multi.server.s.displayMaps) return
+        assert(multi.server instanceof Server)
+        if (!multi.server.settings.displayMaps) return
 
         if (enter && this.map.players.length == 1) {
             this.setPlayerCameraHandle(this.map.players[0])
@@ -82,7 +82,7 @@ export class CCMapDisplay {
 prestart(() => {
     ig.Camera.inject({
         onPostUpdate() {
-            if (!ig.game.paused && multi.server instanceof LocalServer && multi.server.s.displayMaps) {
+            if (!ig.game.paused && multi.server instanceof Server && multi.server.settings.displayMaps) {
                 const map = ig.ccmap
                 if (map) {
                     const move = Vec2.create()
@@ -94,7 +94,7 @@ prestart(() => {
                         if (ig.input.pressed('special') && map.players.length > 0) {
                             map.display.currentPlayerI = 0
                             map.display.setPlayerCameraHandle(map.players[0])
-                        } else if (!multi.server.s.disableMapDisplayCameraMovement) {
+                        } else if (!multi.server.settings.disableMapDisplayCameraMovement) {
                             Vec2.add(map.display.cameraTarget.pos, move)
                         }
                     } else if (map.display.cameraTarget instanceof ig.Camera.EntityTarget) {

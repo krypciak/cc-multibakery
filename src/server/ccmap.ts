@@ -1,5 +1,5 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { LocalServer, waitForScheduledTask } from './local-server'
+import { Server, waitForScheduledTask } from './server'
 import { assert } from '../misc/assert'
 import { ServerPlayer } from './server-player'
 import { CCMapDisplay } from './ccmap-display'
@@ -29,12 +29,12 @@ export class CCMap {
     constructor(public name: string) {}
 
     async load() {
-        assert(multi.server instanceof LocalServer)
+        assert(multi.server instanceof Server)
 
         this.display = new CCMapDisplay(this)
         this.determinism = new determine.Instance('welcome to hell', false, true)
 
-        const displayMaps = multi.server.s.displayMaps
+        const displayMaps = multi.server.settings.displayMaps
 
         const levelDataPromise = this.readLevelData()
         this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
@@ -183,13 +183,13 @@ export class CCMap {
 prestart(() => {
     const backup = ig.CollTools.isInScreen
     ig.CollTools.isInScreen = function (e: ig.Entity, x?: number, y?: number) {
-        if (multi.server instanceof LocalServer) return true
+        if (multi.server instanceof Server) return true
         return backup(e, x, y)
     }
 
     sc.Combat.inject({
         getPartyHpFactor(party) {
-            if (!(multi.server instanceof LocalServer)) return this.parent(party)
+            if (!(multi.server instanceof Server)) return this.parent(party)
 
             assert(ig.ccmap)
             ig.game.playerEntity = ig.ccmap.players[0].dummy

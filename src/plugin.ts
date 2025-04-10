@@ -2,7 +2,8 @@ import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import { Mod1 } from 'cc-determine/src/types'
 import { initMultiplayer } from './multiplayer'
 import './misc/modify-prototypes'
-import { LocalServer } from './server/local-server'
+import { Server } from './server/server'
+import { DEFAULT_SOCKETIO_PORT } from './net/socket'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -43,18 +44,25 @@ export default class Multibakery implements PluginClass {
 
         if (window.crossnode?.options.test) return
 
-        multi.setServer(
-            new LocalServer({
-                name: 'example',
-                slotName: 'example',
-                globalTps: 60,
-                godmode: true,
-                displayServerInstance: false,
-                displayMaps: false,
-                displayLocalClientMaps: true,
-                forceConsistentTickTimes: false,
-            })
-        )
-        multi.server.start()
+        if (process.execPath.includes('server')) {
+            multi.setServer(
+                new Server({
+                    name: 'example',
+                    slotName: 'example',
+                    globalTps: 60,
+                    godmode: true,
+                    displayServerInstance: false,
+                    displayMaps: false,
+                    displayLocalClientMaps: true,
+                    forceConsistentTickTimes: false,
+                    socketSettings: {
+                        port: DEFAULT_SOCKETIO_PORT,
+                    },
+                })
+            )
+            multi.server.start()
+        } else if (process.execPath.includes('client')) {
+            // something
+        }
     }
 }

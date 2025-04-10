@@ -2,12 +2,12 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { ServerPlayer } from '../server/server-player'
 import { assert } from '../misc/assert'
-import { LocalServer, waitForScheduledTask } from '../server/local-server'
 import { CCMap } from '../server/ccmap'
 import { prestart } from '../plugin'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 import { forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
+import { Server, waitForScheduledTask } from '../server/server'
 
 declare global {
     namespace ig {
@@ -39,11 +39,11 @@ export class Client {
     constructor(public settings: ClientSettings) {}
 
     async init() {
-        assert(multi.server instanceof LocalServer)
+        assert(multi.server instanceof Server)
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.settings.username,
-            multi.server.s.displayLocalClientMaps && !this.settings.noShowInstance,
+            multi.server.settings.displayLocalClientMaps && !this.settings.noShowInstance,
             this.settings.forceDraw
         )
         this.inst.ig.client = this
@@ -72,7 +72,7 @@ export class Client {
     }
 
     async teleport() {
-        assert(multi.server instanceof LocalServer)
+        assert(multi.server instanceof Server)
 
         const map = multi.server.maps[this.player.mapName]
         await this.linkMapToInstance(map)
@@ -138,7 +138,7 @@ export class Client {
             initMapInteractEntries(map.inst)
         })
         await waitForScheduledTask(map.inst, () => {
-            assert(multi.server instanceof LocalServer)
+            assert(multi.server instanceof Server)
             for (const client of Object.values(multi.server.clients)) {
                 if (client instanceof Client) {
                     client.player.dummy.model.updateStats()
@@ -155,7 +155,7 @@ export class Client {
     async destroy() {
         if (this.destroyed) return
         this.destroyed = true
-        assert(multi.server instanceof LocalServer)
+        assert(multi.server instanceof Server)
         await multi.server.leaveClient(this.inst.id)
 
         if (this.inst.ig.gamepad.destroy) {
@@ -172,7 +172,7 @@ function rehookObservers(from: sc.Model, to: sc.Model) {
 }
 
 function getClient(username: string): Client | undefined {
-    if (!(multi.server instanceof LocalServer)) return
+    if (!(multi.server instanceof Server)) return
     const client = multi.server.clients[username]
     assert(client)
     return client

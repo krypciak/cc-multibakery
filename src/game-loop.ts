@@ -1,7 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from './misc/assert'
 import { prestart } from './plugin'
-import { LocalServer } from './server/local-server'
+import { Server } from './server/server'
 
 export {}
 declare global {
@@ -24,7 +24,7 @@ export function startGameLoop() {
 
     ig.system.stopRunLoop()
 
-    const tps = 1e3 / multi.server.s.globalTps
+    const tps = 1e3 / multi.server.settings.globalTps
     ig.system.intervalId = setInterval(() => {
         ig.system.run()
     }, tps) as unknown as number
@@ -42,7 +42,7 @@ prestart(() => {
         },
         run() {
             if (!multi.server) return this.parent()
-            if (multi.server instanceof LocalServer) {
+            if (multi.server instanceof Server) {
                 if (!multi.server.serverInst) return
                 assert(instanceinator.id == multi.server.serverInst.id)
             }
@@ -69,7 +69,7 @@ function draw() {
             ig.game.finalDraw()
         }
     }
-    if (multi.server instanceof LocalServer) multi.server.serverInst.apply()
+    if (multi.server instanceof Server) multi.server.serverInst.apply()
 }
 
 // let pi = 0
@@ -80,8 +80,8 @@ let previousMusicTime = 0
 function physicsLoop() {
     ig.system.frame++
     if (ig.system.frame % ig.system.frameSkip == 0) {
-        if (multi.server.s.forceConsistentTickTimes) {
-            const time = ig.Timer._last + 1000 / multi.server.s.globalTps
+        if (multi.server.settings.forceConsistentTickTimes) {
+            const time = ig.Timer._last + 1000 / multi.server.settings.globalTps
             ig.Timer.time =
                 ig.Timer.time + Math.min((time - ig.Timer._last) / 1e3, ig.Timer.maxStep) * ig.Timer.timeScale
             ig.Timer._last = time
@@ -127,7 +127,7 @@ prestart(() => {
     ig.Game.inject({
         run() {
             if (!multi.server) return this.parent()
-            if (multi.server instanceof LocalServer) assert(instanceinator.id == multi.server.serverInst.id)
+            if (multi.server instanceof Server) assert(instanceinator.id == multi.server.serverInst.id)
 
             if (ig.system.hasFocusLost() && this.fullyStopped) {
                 ig.soundManager.update()

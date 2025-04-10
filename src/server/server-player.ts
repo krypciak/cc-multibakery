@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { teleportPlayerToProperMarker } from '../teleport-fix'
-import { LocalServer, waitForScheduledTask } from './local-server'
+import { Server, waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
 
 export class ServerPlayer {
@@ -37,13 +37,13 @@ export class ServerPlayer {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
         // }
 
-        if (multi.server.s.godmode) ig.godmode(this.dummy.model)
+        if (multi.server.settings.godmode) ig.godmode(this.dummy.model)
         // do some player data loading here
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
         this.ready = false
-        assert(multi.server instanceof LocalServer)
+        assert(multi.server instanceof Server)
         let map = multi.server.maps[this.mapName]
         if (map && this.dummy) await map.leave(this)
         this.mapName = mapName
@@ -70,7 +70,7 @@ export class ServerPlayer {
     }
 
     async destroy() {
-        assert(multi.server instanceof LocalServer)
+        assert(multi.server instanceof Server)
         assert(!this.destroyed)
         const map = multi.server.maps[this.mapName]
         if (map) {

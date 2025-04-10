@@ -1,6 +1,6 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
-import { LocalServer, waitForScheduledTask } from '../server/local-server'
+import { Server, waitForScheduledTask } from '../server/server'
 import { Client } from './client'
 import { prestart } from '../plugin'
 
@@ -73,10 +73,10 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
 
 prestart(() => {
     function getClients(): Client[] {
-        if (!(multi.server instanceof LocalServer) || !ig.ccmap) return []
+        if (!(multi.server instanceof Server) || !ig.ccmap) return []
         return ig.ccmap.players
             .map(player => player.username)
-            .map(username => (multi.server as LocalServer).clients[username])
+            .map(username => (multi.server as Server).clients[username])
             .filter(client => client instanceof Client)
     }
     sc.MapInteract.inject({
@@ -142,7 +142,7 @@ prestart(() => {
     })
     sc.XenoDialogIcon.inject({
         onSkipInteract(msg) {
-            if (!multi.server || ig.ccmap || !(multi.server instanceof LocalServer)) return this.parent(msg)
+            if (!multi.server || ig.ccmap || !(multi.server instanceof Server)) return this.parent(msg)
             assert(ig.client)
             const map = multi.server.maps[ig.client.player.mapName]
             assert(map)
@@ -179,7 +179,7 @@ declare global {
 prestart(() => {
     sc.PushPullable.inject({
         onInteraction() {
-            if (!ig.client || !(multi.server instanceof LocalServer)) return this.parent()
+            if (!ig.client || !(multi.server instanceof Server)) return this.parent()
             if (this.player) return
 
             assert(ig.game.playerEntity instanceof dummy.DummyPlayer)

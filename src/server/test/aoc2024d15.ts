@@ -1,7 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
-import { LocalServer, waitForScheduledTask } from '../local-server'
+import { Server, waitForScheduledTask } from '../server'
 import { DummyUpdateInput } from '../../api'
 import { Client } from '../../client/client'
 
@@ -319,7 +319,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         sum: 0,
         async setup() {
             multi.setServer(
-                new LocalServer({
+                new Server({
                     name: this.name,
                     globalTps: this.fps!,
                     displayMaps: !this.skipFrameWait,
@@ -329,7 +329,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await multi.server.start()
         },
         async postSetup() {
-            assert(multi.server instanceof LocalServer)
+            assert(multi.server instanceof Server)
 
             const client = new Client({
                 username: 'aoc',
@@ -341,7 +341,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await client.teleport()
         },
         update() {
-            assert(multi.server instanceof LocalServer)
+            assert(multi.server instanceof Server)
             const ccmap = multi.server.maps[map]
             const p = ccmap.players[0].dummy
             const client = multi.server.clients[p.data.username]

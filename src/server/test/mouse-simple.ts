@@ -1,5 +1,5 @@
 import Multibakery from '../../plugin'
-import { LocalServer } from '../local-server'
+import { Server } from '../server'
 import { assert } from '../../misc/assert'
 import { ServerPlayer } from '../server-player'
 
@@ -15,7 +15,7 @@ for (let i = 0; i < 2; i++) {
         map: 'determine/bots1',
         async setup() {
             multi.setServer(
-                new LocalServer({
+                new Server({
                     name: this.name,
                     globalTps: this.fps!,
                     godmode: true,
@@ -25,7 +25,7 @@ for (let i = 0; i < 2; i++) {
             await multi.server.start()
         },
         async postSetup() {
-            assert(multi.server instanceof LocalServer)
+            assert(multi.server instanceof Server)
             if (i == 0) {
                 await multi.server.loadMap(this.map)
                 await multi.server.loadMap(this.map)
@@ -40,7 +40,7 @@ for (let i = 0; i < 2; i++) {
             ig.Timer.time = 0
         },
         update(frame) {
-            assert(multi.server instanceof LocalServer)
+            assert(multi.server instanceof Server)
             const map = multi.server.maps[this.map]
             if (frame >= 3 * this.fps!) {
                 const expected = { x: 235.81, y: 371.54, z: 0 }

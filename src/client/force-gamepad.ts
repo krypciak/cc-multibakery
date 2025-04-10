@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
-import { waitForScheduledTask } from '../server/local-server'
+import { waitForScheduledTask } from '../server/server'
 import { Client } from './client'
 
 export function forceGamepad(client: Client) {

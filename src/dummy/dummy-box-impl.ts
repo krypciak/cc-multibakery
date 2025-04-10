@@ -38,7 +38,7 @@ prestart(() => {
                 [sc.GAME_MODEL_SUBSTATE.QUICK]: '(Quick)',
                 [sc.GAME_MODEL_SUBSTATE.PAUSE]: '(Pause)',
                 [sc.GAME_MODEL_SUBSTATE.MENU]: '(Main)',
-                [sc.GAME_MODEL_SUBSTATE.ONMAPMENU]: '(Shop)'
+                [sc.GAME_MODEL_SUBSTATE.ONMAPMENU]: '(Shop)',
             }
             const menuMap: PartialRecord<sc.MENU_SUBMENU | -1, string> = {
                 // [sc.MENU_SUBMENU.START]: '',

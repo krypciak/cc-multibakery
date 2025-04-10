@@ -1,4 +1,4 @@
-import { waitForScheduledTask } from './local-server'
+import { waitForScheduledTask } from './server'
 import { prestart } from '../plugin'
 
 type Layer = keyof typeof ig.MAP
@@ -71,20 +71,20 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
 
     const loader = new (this.mapLoader || ig.Loader)()
     loader.onEnd = function (this: ig.Loader) {
-            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
-                /* this.finalize() */
-                this.prevResourcesCnt = ig.resources.length
-                ig.resources.length = 0
-                clearInterval(this._intervalId)
+        waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+            /* this.finalize() */
+            this.prevResourcesCnt = ig.resources.length
+            ig.resources.length = 0
+            clearInterval(this._intervalId)
 
-                ig.ready = true
+            ig.ready = true
 
-                ig.game.loadingComplete()
+            ig.game.loadingComplete()
 
-                this._loadCallbackBound = null
-                ig.loading = false
+            this._loadCallbackBound = null
+            ig.loading = false
 
-                resolve()
+            resolve()
         })
     }.bind(loader)
 

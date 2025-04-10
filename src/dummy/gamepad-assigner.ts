@@ -77,7 +77,7 @@ declare global {
 }
 prestart(() => {
     multi.class.gamepadAssigner = new GamepadAssigner()
-    /* initiaize needs to be called in local-server.ts */
+    /* initiaize needs to be called in server.ts */
 })
 
 declare global {
