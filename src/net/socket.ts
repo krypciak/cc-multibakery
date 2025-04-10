@@ -1,7 +1,7 @@
 import { Server as _Server, Socket as _Socket } from 'socket.io'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerLocalServer } from './connection'
-import { isClientJoinData, Server } from '../server/server'
+import { isClientJoinData, PhysicsServer } from '../server/physics-server'
 
 type SocketData = never
 
@@ -55,7 +55,6 @@ export class SocketNetManagerLocalServer implements NetManagerLocalServer {
     }
 
     async start() {
-        assert(multi.server instanceof Server)
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
@@ -73,7 +72,7 @@ export class SocketNetManagerLocalServer implements NetManagerLocalServer {
                     socket.disconnect()
                 }
                 if (!isClientJoinData(data)) return err('invalid join data')
-                assert(multi.server instanceof Server)
+                assert(multi.server instanceof PhysicsServer)
                 const { id, error } = await multi.server.onNetJoin(data)
                 if (error) return err(error)
                 assert(id !== undefined)

@@ -5,36 +5,24 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
-import { NetConnection, NetManagerLocalServer } from '../net/connection'
-import { SocketNetManagerLocalServer } from '../net/socket'
+import { NetManagerLocalServer } from '../net/connection'
 
 export interface ServerSettings {
     name: string
     globalTps: number
-    godmode?: boolean
     forceConsistentTickTimes?: boolean
 
-    slotName?: string
     displayServerInstance?: boolean
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
     displayLocalClientMaps?: boolean
 
-    socketSettings?: {
-        port: number
-    }
-
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
 
-export interface ClientJoinData {
-    username: string
-}
-export function isClientJoinData(data: unknown): data is ClientJoinData {
-    return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
-}
+export abstract class Server<S extends ServerSettings = ServerSettings> {
+    abstract settings: S
 
-export class Server {
     maps: Record<string, CCMap> = {}
     mapsById: Record<number, CCMap> = {}
     clientsById: Record<number, Client> = {}
@@ -45,8 +33,6 @@ export class Server {
 
     clients: Record<string, Client> = {}
     netManager?: NetManagerLocalServer
-
-    constructor(public settings: ServerSettings) {}
 
     async start() {
         instanceinator.displayId = true
@@ -88,13 +74,6 @@ export class Server {
         //     )
         // }
         // await Promise.all(promises)
-
-        if (this.settings.socketSettings) {
-            this.netManager = new SocketNetManagerLocalServer(this.settings.socketSettings.port)
-        }
-        if (this.netManager) {
-            await this.netManager.start()
-        }
     }
 
     update() {
@@ -190,28 +169,6 @@ export class Server {
                 return () => {}
             },
         })
-    }
-
-    async onNetJoin(
-        data: ClientJoinData
-    ): Promise<{ id: number; error?: undefined } | { id?: undefined; error: string }> {
-        const username = data.username
-        if (this.clients[username]) return { error: 'username taken' }
-
-        const client = await this.createAndJoinClient({
-            username,
-            inputType: 'puppet',
-            // noShowInstance: true,
-            // forceDraw: true,
-        })
-        return { id: client.inst.id }
-    }
-
-    onNetReceive(conn: NetConnection, data: unknown) {
-        console.log(`received packet from`, conn.instanceId, `:`, data)
-    }
-    onNetClose(conn: NetConnection) {
-        this.leaveClient(conn.instanceId)
     }
 
     async destroy() {

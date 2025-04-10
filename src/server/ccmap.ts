@@ -29,8 +29,6 @@ export class CCMap {
     constructor(public name: string) {}
 
     async load() {
-        assert(multi.server instanceof Server)
-
         this.display = new CCMapDisplay(this)
         this.determinism = new determine.Instance('welcome to hell', false, true)
 
@@ -183,13 +181,13 @@ export class CCMap {
 prestart(() => {
     const backup = ig.CollTools.isInScreen
     ig.CollTools.isInScreen = function (e: ig.Entity, x?: number, y?: number) {
-        if (multi.server instanceof Server) return true
+        if (multi.server) return true
         return backup(e, x, y)
     }
 
     sc.Combat.inject({
         getPartyHpFactor(party) {
-            if (!(multi.server instanceof Server)) return this.parent(party)
+            if (!multi.server) return this.parent(party)
 
             assert(ig.ccmap)
             ig.game.playerEntity = ig.ccmap.players[0].dummy

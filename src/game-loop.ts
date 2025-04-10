@@ -1,7 +1,6 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from './misc/assert'
 import { prestart } from './plugin'
-import { Server } from './server/server'
 
 export {}
 declare global {
@@ -42,10 +41,9 @@ prestart(() => {
         },
         run() {
             if (!multi.server) return this.parent()
-            if (multi.server instanceof Server) {
-                if (!multi.server.serverInst) return
-                assert(instanceinator.id == multi.server.serverInst.id)
-            }
+
+            if (!multi.server.serverInst) return
+            assert(instanceinator.id == multi.server.serverInst.id)
             // if (!this.running) {
             //     console.log('not running, return', instanceinator.instanceId)
             //     return
@@ -69,7 +67,7 @@ function draw() {
             ig.game.finalDraw()
         }
     }
-    if (multi.server instanceof Server) multi.server.serverInst.apply()
+    multi.server.serverInst.apply()
 }
 
 // let pi = 0
@@ -127,7 +125,7 @@ prestart(() => {
     ig.Game.inject({
         run() {
             if (!multi.server) return this.parent()
-            if (multi.server instanceof Server) assert(instanceinator.id == multi.server.serverInst.id)
+            assert(instanceinator.id == multi.server.serverInst.id)
 
             if (ig.system.hasFocusLost() && this.fullyStopped) {
                 ig.soundManager.update()

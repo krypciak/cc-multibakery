@@ -39,7 +39,6 @@ export class CCMapDisplay {
     }
 
     async setPosCameraHandle(pos: Vec2) {
-        assert(multi.server instanceof Server)
         if (!multi.server.settings.displayMaps) return
 
         await waitForScheduledTask(this.map.inst, () => {
@@ -69,7 +68,6 @@ export class CCMapDisplay {
     }
 
     async onPlayerCountChange(enter: boolean) {
-        assert(multi.server instanceof Server)
         if (!multi.server.settings.displayMaps) return
 
         if (enter && this.map.players.length == 1) {
@@ -82,7 +80,7 @@ export class CCMapDisplay {
 prestart(() => {
     ig.Camera.inject({
         onPostUpdate() {
-            if (!ig.game.paused && multi.server instanceof Server && multi.server.settings.displayMaps) {
+            if (!ig.game.paused && multi.server?.settings.displayMaps) {
                 const map = ig.ccmap
                 if (map) {
                     const move = Vec2.create()

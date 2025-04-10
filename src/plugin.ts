@@ -1,9 +1,9 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import { Mod1 } from 'cc-determine/src/types'
 import { initMultiplayer } from './multiplayer'
-import './misc/modify-prototypes'
-import { Server } from './server/server'
 import { DEFAULT_SOCKETIO_PORT } from './net/socket'
+import { PhysicsServer } from './server/physics-server'
+import './misc/modify-prototypes'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -46,7 +46,7 @@ export default class Multibakery implements PluginClass {
 
         if (process.execPath.includes('server')) {
             multi.setServer(
-                new Server({
+                new PhysicsServer({
                     name: 'example',
                     slotName: 'example',
                     globalTps: 60,

@@ -1,9 +1,10 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
-import { Server, waitForScheduledTask } from '../server'
+import { waitForScheduledTask } from '../server'
 import { DummyUpdateInput } from '../../api'
 import { Client } from '../../client/client'
+import { PhysicsServer } from '../physics-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -319,7 +320,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         sum: 0,
         async setup() {
             multi.setServer(
-                new Server({
+                new PhysicsServer({
                     name: this.name,
                     globalTps: this.fps!,
                     displayMaps: !this.skipFrameWait,
@@ -329,8 +330,6 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await multi.server.start()
         },
         async postSetup() {
-            assert(multi.server instanceof Server)
-
             const client = new Client({
                 username: 'aoc',
                 inputType: 'puppet',
@@ -341,7 +340,6 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await client.teleport()
         },
         update() {
-            assert(multi.server instanceof Server)
             const ccmap = multi.server.maps[map]
             const p = ccmap.players[0].dummy
             const client = multi.server.clients[p.data.username]
