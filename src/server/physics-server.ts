@@ -1,8 +1,9 @@
-import { NetConnection } from '../net/connection'
+import { NetConnection, NetManagerLocalServer } from '../net/connection'
 import { SocketNetManagerLocalServer } from '../net/socket'
 import { Server, ServerSettings } from './server'
 
 export interface PhysicsServerSettings extends ServerSettings {
+    name: string
     godmode?: boolean
     slotName?: string
 
@@ -19,12 +20,35 @@ export function isClientJoinData(data: unknown): data is ClientJoinData {
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
+    netManager?: NetManagerLocalServer
+
     constructor(public settings: PhysicsServerSettings) {
+        console.info('ROLE: PhysicsServer')
         super()
     }
 
     async start() {
         await super.start()
+
+        if (!window.crossnode?.options.test) {
+            // await this.createAndJoinClient({
+            //     username: `lea_${1}`,
+            // })
+            // await this.createAndJoinClient({
+            //     username: `lea_${2}`,
+            //     inputType: 'puppet',
+            // })
+            // let promises = []
+            // for (let i = 2; i <= 20; i++) {
+            //     promises.push(
+            //         this.createAndJoinClient({
+            //             username: `lea_${i}`,
+            //             noShowInstance: true,
+            //         })
+            //     )
+            // }
+            // await Promise.all(promises)
+        }
 
         if (this.settings.socketSettings) {
             this.netManager = new SocketNetManagerLocalServer(this.settings.socketSettings.port)
@@ -54,6 +78,11 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         console.log(`received packet from`, conn.instanceId, `:`, data)
     }
     onNetClose(conn: NetConnection) {
-        this.leaveClient(conn.instanceId)
+        this.clientsById[conn.instanceId].destroy()
+    }
+
+    async destroy() {
+        if (this.netManager) await this.netManager.destroy()
+        await super.destroy()
     }
 }

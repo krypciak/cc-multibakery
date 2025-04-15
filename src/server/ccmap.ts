@@ -19,8 +19,6 @@ export class CCMap {
     rawLevelData!: sc.MapModel.Map
 
     players: ServerPlayer[] = []
-    // playersThatJustLeft!: Player
-    // private unloadTimeoutId!: NodeJS.Timeout
 
     inst!: InstanceinatorInstance
     display!: CCMapDisplay
@@ -84,11 +82,6 @@ export class CCMap {
         this.players.erase(player)
         if (prevLen == this.players.length) return
 
-        // const packet = (UpdatePacketGather.state[this.name] ??= {})
-        // const playersLeft = (packet.playersLeft ??= [])
-        // playersLeft.push(player.dummy.uuid)
-
-        // this.startUnloadTimer()
         await this.leaveEntity(player.dummy)
         this.display.onPlayerCountChange(false)
     }

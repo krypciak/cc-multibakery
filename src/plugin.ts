@@ -4,6 +4,7 @@ import { initMultiplayer } from './multiplayer'
 import { DEFAULT_SOCKETIO_PORT } from './net/socket'
 import { PhysicsServer } from './server/physics-server'
 import './misc/modify-prototypes'
+import { RemoteServer } from './server/remote-server'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -52,7 +53,7 @@ export default class Multibakery implements PluginClass {
                     globalTps: 60,
                     godmode: true,
                     displayServerInstance: false,
-                    displayMaps: false,
+                    displayMaps: true,
                     displayLocalClientMaps: true,
                     forceConsistentTickTimes: false,
                     socketSettings: {
@@ -62,7 +63,20 @@ export default class Multibakery implements PluginClass {
             )
             multi.server.start()
         } else if (process.execPath.includes('client')) {
-            // something
+            multi.setServer(
+                new RemoteServer({
+                    globalTps: 60,
+                    displayServerInstance: false,
+                    displayMaps: false,
+                    displayLocalClientMaps: true,
+                    forceConsistentTickTimes: false,
+                    socketSettings: {
+                        host: '127.0.0.1',
+                        port: DEFAULT_SOCKETIO_PORT,
+                    },
+                })
+            )
+            multi.server.start()
         }
     }
 }

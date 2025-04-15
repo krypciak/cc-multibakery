@@ -1,7 +1,9 @@
 import { Server as _Server, Socket as _Socket } from 'socket.io'
+import * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerLocalServer } from './connection'
 import { isClientJoinData, PhysicsServer } from '../server/physics-server'
+import { RemoteServer } from '../server/remote-server'
 
 type SocketData = never
 
@@ -97,6 +99,50 @@ export class SocketNetManagerLocalServer implements NetManagerLocalServer {
     }
 }
 
+export class SocketNetClient {
+    conn?: SocketNetConnection
+    socket?: ioclient.Socket
+
+    constructor(
+        public host: string,
+        public port: number
+    ) {}
+
+    async connect() {
+        process.on('exit', () => this.stop())
+        window.addEventListener('beforeunload', () => this.stop())
+
+        const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ioclient.Socket<
+            ServerToClientEvents,
+            ClientToServerEvents
+        >
+        socket.on('connect', () => {
+            assert(multi.server instanceof RemoteServer)
+            multi.server.onNetConnected()
+        })
+        socket.on('disconnect', () => {
+            assert(multi.server instanceof RemoteServer)
+            this.stop()
+            multi.server.onNetDisconnect()
+        })
+        this.socket = socket
+    }
+
+    async sendJoin(data: unknown) {
+        assert(this.socket)
+        this.socket.emit('join', data)
+    }
+
+    async stop() {
+        this.socket?.disconnect()
+        this.conn?.close()
+    }
+
+    async destroy() {
+        await this.stop()
+    }
+}
+
 class SocketNetConnection implements NetConnection {
     closed: boolean = false
 
@@ -118,8 +164,9 @@ class SocketNetConnection implements NetConnection {
     isConnected() {
         return this.socket.connected
     }
-    send(data: unknown): void {
+    sendUpdate(data: unknown): void {
         this.socket.emit('update', data)
+        console.log('sending update', data)
     }
     close(): void {
         if (this.closed) return

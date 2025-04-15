@@ -4,7 +4,7 @@ export interface NetConnection {
     onClose?: (conn: NetConnection) => void
 
     isConnected(): boolean
-    send(data: unknown): void
+    sendUpdate(data: unknown): void
     close(): void
 }
 export interface NetManagerLocalServer {

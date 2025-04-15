@@ -5,13 +5,10 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
-import { NetManagerLocalServer } from '../net/connection'
 
 export interface ServerSettings {
-    name: string
     globalTps: number
     forceConsistentTickTimes?: boolean
-
     displayServerInstance?: boolean
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
@@ -32,7 +29,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     serverDeterminism!: DeterMineInstance
 
     clients: Record<string, Client> = {}
-    netManager?: NetManagerLocalServer
 
     async start() {
         instanceinator.displayId = true
@@ -54,26 +50,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         startGameLoop()
 
         multi.class.gamepadAssigner.initialize()
-
-        if (window.crossnode?.options.test) return
-
-        await this.createAndJoinClient({
-            username: `lea_${1}`,
-        })
-        // await this.createAndJoinClient({
-        //     username: `lea_${2}`,
-        //     inputType: 'puppet',
-        // })
-        // let promises = []
-        // for (let i = 2; i <= 20; i++) {
-        //     promises.push(
-        //         this.createAndJoinClient({
-        //             username: `lea_${i}`,
-        //             noShowInstance: true,
-        //         })
-        //     )
-        // }
-        // await Promise.all(promises)
     }
 
     update() {
@@ -172,8 +148,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async destroy() {
-        if (this.netManager) await this.netManager.destroy()
-
         for (const client of Object.values(this.clientsById)) {
             await client.destroy()
         }
