@@ -53,7 +53,6 @@ for (let i = 0; i < 2; i++) {
             }
         },
         cleanup() {
-            // assert(multi.server instanceof LocalServer)
             // const map = multi.server.maps[this.map]
             // determine.Instance.printCompressedLog(map.determinism.eventLog)
             multi.destroy()

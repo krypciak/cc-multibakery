@@ -1,9 +1,10 @@
 import { Server as _Server, Socket as _Socket } from 'socket.io'
 import * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
-import { NetConnection, NetManagerLocalServer } from './connection'
+import { NetConnection, NetManagerPhysicsServer } from './connection'
 import { isClientJoinData, PhysicsServer } from '../server/physics-server'
 import { RemoteServer } from '../server/remote-server'
+import { Client } from '../client/client'
 
 type SocketData = never
 
@@ -16,8 +17,9 @@ type ServerToClientEvents = {
     error(msg: string): void
 }
 type InterServerEvents = {}
-type Socket = _Socket<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+type Socket = _Socket //<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 type SocketServer = _Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
+type ClientSocket = ioclient.Socket //<ServerToClientEvents, ClientToServerEvents>
 
 export const DEFAULT_SOCKETIO_PORT = 33405
 
@@ -40,7 +42,7 @@ function setIntervalWorkaround() {
     }
 }
 
-export class SocketNetManagerLocalServer implements NetManagerLocalServer {
+export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     connections: SocketNetConnection[] = []
     openListeners: ((conn: NetConnection) => void)[] = []
     closeListeners: ((conn: NetConnection) => void)[] = []
@@ -99,7 +101,7 @@ export class SocketNetManagerLocalServer implements NetManagerLocalServer {
     }
 }
 
-export class SocketNetClient {
+export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
     socket?: ioclient.Socket
 
@@ -112,10 +114,7 @@ export class SocketNetClient {
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
-        const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ioclient.Socket<
-            ServerToClientEvents,
-            ClientToServerEvents
-        >
+        const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket
         socket.on('connect', () => {
             assert(multi.server instanceof RemoteServer)
             multi.server.onNetConnected()
@@ -128,9 +127,11 @@ export class SocketNetClient {
         this.socket = socket
     }
 
-    async sendJoin(data: unknown) {
+    async sendJoin(data: unknown, client: Client) {
         assert(this.socket)
+        assert(multi.server instanceof RemoteServer)
         this.socket.emit('join', data)
+        this.conn = new SocketNetConnection(client.inst.id, this.socket, multi.server.onNetReceive.bind(multi.server))
     }
 
     async stop() {
@@ -148,7 +149,7 @@ class SocketNetConnection implements NetConnection {
 
     constructor(
         public instanceId: number,
-        public socket: Socket,
+        public socket: ClientSocket | Socket,
         public onReceive?: (conn: NetConnection, data: unknown) => void,
         public onClose?: (conn: NetConnection) => void
     ) {
@@ -166,7 +167,7 @@ class SocketNetConnection implements NetConnection {
     }
     sendUpdate(data: unknown): void {
         this.socket.emit('update', data)
-        console.log('sending update', data)
+        // console.log('sending update', data)
     }
     close(): void {
         if (this.closed) return

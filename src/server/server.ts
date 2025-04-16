@@ -12,7 +12,7 @@ export interface ServerSettings {
     displayServerInstance?: boolean
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
-    displayLocalClientMaps?: boolean
+    displayClientMaps?: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
@@ -32,10 +32,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     async start() {
         instanceinator.displayId = true
-        instanceinator.displayFps = true
-        instanceinator.instances[0].display = false
+        instanceinator.displayFps = false
 
         this.baseInst = instanceinator.instances[0]
+        this.baseInst.display = false
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)
         this.serverInst.apply()
         this.safeguardServerInstance()

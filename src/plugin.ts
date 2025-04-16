@@ -54,7 +54,7 @@ export default class Multibakery implements PluginClass {
                     godmode: true,
                     displayServerInstance: false,
                     displayMaps: true,
-                    displayLocalClientMaps: true,
+                    displayClientMaps: true,
                     forceConsistentTickTimes: false,
                     socketSettings: {
                         port: DEFAULT_SOCKETIO_PORT,
@@ -68,7 +68,7 @@ export default class Multibakery implements PluginClass {
                     globalTps: 60,
                     displayServerInstance: false,
                     displayMaps: false,
-                    displayLocalClientMaps: true,
+                    displayClientMaps: true,
                     forceConsistentTickTimes: false,
                     socketSettings: {
                         host: '127.0.0.1',

@@ -1,6 +1,7 @@
-import { NetConnection, NetManagerLocalServer } from '../net/connection'
-import { SocketNetManagerLocalServer } from '../net/socket'
+import { NetConnection, NetManagerPhysicsServer } from '../net/connection'
+import { SocketNetManagerPhysicsServer } from '../net/socket'
 import { Server, ServerSettings } from './server'
+import './physics-server-sender'
 
 export interface PhysicsServerSettings extends ServerSettings {
     name: string
@@ -20,7 +21,7 @@ export function isClientJoinData(data: unknown): data is ClientJoinData {
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
-    netManager?: NetManagerLocalServer
+    netManager?: NetManagerPhysicsServer
 
     constructor(public settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
@@ -51,7 +52,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
 
         if (this.settings.socketSettings) {
-            this.netManager = new SocketNetManagerLocalServer(this.settings.socketSettings.port)
+            this.netManager = new SocketNetManagerPhysicsServer(this.settings.socketSettings.port)
         }
 
         if (this.netManager) {
@@ -68,6 +69,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         const client = await this.createAndJoinClient({
             username,
             inputType: 'puppet',
+            remote: true,
             // noShowInstance: true,
             // forceDraw: true,
         })
@@ -86,3 +88,4 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.destroy()
     }
 }
+

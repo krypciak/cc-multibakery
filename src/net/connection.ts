@@ -7,7 +7,7 @@ export interface NetConnection {
     sendUpdate(data: unknown): void
     close(): void
 }
-export interface NetManagerLocalServer {
+export interface NetManagerPhysicsServer {
     connections: NetConnection[]
     openListeners: ((conn: NetConnection) => void)[]
     closeListeners: ((conn: NetConnection) => void)[]

@@ -1,4 +1,5 @@
 import { CCDeepType, EntityTypes } from '../misc/entity-uuid'
+import { assert } from '../misc/assert'
 
 import './defs/dummy_DummyPlayer'
 
@@ -37,6 +38,22 @@ export function getFullEntityState(entities: ig.Entity[]) {
     return state
 }
 
-export function getDiffEntityState(entities: ig.Entity[]) {
-    return getFullEntityState(entities)
+export function applyEntityStates(states: EntityStateUpdatePacketRecord) {
+    for (const uuid in states) {
+        let entity = ig.game.entitiesByUUID[uuid]
+        const data = states[uuid]
+        if (!entity) {
+            const clazz = ig.entityPathToClass[data.type]
+            assert('create' in clazz)
+            const create = clazz.create as (uuid: string, state: typeof data) => InstanceType<typeof clazz>
+            entity = create(uuid, data)
+        }
+        assert(entity)
+        assert(isStateEntity(entity))
+        entity.setState(data)
+    }
 }
+
+// export function getDiffEntityState(entities: ig.Entity[]) {
+//     return getFullEntityState(entities)
+// }

@@ -1,5 +1,5 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { Server, waitForScheduledTask } from './server'
+import { waitForScheduledTask } from './server'
 import { assert } from '../misc/assert'
 import { ServerPlayer } from './server-player'
 import { CCMapDisplay } from './ccmap-display'
@@ -71,7 +71,6 @@ export class CCMap {
     async enter(player: ServerPlayer) {
         player.mapName = this.name
         this.players.push(player)
-        // this.stopUnloadTimer()
 
         await this.enterEntity(player.dummy)
         this.display.onPlayerCountChange(true)

@@ -2,9 +2,9 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
 import { waitForScheduledTask } from '../server'
-import { DummyUpdateInput } from '../../api'
 import { Client } from '../../client/client'
 import { PhysicsServer } from '../physics-server'
+import { DummyUpdateInput } from '../../dummy/dummy-input-puppet'
 
 declare global {
     namespace ig.ENTITY {

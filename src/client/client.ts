@@ -26,6 +26,7 @@ export type ClientSettings = {
       }
     | {
           inputType: 'puppet'
+          remote?: boolean
       }
 )
 
@@ -42,7 +43,7 @@ export class Client {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.settings.username,
-            multi.server.settings.displayLocalClientMaps && !this.settings.noShowInstance,
+            multi.server.settings.displayClientMaps && !this.settings.noShowInstance,
             this.settings.forceDraw
         )
         this.inst.ig.client = this
