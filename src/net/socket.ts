@@ -24,38 +24,30 @@ type ClientSocket = ioclient.Socket //<ServerToClientEvents, ClientToServerEvent
 export const DEFAULT_SOCKETIO_PORT = 33405
 
 function setIntervalWorkaround() {
-    const setInterval = window.setInterval
+    const origSetInterval = window.setInterval
     // @ts-expect-error
     window.setInterval = (...args) => {
-        const id = setInterval(...args)
+        const id = origSetInterval(...args)
         return { unref: () => {}, ref: () => {}, id }
     }
 
-    const clearInterval = window.clearInterval
+    const origClearInterval = window.clearInterval
     window.clearInterval = id => {
         if (id === undefined || id === null) return
         if (typeof id === 'number') {
-            clearInterval(id)
+            origClearInterval(id)
         } else {
-            clearInterval(id.id)
+            origClearInterval(id.id)
         }
     }
 }
 
 export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     connections: SocketNetConnection[] = []
-    openListeners: ((conn: NetConnection) => void)[] = []
-    closeListeners: ((conn: NetConnection) => void)[] = []
     io!: SocketServer
 
     constructor(public port: number) {
         setIntervalWorkaround()
-        this.closeListeners.push(conn => {
-            this.connections.erase(conn as SocketNetConnection)
-        })
-        this.openListeners.push(conn => {
-            this.connections.push(conn as SocketNetConnection)
-        })
     }
 
     async start() {
@@ -68,26 +60,30 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
                 origin: `http://localhost:5173`,
             },
         })
-        console.log('Listening for connections...')
+        const server = multi.server
+        assert(server instanceof PhysicsServer)
         this.io.on('connection', async socket => {
+            const connection = new SocketNetConnection(
+                socket,
+                data => {
+                    server.onNetReceive(connection, data)
+                },
+                () => {
+                    this.connections.erase(connection)
+                    server.onNetDisconnect(connection)
+                }
+            )
+            this.connections.push(connection)
+
             socket.on('join', async data => {
                 function err(msg: string) {
                     socket.emit('error', msg)
-                    socket.disconnect()
                 }
                 if (!isClientJoinData(data)) return err('invalid join data')
-                assert(multi.server instanceof PhysicsServer)
-                const { id, error } = await multi.server.onNetJoin(data)
+                const { client, error } = await server.onNetJoin(data)
                 if (error) return err(error)
-                assert(id !== undefined)
 
-                const connection = new SocketNetConnection(
-                    id,
-                    socket,
-                    multi.server.onNetReceive.bind(multi.server),
-                    multi.server.onNetClose.bind(multi.server)
-                )
-                for (const func of this.openListeners) func(connection)
+                connection.join(client!)
             })
         })
     }
@@ -103,7 +99,6 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
 export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
-    socket?: ioclient.Socket
 
     constructor(
         public host: string,
@@ -114,28 +109,37 @@ export class SocketNetManagerRemoteServer {
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
+        const server = multi.server
+        assert(server instanceof RemoteServer)
         const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket
         socket.on('connect', () => {
-            assert(multi.server instanceof RemoteServer)
-            multi.server.onNetConnected()
+            const conn = new SocketNetConnection(
+                socket,
+                data => {
+                    server.onNetReceive(conn, data)
+                },
+                () => {
+                    // close
+                }
+            )
+            this.conn = conn
+
+            server.onNetConnected()
         })
         socket.on('disconnect', () => {
-            assert(multi.server instanceof RemoteServer)
             this.stop()
-            multi.server.onNetDisconnect()
+            server.onNetDisconnect()
         })
-        this.socket = socket
     }
 
     async sendJoin(data: unknown, client: Client) {
-        assert(this.socket)
+        assert(this.conn)
         assert(multi.server instanceof RemoteServer)
-        this.socket.emit('join', data)
-        this.conn = new SocketNetConnection(client.inst.id, this.socket, multi.server.onNetReceive.bind(multi.server))
+        this.conn.join(client)
+        this.conn.socket.emit('join', data)
     }
 
     async stop() {
-        this.socket?.disconnect()
         this.conn?.close()
     }
 
@@ -145,39 +149,45 @@ export class SocketNetManagerRemoteServer {
 }
 
 class SocketNetConnection implements NetConnection {
+    clients: Client[] = []
     closed: boolean = false
 
     constructor(
-        public instanceId: number,
         public socket: ClientSocket | Socket,
-        public onReceive?: (conn: NetConnection, data: unknown) => void,
-        public onClose?: (conn: NetConnection) => void
+        public onReceive?: (data: unknown) => void,
+        public onClose?: () => void
     ) {
-        const inst = instanceinator.instances[instanceId]
-        assert(inst)
-        inst.ig.netConnection = this
         this.socket.on('update', data => {
-            if (this.onReceive) this.onReceive(this, data)
+            if (this.onReceive) this.onReceive(data)
         })
         socket.on('disconnect', () => this.close())
+    }
+
+    join(client: Client) {
+        this.clients.push(client)
+        // client.inst.ig.netConnection = this
+    }
+    leave(client: Client) {
+        this.clients.erase(client)
+        // client.inst.ig.netConnection = undefined
     }
 
     isConnected() {
         return this.socket.connected
     }
+
     sendUpdate(data: unknown): void {
         this.socket.emit('update', data)
-        // console.log('sending update', data)
     }
     close(): void {
         if (this.closed) return
         this.closed = true
         if (!this.socket.disconnected) this.socket.disconnect()
 
-        const inst = instanceinator.instances[this.instanceId]
-        assert(inst)
-        inst.ig.netConnection = undefined
+        if (this.onClose) this.onClose()
 
-        if (this.onClose) this.onClose(this)
+        for (const client of this.clients) {
+            this.leave(client)
+        }
     }
 }

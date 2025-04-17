@@ -19,6 +19,7 @@ export type ClientSettings = {
     username: string
     noShowInstance?: boolean
     forceDraw?: boolean
+    remote?: boolean
 } & (
     | {
           inputType?: 'clone'
@@ -26,7 +27,6 @@ export type ClientSettings = {
       }
     | {
           inputType: 'puppet'
-          remote?: boolean
       }
 )
 
@@ -34,8 +34,6 @@ export class Client {
     player!: ServerPlayer
     inst!: InstanceinatorInstance
     determinism!: DeterMineInstance /* determinism is only used for visuals */
-
-    private destroyed = false
 
     constructor(public settings: ClientSettings) {}
 
@@ -150,10 +148,6 @@ export class Client {
     }
 
     async destroy() {
-        if (this.destroyed) return
-        this.destroyed = true
-        await multi.server.leaveClient(this.inst.id)
-
         if (this.inst.ig.gamepad.destroy) {
             await this.inst.ig.gamepad.destroy()
         }

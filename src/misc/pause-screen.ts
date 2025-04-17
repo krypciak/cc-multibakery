@@ -64,7 +64,10 @@ prestart(() => {
                         ig.canLeavePauseMenu = true
                         if (button.data == 0) {
                             ig.interact.removeEntry(this.buttonInteract)
-                            multi.server.leaveClient(instanceinator.id)
+                            assert(ig.client)
+                            multi.server.leaveClient(ig.client).then(() => {
+                                ig.system.startRunLoop()
+                            })
                         }
                     })
                 }

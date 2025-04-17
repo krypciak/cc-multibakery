@@ -1,5 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
+import { RemoteServer } from '../../server/remote-server'
 
 export {}
 declare global {
@@ -20,6 +21,9 @@ function getState(this: dummy.DummyPlayer) {
     return {
         data: this.data,
         pos: this.coll.pos,
+        currentAnim: this.currentAnim,
+        currentAnimTimer: this.animState.timer,
+        face: this.face,
         // input: this.input.getInput(),
         // gamepadInput: this.gamepadManager.getInput(),
         // gatherInput: this.nextGatherInput,
@@ -36,6 +40,15 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
         }
     }
+    if (state.currentAnim) {
+        this.setCurrentAnim(state.currentAnim)
+    }
+    if (state.currentAnimTimer) {
+        this.animState.timer = state.currentAnimTimer
+    }
+    if (state.face) {
+        this.face = state.face
+    }
     // if (state.input) {
     //     this.input.setInput(state.input)
     // }
@@ -51,12 +64,15 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     // if (state.element && this.model.currentElementMode !== state.element) {
     //     this.model.setElementMode(state.element, false, false)
     // }
+
+    // want update from sc.ActorEntity
+    // this.update()
 }
 
 prestart(() => {
     dummy.DummyPlayer.inject({ getState, setState })
     dummy.DummyPlayer.create = (uuid: string, state) => {
-        const inputManager = undefined as unknown as dummy.InputManager
+        const inputManager = new dummy.input.Puppet.InputManager()
         assert(state.data)
         const entity = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
             uuid,
@@ -65,4 +81,13 @@ prestart(() => {
         })
         return entity
     }
+
+    dummy.DummyPlayer.inject({
+        update() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!ig.settingState) return
+
+            this.parent()
+        },
+    })
 }, 2)

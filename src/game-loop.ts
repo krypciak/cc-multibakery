@@ -7,7 +7,6 @@ declare global {
     namespace ig {
         interface System {
             frame: number
-            animationFrameRequestId: number
         }
     }
 }
@@ -33,21 +32,13 @@ export function startGameLoop() {
 
 prestart(() => {
     ig.System.inject({
-        stopRunLoop() {
-            if (window.cancelAnimationFrame) {
-                window.cancelAnimationFrame(this.animationFrameRequestId)
-            }
-            this.parent()
-        },
         run() {
+            if (!ig.system.running) return
+
             if (!multi.server) return this.parent()
 
             if (!multi.server.serverInst) return
             assert(instanceinator.id == multi.server.serverInst.id)
-            // if (!this.running) {
-            //     console.log('not running, return', instanceinator.instanceId)
-            //     return
-            // }
 
             try {
                 physicsLoop()

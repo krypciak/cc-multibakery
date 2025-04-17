@@ -38,7 +38,14 @@ export function getFullEntityState(entities: ig.Entity[]) {
     return state
 }
 
+declare global {
+    namespace ig {
+        var settingState: boolean | boolean
+    }
+}
+
 export function applyEntityStates(states: EntityStateUpdatePacketRecord) {
+    ig.settingState = true
     for (const uuid in states) {
         let entity = ig.game.entitiesByUUID[uuid]
         const data = states[uuid]
@@ -52,6 +59,7 @@ export function applyEntityStates(states: EntityStateUpdatePacketRecord) {
         assert(isStateEntity(entity))
         entity.setState(data)
     }
+    ig.settingState = false
 }
 
 // export function getDiffEntityState(entities: ig.Entity[]) {

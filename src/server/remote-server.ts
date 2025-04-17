@@ -7,11 +7,17 @@ import { ClientJoinData } from './physics-server'
 import { RemoteServerUpdatePacket } from './physics-server-sender'
 import { Server, ServerSettings } from './server'
 
+import './remote-server-sender'
+import { Client } from '../client/client'
+
+export type RemoteServerConnectionSettings = {
+    type: 'socket'
+    host: string
+    port: number
+}
+
 export interface RemoteServerSettings extends ServerSettings {
-    socketSettings?: {
-        host: string
-        port: number
-    }
+    connection: RemoteServerConnectionSettings
 }
 
 export class RemoteServer extends Server<RemoteServerSettings> {
@@ -25,11 +31,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async start() {
         await super.start()
 
-        if (this.settings.socketSettings) {
-            this.netManager = new SocketNetManagerRemoteServer(
-                this.settings.socketSettings.host,
-                this.settings.socketSettings.port
-            )
+        const connS = this.settings.connection
+        if (connS.type == 'socket') {
+            this.netManager = new SocketNetManagerRemoteServer(connS.host, connS.port)
         } else assert(false)
 
         await this.netManager.connect()
@@ -38,7 +42,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     private async createClient(username: string) {
         const client = await this.createAndJoinClient({
             username,
-            inputType: 'puppet',
+            inputType: 'clone',
         })
 
         const data: ClientJoinData = {
@@ -56,21 +60,31 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
-        // console.log(`received packet from`, conn.instanceId, `:`, data)
-        this.processPacket(conn.instanceId, data as RemoteServerUpdatePacket)
+        // console.log(`received packet to`, conn.clients, `:`, data)
+        this.processPacket(conn, data as RemoteServerUpdatePacket)
     }
 
-    onNetClose(conn: NetConnection) {
-        this.clientsById[conn.instanceId].destroy()
+    private processPacket(_conn: NetConnection, data: RemoteServerUpdatePacket) {
+        for (const mapName in data.mapPackets) {
+            const mapPacket = data.mapPackets[mapName]
+
+            const map = multi.server.maps[mapName]
+            assert(map)
+
+            const prevId = instanceinator.id
+            const inst = map.inst
+            assert(inst)
+            inst.apply()
+            applyEntityStates(mapPacket.entities)
+            instanceinator.instances[prevId].apply()
+        }
     }
 
-    private processPacket(instanceId: number, data: RemoteServerUpdatePacket) {
-        const inst = instanceinator.instances[instanceId]
-        assert(inst)
-        const prevId = instanceinator.id
-        inst.apply()
-        applyEntityStates(data.mapPacket.entities)
-        instanceinator.instances[prevId].apply()
+    async leaveClient(client: Client) {
+        await super.leaveClient(client)
+        if (Object.keys(this.clients).length == 0) {
+            await multi.destroy()
+        }
     }
 
     async destroy() {
@@ -80,7 +94,13 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 }
 
 prestart(() => {
-    ig.Physics.inject({
+    // ig.Physics.inject({
+    //     update() {
+    //         if (multi.server instanceof RemoteServer) return
+    //         this.parent()
+    //     },
+    // })
+    ig.EventManager.inject({
         update() {
             if (multi.server instanceof RemoteServer) return
             this.parent()
@@ -92,7 +112,7 @@ prestart(() => {
     ig.Game.inject({
         update() {
             this.parent()
-            if (multi.server instanceof RemoteServer && ig.netConnection) {
+            if (multi.server instanceof RemoteServer /* && ig.netConnection */) {
                 // const data = {
                 //     hi: 'hello',
                 // }
@@ -101,3 +121,22 @@ prestart(() => {
         },
     })
 })
+
+/* for client */
+prestart(() => {
+    ig.EventManager.inject({
+        update() {
+            // TEMP fix todo
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            this.clear()
+        },
+    })
+    ig.CollEntry.inject({
+        // @ts-expect-error
+        update() {
+            if (multi.server instanceof RemoteServer) return
+            // @ts-expect-error
+            this.parent()
+        },
+    })
+}, 3)

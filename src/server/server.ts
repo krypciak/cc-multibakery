@@ -128,10 +128,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         return client
     }
 
-    async leaveClient(id: number) {
+    async leaveClient(client: Client) {
+        const id = client.inst.id
         assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
-        const client = this.clientsById[id]
-        assert(client)
         delete this.clientsById[id]
         delete this.clients[client.player.username]
         await client.destroy()
@@ -148,8 +147,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async destroy() {
+        assert(instanceinator.id == this.serverInst.id)
+        ig.system.stopRunLoop()
+
         for (const client of Object.values(this.clientsById)) {
-            await client.destroy()
+            await this.leaveClient(client)
         }
         for (const map of Object.values(this.maps)) {
             await map.destroy()
@@ -159,6 +161,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         determine.apply(determine.instances[0])
         this.baseInst.apply()
+        this.baseInst.display = true
     }
 }
 

@@ -1,5 +1,5 @@
-import { Client } from '../client/client'
 import { assert } from '../misc/assert'
+import { NetConnection } from '../net/connection'
 import { prestart } from '../plugin'
 import { EntityStateUpdatePacketRecord, getFullEntityState } from '../state/states'
 import { CCMap } from './ccmap'
@@ -18,19 +18,26 @@ prestart(() => {
 })
 
 function send() {
+    assert(multi.server instanceof PhysicsServer)
+    const mapsToSend = new Set<string>()
+
+    const connections = multi.server.netManager!.connections
+    for (const conn of connections) {
+        for (const client of conn.clients) {
+            mapsToSend.add(client.player.mapName)
+        }
+    }
+
     const mapPackets: Record<string, CCMapUpdatePacket> = {}
 
-    for (const mapName in multi.server.maps) {
+    for (const mapName of mapsToSend) {
         const map = multi.server.maps[mapName]
         if (!map.inst) continue
         mapPackets[mapName] = getMapUpdatePacket(map)
     }
 
-    for (const username in multi.server.clients) {
-        const client = multi.server.clients[username]
-        const conn = client.inst.ig.netConnection
-        if (!conn) continue
-        const data = getRemoteServerUpdatePacket(client, mapPackets[client.player.mapName])
+    for (const conn of connections) {
+        const data = getRemoteServerUpdatePacket(conn, mapPackets)
         conn.sendUpdate(data)
     }
 }
@@ -46,12 +53,21 @@ function getMapUpdatePacket(map: CCMap): CCMapUpdatePacket {
 }
 
 export interface RemoteServerUpdatePacket {
-    mapPacket: CCMapUpdatePacket
+    mapPackets: Record</* mapName */ string, CCMapUpdatePacket>
 }
-function getRemoteServerUpdatePacket(_client: Client, mapPacket: CCMapUpdatePacket): RemoteServerUpdatePacket {
-    assert(mapPacket)
+function getRemoteServerUpdatePacket(
+    conn: NetConnection,
+    mapPackets: Record<string, CCMapUpdatePacket>
+): RemoteServerUpdatePacket {
+    const sendMapPackets: RemoteServerUpdatePacket['mapPackets'] = {}
+    for (const client of conn.clients) {
+        const mapName = client.player.mapName
+        if (sendMapPackets[mapName]) continue
+        sendMapPackets[mapName] = mapPackets[mapName]
+    }
+
     const data: RemoteServerUpdatePacket = {
-        mapPacket,
+        mapPackets: sendMapPackets,
     }
     return data
 }

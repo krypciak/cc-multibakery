@@ -2,6 +2,7 @@ import { NetConnection, NetManagerPhysicsServer } from '../net/connection'
 import { SocketNetManagerPhysicsServer } from '../net/socket'
 import { Server, ServerSettings } from './server'
 import './physics-server-sender'
+import { Client } from '../client/client'
 
 export interface PhysicsServerSettings extends ServerSettings {
     name: string
@@ -62,7 +63,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
     async onNetJoin(
         data: ClientJoinData
-    ): Promise<{ id: number; error?: undefined } | { id?: undefined; error: string }> {
+    ): Promise<{ client: Client; error?: undefined } | { client?: undefined; error: string }> {
         const username = data.username
         if (this.clients[username]) return { error: 'username taken' }
 
@@ -73,14 +74,17 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             // noShowInstance: true,
             // forceDraw: true,
         })
-        return { id: client.inst.id }
+        return { client }
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
-        console.log(`received packet from`, conn.instanceId, `:`, data)
+        console.log(`received packet from`, conn.clients, `:`, data)
     }
-    onNetClose(conn: NetConnection) {
-        this.clientsById[conn.instanceId].destroy()
+
+    onNetDisconnect(conn: NetConnection) {
+        for (const client of conn.clients) {
+            this.leaveClient(client)
+        }
     }
 
     async destroy() {
@@ -88,4 +92,3 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.destroy()
     }
 }
-
