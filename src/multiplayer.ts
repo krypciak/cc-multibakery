@@ -11,6 +11,7 @@ import './teleport-fix'
 import './state/states'
 import './misc/paused-virtual'
 import './misc/pause-screen'
+import './misc/disable-fkeys'
 
 declare global {
     namespace multi {

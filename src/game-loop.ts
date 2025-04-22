@@ -16,7 +16,6 @@ export function startGameLoop() {
     ig.system.frame = 0
 
     if (window.crossnode?.options.test) {
-        // console.log('crossnode, start your game loop now!!')
         return
     }
 
@@ -61,10 +60,6 @@ function draw() {
     multi.server.serverInst.apply()
 }
 
-// let pi = 0
-// let pd = Date.now()
-// let pc = 0
-
 let previousMusicTime = 0
 function physicsLoop() {
     ig.system.frame++
@@ -102,14 +97,6 @@ function physicsLoop() {
             ig.system.newGameClass = null
         }
     }
-
-    // pi++
-    // if (pi % 120 == 0) {
-    //     pc = (pi / (Date.now() - pd)) * 1000
-    //     pi = 0
-    //     pd = Date.now()
-    //     console.log('physics:', pc.floor(), 'draw:', dc.floor())
-    // }
 }
 
 prestart(() => {

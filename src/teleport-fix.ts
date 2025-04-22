@@ -25,7 +25,6 @@ export function teleportPlayerToProperMarker(
         }
     } else {
         if (!tpPos) throw new Error('advancedTeleportMarkerBs what')
-        console.log('what???;')
         marker = undefined
         player.coll.level = tpPos.level.toString()
         player.coll.baseZPos = tpPos.baseZPos
@@ -52,7 +51,6 @@ prestart(() => {
     //     teleport(mapName, marker, hint, clearCache, reloadCache) {
     //         ig.game.mapName = mapName
     //         ig.game.marker = marker?.marker
-    //         console.log('ignoring ig.Game#teleport: ', mapName, marker, hint, clearCache, reloadCache)
     //     },
     // })
 

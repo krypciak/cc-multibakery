@@ -1,7 +1,10 @@
 import { CCDeepType, EntityTypes } from '../misc/entity-uuid'
 import { assert } from '../misc/assert'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 import './defs/dummy_DummyPlayer'
+import './defs/ig_ENTITY_Effect'
+// import './defs/ig_ENTITY_Particle'
 
 interface StateEntityBase {
     getState(): object
@@ -18,37 +21,46 @@ export type EntityStateEntry<T extends StateEntityTypes> = {
     type: T
 } & Partial<ReturnType<Filter<T>['getState']>>
 
-export type EntityStateUpdatePacketRecord = Record<string, EntityStateEntry<StateEntityTypes>>
+export type EntityStateUpdatePacket = {
+    states: Record<string, EntityStateEntry<StateEntityTypes>>
+}
 
 function isStateEntity(e: ig.Entity): e is StateEntityInstances {
     return 'getState' in e && 'setState' in e
 }
 
-export function getFullEntityState(entities: ig.Entity[]) {
-    const state: EntityStateUpdatePacketRecord = {}
-    for (const entity of entities) {
+export function getFullEntityState({ ig }: InstanceinatorInstance) {
+    const packet: EntityStateUpdatePacket = {
+        states: {},
+    }
+
+    for (const entity of ig.game.entities) {
         if (isStateEntity(entity)) {
-            state[entity.uuid] = {
+            packet.states[entity.uuid] = {
                 type: entity.type,
+                // @ts-expect-error
                 ...entity.getState(),
             }
         }
     }
 
-    return state
+    return packet
 }
 
 declare global {
     namespace ig {
-        var settingState: boolean | boolean
+        var settingState: boolean | undefined
+        var lastStatePacket: EntityStateUpdatePacket | undefined
     }
 }
 
-export function applyEntityStates(states: EntityStateUpdatePacketRecord) {
+export function applyEntityStates(packet: EntityStateUpdatePacket, tick: number) {
     ig.settingState = true
-    for (const uuid in states) {
+    const backup = ig.system.tick
+    ig.system.tick = tick
+    for (const uuid in packet.states) {
         let entity = ig.game.entitiesByUUID[uuid]
-        const data = states[uuid]
+        const data = packet.states[uuid]
         if (!entity) {
             const clazz = ig.entityPathToClass[data.type]
             assert('create' in clazz)
@@ -57,9 +69,13 @@ export function applyEntityStates(states: EntityStateUpdatePacketRecord) {
         }
         assert(entity)
         assert(isStateEntity(entity))
+        // @ts-expect-error
         entity.setState(data)
     }
+
+    ig.system.tick = backup
     ig.settingState = false
+    ig.lastStatePacket = packet
 }
 
 // export function getDiffEntityState(entities: ig.Entity[]) {

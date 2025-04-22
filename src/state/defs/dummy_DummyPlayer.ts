@@ -18,6 +18,8 @@ declare global {
 
 type Return = Partial<ReturnType<typeof getState>>
 function getState(this: dummy.DummyPlayer) {
+    // const anim = this.animState.animations[0]
+    // console.log(this.currentAnim, anim.sequence.length, )
     return {
         data: this.data,
         pos: this.coll.pos,
@@ -41,7 +43,8 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         }
     }
     if (state.currentAnim) {
-        this.setCurrentAnim(state.currentAnim)
+        this.currentAnim = state.currentAnim
+        // this.setCurrentAnim(state.currentAnim)
     }
     if (state.currentAnimTimer) {
         this.animState.timer = state.currentAnimTimer
@@ -65,8 +68,13 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     //     this.model.setElementMode(state.element, false, false)
     // }
 
-    // want update from sc.ActorEntity
-    // this.update()
+    this.updateAnim()
+    // {
+    //     const backup = ig.ActorEntity.prototype.update
+    //     ig.ActorEntity.prototype.update = () => {}
+    //     sc.ActorEntity.prototype.update.call(this)
+    //     ig.ActorEntity.prototype.update = backup
+    // }
 }
 
 prestart(() => {

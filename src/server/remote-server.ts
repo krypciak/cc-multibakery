@@ -60,7 +60,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
-        // console.log(`received packet to`, conn.clients, `:`, data)
         this.processPacket(conn, data as RemoteServerUpdatePacket)
     }
 
@@ -75,7 +74,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const inst = map.inst
             assert(inst)
             inst.apply()
-            applyEntityStates(mapPacket.entities)
+            applyEntityStates(mapPacket.entities, data.tick)
             instanceinator.instances[prevId].apply()
         }
     }
@@ -92,21 +91,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await super.destroy()
     }
 }
-
-prestart(() => {
-    // ig.Physics.inject({
-    //     update() {
-    //         if (multi.server instanceof RemoteServer) return
-    //         this.parent()
-    //     },
-    // })
-    ig.EventManager.inject({
-        update() {
-            if (multi.server instanceof RemoteServer) return
-            this.parent()
-        },
-    })
-})
 
 prestart(() => {
     ig.Game.inject({

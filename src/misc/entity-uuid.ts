@@ -1,4 +1,5 @@
 import { prestart } from '../plugin'
+import { assert } from './assert'
 
 declare global {
     namespace ig {
@@ -77,13 +78,33 @@ prestart(() => {
 
         const crypto: typeof import('crypto') = (0, eval)('require("crypto")')
 
+        function setUuid(this: ig.Entity, x: number, y: number, z: number, settings: ig.Entity.Settings) {
+            if (ig.game.entitiesByUUID[this.uuid]) {
+                delete ig.game.entitiesByUUID[this.uuid]
+            }
+
+            if (settings.uuid) {
+                this.uuid = settings.uuid
+                assert(!ig.game.entitiesByUUID[this.uuid], 'Entity uuid overlap')
+            } else {
+                do {
+                    this.uuid = crypto
+                        .createHash('sha256')
+                        .update(`${this.type}-${settings.name}-${x},${y},${z}`)
+                        .digest('hex')
+                    x++
+                } while (ig.game.entitiesByUUID[this.uuid])
+            }
+            ig.game.entitiesByUUID[this.uuid] = this
+        }
         ig.Entity.inject({
             init(x, y, z, settings) {
                 this.parent(x, y, z, settings)
-                this.uuid =
-                    settings.uuid ??
-                    crypto.createHash('sha256').update(`${this.type}-${settings.name}-${x},${y}`).digest('hex')
-                ig.game.entitiesByUUID[this.uuid] = this
+                setUuid.call(this, x, y, z, settings)
+            },
+            reset(x, y, z, settings) {
+                this.parent(x, y, z, settings)
+                setUuid.call(this, x, y, z, settings)
             },
             onKill() {
                 this.parent()

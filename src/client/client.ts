@@ -122,6 +122,7 @@ export class Client {
         await waitForScheduledTask(this.inst, () => {
             sc.model.enterNewGame()
             sc.model.enterGame()
+            for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
 
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
             for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(map.rawLevelData)

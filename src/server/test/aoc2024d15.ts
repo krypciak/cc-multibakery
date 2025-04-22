@@ -4,7 +4,7 @@ import Multibakery from '../../plugin'
 import { waitForScheduledTask } from '../server'
 import { Client } from '../../client/client'
 import { PhysicsServer } from '../physics-server'
-import { DummyUpdateInput } from '../../dummy/dummy-input-puppet'
+import { InputData } from '../../dummy/dummy-input-puppet'
 
 declare global {
     namespace ig.ENTITY {
@@ -212,7 +212,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             await waitForScheduledTask(inst, () => {})
         }
     }
-    const emptyInput: DummyUpdateInput = {
+    const emptyInput: InputData = {
         isUsingMouse: false,
         isUsingKeyboard: false,
         isUsingAccelerometer: false,
@@ -227,7 +227,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
         actions: {} as any,
     }
-    const inp: DummyUpdateInput = ig.copy(emptyInput)
+    const inp: InputData = ig.copy(emptyInput)
 
     const playerInp = dummy.input.Puppet.InputManager.emptyGatherInput()
     playerInp.lastMoveDir = dir

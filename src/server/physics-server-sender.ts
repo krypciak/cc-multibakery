@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { NetConnection } from '../net/connection'
 import { prestart } from '../plugin'
-import { EntityStateUpdatePacketRecord, getFullEntityState } from '../state/states'
+import { EntityStateUpdatePacket, getFullEntityState } from '../state/states'
 import { CCMap } from './ccmap'
 import { PhysicsServer } from './physics-server'
 
@@ -43,17 +43,18 @@ function send() {
 }
 
 export interface CCMapUpdatePacket {
-    entities: EntityStateUpdatePacketRecord
+    entities: EntityStateUpdatePacket
 }
 function getMapUpdatePacket(map: CCMap): CCMapUpdatePacket {
     const data: CCMapUpdatePacket = {
-        entities: getFullEntityState(map.inst.ig.game.entities),
+        entities: getFullEntityState(map.inst),
     }
     return data
 }
 
 export interface RemoteServerUpdatePacket {
     mapPackets: Record</* mapName */ string, CCMapUpdatePacket>
+    tick: number
 }
 function getRemoteServerUpdatePacket(
     conn: NetConnection,
@@ -68,6 +69,7 @@ function getRemoteServerUpdatePacket(
 
     const data: RemoteServerUpdatePacket = {
         mapPackets: sendMapPackets,
+        tick: ig.system.tick,
     }
     return data
 }

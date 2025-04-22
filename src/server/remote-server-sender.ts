@@ -1,8 +1,6 @@
-import { Client } from '../client/client'
+import { GamepadManagerData, InputData } from '../dummy/dummy-input-puppet'
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
-import { EntityStateUpdatePacketRecord, getFullEntityState } from '../state/states'
-import { CCMap } from './ccmap'
 import { RemoteServer } from './remote-server'
 
 prestart(() => {
@@ -17,28 +15,47 @@ prestart(() => {
 })
 
 function send() {
-    // const mapPackets: Record<string, RemoteServerInputPacket> = {}
-    //
-    // for (const mapName in multi.server.maps) {
-    //     const map = multi.server.maps[mapName]
-    //     if (!map.inst) continue
-    //     mapPackets[mapName] = getMapUpdatePacket(map)
-    // }
-    //
-    // for (const username in multi.server.clients) {
-    //     const client = multi.server.clients[username]
-    //     const conn = client.inst.ig.netConnection
-    //     if (!conn) continue
-    //     const data = getRemoteServerInputPacket(client, mapPackets[client.player.mapName])
-    //     conn.sendUpdate(data)
-    // }
+    assert(multi.server instanceof RemoteServer)
+    const conn = multi.server.netManager.conn
+    if (!conn) return
+
+    const packets: RemoteServerInputPacket = {}
+    for (const username in multi.server.clients) {
+        const client = multi.server.clients[username]
+        const inst = client.inst
+        assert(inst)
+        const input = dummy.input.Puppet.InputManager.getInputData(inst.ig.input)
+        const gamepad = dummy.input.Puppet.InputManager.getGamepadManagerData(inst.ig.gamepad)
+
+        packets[username] = {
+            input,
+            gamepad,
+        }
+    }
+
+    conn.sendUpdate(packets)
 }
 
-export interface CCMapInputPacket {}
+export type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
+export interface ClientInputPacket {
+    input: InputData
+    gamepad?: GamepadManagerData
+}
+export function isRemoteServerInputPacket(data: any): data is RemoteServerInputPacket {
+    if (typeof data != 'object' || !data) return false
+    for (const username in data) {
+        const client = multi.server.clients[username]
+        if (!client) continue
 
-export interface RemoteServerInputPacket {}
+        const packet: any = data[username]
+        if (typeof packet != 'object' || !packet) return false
 
-function getRemoteServerInputPacket(_client: Client): RemoteServerInputPacket {
-    const data: RemoteServerInputPacket = {}
-    return data
+        const input = packet.input
+        if (typeof input != 'object' || !input) return false
+
+        const gamepad = packet.gamepad
+        if (gamepad && typeof gamepad != 'object') return false
+    }
+
+    return true
 }

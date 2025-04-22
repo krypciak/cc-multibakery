@@ -1,6 +1,6 @@
 import { prestart } from '../plugin'
 
-export interface DummyUpdateInput {
+export interface InputData {
     isUsingMouse: boolean
     isUsingKeyboard: boolean
     isUsingAccelerometer: boolean
@@ -16,7 +16,7 @@ export interface DummyUpdateInput {
     actions: ig.Input['actions']
 }
 
-export interface DummyUpdateGamepadInput {
+export interface GamepadManagerData {
     buttonDeadzones: Record<ig.BUTTONS, number>
     axesDeadzones: Record<ig.BUTTONS, number>
     buttonStates: Record<ig.BUTTONS, number>
@@ -46,7 +46,7 @@ class InputManagerClazz implements dummy.InputManager {
         }
     }
 
-    static getDummyUpdateKeyboardInputFromIgInput(input: ig.Input): DummyUpdateInput {
+    static getInputData(input: ig.Input): InputData {
         return {
             isUsingMouse: input.isUsingMouse,
             isUsingKeyboard: input.isUsingKeyboard,
@@ -64,9 +64,7 @@ class InputManagerClazz implements dummy.InputManager {
         }
     }
 
-    static getDummyUpdateGamepadInputFromIgGamepadManager(
-        gamepadmanager: ig.GamepadManager
-    ): DummyUpdateGamepadInput | undefined {
+    static getGamepadManagerData(gamepadmanager: ig.GamepadManager): GamepadManagerData | undefined {
         const gp = gamepadmanager.activeGamepads[0]
         if (!gp) return
         return {
@@ -115,10 +113,12 @@ prestart(() => {
 declare global {
     namespace dummy.input.Puppet {
         interface Input extends ig.Input {
-            _lastInput: DummyUpdateInput
+            inputQueue: InputData[]
 
-            getInput(this: this): DummyUpdateInput
-            setInput(this: this, input: DummyUpdateInput): void
+            getInput(this: this): InputData
+            setInput(this: this, input: InputData): void
+            pushInput(this: this, input: InputData): void
+            popInput(this: this): void
         }
         interface InputConstructor extends ImpactClass<Input> {
             new (): Input
@@ -130,17 +130,28 @@ prestart(() => {
     dummy.input.Puppet.Input = ig.Input.extend({
         init() {
             this.bindings = ig.input.bindings
+            this.inputQueue = []
         },
         getInput() {
-            return this._lastInput ?? dummy.input.Puppet.InputManager.getDummyUpdateKeyboardInputFromIgInput(this)
+            return dummy.input.Puppet.InputManager.getInputData(this)
         },
         setInput(input) {
-            this._lastInput = input
             for (const key of Object.keysT(input)) {
                 const value = input[key]
                 if (typeof value === 'function') continue
                 // @ts-expect-error
                 this[key] = value
+            }
+        },
+        pushInput(input) {
+            this.inputQueue.push(input)
+            this.popInput()
+        },
+        popInput() {
+            if (this.inputQueue.length > 0) {
+                const ele = this.inputQueue[0]
+                this.inputQueue.splice(0, 1)
+                this.setInput(ele)
             }
         },
     })
@@ -149,10 +160,11 @@ prestart(() => {
 declare global {
     namespace dummy.input.Puppet {
         interface GamepadManager extends ig.GamepadManager {
-            _lastInput: DummyUpdateGamepadInput
+            _lastInput: GamepadManagerData
 
-            getInput(this: this): DummyUpdateGamepadInput
-            setInput(this: this, input: DummyUpdateGamepadInput): void
+            getInput(this: this): GamepadManagerData
+            pushInput(this: this, input: GamepadManagerData): void
+            setInput(this: this, input: GamepadManagerData): void
         }
         interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
             new (): GamepadManager
@@ -176,9 +188,7 @@ prestart(() => {
             ]
         },
         getInput() {
-            return (
-                this._lastInput ?? dummy.input.Puppet.InputManager.getDummyUpdateGamepadInputFromIgGamepadManager(this)
-            )
+            return this._lastInput ?? dummy.input.Puppet.InputManager.getGamepadManagerData(this)
         },
         setInput(input) {
             this._lastInput = input
