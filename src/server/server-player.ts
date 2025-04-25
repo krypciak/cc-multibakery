@@ -53,6 +53,7 @@ export class ServerPlayer {
             map = multi.server.maps[this.mapName]
             assert(map)
         }
+        await map.ready
         await waitForScheduledTask(map.inst, () => {
             this.createPlayer()
         })

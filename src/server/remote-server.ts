@@ -52,7 +52,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async onNetConnected() {
-        await this.createClient('client')
+        await this.createClient('client1')
+        await this.createClient('client2')
     }
 
     onNetDisconnect() {

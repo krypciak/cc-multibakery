@@ -24,7 +24,14 @@ export class CCMap {
     display!: CCMapDisplay
     determinism!: DeterMineInstance
 
-    constructor(public name: string) {}
+    ready: Promise<void>
+    private readyResolve!: () => void
+
+    constructor(public name: string) {
+        this.ready = new Promise<void>(resolve => {
+            this.readyResolve = resolve
+        })
+    }
 
     async load() {
         this.display = new CCMapDisplay(this)
@@ -52,6 +59,7 @@ export class CCMap {
                 this.display.addDummyUsernameBoxes()
             })
         })
+        this.readyResolve()
     }
 
     private async readLevelData() {
