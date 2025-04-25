@@ -1,5 +1,5 @@
-import { Server as _Server, Socket as _Socket } from 'socket.io'
-import * as ioclient from 'socket.io-client'
+import type { Server as _Server, Socket as _Socket } from 'socket.io'
+import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerPhysicsServer } from './connection'
 import { isClientJoinData, PhysicsServer } from '../server/physics-server'
@@ -54,7 +54,8 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
-        this.io = new _Server(this.port, {
+        const { Server } = await import('socket.io')
+        this.io = new Server(this.port, {
             connectionStateRecovery: {},
             cors: {
                 origin: `http://localhost:5173`,
@@ -111,6 +112,15 @@ export class SocketNetManagerRemoteServer {
 
         const server = multi.server
         assert(server instanceof RemoteServer)
+
+        let ioclient: typeof import('socket.io-client')
+        if (ig.platform == ig.PLATFORM_TYPES.BROWSER) {
+            // @ts-expect-error
+            ioclient = window.io
+        } else if (ig.platform == ig.PLATFORM_TYPES.DESKTOP) {
+            ioclient = await import('socket.io-client')
+        } else assert(false, 'Unsupported platform')
+
         const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket
         socket.on('connect', () => {
             const conn = new SocketNetConnection(

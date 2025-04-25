@@ -51,8 +51,11 @@ importers:
         specifier: ^5.8.2
         version: 5.8.2
       ultimate-crosscode-typedefs:
-        specifier: github:krypciak/ultimate-crosscode-typedefs
-        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/2ca9402227e6314e84e5e22b4b90a1ab9d2727c3
+        specifier: link:../../../../../../../../.local/share/pnpm/global/5/node_modules/ultimate-crosscode-typedefs
+        version: link:../../../../../../../../.local/share/pnpm/global/5/node_modules/ultimate-crosscode-typedefs
+      uuid-by-string:
+        specifier: ^4.0.0
+        version: 4.0.0
 
 packages:
 
@@ -200,17 +203,11 @@ packages:
   '@types/cors@2.8.17':
     resolution: {integrity: sha512-8CGDvrBj1zgo2qE+oS3pOCyYNqCPryMWY2bGfwA0dcfopWGgxs+78df0Rs3rc9THP4JkOhLsAa+15VdpAqkcUA==}
 
-  '@types/jquery@1.10.45':
-    resolution: {integrity: sha512-JvoVtPbu1wrcOldn5gvuyJqr7DLX6I657N68Fqj5S7AUutdYZqabQjfP7dY6Gee7/Afo1uajwcORVlQfnsjkLQ==}
-
   '@types/jquery@3.5.32':
     resolution: {integrity: sha512-b9Xbf4CkMqS02YH8zACqN1xzdxc3cO735Qe5AbSUFmyOiaWAbcpqh9Wna+Uk0vgACvoQHpWDg2rGdHkYPLmCiQ==}
 
   '@types/node@11.15.54':
     resolution: {integrity: sha512-1RWYiq+5UfozGsU6MwJyFX6BtktcT10XRjvcAQmskCtMcW3tPske88lM/nHv7BQG1w9KBXI1zPGuu5PnNCX14g==}
-
-  '@types/semver@6.2.7':
-    resolution: {integrity: sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==}
 
   '@types/sizzle@2.3.9':
     resolution: {integrity: sha512-xzLEyKB50yqCUPUJkIsrVvoWNfFUbIZI+RspLWt8u+tIW/BetMBZtgV2LY/2o+tYH8dRvQ+eoPf3NdhQCcLE2w==}
@@ -272,6 +269,12 @@ packages:
     engines: {node: '>=12'}
     hasBin: true
 
+  js-md5@0.7.3:
+    resolution: {integrity: sha512-ZC41vPSTLKGwIRjqDh8DfXoCrdQIyBgspJVPXHBGu4nZlAEvG3nf+jO9avM9RmLiGakg7vz974ms99nEV0tmTQ==}
+
+  js-sha1@0.6.0:
+    resolution: {integrity: sha512-01gwBFreYydzmU9BmZxpVk6svJJHrVxEN3IOiGl6VO93bVKYETJ0sIth6DASI6mIFdt7NmfX9UiByRzsYHGU9w==}
+
   mime-db@1.52.0:
     resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
     engines: {node: '>= 0.6'}
@@ -327,10 +330,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/2ca9402227e6314e84e5e22b4b90a1ab9d2727c3:
-    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/2ca9402227e6314e84e5e22b4b90a1ab9d2727c3}
-    version: 0.0.1
-    engines: {node: '>=10.0.0'}
+  uuid-by-string@4.0.0:
+    resolution: {integrity: sha512-88ZSfcSkN04juiLqSsuyteqlSrXNFdsEPzSv3urnElDXNsZUXQN0smeTnh99x2DE15SCUQNgqKBfro54CuzHNQ==}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -429,15 +430,11 @@ snapshots:
     dependencies:
       '@types/node': 11.15.54
 
-  '@types/jquery@1.10.45': {}
-
   '@types/jquery@3.5.32':
     dependencies:
       '@types/sizzle': 2.3.9
 
   '@types/node@11.15.54': {}
-
-  '@types/semver@6.2.7': {}
 
   '@types/sizzle@2.3.9': {}
 
@@ -523,6 +520,10 @@ snapshots:
       '@esbuild/win32-ia32': 0.20.2
       '@esbuild/win32-x64': 0.20.2
 
+  js-md5@0.7.3: {}
+
+  js-sha1@0.6.0: {}
+
   mime-db@1.52.0: {}
 
   mime-types@2.1.35:
@@ -588,11 +589,10 @@ snapshots:
 
   typescript@5.8.2: {}
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/2ca9402227e6314e84e5e22b4b90a1ab9d2727c3:
+  uuid-by-string@4.0.0:
     dependencies:
-      '@types/jquery': 1.10.45
-      '@types/node': 11.15.54
-      '@types/semver': 6.2.7
+      js-md5: 0.7.3
+      js-sha1: 0.6.0
 
   vary@1.1.2: {}
 

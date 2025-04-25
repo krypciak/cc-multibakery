@@ -66,6 +66,10 @@ export default class Multibakery implements PluginClass {
                 type: 'socket',
                 host: '127.0.0.1',
                 port: DEFAULT_SOCKETIO_PORT,
+                // host: '147.185.221.18',
+                // port: 56618,
+                // host: '6.tcp.eu.ngrok.io',
+                // port: 10204,
             })
         }
     }

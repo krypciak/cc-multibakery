@@ -24,7 +24,8 @@
         "socket.io": "^4.8.1",
         "socket.io-client": "^4.8.1",
         "typescript": "^5.8.2",
-        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
+        "uuid-by-string": "^4.0.0"
     },
     "pnpm": {
         "overrides": {

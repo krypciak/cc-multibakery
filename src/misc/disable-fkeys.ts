@@ -1,9 +1,8 @@
 import { prestart } from '../plugin'
-import { assert } from './assert'
 
 function disable(name: keyof typeof window) {
     const orig = window[name]
-    assert(typeof orig == 'function')
+    if (!orig) return
     // @ts-expect-error
     window[name] = () => {
         if (multi.server) return

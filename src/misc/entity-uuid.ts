@@ -1,5 +1,6 @@
 import { prestart } from '../plugin'
 import { assert } from './assert'
+import getUuid from 'uuid-by-string'
 
 declare global {
     namespace ig {
@@ -76,8 +77,6 @@ prestart(() => {
             },
         })
 
-        const crypto: typeof import('crypto') = (0, eval)('require("crypto")')
-
         function setUuid(this: ig.Entity, x: number, y: number, z: number, settings: ig.Entity.Settings) {
             if (ig.game.entitiesByUUID[this.uuid]) {
                 delete ig.game.entitiesByUUID[this.uuid]
@@ -88,10 +87,7 @@ prestart(() => {
                 assert(!ig.game.entitiesByUUID[this.uuid], 'Entity uuid overlap')
             } else {
                 do {
-                    this.uuid = crypto
-                        .createHash('sha256')
-                        .update(`${this.type}-${settings.name}-${x},${y},${z}`)
-                        .digest('hex')
+                    this.uuid = getUuid(`${this.type}-${settings.name}-${x},${y},${z}`)
                     x++
                 } while (ig.game.entitiesByUUID[this.uuid])
             }
