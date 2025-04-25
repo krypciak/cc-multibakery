@@ -1,77 +1,39 @@
-import { CCDeepType, EntityTypes } from '../misc/entity-uuid'
-import { assert } from '../misc/assert'
-import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-
-import './defs/dummy_DummyPlayer'
-import './defs/ig_ENTITY_Effect'
-// import './defs/ig_ENTITY_Particle'
-
-interface StateEntityBase {
-    getState(): object
-    setState(value: object): void
+declare global {
+    interface StateUpdatePacket {}
 }
 
-type OnlyStateEntityBased<T> = T extends StateEntityBase ? T : never
-type Filter<T extends EntityTypes> = OnlyStateEntityBased<InstanceType<CCDeepType<T>>>
-
-export type StateEntityInstances = Filter<EntityTypes>
-export type StateEntityTypes = StateEntityInstances['type']
-
-export type EntityStateEntry<T extends StateEntityTypes> = {
-    type: T
-} & Partial<ReturnType<Filter<T>['getState']>>
-
-export type EntityStateUpdatePacket = {
-    states: Record<string, EntityStateEntry<StateEntityTypes>>
-}
-
-function isStateEntity(e: ig.Entity): e is StateEntityInstances {
-    return 'getState' in e && 'setState' in e
-}
-
-export function getFullEntityState({ ig }: InstanceinatorInstance) {
-    const packet: EntityStateUpdatePacket = {
-        states: {},
-    }
-
-    for (const entity of ig.game.entities) {
-        if (isStateEntity(entity)) {
-            packet.states[entity.uuid] = {
-                type: entity.type,
-                // @ts-expect-error
-                ...entity.getState(),
-            }
-        }
-    }
-
-    return packet
-}
+import './defs/entity'
 
 declare global {
     namespace ig {
         var settingState: boolean | undefined
-        var lastStatePacket: EntityStateUpdatePacket | undefined
+        var lastStatePacket: StateUpdatePacket | undefined
     }
 }
 
-export function applyEntityStates(packet: EntityStateUpdatePacket, tick: number) {
+export function getFullEntityState() {
+    const packet: StateUpdatePacket = {}
+
+    for (const { get } of handlers) get(packet)
+
+    return packet
+}
+
+type Handler = {
+    get: (packet: StateUpdatePacket) => void
+    set: (packet: StateUpdatePacket) => void
+}
+const handlers: Handler[] = []
+export function addStateHandler(handler: Handler) {
+    handlers.push(handler)
+}
+
+export function applyEntityStates(packet: StateUpdatePacket, tick: number) {
     ig.settingState = true
     const backup = ig.system.tick
     ig.system.tick = tick
-    for (const uuid in packet.states) {
-        let entity = ig.game.entitiesByUUID[uuid]
-        const data = packet.states[uuid]
-        if (!entity) {
-            const clazz = ig.entityPathToClass[data.type]
-            assert('create' in clazz)
-            const create = clazz.create as (uuid: string, state: typeof data) => InstanceType<typeof clazz>
-            entity = create(uuid, data)
-        }
-        assert(entity)
-        assert(isStateEntity(entity))
-        // @ts-expect-error
-        entity.setState(data)
-    }
+
+    for (const { set } of handlers) set(packet)
 
     ig.system.tick = backup
     ig.settingState = false

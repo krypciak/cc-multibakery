@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { NetConnection } from '../net/connection'
 import { prestart } from '../plugin'
-import { EntityStateUpdatePacket, getFullEntityState } from '../state/states'
+import { getFullEntityState } from '../state/states'
 import { CCMap } from './ccmap'
 import { PhysicsServer } from './physics-server'
 
@@ -43,12 +43,17 @@ function send() {
 }
 
 export interface CCMapUpdatePacket {
-    entities: EntityStateUpdatePacket
+    entities: StateUpdatePacket
 }
 function getMapUpdatePacket(map: CCMap): CCMapUpdatePacket {
+    const prevId = instanceinator.id
+    map.inst.apply()
+
     const data: CCMapUpdatePacket = {
-        entities: getFullEntityState(map.inst),
+        entities: getFullEntityState(),
     }
+
+    instanceinator.instances[prevId].apply()
     return data
 }
 

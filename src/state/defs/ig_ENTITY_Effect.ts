@@ -1,6 +1,8 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
+import { PhysicsServer } from '../../server/physics-server'
 import { RemoteServer } from '../../server/remote-server'
+import { addStateHandler } from '../states'
 
 export {}
 declare global {
@@ -74,12 +76,12 @@ function resolveObjects(state: Return) {
     let target
     if (state.target) {
         target = ig.game.entitiesByUUID[state.target]
-        // assert(target)
+        if (!target) console.warn('target not found:', state.target)
     }
     let target2
     if (state.target2) {
         target2 = ig.game.entitiesByUUID[state.target2]
-        // assert(target2)
+        if (!target2) console.warn('target2 not found:', state.target2)
     }
     let effect
     if (state.effect) {
@@ -111,21 +113,84 @@ prestart(() => {
     ig.ENTITY.Effect.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && ig.lastStatePacket?.states[this.uuid]) return
+            if (!ig.settingState && ig.lastStatePacket?.states?.[this.uuid]) return
 
             this.parent()
         },
         deferredUpdate() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && ig.lastStatePacket?.states[this.uuid]) return
-            if (!ig.settingState && !ig.lastStatePacket?.states[this.uuid]) {
-                console.log('def update when no info')
-            }
+            if (!ig.settingState && ig.lastStatePacket?.states?.[this.uuid]) return
 
             this.parent()
         },
     })
 }, 2)
+
+declare global {
+    interface StateUpdatePacket {
+        clearEffects?: [string, string | undefined][]
+    }
+    namespace ig {
+        var clearEffects: [string, string | undefined][] | undefined
+    }
+}
+prestart(() => {
+    addStateHandler({
+        get(packet) {
+            packet.clearEffects = ig.clearEffects
+            ig.clearEffects = undefined
+        },
+        set(packet) {
+            if (!packet.clearEffects) return
+            for (const [uuid, withTheSameGroup] of packet.clearEffects) {
+                const entity = ig.game.entitiesByUUID[uuid]
+                if (!entity) continue
+                ig.EffectTools.clearEffects(entity, withTheSameGroup)
+            }
+        },
+    })
+    const orig = ig.EffectTools.clearEffects
+    ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
+        orig(entity, withTheSameGroup)
+        if (!(multi.server instanceof PhysicsServer)) return
+        ig.clearEffects ??= []
+        ig.clearEffects.push([entity.uuid, withTheSameGroup])
+    }
+})
+
+declare global {
+    interface StateUpdatePacket {
+        stopEffects?: string[]
+    }
+    namespace ig {
+        var stopEffects: string[] | undefined
+    }
+}
+prestart(() => {
+    addStateHandler({
+        get(packet) {
+            packet.stopEffects = ig.stopEffects
+            ig.stopEffects = undefined
+        },
+        set(packet) {
+            if (!packet.stopEffects) return
+            for (const uuid of packet.stopEffects) {
+                const entity = ig.game.entitiesByUUID[uuid]
+                if (!entity) continue
+                assert(entity instanceof ig.ENTITY.Effect)
+                entity.stop()
+            }
+        },
+    })
+    ig.ENTITY.Effect.inject({
+        stop() {
+            this.parent()
+            if (!(multi.server instanceof PhysicsServer)) return
+            ig.stopEffects ??= []
+            ig.stopEffects.push(this.uuid)
+        },
+    })
+})
 
 declare global {
     namespace ig {
