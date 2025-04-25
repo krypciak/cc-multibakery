@@ -52,7 +52,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async onNetConnected() {
-        await this.createClient('client1')
+        const id = (100 + determine.instances[0].general() * 900).floor()
+        await this.createClient(`client${id}`)
         // await this.createClient('client2')
     }
 

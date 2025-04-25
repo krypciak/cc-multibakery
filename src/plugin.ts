@@ -70,6 +70,8 @@ export default class Multibakery implements PluginClass {
                 // port: 56618,
                 // host: '6.tcp.eu.ngrok.io',
                 // port: 10204,
+                // host: 'crosscode.ogur.pl',
+                // port: 80,
             })
         }
     }
