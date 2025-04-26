@@ -5,6 +5,7 @@ import { NetConnection, NetManagerPhysicsServer } from './connection'
 import { isClientJoinData, PhysicsServer } from '../server/physics-server'
 import { RemoteServer } from '../server/remote-server'
 import { Client } from '../client/client'
+import type { Server as HttpServer } from 'http'
 
 type SocketData = never
 
@@ -20,8 +21,6 @@ type InterServerEvents = {}
 type Socket = _Socket //<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 type SocketServer = _Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
 type ClientSocket = ioclient.Socket //<ServerToClientEvents, ClientToServerEvents>
-
-export const DEFAULT_SOCKETIO_PORT = 33405
 
 function setIntervalWorkaround() {
     const origSetInterval = window.setInterval
@@ -46,7 +45,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     connections: SocketNetConnection[] = []
     io!: SocketServer
 
-    constructor(public port: number) {
+    constructor(private httpServer: HttpServer) {
         setIntervalWorkaround()
     }
 
@@ -86,11 +85,11 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         // hs.listen(DEFAULT_SOCKETIO_PORT)
 
         const { Server } = await import('socket.io')
-        this.io = new Server(this.port, {
+        this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
-            cors: {
-                origin: `http://localhost:${DEFAULT_SOCKETIO_PORT}`,
-            },
+            // cors: {
+            //     origin: `http://localhost:${this.port}`,
+            // },
         })
 
         const server = multi.server
@@ -190,7 +189,7 @@ export class SocketNetManagerRemoteServer {
     }
 }
 
-class SocketNetConnection implements NetConnection {
+export class SocketNetConnection implements NetConnection {
     clients: Client[] = []
     closed: boolean = false
 
@@ -218,7 +217,7 @@ class SocketNetConnection implements NetConnection {
         return this.socket.connected
     }
 
-    sendUpdate(data: unknown): void {
+    sendUpdate(data: unknown) {
         this.socket.emit('update', data)
     }
     close(): void {

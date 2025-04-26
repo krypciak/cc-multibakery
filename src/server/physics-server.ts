@@ -1,19 +1,25 @@
 import { NetConnection, NetManagerPhysicsServer } from '../net/connection'
 import { SocketNetManagerPhysicsServer } from '../net/socket'
 import { Server, ServerSettings } from './server'
-import './physics-server-sender'
 import { Client } from '../client/client'
 import { isRemoteServerInputPacket, RemoteServerInputPacket } from './remote-server-sender'
 import { assert } from '../misc/assert'
+import { NetServerInfoPhysics } from '../client/menu/server-info'
+
+import './physics-server-sender'
+import { PhysicsHttpServer } from '../net/web-server'
+
+export type PhysicsServerConnectionSettings = {
+    httpPort: number
+} & {
+    type: 'socket'
+}
 
 export interface PhysicsServerSettings extends ServerSettings {
-    name: string
     godmode?: boolean
     slotName?: string
 
-    socketSettings?: {
-        port: number
-    }
+    netInfo?: NetServerInfoPhysics
 }
 
 export interface ClientJoinData {
@@ -25,6 +31,7 @@ export function isClientJoinData(data: unknown): data is ClientJoinData {
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     netManager?: NetManagerPhysicsServer
+    httpServer?: PhysicsHttpServer
 
     constructor(public settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
@@ -54,8 +61,14 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             // await Promise.all(promises)
         }
 
-        if (this.settings.socketSettings) {
-            this.netManager = new SocketNetManagerPhysicsServer(this.settings.socketSettings.port)
+        const netInfo = this.settings.netInfo
+        if (netInfo) {
+            this.httpServer = new PhysicsHttpServer(netInfo)
+            await this.httpServer.start()
+
+            if (netInfo.connection.type == 'socket') {
+                this.netManager = new SocketNetManagerPhysicsServer(this.httpServer.httpServer)
+            } else assert(false, 'not implemented')
         }
 
         if (this.netManager) {
@@ -112,6 +125,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
     async destroy() {
         if (this.netManager) await this.netManager.destroy()
+        if (this.httpServer) await this.httpServer.destroy()
         await super.destroy()
     }
 }

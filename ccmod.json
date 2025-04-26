@@ -12,7 +12,9 @@
     "dependencies": {
         "crosscode": ">=1.4.0",
         "cc-determine": ">=0.0.1",
-        "cc-instanceinator": ">=0.0.1"
+        "cc-instanceinator": ">=0.0.1",
+        "nax-ccuilib": ">=1.3.0",
+        "ccmodmanager": ">=1.0.3"
     },
     "plugin": "plugin.js"
 }

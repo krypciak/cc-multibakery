@@ -15,7 +15,6 @@ for (let i = 0; i < 2; i++) {
         async setup() {
             multi.setServer(
                 new PhysicsServer({
-                    name: this.name,
                     globalTps: this.fps!,
                     godmode: true,
                     displayMaps: !this.skipFrameWait,

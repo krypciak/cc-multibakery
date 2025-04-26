@@ -11,9 +11,10 @@ import './remote-server-sender'
 import { Client } from '../client/client'
 
 export type RemoteServerConnectionSettings = {
-    type: 'socket'
     host: string
     port: number
+} & {
+    type: 'socket'
 }
 
 export interface RemoteServerSettings extends ServerSettings {

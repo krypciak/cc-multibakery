@@ -1,9 +1,9 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import { Mod1 } from 'cc-determine/src/types'
 import { initMultiplayer } from './multiplayer'
-import { DEFAULT_SOCKETIO_PORT } from './net/socket'
 import { PhysicsServer } from './server/physics-server'
 import './misc/modify-prototypes'
+import { DEFAULT_HTTP_PORT } from './net/web-server'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -47,7 +47,6 @@ export default class Multibakery implements PluginClass {
         if (process.execPath.includes('server')) {
             multi.setServer(
                 new PhysicsServer({
-                    name: 'example',
                     slotName: 'example',
                     globalTps: 60,
                     godmode: true,
@@ -55,17 +54,26 @@ export default class Multibakery implements PluginClass {
                     displayMaps: true,
                     displayClientMaps: true,
                     forceConsistentTickTimes: false,
-                    socketSettings: {
-                        port: DEFAULT_SOCKETIO_PORT,
+                    netInfo: {
+                        connection: {
+                            httpPort: DEFAULT_HTTP_PORT,
+                            type: 'socket',
+                        },
+                        details: {
+                            title: 'dev',
+                            description: 'dev server',
+                            iconPath: './assets/mods/cc-multibakery/icon/icon.png',
+                        },
                     },
                 })
             )
             multi.server.start()
         } else if (process.execPath.includes('client')) {
+            return;
             multi.startRemoteServer({
                 type: 'socket',
                 host: '127.0.0.1',
-                port: DEFAULT_SOCKETIO_PORT,
+                port: DEFAULT_HTTP_PORT,
                 // host: '147.185.221.18',
                 // port: 56618,
                 // host: '6.tcp.eu.ngrok.io',
