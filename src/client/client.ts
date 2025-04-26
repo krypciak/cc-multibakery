@@ -35,6 +35,8 @@ export class Client {
     inst!: InstanceinatorInstance
     determinism!: DeterMineInstance /* determinism is only used for visuals */
 
+    private destroyed: boolean = false
+
     constructor(public settings: ClientSettings) {}
 
     async init() {
@@ -149,6 +151,8 @@ export class Client {
     }
 
     async destroy() {
+        if (this.destroyed) return
+        this.destroyed = true
         if (this.inst.ig.gamepad.destroy) {
             await this.inst.ig.gamepad.destroy()
         }
