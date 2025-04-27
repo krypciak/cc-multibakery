@@ -1,7 +1,8 @@
-import { poststart, prestart } from '../../plugin'
+import Multibakery, { poststart, prestart } from '../../plugin'
 
 import './title-screen-button'
 import './server-list-list'
+import { uniqueSort } from 'jquery'
 
 declare global {
     namespace sc {
@@ -11,7 +12,10 @@ declare global {
     }
     namespace multi.class.ServerList {
         interface Menu extends sc.ListInfoMenu {
+            accountButton: sc.ButtonGui
+
             initSortMenu(this: this): void
+            initAccountButton(this: this): void
             onBackButtonPress(this: this): void
         }
         interface MenuConstructor extends ImpactClass<Menu> {
@@ -35,19 +39,44 @@ prestart(() => {
             this.list.setPos(9, 23)
 
             this.initSortMenu()
+            this.initAccountButton()
         },
         initSortMenu() {
             this.sortMenu.addButton('name', modmanager.gui.MENU_SORT_ORDER.NAME, modmanager.gui.MENU_SORT_ORDER.NAME)
         },
-        showMenu() {
+        initAccountButton() {
+            this.accountButton = new sc.ButtonGui('\\i[help2]' + 'Account', undefined, true, sc.BUTTON_TYPE.SMALL)
+            this.accountButton.keepMouseFocus = true
+            this.accountButton.hook.transitions = {
+                DEFAULT: { state: {}, time: 0.2, timeFunction: KEY_SPLINES.EASE },
+                HIDDEN: {
+                    state: { offsetY: -this.accountButton.hook.size.y },
+                    time: 0.2,
+                    timeFunction: KEY_SPLINES.LINEAR,
+                },
+            }
+            this.accountButton.onButtonPress = () => {
+                const tab = 1
+                modmanager.openModOptionsMenu(Multibakery.manifset.id, tab)
+            }
+        },
+        commitHotKeysToTopBar(longTransition) {
+            sc.menu.addHotkey(() => this.accountButton)
+            this.parent(longTransition)
+        },
+        onAddHotkeys() {
+            sc.menu.buttonInteract.addGlobalButton(this.accountButton, () => sc.control.menuHotkeyHelp2())
             this.parent()
-            sc.menu.pushBackCallback(() => this.onBackButtonPress())
-            sc.menu.moveLeaSprite(0, 0, sc.MENU_LEA_STATE.HIDDEN)
+        },
+        showMenu(_previousMenu, prevSubmenu) {
+            this.parent()
+            if (prevSubmenu != sc.MENU_SUBMENU.START) sc.menu.popBackCallback()
         },
         hideMenu() {
             this.parent()
             sc.menu.moveLeaSprite(0, 0, sc.MENU_LEA_STATE.LARGE)
             this.exitMenu()
+            sc.menu.buttonInteract.removeGlobalButton(this.accountButton)
         },
         onBackButtonPress() {
             sc.menu.popBackCallback()

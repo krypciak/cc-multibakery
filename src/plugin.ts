@@ -1,9 +1,11 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
+import ccmod from '../ccmod.json'
 import { Mod1 } from 'cc-determine/src/types'
 import { initMultiplayer } from './multiplayer'
 import { PhysicsServer } from './server/physics-server'
 import './misc/modify-prototypes'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
+import { registerOpts } from './options'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -20,6 +22,7 @@ export function poststart(func: () => void | Promise<void>, priority: number = 1
 export default class Multibakery implements PluginClass {
     static dir: string
     static mod: Mod1
+    static manifset: typeof import('../ccmod.json') = ccmod
 
     constructor(mod: Mod1) {
         Multibakery.dir = mod.baseDirectory
@@ -30,6 +33,8 @@ export default class Multibakery implements PluginClass {
     }
 
     async prestart() {
+        registerOpts()
+
         if (window.crossnode?.options.test) {
             await import('./server/test/aoc2024d15')
             // await import('./server/test/mouse-simple')
@@ -52,7 +57,7 @@ export default class Multibakery implements PluginClass {
                     godmode: true,
                     displayServerInstance: false,
                     displayMaps: true,
-                    displayClientMaps: true,
+                    displayClientInstances: true,
                     forceConsistentTickTimes: false,
                     netInfo: {
                         connection: {

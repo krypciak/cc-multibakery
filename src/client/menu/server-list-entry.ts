@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { getServerDetailsAndPing, getServerIcon } from '../../net/connection'
+import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { prestart } from '../../plugin'
 import { NetServerInfoRemote } from './server-info'
 

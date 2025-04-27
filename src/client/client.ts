@@ -43,7 +43,7 @@ export class Client {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.settings.username,
-            multi.server.settings.displayClientMaps && !this.settings.noShowInstance,
+            multi.server.settings.displayClientInstances && !this.settings.noShowInstance,
             this.settings.forceDraw
         )
         this.inst.ig.client = this

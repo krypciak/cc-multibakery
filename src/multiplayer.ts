@@ -48,7 +48,7 @@ export function initMultiplayer() {
                     globalTps: 60,
                     displayServerInstance: false,
                     displayMaps: false,
-                    displayClientMaps: true,
+                    displayClientInstances: true,
                     forceConsistentTickTimes: false,
                     connection,
                 })

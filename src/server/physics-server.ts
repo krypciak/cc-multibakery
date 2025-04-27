@@ -5,9 +5,9 @@ import { Client } from '../client/client'
 import { isRemoteServerInputPacket, RemoteServerInputPacket } from './remote-server-sender'
 import { assert } from '../misc/assert'
 import { NetServerInfoPhysics } from '../client/menu/server-info'
+import { PhysicsHttpServer } from '../net/web-server'
 
 import './physics-server-sender'
-import { PhysicsHttpServer } from '../net/web-server'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
