@@ -3,12 +3,14 @@ import { NetConnection } from '../net/connection'
 import { SocketNetManagerRemoteServer } from '../net/socket'
 import { prestart } from '../plugin'
 import { applyEntityStates } from '../state/states'
-import { ClientJoinData } from './physics-server'
+import { ClientJoinAckData, ClientJoinData } from './physics-server'
 import { RemoteServerUpdatePacket } from './physics-server-sender'
 import { Server, ServerSettings } from './server'
 
 import './remote-server-sender'
 import { Client } from '../client/client'
+import { getDummyUuidByUsername } from '../dummy/dummy-player'
+import { NetServerInfoRemote } from '../client/menu/server-info'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -40,22 +42,19 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await this.netManager.connect()
     }
 
-    private async createClient(username: string) {
-        const client = await this.createAndJoinClient({
-            username,
-            inputType: 'clone',
-        })
-
-        const data: ClientJoinData = {
-            username,
+    async tryJoinRemote(joinData: ClientJoinData): Promise<ClientJoinAckData> {
+        const ackData = await this.netManager.sendJoin(joinData)
+        if (ackData.status == 'ok') {
+            this.baseInst.display = false
+            const client = await this.createAndJoinClient({
+                username: joinData.username,
+                inputType: 'clone',
+            })
+            assert(this.netManager.conn)
+            this.netManager.conn.join(client)
         }
-        await this.netManager.sendJoin(data, client)
-    }
 
-    async onNetConnected() {
-        const id = (100 + determine.instances[0].general() * 900).floor()
-        await this.createClient(`client${id}`)
-        // await this.createClient('client2')
+        return ackData
     }
 
     onNetDisconnect() {
@@ -67,14 +66,23 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     private processPacket(_conn: NetConnection, data: RemoteServerUpdatePacket) {
+        const unreadyClientPlayers: string[] = Object.keys(this.unreadyClients).map(getDummyUuidByUsername)
+
         for (const mapName in data.mapPackets) {
             const mapPacket = data.mapPackets[mapName]
 
             const map = multi.server.maps[mapName]
-            assert(map)
+            if (!map?.ready) continue
 
             const prevId = instanceinator.id
             const inst = map.inst
+
+            /* prevent spawning dummies of clients that are initializing at the moment */
+            /* this is ugly, could this be done in a cleaner way? */
+            for (const uuid of unreadyClientPlayers) {
+                if (mapPacket.entities.states?.[uuid]) delete mapPacket.entities.states?.[uuid]
+            }
+
             assert(inst)
             inst.apply()
             applyEntityStates(mapPacket.entities, data.tick)
@@ -127,3 +135,36 @@ prestart(() => {
         },
     })
 }, 3)
+
+declare global {
+    namespace multi {
+        function tryJoinRemote(serverInfo: NetServerInfoRemote, joinData: ClientJoinData): Promise<ClientJoinAckData>
+    }
+}
+prestart(() => {
+    multi.tryJoinRemote = async (serverInfo: NetServerInfoRemote, joinData: ClientJoinData) => {
+        {
+            const server = multi.server
+            assert(!server)
+        }
+        assert(serverInfo.details)
+
+        const server = new RemoteServer({
+            globalTps: serverInfo.details.globalTps,
+            displayServerInstance: false,
+            displayMaps: false,
+            displayClientInstances: true,
+            forceConsistentTickTimes: false,
+            connection: serverInfo.connection,
+        })
+        multi.setServer(server)
+        await server.start()
+
+        const ack = await server.tryJoinRemote(joinData)
+        if (ack.status != 'ok') {
+            await multi.destroy()
+            ig.system.startRunLoop()
+        }
+        return ack
+    }
+})

@@ -28,14 +28,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     serverInst!: InstanceinatorInstance
     serverDeterminism!: DeterMineInstance
 
+    unreadyClients: Record<string, Client> = {}
     clients: Record<string, Client> = {}
 
     async start() {
-        instanceinator.displayId = true
-        instanceinator.displayFps = false
-
         this.baseInst = instanceinator.instances[0]
-        this.baseInst.display = false
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)
         this.serverInst.apply()
         this.safeguardServerInstance()
@@ -122,9 +119,15 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     async createAndJoinClient(settings: ClientSettings) {
         const client = new Client(settings)
+
+        this.unreadyClients[settings.username] = client
+
         await client.init()
         await this.joinClient(client)
         await client.teleport()
+
+        delete this.unreadyClients[settings.username]
+
         return client
     }
 
@@ -156,11 +159,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         for (const map of Object.values(this.maps)) {
             await map.destroy()
         }
+        determine.apply(determine.instances[0])
+        this.baseInst.apply()
+
         instanceinator.delete(this.serverInst)
         determine.delete(this.serverDeterminism)
 
-        determine.apply(determine.instances[0])
-        this.baseInst.apply()
         this.baseInst.display = true
     }
 }

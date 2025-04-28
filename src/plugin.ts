@@ -74,18 +74,18 @@ export default class Multibakery implements PluginClass {
             )
             multi.server.start()
         } else if (process.execPath.includes('client')) {
-            return;
-            multi.startRemoteServer({
-                type: 'socket',
-                host: '127.0.0.1',
-                port: DEFAULT_HTTP_PORT,
-                // host: '147.185.221.18',
-                // port: 56618,
-                // host: '6.tcp.eu.ngrok.io',
-                // port: 10204,
-                // host: 'crosscode.ogur.pl',
-                // port: 80,
-            })
+            return
+            // multi.startRemoteServer({
+            //     type: 'socket',
+            //     host: '127.0.0.1',
+            //     port: DEFAULT_HTTP_PORT,
+            //     // host: '147.185.221.18',
+            //     // port: 56618,
+            //     // host: '6.tcp.eu.ngrok.io',
+            //     // port: 10204,
+            //     // host: 'crosscode.ogur.pl',
+            //     // port: 80,
+            // })
         }
     }
 }

@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { teleportPlayerToProperMarker } from '../teleport-fix'
-import { Server, waitForScheduledTask } from './server'
+import { waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics-server'
 
@@ -53,7 +53,7 @@ export class ServerPlayer {
             map = multi.server.maps[this.mapName]
             assert(map)
         }
-        await map.ready
+        await map.readyPromise
         await waitForScheduledTask(map.inst, () => {
             this.createPlayer()
         })

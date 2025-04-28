@@ -1,5 +1,6 @@
 import { assert } from '../../misc/assert'
 import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
+import { Opts } from '../../options'
 import { prestart } from '../../plugin'
 import { NetServerInfoRemote } from './server-info'
 
@@ -26,17 +27,17 @@ declare global {
             pingText: sc.TextGui
             highlight: modmanager.gui.ListEntryHighlight
             iconGui: ig.ImageGui
+            canJoin: boolean
 
             updateDetails(this: this): void
             updateIcon(this: this): void
             getIconConfig(this: this): Promise<ServerImageConfig>
             setIcon(this: this, config: ServerImageConfig): void
             getTitleAndIcon(this: this): { icon: string; text: string }
-            onButtonPress(this: this): void
             updateNameText(this: this, color?: COLOR): void
             updateHighlightWidth(this: this): void
-            onButtonPress(this: this): void
-            updateConnectionStatus(this: this): void
+            onButtonPress(this: this): Promise<void>
+            updateConnectionStatus(this: this): Promise<void>
         }
         interface ListEntryConstructor extends ImpactClass<ListEntry> {
             new (serverInfo: NetServerInfoRemote, modListWidth: number): ListEntry
@@ -211,22 +212,34 @@ prestart(() => {
 
             this.connectionText.setPos(this.nameText.hook.pos.x + this.nameText.hook.size.x + 8, 4)
         },
-        onButtonPress() {
-            console.log('todo connect to', this.serverInfo)
+        async onButtonPress() {
+            await this.updateConnectionStatus()
+            if (!this.canJoin) {
+                return sc.Dialogs.showErrorDialog('Unable to reach the server.')
+            }
+            const username = Opts.clientLogin
+            const resp = await multi.tryJoinRemote(this.serverInfo, { username })
+            if (resp.status == 'ok') return
+            let msg!: string
+            assert(resp.status != 'invalid_join_data', 'invalid_join_data??')
+            if (resp.status == 'username_taken') msg = `Error: username "${username}" is taken.`
+            assert(msg)
+            sc.Dialogs.showErrorDialog(msg)
         },
-        updateConnectionStatus() {
-            getServerDetailsAndPing(this.serverInfo.connection).then(obj => {
-                if (!obj) {
-                    this.updateNameText(COLOR.RED)
-                    return
-                }
-                const { details, ping } = obj
-                this.serverInfo.details = details
+        async updateConnectionStatus() {
+            this.canJoin = false
+            const obj = await getServerDetailsAndPing(this.serverInfo.connection)
+            if (!obj) {
+                this.updateNameText(COLOR.RED)
+                return
+            }
+            const { details, ping } = obj
+            this.serverInfo.details = details
 
-                this.updateDetails()
-                this.updateNameText(COLOR.GREEN)
-                this.pingText.setText(`${ping}ms`)
-            })
+            this.updateDetails()
+            this.updateNameText(COLOR.GREEN)
+            this.pingText.setText(`${ping}ms`)
+            this.canJoin = true
         },
     })
 })

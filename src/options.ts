@@ -21,9 +21,15 @@ export function registerOpts() {
             },
             headers: {
                 account: {
+                    info: {
+                        type: 'INFO',
+                        name: 'Username',
+                    },
                     clientLogin: {
-                        type: 'JSON_DATA',
-                        init: { username: `client` } as { username: string },
+                        type: 'INPUT_FIELD',
+                        init: `client${(100 + 900 * Math.randomOrig()).floor()}`,
+                        description: 'desc!',
+                        changeEvent() {},
                     },
                 },
                 server: {},

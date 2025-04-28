@@ -24,12 +24,16 @@ export class CCMap {
     display!: CCMapDisplay
     determinism!: DeterMineInstance
 
-    ready: Promise<void>
+    ready: boolean = false
+    readyPromise: Promise<void>
     private readyResolve!: () => void
 
     constructor(public name: string) {
-        this.ready = new Promise<void>(resolve => {
-            this.readyResolve = resolve
+        this.readyPromise = new Promise<void>(resolve => {
+            this.readyResolve = () => {
+                this.ready = true
+                resolve()
+            }
         })
     }
 

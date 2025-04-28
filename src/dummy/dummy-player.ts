@@ -41,11 +41,15 @@ declare global {
     }
 }
 
+export function getDummyUuidByUsername(username: string): string {
+    return `dummy-${username}`
+}
 global.dummy = window.dummy ??= {} as any
 prestart(() => {
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
             settings.name = settings.data.username
+            settings.uuid = getDummyUuidByUsername(settings.data.username)
             sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, settings)
 
             assert(settings.inputManager)

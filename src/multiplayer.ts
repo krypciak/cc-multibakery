@@ -1,5 +1,4 @@
 import { Server } from './server/server'
-import { RemoteServer, RemoteServerConnectionSettings } from './server/remote-server'
 import { assert } from './misc/assert'
 
 // import './misc/skip-title-screen'
@@ -20,7 +19,6 @@ declare global {
         var server: Server
         function setServer(server: Server): void
         function destroy(): Promise<void>
-        function startRemoteServer(connection: RemoteServerConnectionSettings): Promise<void>
     }
     namespace NodeJS {
         interface Global {
@@ -41,19 +39,6 @@ export function initMultiplayer() {
         async destroy() {
             await this.server.destroy()
             this.server = undefined as any
-        },
-        async startRemoteServer(connection: RemoteServerConnectionSettings) {
-            multi.setServer(
-                new RemoteServer({
-                    globalTps: 60,
-                    displayServerInstance: false,
-                    displayMaps: false,
-                    displayClientInstances: true,
-                    forceConsistentTickTimes: false,
-                    connection,
-                })
-            )
-            multi.server.start()
         },
     }
 }

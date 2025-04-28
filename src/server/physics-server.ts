@@ -28,6 +28,9 @@ export interface ClientJoinData {
 export function isClientJoinData(data: unknown): data is ClientJoinData {
     return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
 }
+export type ClientJoinAckData = {
+    status: 'ok' | 'username_taken' | 'invalid_join_data'
+}
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     netManager?: NetManagerPhysicsServer
@@ -40,6 +43,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
     async start() {
         await super.start()
+
+        this.baseInst.display = false
+        instanceinator.displayId = true
+        instanceinator.displayFps = false
 
         if (!window.crossnode?.options.test) {
             // await this.createAndJoinClient({
@@ -76,20 +83,25 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    async onNetJoin(
-        data: ClientJoinData
-    ): Promise<{ client: Client; error?: undefined } | { client?: undefined; error: string }> {
-        const username = data.username
-        if (this.clients[username]) return { error: 'username taken' }
+    async onNetJoin(data: ClientJoinData): Promise<{ client: Client; ackData: ClientJoinAckData }> {
+        const ackData = await this.processNetJoinRequest(data)
+        const client = this.clients[data.username]
+        if (ackData.status == 'ok') assert(client)
+        return { client, ackData: ackData }
+    }
 
-        const client = await this.createAndJoinClient({
+    private async processNetJoinRequest(data: ClientJoinData): Promise<ClientJoinAckData> {
+        const username = data.username
+        if (this.clients[username]) return { status: 'username_taken' }
+
+        await this.createAndJoinClient({
             username,
             inputType: 'puppet',
             remote: true,
             // noShowInstance: true,
             // forceDraw: true,
         })
-        return { client }
+        return { status: 'ok' }
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {

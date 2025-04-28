@@ -2,7 +2,7 @@ import type { Server as _Server, Socket as _Socket } from 'socket.io'
 import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerPhysicsServer } from './connection'
-import { isClientJoinData, PhysicsServer } from '../server/physics-server'
+import { ClientJoinAckData, ClientJoinData, isClientJoinData, PhysicsServer } from '../server/physics-server'
 import { RemoteServer } from '../server/remote-server'
 import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
@@ -11,7 +11,7 @@ type SocketData = never
 
 type ClientToServerEvents = {
     update(data: unknown): void
-    join(data: unknown): void
+    join(data: ClientJoinData, callback: (data: ClientJoinAckData) => void): void
 }
 type ServerToClientEvents = {
     update(data: unknown): void
@@ -95,27 +95,18 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         const server = multi.server
         assert(server instanceof PhysicsServer)
         this.io.on('connection', async socket => {
-            const connection = new SocketNetConnection(
-                socket,
-                data => {
-                    server.onNetReceive(connection, data)
-                },
-                () => {
-                    this.connections.erase(connection)
-                    server.onNetDisconnect(connection)
-                }
-            )
+            const connection = new SocketNetConnection(socket, () => {
+                this.connections.erase(connection)
+                server.onNetDisconnect(connection)
+            })
             this.connections.push(connection)
 
-            socket.on('join', async data => {
-                function err(msg: string) {
-                    socket.emit('error', msg)
-                }
-                if (!isClientJoinData(data)) return err('invalid join data')
-                const { client, error } = await server.onNetJoin(data)
-                if (error) return err(error)
-
-                connection.join(client!)
+            socket.on('update', data => server.onNetReceive(connection, data))
+            socket.on('join', async (data, callback) => {
+                if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
+                const { client, ackData } = await server.onNetJoin(data)
+                if (ackData.status == 'ok') connection.join(client!)
+                callback(ackData)
             })
         })
     }
@@ -131,6 +122,8 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
 export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
+
+    private joinActCallbacks: Record<string, (data: ClientJoinAckData) => void> = {}
 
     constructor(
         public host: string,
@@ -153,31 +146,29 @@ export class SocketNetManagerRemoteServer {
         } else assert(false, 'Unsupported platform')
 
         const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket
-        socket.on('connect', () => {
-            const conn = new SocketNetConnection(
-                socket,
-                data => {
-                    server.onNetReceive(conn, data)
-                },
-                () => {
-                    // close
-                }
-            )
-            this.conn = conn
-
-            server.onNetConnected()
-        })
+        socket.on('update', data => server.onNetReceive(this.conn!, data))
         socket.on('disconnect', () => {
             this.stop()
             server.onNetDisconnect()
         })
+        return new Promise<void>(resolve => {
+            socket.on('connect', () => {
+                const conn = new SocketNetConnection(socket)
+                this.conn = conn
+
+                resolve()
+            })
+        })
     }
 
-    async sendJoin(data: unknown, client: Client) {
-        assert(this.conn)
-        assert(multi.server instanceof RemoteServer)
-        this.conn.join(client)
-        this.conn.socket.emit('join', data)
+    async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
+        const ack = await new Promise<ClientJoinAckData>(resolve => {
+            assert(this.conn)
+            assert(multi.server instanceof RemoteServer)
+            this.joinActCallbacks[data.username] = resolve
+            this.conn.socket.emit('join', data, resolve)
+        })
+        return ack
     }
 
     async stop() {
@@ -195,12 +186,8 @@ export class SocketNetConnection implements NetConnection {
 
     constructor(
         public socket: ClientSocket | Socket,
-        public onReceive?: (data: unknown) => void,
         public onClose?: () => void
     ) {
-        this.socket.on('update', data => {
-            if (this.onReceive) this.onReceive(data)
-        })
         socket.on('disconnect', () => this.close())
     }
 
