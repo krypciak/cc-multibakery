@@ -10,6 +10,7 @@ export interface NetConnection {
     isConnected(): boolean
     sendUpdate(data: unknown): void
     close(): void
+    getConnectionInfo(): string
 }
 export interface NetManagerPhysicsServer {
     connections: NetConnection[]

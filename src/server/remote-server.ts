@@ -34,6 +34,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async start() {
         await super.start()
 
+        instanceinator.displayId = true
+        instanceinator.displayFps = true
+
         const connS = this.settings.connection
         if (connS.type == 'socket') {
             this.netManager = new SocketNetManagerRemoteServer(connS.host, connS.port)

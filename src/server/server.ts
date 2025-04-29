@@ -166,6 +166,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         determine.delete(this.serverDeterminism)
 
         this.baseInst.display = true
+        instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId
+        instanceinator.displayFps = modmanager.options['cc-instanceinator'].displayFps
     }
 }
 

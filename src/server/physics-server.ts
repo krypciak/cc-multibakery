@@ -97,7 +97,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await this.createAndJoinClient({
             username,
             inputType: 'puppet',
-            remote: true,
             // noShowInstance: true,
             // forceDraw: true,
         })

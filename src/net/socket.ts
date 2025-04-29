@@ -218,4 +218,11 @@ export class SocketNetConnection implements NetConnection {
             this.leave(client)
         }
     }
+
+    getConnectionInfo() {
+        if (!this.socket.connected) return `socket disconnected`
+        // @ts-expect-error
+        const type = this.socket.io.engine.transport.name
+        return `socket ${type}`
+    }
 }

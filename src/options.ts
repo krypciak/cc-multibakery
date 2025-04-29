@@ -12,6 +12,20 @@ export function registerOpts() {
             },
             headers: {
                 server: {},
+                client: {
+                    showClientMsPing: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Show ping',
+                        description: 'Show client ping in miliseconds',
+                    },
+                    showClientConnectionInfo: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Show connection info',
+                        description: 'Show client connection info',
+                    },
+                },
             },
         },
         account: {

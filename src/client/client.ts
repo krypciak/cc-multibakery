@@ -8,7 +8,8 @@ import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 import { forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
 import { waitForScheduledTask } from '../server/server'
-import { LabelDrawClass, ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
+import { createClientConnectionInfoLabel, createClientPingLabel } from './client-label-draw'
+import { RemoteServer } from '../server/remote-server'
 
 declare global {
     namespace ig {
@@ -20,7 +21,6 @@ export type ClientSettings = {
     username: string
     noShowInstance?: boolean
     forceDraw?: boolean
-    remote?: boolean
 } & (
     | {
           inputType?: 'clone'
@@ -73,26 +73,10 @@ export class Client {
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
 
-        this.createPingLabel()
-    }
-
-    private createPingLabel() {
-        const self = this
-        class MsPingLabelDrawClass implements LabelDrawClass {
-            avg = new ValueAverageOverTime(60)
-
-            draw(y: number) {
-                // if (!instanceinator.displayId) return y
-                this.avg.pushValue(self.lastPingMs)
-                const msPing = this.avg.getAverage().floor()
-                const str = `${msPing}ms`
-                const text = new ig.TextBlock(sc.fontsystem.font, `${str}`, {})
-                text.draw(ig.system.width - text.size.x - 5, y)
-                y += text.size.y
-                return y
-            }
+        if (multi.server instanceof RemoteServer) {
+            createClientPingLabel(this)
+            createClientConnectionInfoLabel(this)
         }
-        this.inst.labelDrawClasses.push(new MsPingLabelDrawClass())
     }
 
     async teleport() {
