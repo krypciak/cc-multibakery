@@ -60,6 +60,7 @@ function getMapUpdatePacket(map: CCMap): CCMapUpdatePacket {
 export interface RemoteServerUpdatePacket {
     mapPackets: Record</* mapName */ string, CCMapUpdatePacket>
     tick: number
+    sendAt: number
 }
 function getRemoteServerUpdatePacket(
     conn: NetConnection,
@@ -75,6 +76,7 @@ function getRemoteServerUpdatePacket(
     const data: RemoteServerUpdatePacket = {
         mapPackets: sendMapPackets,
         tick: ig.system.tick,
+        sendAt: Date.now(),
     }
     return data
 }

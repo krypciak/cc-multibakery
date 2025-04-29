@@ -68,6 +68,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     private processPacket(_conn: NetConnection, data: RemoteServerUpdatePacket) {
         const unreadyClientPlayers: string[] = Object.keys(this.unreadyClients).map(getDummyUuidByUsername)
 
+        const msPing = Date.now() - data.sendAt
+        for (const username in this.clients) {
+            const client = this.clients[username]
+            client.lastPingMs = msPing
+        }
+
         for (const mapName in data.mapPackets) {
             const mapPacket = data.mapPackets[mapName]
 
