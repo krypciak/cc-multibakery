@@ -19,9 +19,10 @@ prestart(() => {
 
 function send() {
     assert(multi.server instanceof PhysicsServer)
+    if (!multi.server.netManager) return
     const mapsToSend = new Set<string>()
 
-    const connections = multi.server.netManager!.connections
+    const connections = multi.server.netManager.connections
     for (const conn of connections) {
         for (const client of conn.clients) {
             mapsToSend.add(client.player.mapName)
