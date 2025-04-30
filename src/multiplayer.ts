@@ -11,6 +11,7 @@ import './state/states'
 import './misc/paused-virtual'
 import './misc/pause-screen'
 import './misc/disable-fkeys'
+import './misc/disallow-singleplayer'
 import './client/menu/server-list-menu'
 
 declare global {
