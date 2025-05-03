@@ -1,4 +1,4 @@
-import type { Server } from 'http'
+import type { Server, IncomingMessage, ServerResponse } from 'http'
 import { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server-info'
 import Multibakery from '../plugin'
 import { RemoteServerConnectionSettings } from '../server/remote-server'
@@ -12,11 +12,10 @@ export class PhysicsHttpServer {
     constructor(public netInfo: NetServerInfoPhysics) {}
 
     async start() {
-        const http: typeof import('http') = (0, eval)('require("http")')
+        const fs: typeof import('fs') = (0, eval)('require("fs")')
 
         let icon: ArrayBuffer | undefined
         if (this.netInfo.details.iconPath) {
-            const fs: typeof import('fs') = (0, eval)('require("fs")')
             icon = await fs.promises.readFile(this.netInfo.details.iconPath)
         }
 
@@ -29,30 +28,46 @@ export class PhysicsHttpServer {
         }
         const serverDetailsString: string = JSON.stringify(serverDetails)
 
-        this.httpServer = http.createServer((req, res) => {
-            if (req.url == '/') {
-                res.writeHead(200, {
-                    'Content-Type': 'text/plain',
-                })
-                res.write('hi')
-                res.end()
-            } else if (req.url == '/details') {
-                res.writeHead(200, {
-                    'Content-Type': 'application/json',
-                })
-                res.write(serverDetailsString)
-                res.end()
-            } else if (req.url == '/icon' && icon) {
-                res.writeHead(200, {
-                    'Content-Type': 'image/png',
-                })
-                res.write(icon)
-                res.end()
-            } else {
-                res.writeHead(404)
-                res.end()
-            }
+        const httpRoot = this.netInfo.connection.httpRoot
+
+        const { createServer } = await import('http-server')
+        const httpServer = createServer({
+            root: httpRoot,
+            cache: 60 * 60 * 24,
+            cors: true,
+            showDotfiles: false,
+            showDir: 'false',
+            gzip: true,
+            before: [
+                (req: IncomingMessage, res: ServerResponse) => {
+                    if (req.url == '/details') {
+                        res.writeHead(200, {
+                            'Content-Type': 'application/json',
+                        })
+                        res.write(serverDetailsString)
+                        res.end()
+                    } else if (req.url == '/icon' && icon) {
+                        res.writeHead(200, {
+                            'Content-Type': 'image/png',
+                        })
+                        res.write(icon)
+                        res.end()
+                    } else {
+                        if (httpRoot) res.emit('next')
+                        else if (req.url == '/') {
+                            res.writeHead(200)
+                            res.write('crosscode server')
+                            res.end()
+                        } else {
+                            res.writeHead(404)
+                            res.end()
+                        }
+                    }
+                },
+            ],
         })
+        // @ts-expect-error for some reason http-server typedefs are wrong
+        this.httpServer = httpServer.server
 
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())

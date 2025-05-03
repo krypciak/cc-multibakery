@@ -88,7 +88,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
             // cors: {
-            //     origin: `http://localhost:${this.port}`,
+            //     origin: `*`,
             // },
         })
 

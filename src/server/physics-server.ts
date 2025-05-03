@@ -11,6 +11,7 @@ import './physics-server-sender'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
+    httpRoot?: string
 } & {
     type: 'socket'
 }

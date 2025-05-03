@@ -63,6 +63,7 @@ export default class Multibakery implements PluginClass {
                     netInfo: {
                         connection: {
                             httpPort: DEFAULT_HTTP_PORT,
+                            httpRoot: '../cc-bundle-inst/ccbundler/dist',
                             type: 'socket',
                         },
                         details: {
