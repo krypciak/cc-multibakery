@@ -176,10 +176,10 @@ function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
 }
 
-function getClient(username: string): Client | undefined {
+function getClient(username: string, noAssert?: boolean): Client | undefined {
     if (!multi.server) return
     const client = multi.server.clients[username]
-    assert(client)
+    if (!noAssert) assert(client)
     return client
 }
 
@@ -209,7 +209,7 @@ prestart(() => {
     })
     dummy.DummyPlayer.inject({
         update() {
-            const client = getClient(this.data.username)
+            const client = getClient(this.data.username, true)
             if (!client) return this.parent()
 
             const camera = ig.camera
