@@ -47,9 +47,11 @@ export class Client {
             multi.server.baseInst,
             'localclient-' + this.settings.username,
             multi.server.settings.displayClientInstances && !this.settings.noShowInstance,
-            this.settings.forceDraw
+            this.settings.forceDraw,
+            inst => {
+                inst.ig.client = this
+            }
         )
-        this.inst.ig.client = this
 
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
@@ -214,6 +216,17 @@ prestart(() => {
             ig.camera = client.inst.ig.camera
             this.parent()
             ig.camera = camera
+        },
+    })
+
+    sc.TitleScreenGui.inject({
+        init() {
+            this.parent()
+            if (!ig.client) return
+            this.introGui.timeLine = [
+                { time: 10000, gui: 'baseBG', state: 'DEFAULT' },
+                { time: 0, end: true },
+            ]
         },
     })
 
