@@ -112,7 +112,7 @@ prestart(() => {
         },
         clearCharge() {
             /* prevent crashes */
-            if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
+            this.cameraHandle ??= { setZoom() {} }
             this.parent()
             if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
         },

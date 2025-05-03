@@ -87,7 +87,7 @@ function physicsLoop() {
         //     ig.system.actualTick = ig.system.actualTick * 8
         // }
 
-        if (ig.system.hasFocusLost() && ig.system.cancelFocusLostCallback && ig.system.cancelFocusLostCallback()) {
+        if (ig.system.hasFocusLost() && ig.system.cancelFocusLostCallback?.()) {
             ig.system.regainFocus()
         }
 

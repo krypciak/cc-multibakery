@@ -136,8 +136,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     }
 
     async destroy() {
-        if (this.netManager) await this.netManager.destroy()
-        if (this.httpServer) await this.httpServer.destroy()
+        await this.netManager?.destroy()
+        await this.httpServer?.destroy()
         await super.destroy()
     }
 }

@@ -59,7 +59,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
             copyTickInfo(this.serverInst, obj.inst)
             obj.inst.apply()
             determine.apply(obj.determinism)
-            if (obj.update) obj.update()
+            obj.update?.()
             ig.game.update()
         }
 
@@ -103,7 +103,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async loadMap(name: string) {
-        if (this.maps[name]) this.maps[name].destroy()
+        this.maps[name]?.destroy()
         const map = new CCMap(name)
         this.maps[name] = map
         await map.load()

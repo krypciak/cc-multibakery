@@ -95,7 +95,7 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
     if (!multi.headless) this.preDrawMaps()
 
     let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
-    if (collisionLayer) collisionLayer.prepare()
+    collisionLayer?.prepare()
 
     for (let i = this.masterLevel + 1; i < this.maxLevel; i++) {
         const level = this.levels[i]

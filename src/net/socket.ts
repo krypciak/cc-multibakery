@@ -53,37 +53,6 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
-        // const fs = await import('fs')
-        // const { createServer } = await import('http')
-        // const crypto = await import('crypto')
-        // const htm = await fs.promises.readFile(
-        //     '/home/krypek/Programming/crosscode/instances/cc-bundle-inst/ccbundler/dist.html',
-        //     'utf8'
-        // )
-        // const etag = 'W/' + crypto.createHash('sha256').update(htm).digest('hex')
-        //
-        // const hs = createServer(function (req, res) {
-        //     const ifNoneMatch = req.headers['if-none-match']
-        //     if (ifNoneMatch === etag) {
-        //         res.writeHead(304)
-        //         res.end()
-        //         return
-        //     }
-        //
-        //     res.writeHead(200, {
-        //         'Content-Type': 'text/html',
-        //         'Cache-Control': 'public, max-age=31536000, immutable',
-        //         'Last-Modified': 'Tue, 22 Feb 2022 20:20:20 GMT',
-        //         Expires: 'Sun, 15 Feb 2028 20:47:38 GMT',
-        //         Vary: 'Accept-Encoding',
-        //         'Content-Length': Buffer.byteLength(htm, 'utf8'),
-        //         ETag: etag,
-        //     })
-        //     res.write(htm)
-        //     res.end()
-        // })
-        // hs.listen(DEFAULT_SOCKETIO_PORT)
-
         const { Server } = await import('socket.io')
         this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
@@ -212,7 +181,7 @@ export class SocketNetConnection implements NetConnection {
         this.closed = true
         if (!this.socket.disconnected) this.socket.disconnect()
 
-        if (this.onClose) this.onClose()
+        this.onClose?.()
 
         for (const client of this.clients) {
             this.leave(client)
