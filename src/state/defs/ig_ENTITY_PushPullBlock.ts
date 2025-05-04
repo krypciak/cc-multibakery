@@ -1,3 +1,4 @@
+import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote-server'
 
@@ -22,13 +23,19 @@ function getState(this: ig.ENTITY.PushPullBlock) {
     }
 }
 function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
+    const stopSound = () => {
+        ;(this.pushPullable.soundHandle as ig.SoundHandleWebAudio | undefined)?.stop()
+        this.pushPullable.soundHandle = null
+    }
     if (state.pos) {
         const p1 = this.coll.pos
         const p2 = state.pos
         if (!Vec3.equal(p1, p2)) {
             Vec3.assign(this.coll.pos, p2)
-        }
-    }
+            this.pushPullable.soundHandle ??= sc.PushPullSounds.Loop.play(true)
+        } else stopSound()
+    } else stopSound()
+
     this.update()
 }
 
@@ -47,6 +54,13 @@ prestart(() => {
         // )
         // return entity
     }
+
+    sc.PushPullable.inject({
+        stopSound() {
+            /* fix ig.ENTITY.PushPullBlock#update stopping the sound that was just played in setState */
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+        },
+    })
 
     ig.ENTITY.PushPullBlock.inject({
         update() {
