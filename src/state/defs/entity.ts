@@ -6,6 +6,7 @@ import { assert } from '../../misc/assert'
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
 import './ig_ENTITY_PushPullBlock'
+import './ig_ENTITY_Switch'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {
