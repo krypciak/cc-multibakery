@@ -20,6 +20,7 @@ declare global {
         var server: Server
         function setServer(server: Server): void
         function destroy(): Promise<void>
+        function destroyAndStartLoop(): Promise<void>
     }
     namespace NodeJS {
         interface Global {
@@ -40,6 +41,10 @@ export function initMultiplayer() {
         async destroy() {
             await this.server.destroy()
             this.server = undefined as any
+        },
+        async destroyAndStartLoop() {
+            await this.destroy()
+            ig.system.startRunLoop()
         },
     }
 }

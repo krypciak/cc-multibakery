@@ -3,7 +3,7 @@ import { Client } from '../client/client'
 export interface NetConnection {
     clients: Client[]
     onReceive?: (data: unknown) => void
-    onClose?: () => void
+    onDisconnect?: () => void
 
     join(client: Client): void
     leave(client: Client): void

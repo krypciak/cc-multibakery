@@ -4,7 +4,7 @@ import { SocketNetManagerRemoteServer } from '../net/socket'
 import { prestart } from '../plugin'
 import { applyEntityStates } from '../state/states'
 import { ClientJoinAckData, ClientJoinData } from './physics-server'
-import { RemoteServerUpdatePacket } from './physics-server-sender'
+import { PhysicsServerUpdatePacket } from './physics-server-sender'
 import { Server, ServerSettings } from './server'
 
 import './remote-server-sender'
@@ -60,15 +60,15 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         return ackData
     }
 
-    onNetDisconnect() {
+    async onNetDisconnect() {
         console.log('server disconnected')
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
-        this.processPacket(conn, data as RemoteServerUpdatePacket)
+        this.processPacket(conn, data as PhysicsServerUpdatePacket)
     }
 
-    private processPacket(_conn: NetConnection, data: RemoteServerUpdatePacket) {
+    private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
         const unreadyClientPlayers: string[] = Object.keys(this.unreadyClients).map(getDummyUuidByUsername)
 
         const msPing = Date.now() - data.sendAt
@@ -102,12 +102,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async leaveClient(client: Client) {
         await super.leaveClient(client)
         if (Object.keys(this.clients).length == 0) {
-            await multi.destroy()
+            await multi.destroyAndStartLoop()
         }
     }
 
     async destroy() {
-        if (this.netManager) await this.netManager.destroy()
+        await this.netManager.destroy?.()
         await super.destroy()
     }
 }
@@ -171,8 +171,7 @@ prestart(() => {
 
         const ack = await server.tryJoinRemote(joinData)
         if (ack.status != 'ok') {
-            await multi.destroy()
-            ig.system.startRunLoop()
+            await multi.destroyAndStartLoop()
         }
         return ack
     }

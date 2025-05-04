@@ -58,7 +58,7 @@ function getMapUpdatePacket(map: CCMap): CCMapUpdatePacket {
     return data
 }
 
-export interface RemoteServerUpdatePacket {
+export interface PhysicsServerUpdatePacket {
     mapPackets: Record</* mapName */ string, CCMapUpdatePacket>
     tick: number
     sendAt: number
@@ -66,15 +66,15 @@ export interface RemoteServerUpdatePacket {
 function getRemoteServerUpdatePacket(
     conn: NetConnection,
     mapPackets: Record<string, CCMapUpdatePacket>
-): RemoteServerUpdatePacket {
-    const sendMapPackets: RemoteServerUpdatePacket['mapPackets'] = {}
+): PhysicsServerUpdatePacket {
+    const sendMapPackets: PhysicsServerUpdatePacket['mapPackets'] = {}
     for (const client of conn.clients) {
         const mapName = client.player.mapName
         if (sendMapPackets[mapName]) continue
         sendMapPackets[mapName] = mapPackets[mapName]
     }
 
-    const data: RemoteServerUpdatePacket = {
+    const data: PhysicsServerUpdatePacket = {
         mapPackets: sendMapPackets,
         tick: ig.system.tick,
         sendAt: Date.now(),

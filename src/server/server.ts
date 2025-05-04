@@ -151,11 +151,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     async destroy() {
         assert(instanceinator.id == this.serverInst.id)
-        ig.system.stopRunLoop()
 
         for (const client of Object.values(this.clientsById)) {
             await this.leaveClient(client)
         }
+
+        ig.system.stopRunLoop()
+
         for (const map of Object.values(this.maps)) {
             await map.destroy()
         }

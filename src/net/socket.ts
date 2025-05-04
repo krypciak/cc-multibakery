@@ -81,6 +81,10 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     }
 
     async stop() {
+        for (const connection of this.connections) {
+            connection.close()
+        }
+        this.connections = []
         await this.io.close()
     }
 
@@ -155,18 +159,16 @@ export class SocketNetConnection implements NetConnection {
 
     constructor(
         public socket: ClientSocket | Socket,
-        public onClose?: () => void
+        public onDisconnect?: () => void
     ) {
-        socket.on('disconnect', () => this.close())
+        socket.on('disconnect', () => this.onDisconnect?.())
     }
 
     join(client: Client) {
         this.clients.push(client)
-        // client.inst.ig.netConnection = this
     }
     leave(client: Client) {
         this.clients.erase(client)
-        // client.inst.ig.netConnection = undefined
     }
 
     isConnected() {
@@ -181,7 +183,7 @@ export class SocketNetConnection implements NetConnection {
         this.closed = true
         if (!this.socket.disconnected) this.socket.disconnect()
 
-        this.onClose?.()
+        this.onDisconnect?.()
 
         for (const client of this.clients) {
             this.leave(client)

@@ -2,7 +2,7 @@ import { NetConnection, NetManagerPhysicsServer } from '../net/connection'
 import { SocketNetManagerPhysicsServer } from '../net/socket'
 import { Server, ServerSettings } from './server'
 import { Client } from '../client/client'
-import { isRemoteServerInputPacket, RemoteServerInputPacket } from './remote-server-sender'
+import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from './remote-server-sender'
 import { assert } from '../misc/assert'
 import { NetServerInfoPhysics } from '../client/menu/server-info'
 import { PhysicsHttpServer } from '../net/web-server'
@@ -106,23 +106,22 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
     onNetReceive(conn: NetConnection, data: unknown) {
         // console.log(`received packet from`, conn.clients, `:`, data)
-        if (!isRemoteServerInputPacket(data)) {
-            console.warn('invalid update packet received from', conn.clients, ', closing')
+        if (!isRemoteServerUpdatePacket(data)) {
+            console.warn('invalid update packet received from', conn.clients, ', contents: ', data, ', closing')
             conn.close()
             return
         }
         this.processPacket(conn, data)
     }
 
-    private processPacket(_conn: NetConnection, data: RemoteServerInputPacket) {
-        for (const username in data) {
+    private processPacket(conn: NetConnection, data: RemoteServerUpdatePacket) {
+        for (const username in data.input) {
             const client = multi.server.clients[username]
             if (!client) continue
             const inp = client.player.inputManager
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
-            const packet = data[username]
-            inp.input.pushInput(packet.input)
+            const packet = data.input[username]
             if (packet.gamepad) {
                 inp.gamepadManager.pushInput(packet.gamepad)
             }

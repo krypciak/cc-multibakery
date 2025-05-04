@@ -19,7 +19,7 @@ function send() {
     const conn = multi.server.netManager.conn
     if (!conn) return
 
-    const packets: RemoteServerInputPacket = {}
+    const inputPackets: RemoteServerInputPacket = {}
     for (const username in multi.server.clients) {
         const client = multi.server.clients[username]
         const inst = client.inst
@@ -27,21 +27,37 @@ function send() {
         const input = dummy.input.Puppet.InputManager.getInputData(inst.ig.input)
         const gamepad = dummy.input.Puppet.InputManager.getGamepadManagerData(inst.ig.gamepad)
 
-        packets[username] = {
+        inputPackets[username] = {
             input,
             gamepad,
         }
     }
 
-    conn.sendUpdate(packets)
+    const packet: RemoteServerUpdatePacket = {
+        input: inputPackets,
+    }
+
+    conn.sendUpdate(packet)
 }
 
-export type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
+export interface RemoteServerUpdatePacket {
+    input: RemoteServerInputPacket
+}
+type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
 export interface ClientInputPacket {
     input: InputData
     gamepad?: GamepadManagerData
 }
-export function isRemoteServerInputPacket(data: any): data is RemoteServerInputPacket {
+export function isRemoteServerUpdatePacket(data: any): data is RemoteServerUpdatePacket {
+    if (typeof data != 'object' || !data) return false
+
+    const input = data.input
+    if (typeof input !== 'object' || !input) return false
+    if (!isRemoteServerInputPacket(input)) return false
+
+    return true
+}
+function isRemoteServerInputPacket(data: any): data is RemoteServerInputPacket {
     if (typeof data != 'object' || !data) return false
     for (const username in data) {
         const client = multi.server.clients[username]
