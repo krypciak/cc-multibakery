@@ -9,6 +9,7 @@ import './ig_ENTITY_PushPullBlock'
 import './ig_ENTITY_Switch'
 import './ig_ENTITY_OneTimeSwitch'
 import './ig_ENTITY_MultiHitSwitch'
+import './ig_ENTITY_WallBase'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {
