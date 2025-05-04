@@ -7,6 +7,7 @@ import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
 import './ig_ENTITY_PushPullBlock'
 import './ig_ENTITY_Switch'
+import './ig_ENTITY_OneTimeSwitch'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {

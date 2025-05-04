@@ -153,7 +153,7 @@ export class Client {
                     sc.Model.notifyObserver(client.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
                 }
             }
-            this.player.dummy.party = this.inst.id + 2
+            this.player.dummy.party = this.inst.id - 1
         })
 
         if (this.settings.inputType == 'clone' && this.settings.forceInputType == ig.INPUT_DEVICES.GAMEPAD)
