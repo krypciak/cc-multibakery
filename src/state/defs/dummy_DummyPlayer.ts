@@ -18,19 +18,12 @@ declare global {
 
 type Return = Partial<ReturnType<typeof getState>>
 function getState(this: dummy.DummyPlayer) {
-    // const anim = this.animState.animations[0]
-    // console.log(this.currentAnim, anim.sequence.length, )
     return {
         data: this.data,
         pos: this.coll.pos,
         currentAnim: this.currentAnim,
         currentAnimTimer: this.animState.timer,
         face: this.face,
-        // input: this.input.getInput(),
-        // gamepadInput: this.gamepadManager.getInput(),
-        // gatherInput: this.nextGatherInput,
-        // element: this.model.currentElementMode,
-        // relativeCursorPos: this.crosshairController.relativeCursorPos,
     }
 }
 function setState(this: dummy.DummyPlayer, state: Return) {
@@ -44,7 +37,6 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     }
     if (state.currentAnim) {
         this.currentAnim = state.currentAnim
-        // this.setCurrentAnim(state.currentAnim)
     }
     if (state.currentAnimTimer) {
         this.animState.timer = state.currentAnimTimer
@@ -52,29 +44,8 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.face) {
         this.face = state.face
     }
-    // if (state.input) {
-    //     this.input.setInput(state.input)
-    // }
-    // if (state.gamepadInput) {
-    //     this.gamepadManager.setInput(state.gamepadInput)
-    // }
-    // if (state.gatherInput) {
-    //     this.nextGatherInput = state.gatherInput
-    // }
-    // if (state.relativeCursorPos && this.crosshairController) {
-    //     this.crosshairController.relativeCursorPos = state.relativeCursorPos
-    // }
-    // if (state.element && this.model.currentElementMode !== state.element) {
-    //     this.model.setElementMode(state.element, false, false)
-    // }
 
     this.updateAnim()
-    // {
-    //     const backup = ig.ActorEntity.prototype.update
-    //     ig.ActorEntity.prototype.update = () => {}
-    //     sc.ActorEntity.prototype.update.call(this)
-    //     ig.ActorEntity.prototype.update = backup
-    // }
 }
 
 prestart(() => {

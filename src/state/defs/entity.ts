@@ -5,6 +5,7 @@ import { assert } from '../../misc/assert'
 
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
+import './ig_ENTITY_PushPullBlock'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {
@@ -49,9 +50,17 @@ prestart(() => {
         set(packet) {
             if (!packet.states) return
 
-            for (const uuid in packet.states) {
+            const states = Object.entriesT(packet.states)
+            /*.sort(([_, dataA], [__, dataB]) => {
+                const classA = ig.entityPathToClass[dataA.type]
+                const classB = ig.entityPathToClass[dataB.type]
+                const prioA = 'priority' in classA ? classA.priority : 1000
+                const prioB = 'priority' in classB ? classB.priority : 1000
+                return prioA - prioB
+            })*/
+
+            for (const [uuid, data] of states) {
                 let entity = ig.game.entitiesByUUID[uuid]
-                const data = packet.states[uuid]
                 if (!entity) {
                     const clazz = ig.entityPathToClass[data.type]
                     assert('create' in clazz)

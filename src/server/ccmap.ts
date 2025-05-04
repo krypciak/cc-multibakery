@@ -185,7 +185,7 @@ export class CCMap {
 prestart(() => {
     const backup = ig.CollTools.isInScreen
     ig.CollTools.isInScreen = function (e: ig.Entity, x?: number, y?: number) {
-        if (multi.server) return true
+        if (multi.server && !ig.client) return true
         return backup(e, x, y)
     }
 
