@@ -13,6 +13,12 @@ export function registerOpts() {
             headers: {
                 server: {},
                 client: {
+                    hideClientUsername: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Hide your username',
+                        description: 'Hides your player username',
+                    },
                     showClientMsPing: {
                         type: 'CHECKBOX',
                         init: true,

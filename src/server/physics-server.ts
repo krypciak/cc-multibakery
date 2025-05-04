@@ -114,7 +114,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.processPacket(conn, data)
     }
 
-    private processPacket(conn: NetConnection, data: RemoteServerUpdatePacket) {
+    private processPacket(_conn: NetConnection, data: RemoteServerUpdatePacket) {
         for (const username in data.input) {
             const client = multi.server.clients[username]
             if (!client) continue
@@ -122,6 +122,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
             const packet = data.input[username]
+            inp.input.pushInput(packet.input)
             if (packet.gamepad) {
                 inp.gamepadManager.pushInput(packet.gamepad)
             }

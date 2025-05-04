@@ -1,3 +1,4 @@
+import { Opts } from '../options'
 import { prestart } from '../plugin'
 
 import './dummy-box-addon'
@@ -14,9 +15,18 @@ declare global {
 prestart(() => {
     dummy.BoxGuiAddon.Username = dummy.BoxGuiAddon.BoxGuiAddon.extend({
         init(game) {
-            this.parent('DummyUsernameGui', game, player => {
-                return player.data.username
-            })
+            this.parent(
+                'DummyUsernameGui',
+                game,
+                player => {
+                    return player.data.username
+                },
+                player => {
+                    if (!ig.client) return true
+                    if (!Opts.hideClientUsername) return true
+                    return ig.client.player.username != player.data.username
+                }
+            )
         },
     })
 }, 3)
