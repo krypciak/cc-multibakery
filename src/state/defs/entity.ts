@@ -44,10 +44,11 @@ prestart(() => {
             packet.states = {}
             for (const entity of ig.game.entities) {
                 if (isStateEntity(entity)) {
+                    // @ts-expect-error
+                    const state = entity.getState()
                     packet.states[entity.uuid] = {
                         type: entity.type,
-                        // @ts-expect-error
-                        ...entity.getState(),
+                        ...state,
                     }
                 }
             }

@@ -96,7 +96,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             assert(inst)
             inst.apply()
-            applyEntityStates(mapPacket.entities, data.tick)
+            applyEntityStates(mapPacket.entities, data.tick, map.noStateAppliedYet)
+            map.noStateAppliedYet = false
             instanceinator.instances[prevId].apply()
         }
     }

@@ -24,14 +24,20 @@ function getState(this: ig.ENTITY.MultiHitSwitch) {
 function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
     const hits = state.currentHits ?? 0
     if (this.currentHits != hits) {
+        const oldHits = this.currentHits
+        this.currentHits = hits
+
         if (hits >= this.hitsToActive) {
-            this.setCurrentAnim('switch', true, null, true, true)
-            ig.SoundHelper.playAtEntity(this.activateSound, this)
+            if (ig.settingStateImmediately) {
+                this.animationEnded('switch')
+            } else {
+                this.setCurrentAnim('switch', true, null, true, true)
+                ig.SoundHelper.playAtEntity(this.activateSound, this)
+            }
         } else {
             this._setAnimation()
-            if (hits > this.currentHits) ig.SoundHelper.playAtEntity(this.countSound, this)
+            if (hits > oldHits && !ig.settingStateImmediately) ig.SoundHelper.playAtEntity(this.countSound, this)
         }
-        this.currentHits = hits
     }
 }
 

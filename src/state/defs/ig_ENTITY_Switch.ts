@@ -24,9 +24,16 @@ function setState(this: ig.ENTITY.Switch, state: Return) {
     const isOn = !!state.isOn
     if (this.isOn != isOn) {
         this.isOn = isOn
-        this.setCurrentAnim(this.isOn ? 'switchOn' : 'switchOff', true, this.isOn ? 'on' : 'off', true)
-        ig.SoundHelper.playAtEntity(this.sounds.hit, this)
-        ig.SoundHelper.playAtEntity(this.sounds.bing, this)
+        const anim = this.isOn ? 'switchOn' : 'switchOff'
+        const followUpAnim = this.isOn ? 'on' : 'off'
+
+        if (ig.settingStateImmediately) {
+            this.setCurrentAnim(followUpAnim, true, null, true)
+        } else {
+            this.setCurrentAnim(anim, true, followUpAnim, true)
+            ig.SoundHelper.playAtEntity(this.sounds.hit, this)
+            ig.SoundHelper.playAtEntity(this.sounds.bing, this)
+        }
     }
 }
 

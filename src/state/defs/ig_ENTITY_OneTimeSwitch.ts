@@ -25,9 +25,13 @@ function setState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
     if (this.isOn != isOn) {
         this.isOn = isOn
         if (isOn) {
-            this.setOn()
-            ig.SoundHelper.playAtEntity(this.sounds.hit, this)
-            ig.SoundHelper.playAtEntity(this.sounds.bing, this)
+            if (ig.settingStateImmediately) {
+                this.finalizeOn()
+            } else {
+                this.setOn()
+                ig.SoundHelper.playAtEntity(this.sounds.hit, this)
+                ig.SoundHelper.playAtEntity(this.sounds.bing, this)
+            }
         } else this.setOff()
     }
 }

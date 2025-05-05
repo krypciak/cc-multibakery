@@ -1,4 +1,5 @@
 import { prestart } from '../../plugin'
+import { RemoteServer } from '../../server/remote-server'
 
 export {}
 declare global {
@@ -16,11 +17,17 @@ declare global {
 
 type Return = Partial<ReturnType<typeof getState>>
 function getState(this: ig.ENTITY.WallBase) {
+    const timer = this.wallBlockers[0]?.timer
     return {
         active: this.active ? true : undefined,
+        timer: timer > 0 ? timer : undefined,
     }
 }
 function setState(this: ig.ENTITY.WallBase, state: Return) {
+    const timer = state.timer ?? 0
+    for (const wallBlocker of this.wallBlockers) {
+        wallBlocker.timer = timer
+    }
     const active = !!state.active
     if (this.active != active) {
         this.active = active
@@ -43,4 +50,19 @@ prestart(() => {
         // )
         // return entity
     }
+
+    ig.ENTITY.WallBlocker.inject({
+        update() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            /* prevent this.timer from ticking */
+        },
+        setActive(isBaseActive, isActive) {
+            if (!ig.settingStateImmediately) return this.parent(isBaseActive, isActive)
+
+            const soundsBackup = this.sounds
+            this.sounds = undefined
+            this.parent(isBaseActive, isActive)
+            this.sounds = soundsBackup
+        },
+    })
 }, 2)

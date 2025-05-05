@@ -27,6 +27,7 @@ export class CCMap {
     ready: boolean = false
     readyPromise: Promise<void>
     private readyResolve!: () => void
+    noStateAppliedYet: boolean = true
 
     constructor(public name: string) {
         this.readyPromise = new Promise<void>(resolve => {

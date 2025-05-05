@@ -24,10 +24,9 @@ function setState(this: ig.ENTITY.OLPlatform, state: Return) {
     const currentStateIndex = state.currentState ?? -1
     const platformState = this.states[currentStateIndex]
 
-    const immediately = false
     if (platformState && platformState != this.currentState) {
         Vec3.assign(this._lastPos, this.coll.pos)
-        if (immediately) {
+        if (ig.settingStateImmediately) {
             Vec3.assign(this.coll.pos, platformState.pos)
         } else {
             const sound = this.sound.move.play() as ig.SoundHandleWebAudio
