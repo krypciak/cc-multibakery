@@ -113,7 +113,7 @@ prestart(() => {
         onCreateListEntries(list, buttonGroup) {
             list.clear()
             buttonGroup.clear()
-            this.tabz[this.currentTabIndex].populateFunc.bind(this)(list, buttonGroup, this.currentSort)
+            this.tabz[this.currentTabIndex].populateFunc.call(this, list, buttonGroup, this.currentSort)
         },
         addObservers() {
             sc.Model.addObserver(sc.menu, this)

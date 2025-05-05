@@ -50,7 +50,7 @@ prestart(() => {
         init(_x, _y, _z, settings) {
             settings.name = settings.data.username
             settings.uuid = getDummyUuidByUsername(settings.data.username)
-            sc.PlayerBaseEntity.prototype.init.bind(this)(0, 0, 0, settings)
+            sc.PlayerBaseEntity.prototype.init.call(this, 0, 0, 0, settings)
 
             assert(settings.inputManager)
             this.inputManager = settings.inputManager
