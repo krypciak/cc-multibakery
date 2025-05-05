@@ -66,12 +66,16 @@ prestart(() => {
             })*/
 
             for (const [uuid, data] of states) {
-                let entity = ig.game.entitiesByUUID[uuid]
+                let entity: ig.Entity | undefined = ig.game.entitiesByUUID[uuid]
                 if (!entity) {
                     const clazz = ig.entityPathToClass[data.type]
                     assert('create' in clazz)
-                    const create = clazz.create as (uuid: string, state: typeof data) => InstanceType<typeof clazz>
+                    const create = clazz.create as (
+                        uuid: string,
+                        state: typeof data
+                    ) => InstanceType<typeof clazz> | undefined
                     entity = create(uuid, data)
+                    if (!entity) continue
                 }
                 assert(entity)
                 assert(isStateEntity(entity))
