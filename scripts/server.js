@@ -11,7 +11,6 @@ startCrossnode({
         'ccmodmanager',
         'cc-ts-template-esbuild',
         'nax-ccuilib',
-        'nax-module-cache',
     ],
     extensionWhitelist: [],
 })

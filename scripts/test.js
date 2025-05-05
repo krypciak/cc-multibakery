@@ -7,7 +7,7 @@ startCrossnode({
     writeImageInstanceinator: true,
     shell: true,
 
-    modWhitelist: ['cc-multibakery', 'cc-determine', 'cc-instanceinator', 'ccmodmanager', 'cc-ts-template-esbuild'],
+    modWhitelist: ['cc-multibakery', 'cc-determine', 'cc-instanceinator', 'ccmodmanager', 'cc-ts-template-esbuild', 'nax-ccuilib'],
     extensionWhitelist: [],
     modTestWhitelist: ['cc-multibakery'],
 })
