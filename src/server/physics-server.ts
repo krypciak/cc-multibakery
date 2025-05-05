@@ -52,10 +52,17 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (!window.crossnode?.options.test) {
             // await this.createAndJoinClient({
             //     username: `lea_${1}`,
+            //     inputType: 'clone',
             // })
             // await this.createAndJoinClient({
             //     username: `lea_${2}`,
-            //     inputType: 'puppet',
+            //     inputType: 'clone',
+            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+            // })
+            // await this.createAndJoinClient({
+            //     username: `lea_${3}`,
+            //     inputType: 'clone',
+            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
             // })
             // let promises = []
             // for (let i = 2; i <= 20; i++) {
@@ -122,9 +129,9 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
             const packet = data.input[username]
-            inp.input.pushInput(packet.input)
+            inp.mainInput.pushInput(packet.input)
             if (packet.gamepad) {
-                inp.gamepadManager.pushInput(packet.gamepad)
+                inp.mainGamepadManager.pushInput(packet.gamepad)
             }
         }
     }

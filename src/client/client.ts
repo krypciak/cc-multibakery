@@ -27,7 +27,7 @@ export type ClientSettings = {
     forceDraw?: boolean
 } & (
     | {
-          inputType?: 'clone'
+          inputType: 'clone'
           forceInputType?: ig.INPUT_DEVICES
       }
     | {
@@ -60,20 +60,7 @@ export class Client {
         this.determinism = new determine.Instance('welcome to hell')
         determine.append(this.determinism)
 
-        removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
-        this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
-        addAddon(this.inst.ig.gamepad, this.inst.ig.game)
-        let inputManager: dummy.InputManager
-        if (this.settings.inputType == 'puppet') {
-            inputManager = new dummy.input.Puppet.InputManager()
-            this.inst.ig.input = inputManager.input
-        } else if (this.settings.inputType == 'clone' || this.settings.inputType === undefined) {
-            inputManager = new dummy.input.Clone.InputManager(
-                this.inst.ig.input,
-                this.inst.ig.gamepad,
-                this.settings.forceInputType
-            )
-        } else assert(false)
+        const inputManager = this.initInputManager()
         this.player = new ServerPlayer(this.settings.username, undefined, inputManager)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
@@ -84,6 +71,26 @@ export class Client {
             createClientConnectionInfoLabel(this)
             createClientNetworkPacketTraffic(this)
         }
+    }
+    private initInputManager() {
+        removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
+        let inputManager: dummy.InputManager
+        if (this.settings.inputType == 'puppet') {
+            const puppet = new dummy.input.Puppet.InputManager()
+            inputManager = puppet
+            this.inst.ig.input = puppet.mainInput
+            this.inst.ig.gamepad = puppet.mainGamepadManager
+        } else if (this.settings.inputType == 'clone') {
+            this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
+            inputManager = new dummy.input.Clone.InputManager(
+                this.inst.ig.input,
+                this.inst.ig.gamepad,
+                this.settings.forceInputType
+            )
+        } else assert(false)
+        addAddon(this.inst.ig.gamepad, this.inst.ig.game)
+
+        return inputManager
     }
 
     async teleport() {
@@ -224,6 +231,7 @@ prestart(() => {
         },
     })
 
+    /* dont show title screen when client gets created, instead show a black screen */
     sc.TitleScreenGui.inject({
         init() {
             this.parent()

@@ -2,7 +2,7 @@ import { prestart } from '../plugin'
 
 import './gamepad-assigner'
 
-class InputManagerClazz implements dummy.InputManager {
+class CloneInputManager implements dummy.InputManager {
     player!: dummy.DummyPlayer
     input: ig.Input
     gamepadManager: dummy.input.Clone.GamepadManager
@@ -21,10 +21,8 @@ class InputManagerClazz implements dummy.InputManager {
         }
     }
 
-    gatherInput() {
-        if (this.ignoreKeyboardInput) return undefined
-
-        return ig.ENTITY.Player.prototype.gatherInput.call(this.player)
+    gatherInput(): ig.ENTITY.Player.PlayerInput | undefined {
+        return undefined
     }
 
     isKeyboardBlocked() {
@@ -40,8 +38,8 @@ declare global {
     namespace dummy {
         namespace input {
             namespace Clone {
-                type InputManager = InputManagerClazz
-                let InputManager: typeof InputManagerClazz
+                type InputManager = CloneInputManager
+                let InputManager: typeof CloneInputManager
             }
         }
     }
@@ -50,7 +48,7 @@ prestart(() => {
     dummy.input ??= {} as any
     dummy.input.Clone = {} as any
 
-    dummy.input.Clone.InputManager = InputManagerClazz
+    dummy.input.Clone.InputManager = CloneInputManager
 }, 2)
 
 declare global {

@@ -215,7 +215,6 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     const emptyInput: InputData = {
         isUsingMouse: false,
         isUsingKeyboard: false,
-        isUsingAccelerometer: false,
         ignoreKeyboard: false,
         mouseGuiActive: true,
         mouse: { x: 0, y: 0 },
@@ -277,11 +276,11 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
                     const action = dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'
                     inp.actions[action] = true
                 }
-                input.input.setInput(inp)
+                input.mainInput.setInput(inp)
             })
         }
     }
-    input.input.setInput(emptyInput)
+    input.mainInput.setInput(emptyInput)
     waitFrames(8)
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)
