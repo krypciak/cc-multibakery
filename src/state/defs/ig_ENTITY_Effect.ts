@@ -66,7 +66,6 @@ function setState(this: ig.ENTITY.Effect, state: Return) {
     // this.attachGroup = state.group
 
     // this.timer = state.timer
-    // console.log(this.duration, this.timer)
 
     this.update()
     this.deferredUpdate()

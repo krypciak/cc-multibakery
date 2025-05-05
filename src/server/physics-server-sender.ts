@@ -39,7 +39,7 @@ function send() {
 
     for (const conn of connections) {
         const data = getRemoteServerUpdatePacket(conn, mapPackets)
-        conn.sendUpdate(data)
+        conn.send('update', data)
     }
 }
 

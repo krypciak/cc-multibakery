@@ -8,7 +8,11 @@ import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 import { forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
 import { waitForScheduledTask } from '../server/server'
-import { createClientConnectionInfoLabel, createClientPingLabel } from './client-label-draw'
+import {
+    createClientConnectionInfoLabel,
+    createClientNetworkPacketTraffic,
+    createClientPingLabel,
+} from './client-label-draw'
 import { RemoteServer } from '../server/remote-server'
 
 declare global {
@@ -78,6 +82,7 @@ export class Client {
         if (multi.server instanceof RemoteServer) {
             createClientPingLabel(this)
             createClientConnectionInfoLabel(this)
+            createClientNetworkPacketTraffic(this)
         }
     }
 

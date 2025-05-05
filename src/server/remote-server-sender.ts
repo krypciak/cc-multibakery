@@ -37,7 +37,7 @@ function send() {
         input: inputPackets,
     }
 
-    conn.sendUpdate(packet)
+    conn.send('update', packet)
 }
 
 export interface RemoteServerUpdatePacket {

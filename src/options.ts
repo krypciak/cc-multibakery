@@ -31,6 +31,12 @@ export function registerOpts() {
                         name: 'Show connection info',
                         description: 'Show client connection info',
                     },
+                    showPacketNetworkTraffic: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Show network traffic',
+                        description: 'Shows the nettwork trafic',
+                    },
                 },
             },
         },

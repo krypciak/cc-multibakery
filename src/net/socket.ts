@@ -157,6 +157,9 @@ export class SocketNetConnection implements NetConnection {
     clients: Client[] = []
     closed: boolean = false
 
+    bytesSent: bigint = 0n
+    bytesReceived: bigint = 0n
+
     constructor(
         public socket: ClientSocket | Socket,
         public onDisconnect?: () => void
@@ -164,6 +167,14 @@ export class SocketNetConnection implements NetConnection {
         socket.on('disconnect', () => {
             this.close()
             // this.onDisconnect?.()
+        })
+
+        const engine = 'conn' in socket ? socket.conn : socket.io.engine
+        engine.on('packetCreate', packet => {
+            if (packet.data) this.bytesSent += BigInt(Buffer.byteLength(packet.data))
+        })
+        engine.on('packet', packet => {
+            if (packet.data) this.bytesReceived += BigInt(Buffer.byteLength(packet.data))
         })
     }
 
@@ -178,9 +189,10 @@ export class SocketNetConnection implements NetConnection {
         return this.socket.connected
     }
 
-    sendUpdate(data: unknown) {
-        this.socket.emit('update', data)
+    send(type: string, data: unknown) {
+        this.socket.emit(type, data)
     }
+
     close(): void {
         if (this.closed) return
         this.closed = true

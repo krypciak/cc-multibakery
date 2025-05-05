@@ -2,13 +2,15 @@ import { Client } from '../client/client'
 
 export interface NetConnection {
     clients: Client[]
+    bytesSent: bigint
+    bytesReceived: bigint
     onReceive?: (data: unknown) => void
     onDisconnect?: () => void
 
     join(client: Client): void
     leave(client: Client): void
     isConnected(): boolean
-    sendUpdate(data: unknown): void
+    send(type: string, data: unknown): void
     close(): void
     getConnectionInfo(): string
 }
