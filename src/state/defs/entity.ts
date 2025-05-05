@@ -10,6 +10,7 @@ import './ig_ENTITY_Switch'
 import './ig_ENTITY_OneTimeSwitch'
 import './ig_ENTITY_MultiHitSwitch'
 import './ig_ENTITY_WallBase'
+import './ig_ENTITY_OLPlatform'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {
