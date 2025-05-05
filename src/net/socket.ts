@@ -161,7 +161,10 @@ export class SocketNetConnection implements NetConnection {
         public socket: ClientSocket | Socket,
         public onDisconnect?: () => void
     ) {
-        socket.on('disconnect', () => this.onDisconnect?.())
+        socket.on('disconnect', () => {
+            this.close()
+            // this.onDisconnect?.()
+        })
     }
 
     join(client: Client) {
