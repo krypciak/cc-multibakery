@@ -7,6 +7,7 @@ declare global {
     namespace ig {
         interface System {
             frame: number
+            animationFrameId: number
         }
     }
 }
@@ -30,7 +31,20 @@ export function startGameLoop() {
 }
 
 prestart(() => {
+    const orig = window.requestAnimationFrame
+    if (orig) {
+        window.requestAnimationFrame = callback => {
+            const id = orig(callback)
+            ig.system.animationFrameId = id
+            return id
+        }
+    }
+
     ig.System.inject({
+        stopRunLoop() {
+            this.parent()
+            window.cancelAnimationFrame(this.animationFrameId)
+        },
         run() {
             if (!ig.system.running) return
 
