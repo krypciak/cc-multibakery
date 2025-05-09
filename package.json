@@ -18,7 +18,7 @@
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "ccmodmanager": "github:CCDirectLink/CCModManager",
         "crossnode": "github:krypciak/crossnode",
-        "esbuild": "^0.20.2",
+        "esbuild": "^0.25.4",
         "http-server": "^14.1.1",
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
         "node": "^22.15.0",
