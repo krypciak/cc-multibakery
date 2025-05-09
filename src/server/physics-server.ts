@@ -8,6 +8,7 @@ import { NetServerInfoPhysics } from '../client/menu/server-info'
 import { PhysicsHttpServer } from '../net/web-server'
 
 import './physics-server-sender'
+import { startRepl } from '../misc/server-shell'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -89,6 +90,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (this.netManager) {
             await this.netManager.start()
         }
+
+        if (window.crossnode) startRepl()
     }
 
     async onNetJoin(data: ClientJoinData): Promise<{ client: Client; ackData: ClientJoinAckData }> {
