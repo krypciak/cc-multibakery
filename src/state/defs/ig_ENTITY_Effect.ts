@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { PhysicsServer } from '../../server/physics-server'
-import { RemoteServer } from '../../server/remote-server'
+import { PhysicsServer } from '../../server/physics/physics-server'
+import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 
 export {}

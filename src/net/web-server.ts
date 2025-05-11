@@ -1,7 +1,7 @@
 import type { Server, IncomingMessage, ServerResponse } from 'http'
 import { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server-info'
 import Multibakery from '../plugin'
-import { RemoteServerConnectionSettings } from '../server/remote-server'
+import { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
 
 export const DEFAULT_HTTP_PORT = 33405

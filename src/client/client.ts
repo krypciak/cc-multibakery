@@ -13,7 +13,7 @@ import {
     createClientNetworkPacketTraffic,
     createClientPingLabel,
 } from './client-label-draw'
-import { RemoteServer } from '../server/remote-server'
+import { RemoteServer } from '../server/remote/remote-server'
 
 declare global {
     namespace ig {

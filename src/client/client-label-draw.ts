@@ -1,7 +1,7 @@
 import { LabelDrawClass, ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import { Client } from './client'
 import { assert } from '../misc/assert'
-import { RemoteServer } from '../server/remote-server'
+import { RemoteServer } from '../server/remote/remote-server'
 import { Opts } from '../options'
 
 abstract class BasicLabelDrawClass implements LabelDrawClass {

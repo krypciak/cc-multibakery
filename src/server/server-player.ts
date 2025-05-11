@@ -3,7 +3,7 @@ import { prestart } from '../plugin'
 import { teleportPlayerToProperMarker } from '../teleport-fix'
 import { waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
-import { PhysicsServer } from './physics-server'
+import { PhysicsServer } from './physics/physics-server'
 
 export class ServerPlayer {
     private destroyed: boolean = false

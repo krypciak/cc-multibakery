@@ -1,6 +1,6 @@
 import Multibakery from '../../plugin'
 import { ServerPlayer } from '../server-player'
-import { PhysicsServer } from '../physics-server'
+import { PhysicsServer } from '../physics/physics-server'
 
 for (let i = 0; i < 2; i++) {
     window.crossnode.registerTest<{ map: string }>({

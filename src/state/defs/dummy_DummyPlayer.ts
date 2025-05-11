@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { RemoteServer } from '../../server/remote-server'
+import { RemoteServer } from '../../server/remote/remote-server'
 
 export {}
 declare global {

@@ -1,16 +1,16 @@
-import { assert } from '../misc/assert'
-import { NetConnection } from '../net/connection'
-import { SocketNetManagerRemoteServer } from '../net/socket'
-import { prestart } from '../plugin'
-import { applyEntityStates } from '../state/states'
-import { ClientJoinAckData, ClientJoinData } from './physics-server'
-import { PhysicsServerUpdatePacket } from './physics-server-sender'
-import { Server, ServerSettings } from './server'
+import { assert } from '../../misc/assert'
+import { NetConnection } from '../../net/connection'
+import { SocketNetManagerRemoteServer } from '../../net/socket'
+import { prestart } from '../../plugin'
+import { applyEntityStates } from '../../state/states'
+import { ClientJoinAckData, ClientJoinData } from '../physics/physics-server'
+import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
+import { Server, ServerSettings } from '../server'
 
 import './remote-server-sender'
-import { Client } from '../client/client'
-import { getDummyUuidByUsername } from '../dummy/dummy-player'
-import { NetServerInfoRemote } from '../client/menu/server-info'
+import { Client } from '../../client/client'
+import { getDummyUuidByUsername } from '../../dummy/dummy-player'
+import { NetServerInfoRemote } from '../../client/menu/server-info'
 
 export type RemoteServerConnectionSettings = {
     host: string

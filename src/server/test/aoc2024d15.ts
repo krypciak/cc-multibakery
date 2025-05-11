@@ -3,7 +3,7 @@ import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
 import { waitForScheduledTask } from '../server'
 import { Client } from '../../client/client'
-import { PhysicsServer } from '../physics-server'
+import { PhysicsServer } from '../physics/physics-server'
 import { InputData } from '../../dummy/dummy-input-puppet'
 
 declare global {

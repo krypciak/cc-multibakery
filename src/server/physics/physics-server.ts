@@ -1,14 +1,14 @@
-import { NetConnection, NetManagerPhysicsServer } from '../net/connection'
-import { SocketNetManagerPhysicsServer } from '../net/socket'
-import { Server, ServerSettings } from './server'
-import { Client } from '../client/client'
-import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from './remote-server-sender'
-import { assert } from '../misc/assert'
-import { NetServerInfoPhysics } from '../client/menu/server-info'
-import { PhysicsHttpServer } from '../net/web-server'
+import { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
+import { SocketNetManagerPhysicsServer } from '../../net/socket'
+import { Server, ServerSettings } from '../server'
+import { Client } from '../../client/client'
+import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from '../remote/remote-server-sender'
+import { assert } from '../../misc/assert'
+import { NetServerInfoPhysics } from '../../client/menu/server-info'
+import { PhysicsHttpServer } from '../../net/web-server'
 
 import './physics-server-sender'
-import { startRepl } from '../misc/server-shell'
+import { startRepl } from './shell'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number

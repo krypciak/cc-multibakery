@@ -1,8 +1,8 @@
-import { assert } from '../misc/assert'
-import { NetConnection } from '../net/connection'
-import { prestart } from '../plugin'
-import { getFullEntityState } from '../state/states'
-import { CCMap } from './ccmap'
+import { assert } from '../../misc/assert'
+import { NetConnection } from '../../net/connection'
+import { prestart } from '../../plugin'
+import { getFullEntityState } from '../../state/states'
+import { CCMap } from '../ccmap'
 import { PhysicsServer } from './physics-server'
 
 let i = -1

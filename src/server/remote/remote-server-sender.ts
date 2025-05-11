@@ -1,6 +1,6 @@
-import { GamepadManagerData, InputData } from '../dummy/dummy-input-puppet'
-import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
+import { GamepadManagerData, InputData } from '../../dummy/dummy-input-puppet'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../plugin'
 import { RemoteServer } from './remote-server'
 
 prestart(() => {

@@ -1,6 +1,6 @@
-import { RemoteServerConnectionSettings } from '../../server/remote-server'
+import { RemoteServerConnectionSettings } from '../../server/remote/remote-server'
 import { DEFAULT_HTTP_PORT } from '../../net/web-server'
-import { PhysicsServerConnectionSettings } from '../../server/physics-server'
+import { PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
 
 interface ServerDetailsBase {
     title: string
