@@ -11,6 +11,7 @@ import './ig_ENTITY_OneTimeSwitch'
 import './ig_ENTITY_MultiHitSwitch'
 import './ig_ENTITY_WallBase'
 import './ig_ENTITY_OLPlatform'
+import './ig_ENTITY_Ball'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {
@@ -56,14 +57,13 @@ prestart(() => {
         set(packet) {
             if (!packet.states) return
 
-            const states = Object.entriesT(packet.states)
-            /*.sort(([_, dataA], [__, dataB]) => {
+            const states = Object.entriesT(packet.states).sort(([_, dataA], [__, dataB]) => {
                 const classA = ig.entityPathToClass[dataA.type]
                 const classB = ig.entityPathToClass[dataB.type]
                 const prioA = 'priority' in classA ? classA.priority : 1000
                 const prioB = 'priority' in classB ? classB.priority : 1000
                 return prioA - prioB
-            })*/
+            })
 
             for (const [uuid, data] of states) {
                 let entity: ig.Entity | undefined = ig.game.entitiesByUUID[uuid]

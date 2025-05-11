@@ -67,7 +67,11 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
-        this.processPacket(conn, data as PhysicsServerUpdatePacket)
+        try {
+            this.processPacket(conn, data as PhysicsServerUpdatePacket)
+        } catch (e) {
+            console.error(`Error applying packet!`, e)
+        }
     }
 
     private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {

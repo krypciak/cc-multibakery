@@ -14,6 +14,7 @@ declare global {
         }
         interface EffectConstructor {
             create(uuid: string, state: Return): ig.ENTITY.Effect | undefined
+            priority: number
         }
     }
 }
@@ -135,6 +136,7 @@ prestart(() => {
         assert(ig.game.entitiesByUUID[uuid])
         return entity
     }
+    ig.ENTITY.Effect.priority = 2000
 
     let effectId = 0
     ig.ENTITY.Effect.inject({

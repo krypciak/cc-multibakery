@@ -207,8 +207,8 @@ prestart(() => {
         start() {
             if (!multi.server) return this.parent()
             assert(ig.game.playerEntity == undefined)
+            // @ts-expect-error
             ig.game.playerEntity = {
-                // @ts-expect-error
                 hasCameraTarget: () => true,
             }
             this.parent()

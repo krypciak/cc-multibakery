@@ -54,6 +54,23 @@ type EntityClass = new (x: number, y: number, z: number, settings: any /*ig.Enti
 type IsEntityClass<T> = T extends EntityClass ? T : never
 export type CCPathToEntityClass<P extends string> = IsEntityClass<CCDeepType<P>>
 
+export function setUuid(this: ig.Entity, x: number, y: number, z: number, settings: ig.Entity.Settings) {
+    if (ig.game.entitiesByUUID[this.uuid]) {
+        delete ig.game.entitiesByUUID[this.uuid]
+    }
+
+    if (settings.uuid) {
+        this.uuid = settings.uuid
+        assert(!ig.game.entitiesByUUID[this.uuid], 'Entity uuid overlap')
+    } else {
+        do {
+            this.uuid = getUuid(`${this.type}-${settings.name}-${x},${y},${z}`)
+            x++
+        } while (ig.game.entitiesByUUID[this.uuid])
+    }
+    ig.game.entitiesByUUID[this.uuid] = this
+}
+
 prestart(() => {
     if (!ig.Entity.entityUuidCodeInitialized) {
         ig.Entity.entityUuidCodeInitialized = true
@@ -77,22 +94,6 @@ prestart(() => {
             },
         })
 
-        function setUuid(this: ig.Entity, x: number, y: number, z: number, settings: ig.Entity.Settings) {
-            if (ig.game.entitiesByUUID[this.uuid]) {
-                delete ig.game.entitiesByUUID[this.uuid]
-            }
-
-            if (settings.uuid) {
-                this.uuid = settings.uuid
-                assert(!ig.game.entitiesByUUID[this.uuid], 'Entity uuid overlap')
-            } else {
-                do {
-                    this.uuid = getUuid(`${this.type}-${settings.name}-${x},${y},${z}`)
-                    x++
-                } while (ig.game.entitiesByUUID[this.uuid])
-            }
-            ig.game.entitiesByUUID[this.uuid] = this
-        }
         ig.Entity.inject({
             init(x, y, z, settings) {
                 this.parent(x, y, z, settings)
