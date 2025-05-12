@@ -31,6 +31,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     unreadyClients: Record<string, Client> = {}
     clients: Record<string, Client> = {}
 
+    measureTraffic: boolean = false
+
     async start() {
         this.baseInst = instanceinator.instances[0]
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)

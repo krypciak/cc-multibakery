@@ -169,12 +169,19 @@ export class SocketNetConnection implements NetConnection {
             // this.onDisconnect?.()
         })
 
+        function bytesFromData(data: any): bigint {
+            if (multi.server?.measureTraffic && data) {
+                return BigInt(new Blob([data]).size)
+            }
+            return 0n
+        }
+
         const engine = 'conn' in socket ? socket.conn : socket.io.engine
         engine.on('packetCreate', packet => {
-            if (packet.data) this.bytesSent += BigInt(Buffer.byteLength(packet.data))
+            this.bytesSent += bytesFromData(packet.data)
         })
         engine.on('packet', packet => {
-            if (packet.data) this.bytesReceived += BigInt(Buffer.byteLength(packet.data))
+            this.bytesReceived += bytesFromData(packet.data)
         })
     }
 

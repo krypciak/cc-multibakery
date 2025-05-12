@@ -1,5 +1,6 @@
 import type { Options } from 'ccmodmanager/types/mod-options'
 import Multibakery from './plugin'
+import { RemoteServer } from './server/remote/remote-server'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -36,6 +37,11 @@ export function registerOpts() {
                         init: true,
                         name: 'Show network traffic',
                         description: 'Shows the nettwork trafic',
+                        changeEvent() {
+                            if (multi.server instanceof RemoteServer) {
+                                multi.server.measureTraffic = Opts.showPacketNetworkTraffic
+                            }
+                        },
                     },
                 },
             },

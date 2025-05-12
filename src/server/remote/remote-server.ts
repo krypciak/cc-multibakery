@@ -13,6 +13,7 @@ import { getDummyUuidByUsername } from '../../dummy/dummy-player'
 import { NetServerInfoRemote } from '../../client/menu/server-info'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { showClientErrorPopup } from '../../client/menu/error-popup'
+import { Opts } from '../../options'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -45,6 +46,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         } else assert(false)
 
         await this.netManager.connect()
+        this.measureTraffic = Opts.showPacketNetworkTraffic
     }
 
     onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown, whenApplingPacket?: boolean): never {
