@@ -52,7 +52,15 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     update() {
         multi.class.gamepadAssigner.update()
 
-        ig.game.update()
+        const updateWrapper = () => {
+            try {
+                ig.game.update()
+            } catch (e) {
+                this.onInstanceUpdateError(instanceinator.instances[instanceinator.id], e)
+            }
+        }
+
+        updateWrapper()
 
         const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; update?(): void }) => {
             if (!obj.inst) return
@@ -60,7 +68,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
             obj.inst.apply()
             determine.apply(obj.determinism)
             obj.update?.()
-            ig.game.update()
+            updateWrapper()
         }
 
         for (const name in this.maps) {
@@ -77,14 +85,22 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     deferredUpdate() {
-        ig.game.deferredUpdate()
+        const updateWrapper = () => {
+            try {
+                ig.game.deferredUpdate()
+            } catch (e) {
+                this.onInstanceUpdateError(instanceinator.instances[instanceinator.id], e)
+            }
+        }
+
+        updateWrapper()
 
         const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; update?(): void }) => {
             if (!obj.inst) return
             copyTickInfo(this.serverInst, obj.inst)
             obj.inst.apply()
             determine.apply(obj.determinism)
-            ig.game.deferredUpdate()
+            updateWrapper()
             ig.input.clearPressed()
         }
 
@@ -100,6 +116,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.serverInst.apply()
         determine.apply(this.serverDeterminism)
         ig.input.clearPressed()
+    }
+
+    onInstanceUpdateError(_inst: InstanceinatorInstance, error: unknown): never {
+        this.destroy()
+        throw error
     }
 
     async loadMap(name: string) {
@@ -150,7 +171,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async destroy() {
-        assert(instanceinator.id == this.serverInst.id)
+        this.serverInst.apply()
 
         for (const client of Object.values(this.clientsById)) {
             await this.leaveClient(client)

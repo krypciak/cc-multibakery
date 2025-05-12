@@ -72,6 +72,7 @@ export class Client {
             createClientNetworkPacketTraffic(this)
         }
     }
+
     private initInputManager() {
         removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
         let inputManager: dummy.InputManager
