@@ -9,7 +9,7 @@ declare global {
     namespace ig.ENTITY {
         interface Effect {
             type: 'ig.ENTITY.Effect'
-            getState(this: this): Return
+            getState(this: this): Return | undefined
             setState(this: this, state: Return): void
         }
         interface EffectConstructor {
@@ -19,13 +19,16 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
+type Return = Exclude<ReturnType<typeof getState>, undefined>
 function getState(this: ig.ENTITY.Effect) {
+    const effectName = this.effect!.effectName
+    const sheetPath = this.effect!.sheet.path
+    if (effectName == 'ballTrail') return
     return {
         pos: this.coll.pos,
         effect: {
-            effectName: this.effect!.effectName,
-            sheetPath: this.effect!.sheet.path,
+            effectName,
+            sheetPath
         },
         target: this.target?.uuid,
         target2: this.target2.entity?.uuid,
@@ -134,6 +137,7 @@ prestart(() => {
         assert(!ig.game.entitiesByUUID[uuid])
         const entity = ig.game.spawnEntity(ig.ENTITY.Effect, x, y, z, settings)
         assert(ig.game.entitiesByUUID[uuid])
+
         return entity
     }
     ig.ENTITY.Effect.priority = 2000

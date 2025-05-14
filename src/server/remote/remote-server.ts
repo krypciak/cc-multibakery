@@ -132,20 +132,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 }
 
-prestart(() => {
-    ig.Game.inject({
-        update() {
-            this.parent()
-            if (multi.server instanceof RemoteServer /* && ig.netConnection */) {
-                // const data = {
-                //     hi: 'hello',
-                // }
-                // ig.netConnection.sendUpdate(data)
-            }
-        },
-    })
-})
-
 /* for client */
 prestart(() => {
     ig.EventManager.inject({

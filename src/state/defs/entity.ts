@@ -15,7 +15,7 @@ import './ig_ENTITY_Ball'
 // TODO sc.CombatProxyEntity
 
 interface StateEntityBase {
-    getState(): object
+    getState(): object | undefined
     setState(value: object): void
 }
 
@@ -47,6 +47,7 @@ prestart(() => {
                 if (isStateEntity(entity)) {
                     // @ts-expect-error
                     const state = entity.getState()
+                    if (!state) continue
                     packet.states[entity.uuid] = {
                         type: entity.type,
                         ...state,
