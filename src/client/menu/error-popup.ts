@@ -1,8 +1,17 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type {} from 'ccmodmanager/types/local-mods'
-import Multibakery from '../../plugin'
+import Multibakery, { prestart } from '../../plugin'
 import { assert } from '../../misc/assert'
 import { RemoteServer } from '../../server/remote/remote-server'
+
+prestart(() => {
+    ig.System.inject({
+        error(error) {
+            if (!(multi.server instanceof RemoteServer)) return this.parent(error)
+            throw error
+        },
+    })
+})
 
 function gatherInfo(err: unknown, inst: InstanceinatorInstance, whenApplingPacket?: boolean) {
     const isCCL3 = Multibakery.mod.isCCL3
