@@ -118,7 +118,12 @@ async function fetchUrlWithPing(url: string): Promise<{
 } | void> {
     const started = Date.now()
     try {
-        const res = await fetch(url, { signal: AbortSignal.timeout(3000) })
+        const timeout = 3000
+        const res = await Promise.race([
+            fetch(url, { signal: AbortSignal.timeout?.(3000) }),
+            /* AbortSignal.timeout is not available in older nwjs versions */
+            new Promise<{ status: 408 }>(resolve => setTimeout(() => resolve({ status: 408 }), timeout + 100)),
+        ])
         if (res.status == 200) {
             const ping = Date.now() - started
             return { ping, res }

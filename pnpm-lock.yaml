@@ -28,7 +28,7 @@ importers:
         version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/a214f0c3fa85cfd162950042816f2c5c962e1b54
       crossnode:
         specifier: github:krypciak/crossnode
-        version: https://codeload.github.com/krypciak/crossnode/tar.gz/d401aaa3aed41f0019f5b1ca8770b4bf22d4c08a
+        version: https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940
       esbuild:
         specifier: ^0.25.4
         version: 0.25.4
@@ -39,8 +39,8 @@ importers:
         specifier: github:krypciak/nax-ccuilib
         version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/3541433a7f15748bb88da70cc7b2f467d67cff19
       node:
-        specifier: ^22.15.0
-        version: 22.15.0
+        specifier: ^22.15.1
+        version: 22.15.1
       prettier:
         specifier: 3.2.5
         version: 3.2.5
@@ -61,7 +61,7 @@ importers:
         version: 5.8.3
       ultimate-crosscode-typedefs:
         specifier: github:krypciak/ultimate-crosscode-typedefs
-        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/4d9162d23bc59ce320f69a882d3821dc56ee3914
+        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/fa0ad691d2f672335d7dbe6c130c1d696c5b0270
       uuid-by-string:
         specifier: ^4.0.0
         version: 4.0.0
@@ -310,8 +310,8 @@ packages:
     resolution: {integrity: sha512-utCYNzRSQIZNPIcGZdQc92UVJYAhtGAteCFg0yRaFm8f0P+CPtyGyHXJcGXnffjCybUCEx3FQ2G7U3/o9eIkVQ==}
     engines: {node: '>= 0.4.0'}
 
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/d401aaa3aed41f0019f5b1ca8770b4bf22d4c08a:
-    resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/d401aaa3aed41f0019f5b1ca8770b4bf22d4c08a}
+  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940:
+    resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940}
     version: 1.0.0
 
   debug@4.3.7:
@@ -323,8 +323,8 @@ packages:
       supports-color:
         optional: true
 
-  debug@4.4.0:
-    resolution: {integrity: sha512-6WTZ/IxCY/T6BALoZHaE4ctp9xm+Z5kY/pzYaCHRFeyVhojxlrm+46y68HA6hr0TcwEssoxNiDEUJQjfPZ/RYA==}
+  debug@4.4.1:
+    resolution: {integrity: sha512-KcKCqiftBJcZr++7ykoDIEwSa3XWowTfNPo92BYxjXiyYEVrUQh2aLyhxBCwww+heortUFxEJYcRzosstTEBYQ==}
     engines: {node: '>=6.0'}
     peerDependencies:
       supports-color: '*'
@@ -482,11 +482,11 @@ packages:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
     engines: {node: '>= 0.6'}
 
-  node-bin-setup@1.1.3:
-    resolution: {integrity: sha512-opgw9iSCAzT2+6wJOETCpeRYAQxSopqQ2z+N6BXwIMsQQ7Zj5M8MaafQY8JMlolRR6R1UXg2WmhKp0p9lSOivg==}
+  node-bin-setup@1.1.4:
+    resolution: {integrity: sha512-vWNHOne0ZUavArqPP5LJta50+S8R261Fr5SvGul37HbEDcowvLjwdvd0ZeSr0r2lTSrPxl6okq9QUw8BFGiAxA==}
 
-  node@22.15.0:
-    resolution: {integrity: sha512-qrOEL83lNt+Jbh9pekl5xQrZK+QRJz51m2IGGCu2NENgbG6Go0D1QUBvjbejP8jB2eokQpX1AorDLbKQ/FxuYA==}
+  node@22.15.1:
+    resolution: {integrity: sha512-fVMOwAjiig0JqRACMgoKUPydhOTaMh3jCJn+aeFU5u7XCCYkvjQ8H5B6L8c26ruKHkDm66a9QDMDkR3CQ78I+A==}
     engines: {npm: '>=5.0.0'}
     hasBin: true
 
@@ -602,8 +602,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/4d9162d23bc59ce320f69a882d3821dc56ee3914:
-    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/4d9162d23bc59ce320f69a882d3821dc56ee3914}
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/fa0ad691d2f672335d7dbe6c130c1d696c5b0270:
+    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/fa0ad691d2f672335d7dbe6c130c1d696c5b0270}
     version: 0.0.1
     engines: {node: '>=10.0.0'}
 
@@ -805,13 +805,13 @@ snapshots:
 
   corser@2.0.1: {}
 
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/d401aaa3aed41f0019f5b1ca8770b4bf22d4c08a: {}
+  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940: {}
 
   debug@4.3.7:
     dependencies:
       ms: 2.1.3
 
-  debug@4.4.0:
+  debug@4.4.1:
     dependencies:
       ms: 2.1.3
 
@@ -999,11 +999,11 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  node-bin-setup@1.1.3: {}
+  node-bin-setup@1.1.4: {}
 
-  node@22.15.0:
+  node@22.15.1:
     dependencies:
-      node-bin-setup: 1.1.3
+      node-bin-setup: 1.1.4
 
   object-assign@4.1.1: {}
 
@@ -1016,7 +1016,7 @@ snapshots:
   portfinder@1.0.37:
     dependencies:
       async: 3.2.6
-      debug: 4.4.0
+      debug: 4.4.1
     transitivePeerDependencies:
       - supports-color
 
@@ -1129,7 +1129,7 @@ snapshots:
 
   spdy-transport@3.0.0:
     dependencies:
-      debug: 4.4.0
+      debug: 4.4.1
       detect-node: 2.1.0
       hpack.js: 2.1.6
       obuf: 1.1.2
@@ -1140,7 +1140,7 @@ snapshots:
 
   spdy@4.0.2:
     dependencies:
-      debug: 4.4.0
+      debug: 4.4.1
       handle-thing: 2.0.1
       http-deceiver: 1.2.7
       select-hose: 2.0.0
@@ -1162,7 +1162,7 @@ snapshots:
 
   typescript@5.8.3: {}
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/4d9162d23bc59ce320f69a882d3821dc56ee3914:
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/fa0ad691d2f672335d7dbe6c130c1d696c5b0270:
     dependencies:
       '@types/jquery': 1.10.45
       '@types/node': 11.15.54
