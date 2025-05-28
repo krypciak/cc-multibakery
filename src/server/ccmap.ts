@@ -202,16 +202,15 @@ prestart(() => {
         },
     })
 
-    // @ts-expect-error
     ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({
-        start() {
-            if (!multi.server) return this.parent()
+        start(actor) {
+            if (!multi.server) return this.parent(actor)
             assert(ig.game.playerEntity == undefined)
             // @ts-expect-error
             ig.game.playerEntity = {
                 hasCameraTarget: () => true,
             }
-            this.parent()
+            this.parent(actor)
             ig.game.playerEntity = undefined as any
         },
     })
