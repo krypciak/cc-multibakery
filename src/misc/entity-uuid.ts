@@ -26,8 +26,11 @@ declare global {
         function registerEntityPath<T extends EntityTypes>(entityClass: CCPathToEntityClass<T>, path: T): void
     }
 
-    interface EntityTypesInterface {}
+    interface EntityTypesInterface {
+        'sc.CombatProxyEntity': never
+    }
 }
+const scEntities = ['CombatProxyEntity'] as const satisfies (keyof typeof sc)[]
 
 type FilterEntities<P extends string> = IsEntityClass<CCDeepType<P>> extends never ? never : P
 
@@ -82,6 +85,10 @@ prestart(() => {
         }
         for (const key of Object.keysT(ig.ENTITY)) {
             ig.registerEntityPath(ig.ENTITY[key], `ig.ENTITY.${key}`)
+        }
+
+        for (const key of scEntities) {
+            ig.registerEntityPath(sc[key], `sc.${key}`)
         }
 
         ig.Game.inject({

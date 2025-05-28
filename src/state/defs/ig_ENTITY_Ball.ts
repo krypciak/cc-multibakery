@@ -71,10 +71,6 @@ prestart(() => {
             /* ig.ENTITY.Ball creates a new settings object so uuid doesnt get set */
             setUuid.call(this, x, y, z, settings)
         },
-        reset(x, y, z, settings) {
-            this.parent(x, y, z, settings)
-            console.log('hi reset')
-        },
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             if (!ig.settingState) return
@@ -113,7 +109,7 @@ prestart(() => {
     })
 })
 
-function resolveProxyFromType(key: string): sc.ProxySpawnerBase {
+export function resolveProxyFromType(key: string): sc.ProxySpawnerBase {
     if (!key) throw new Error(`Proxy key undefined!`)
     const proxy = proxyTypeToSpawner.get(key)
     assert(proxy)
@@ -133,7 +129,7 @@ prestart(() => {
             const ball = this.parent(x, y, z, entity, dir)
             ball.proxyType = this.proxyType!
             if (!ball.proxyType) {
-                console.warn('ball.proxyType is undefined!')
+                console.warn('sc.BallInfo#proxyType is undefined!')
                 debugger
             }
             return ball

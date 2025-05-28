@@ -12,7 +12,7 @@ import './ig_ENTITY_MultiHitSwitch'
 import './ig_ENTITY_WallBase'
 import './ig_ENTITY_OLPlatform'
 import './ig_ENTITY_Ball'
-// TODO sc.CombatProxyEntity
+import './sc_CombatProxyEntity'
 
 interface StateEntityBase {
     getState(): object | undefined
