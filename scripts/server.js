@@ -3,6 +3,7 @@ import { startCrossnode } from '../../crossnode/crossnode.js'
 
 startCrossnode({
     ccloader2: true,
+    nukeImageStack: true,
     modWhitelist: [
         'cc-multibakery',
         'cc-determine',
