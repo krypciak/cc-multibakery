@@ -331,6 +331,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             const client = new Client({
                 username: 'aoc',
                 inputType: 'puppet',
+                remote: false,
             })
             await client.init()
             client.player.mapName = map

@@ -9,10 +9,12 @@ import './dummy/dummy-player'
 import './teleport-fix'
 import './state/states'
 import './misc/paused-virtual'
-import './misc/pause-screen'
 import './misc/disable-fkeys'
 import './misc/disallow-singleplayer'
 import './client/menu/server-list-menu'
+import './client/menu/pause/version'
+import './client/menu/pause/leave-server-button'
+import './client/menu/pause/server-manage-button'
 
 declare global {
     namespace multi {

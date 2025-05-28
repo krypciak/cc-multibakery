@@ -42,7 +42,3 @@ export function applyEntityStates(packet: StateUpdatePacket, tick: number, immed
     ig.settingStateImmediately = false
     ig.lastStatePacket = packet
 }
-
-// export function getDiffEntityState(entities: ig.Entity[]) {
-//     return getFullEntityState(entities)
-// }

@@ -37,6 +37,7 @@ export type ClientJoinAckData = {
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     netManager?: NetManagerPhysicsServer
     httpServer?: PhysicsHttpServer
+    masterUsername?: string
 
     constructor(public settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
@@ -47,8 +48,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.start()
 
         this.baseInst.display = false
-        instanceinator.displayId = true
-        instanceinator.displayFps = false
 
         if (!window.crossnode?.options.test) {
             // await this.createAndJoinClient({
@@ -108,6 +107,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await this.createAndJoinClient({
             username,
             inputType: 'puppet',
+            remote: true,
             // noShowInstance: true,
             // forceDraw: true,
         })

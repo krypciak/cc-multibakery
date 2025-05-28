@@ -37,9 +37,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async start() {
         await super.start()
 
-        instanceinator.displayId = true
-        instanceinator.displayFps = true
-
         const connS = this.settings.connection
         if (connS.type == 'socket') {
             this.netManager = new SocketNetManagerRemoteServer(connS.host, connS.port)
@@ -61,6 +58,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const client = await this.createAndJoinClient({
                 username: joinData.username,
                 inputType: 'clone',
+                remote: false
             })
             assert(this.netManager.conn)
             this.netManager.conn.join(client)

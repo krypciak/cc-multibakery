@@ -13,6 +13,7 @@ export interface ServerSettings {
     displayMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
     displayClientInstances?: boolean
+    displayRemoteClientInstances?: boolean
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }

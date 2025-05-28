@@ -23,6 +23,7 @@ declare global {
 
 export type ClientSettings = {
     username: string
+    remote: boolean
     noShowInstance?: boolean
     forceDraw?: boolean
 } & (
@@ -50,7 +51,9 @@ export class Client {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.settings.username,
-            multi.server.settings.displayClientInstances && !this.settings.noShowInstance,
+            multi.server.settings.displayClientInstances &&
+                !this.settings.noShowInstance &&
+                (!this.settings.remote || multi.server.settings.displayRemoteClientInstances),
             this.settings.forceDraw,
             inst => {
                 inst.ig.client = this

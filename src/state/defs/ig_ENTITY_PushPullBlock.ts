@@ -31,7 +31,11 @@ function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
         const p1 = this.coll.pos
         const p2 = state.pos
         if (!Vec3.equal(p1, p2)) {
-            Vec3.assign(this.coll.pos, p2)
+            if (multi.server) {
+                Vec3.assign(this.coll.pos, p2)
+            } else {
+                this.setPos(p2.x, p2.y, p2.z)
+            }
             this.pushPullable.soundHandle ??= sc.PushPullSounds.Loop.play(true)
         } else stopSound()
     } else stopSound()
