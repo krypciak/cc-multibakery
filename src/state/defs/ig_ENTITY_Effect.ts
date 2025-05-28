@@ -28,7 +28,7 @@ function getState(this: ig.ENTITY.Effect) {
         pos: this.coll.pos,
         effect: {
             effectName,
-            sheetPath
+            sheetPath,
         },
         target: this.target?.uuid,
         target2: this.target2.entity?.uuid,
@@ -97,7 +97,7 @@ function resolveObjects(state: Return) {
 }
 
 class TemporarySet<T> {
-    private bins: Set<T>[] = [new Set<T>(), new Set<T>(), new Set<T>()]
+    private bins: Set<T>[] = [new Set<T>(), new Set<T>()]
     private currentBin = 0
 
     /* Guaranteed amount of items: [binSize, binSize*2] */
@@ -105,14 +105,14 @@ class TemporarySet<T> {
     constructor(private binSize: number) {}
 
     has(item: T) {
-        return this.bins[0].has(item) || this.bins[1].has(item) || this.bins[2].has(item)
+        return this.bins[0].has(item) || this.bins[1].has(item)
     }
     /* We are not worried about duplicates as they will not happen in this use case */
     push(item: T) {
         const currentBin = this.bins[this.currentBin]
         currentBin.add(item)
         if (currentBin.size >= this.binSize) {
-            this.bins[(this.currentBin + 2) % this.bins.length].clear()
+            this.bins[(this.currentBin + 1) % this.bins.length].clear()
             this.currentBin = (this.currentBin + 1) % this.bins.length
         }
     }
@@ -121,7 +121,7 @@ class TemporarySet<T> {
 prestart(() => {
     ig.ENTITY.Effect.inject({ getState, setState })
 
-    const allEffectsUuidSpawned = new TemporarySet<string>(30)
+    const allEffectsUuidSpawned = new TemporarySet<string>(50)
     ig.ENTITY.Effect.create = (uuid: string, state: Return) => {
         if (allEffectsUuidSpawned.has(uuid)) return
         allEffectsUuidSpawned.push(uuid)
@@ -143,13 +143,16 @@ prestart(() => {
     ig.ENTITY.Effect.priority = 2000
 
     let effectId = 0
+    function newEffectUuid() {
+        return `Effect${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
+    }
     ig.ENTITY.Effect.inject({
         init(x, y, z, settings) {
-            settings.uuid ??= `Effect${effectId++}`
+            settings.uuid ??= newEffectUuid()
             this.parent(x, y, z, settings)
         },
         reset(x, y, z, settings) {
-            settings.uuid ??= `Effect${effectId++}`
+            settings.uuid ??= newEffectUuid()
             this.parent(x, y, z, settings)
         },
         update() {
