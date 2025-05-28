@@ -277,8 +277,8 @@
         },
         {
             "type": "Marker",
-            "x": 372,
-            "y": 239,
+            "x": 943,
+            "y": 462,
             "level": 2,
             "settings": {
                 "size": { "x": 16, "y": 16 },
@@ -1102,6 +1102,13 @@
             }
         },
         {
+            "type": "PushPullBlock",
+            "x": 619,
+            "y": 331,
+            "level": 2,
+            "settings": { "name": "", "pushPullType": "Large", "mapId": 124 }
+        },
+        {
             "type": "Destructible",
             "x": 510,
             "y": 476,
@@ -1491,13 +1498,6 @@
                     "group": "cage"
                 }
             }
-        },
-        {
-            "type": "PushPullBlock",
-            "x": 619,
-            "y": 331,
-            "level": 2,
-            "settings": { "name": "", "pushPullType": "Large", "mapId": 124 }
         }
     ],
     "layer": [
