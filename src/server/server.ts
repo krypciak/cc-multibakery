@@ -35,6 +35,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     measureTraffic: boolean = false
 
     async start() {
+        instanceinator.displayId = true
+        instanceinator.displayFps = true
+
         this.baseInst = instanceinator.instances[0]
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)
         this.serverInst.apply()
