@@ -2,7 +2,7 @@ import { prestart } from '../plugin'
 
 import './gamepad-assigner'
 
-class CloneInputManager implements dummy.InputManager {
+class CloneInputManager {
     player!: dummy.DummyPlayer
     input: ig.Input
     gamepadManager: dummy.input.Clone.GamepadManager

@@ -2,14 +2,7 @@ import { assert } from '../misc/assert'
 
 declare global {
     namespace dummy {
-        interface InputManager {
-            input: ig.Input
-            gamepadManager: ig.GamepadManager
-            screen: Vec2
-            player: dummy.DummyPlayer
-
-            gatherInput(): ig.ENTITY.Player.PlayerInput | undefined
-        }
+        type InputManager = dummy.input.Clone.InputManager
     }
 }
 

@@ -61,10 +61,7 @@ export class Html5GamepadHandler {
             for (const buttonId of Object.keysT(this.buttonMappings)) {
                 const button = rawGamepad.buttons[this.buttonMappings[buttonId]]
                 if (button instanceof Object) gamepad.updateButton(buttonId, button.value)
-                else {
-                    assert(false)
-                    // gamepad.updateButton(buttonId, button)
-                }
+                else gamepad.updateButton(buttonId, button)
             }
 
             for (const axesId of Object.keysT(this.axesMappings)) {

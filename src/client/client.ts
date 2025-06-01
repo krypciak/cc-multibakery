@@ -99,7 +99,8 @@ export class Client {
 
     updateGamepadForcer() {
         assert(instanceinator.id == this.inst.id)
-        if (!(this.player.inputManager instanceof dummy.input.Clone.InputManager)) return
+        if (this.player.inputManager instanceof dummy.input.Puppet.InputManager) return
+
         if (this.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD) {
             forceGamepad(this)
         } else {
@@ -317,7 +318,6 @@ prestart(() => {
                 inp.player.data.isControlBlocked = subState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU
                 inp.player.data.inCutscene = ig.client!.inst.ig.game.isControlBlocked()
             }
-            if (!(inp instanceof dummy.input.Clone.InputManager)) return
 
             const inMenu = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
             if (inMenu) {

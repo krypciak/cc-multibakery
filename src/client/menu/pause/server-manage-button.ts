@@ -112,7 +112,7 @@ prestart(() => {
             let callAfterParent: (() => void) | undefined
 
             const inputManager = ig.client?.player.inputManager
-            if (inputManager instanceof dummy.input.Clone.InputManager) {
+            if (inputManager && !(inputManager instanceof dummy.input.Puppet.InputManager)) {
                 const buttonI = buttons.length
                 const updateButtonText = () => {
                     const button = this.userButtons![buttonI]
