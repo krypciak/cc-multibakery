@@ -32,7 +32,7 @@ prestart(() => {
         init() {
             this.parent()
 
-            this.multibakeryManageServerButton = new sc.ButtonGui('Manage server')
+            this.multibakeryManageServerButton = new sc.ButtonGui('\\i[help2]' + 'Manage server')
 
             let y = 3
             // @ts-ignore from archipelago mod CCMultiworldRandomizer
@@ -43,6 +43,7 @@ prestart(() => {
 
             this.buttonGroup.addFocusGui(this.multibakeryManageServerButton, 999, 999)
             this.multibakeryManageServerButton.onButtonPress = () => openManagerServerPopup()
+            this.buttonInteract.addGlobalButton(this.multibakeryManageServerButton, () => sc.control.menuHotkeyHelp2())
             this.addChildGui(this.multibakeryManageServerButton)
         },
     })
