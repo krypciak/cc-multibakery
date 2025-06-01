@@ -2,10 +2,11 @@ import type { Server as _Server, Socket as _Socket } from 'socket.io'
 import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerPhysicsServer } from './connection'
-import { ClientJoinAckData, ClientJoinData, isClientJoinData, PhysicsServer } from '../server/physics/physics-server'
+import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
+import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
 
 type SocketData = never
 
@@ -73,7 +74,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             socket.on('update', data => server.onNetReceive(connection, data))
             socket.on('join', async (data, callback) => {
                 if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-                const { client, ackData } = await server.onNetJoin(data)
+                const { client, ackData } = await server.tryJoinClient(data, true)
                 if (ackData.status == 'ok') connection.join(client!)
                 callback(ackData)
             })

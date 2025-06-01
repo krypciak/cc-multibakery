@@ -3,17 +3,16 @@ import { NetConnection } from '../../net/connection'
 import { SocketNetManagerRemoteServer } from '../../net/socket'
 import { prestart } from '../../plugin'
 import { applyEntityStates } from '../../state/states'
-import { ClientJoinAckData, ClientJoinData } from '../physics/physics-server'
 import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
-import { Server, ServerSettings } from '../server'
-
-import './remote-server-sender'
+import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
 import { getDummyUuidByUsername } from '../../dummy/dummy-player'
 import { NetServerInfoRemote } from '../../client/menu/server-info'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { showClientErrorPopup } from '../../client/menu/error-popup'
 import { Opts } from '../../options'
+
+import './remote-server-sender'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -46,25 +45,31 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.measureTraffic = Opts.showPacketNetworkTraffic
     }
 
-    onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown, whenApplingPacket?: boolean): never {
+    protected onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown, whenApplingPacket?: boolean): never {
         showClientErrorPopup(inst, error, whenApplingPacket)
         super.onInstanceUpdateError(inst, error)
     }
 
-    async tryJoinRemote(joinData: ClientJoinData): Promise<ClientJoinAckData> {
+    async tryJoinClient(
+        joinData: ClientJoinData,
+        remote: boolean
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        assert(!remote)
+
         const ackData = await this.netManager.sendJoin(joinData)
+        let client: Client | undefined
         if (ackData.status == 'ok') {
             this.baseInst.display = false
-            const client = await this.createAndJoinClient({
+            client = await this.createAndJoinClient({
                 username: joinData.username,
                 inputType: 'clone',
-                remote: false
+                remote,
             })
             assert(this.netManager.conn)
             this.netManager.conn.join(client)
         }
 
-        return ackData
+        return { client, ackData }
     }
 
     async onNetDisconnect() {
@@ -172,11 +177,12 @@ prestart(() => {
         })
         multi.setServer(server)
         await server.start()
+        server.masterUsername = joinData.username
 
-        const ack = await server.tryJoinRemote(joinData)
-        if (ack.status != 'ok') {
+        const { ackData } = await server.tryJoinClient(joinData, false)
+        if (ackData.status != 'ok') {
             await multi.destroyAndStartLoop()
         }
-        return ack
+        return ackData
     }
 })

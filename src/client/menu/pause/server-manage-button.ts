@@ -1,12 +1,19 @@
+import { assert } from '../../../misc/assert'
 import { prestart } from '../../../plugin'
 import {
     closePhysicsServerAndSaveState,
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
+import { PhysicsServer } from '../../../server/physics/physics-server'
+import { ClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 
-export function openManagerServerPopup() {
+export function openManagerServerPopup(immediately?: boolean) {
     ig.multibakeryManageServerPopup ??= new multi.class.ManageServerPopup()
     ig.multibakeryManageServerPopup.openMenu()
+    if (immediately) {
+        ig.multibakeryManageServerPopup.doStateTransition('DEFAULT', true)
+        ig.multibakeryManageServerPopup.msgBox.doStateTransition('DEFAULT', true)
+    }
 }
 
 declare global {
@@ -44,8 +51,7 @@ prestart(() => {
 declare global {
     namespace multi.class {
         interface ManageServerPopup extends modmanager.gui.MultiPageButtonBoxGui {
-            updateServerStatus(this: this): void
-            startStopServer(this: this): void
+            updateContent(this: this): void
         }
         interface ManageServerPopupConstructor extends ImpactClass<ManageServerPopup> {
             new (): ManageServerPopup
@@ -60,45 +66,96 @@ prestart(() => {
     multi.class.ManageServerPopup = modmanager.gui.MultiPageButtonBoxGui.extend({
         init() {
             const self = this
-            this.parent(200, 100, [
-                {
-                    name: 'Close',
-                    onPress() {
-                        self.closeMenu()
-                    },
+            const buttons: ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2] = []
+            buttons.push({
+                name: 'Close',
+                onPress() {
+                    self.closeMenu()
                 },
-                {
+            })
+
+            const isMaster = ig.client && ig.client.player.username == multi.server.masterUsername
+
+            if (!multi.server) {
+                buttons.push({
                     name: 'Start server',
                     onPress() {
-                        self.startStopServer()
+                        createPhysicsServerFromCurrentState()
                     },
-                },
-            ])
+                })
+            } else if (multi.server instanceof PhysicsServer && isMaster) {
+                buttons.push({
+                    name: 'Stop server',
+                    onPress() {
+                        closePhysicsServerAndSaveState()
+                    },
+                })
+            }
+
+            if (isMaster) {
+                buttons.push({
+                    name: 'Create client',
+                    async onPress() {
+                        const username = 'hi!!'
+
+                        const joinData: ClientJoinData = { username }
+                        const igBackup = ig
+                        const { ackData } = await multi.server.tryJoinClient(joinData, false)
+                        igBackup.game.scheduledTasks.push(() => {
+                            showTryNetJoinResponseDialog(joinData, ackData)
+                        })
+                    },
+                })
+            }
+
+            let callAfterParent: (() => void) | undefined
+
+            const inputManager = ig.client?.player.inputManager
+            if (inputManager instanceof dummy.input.Clone.InputManager) {
+                const buttonI = buttons.length
+                const updateButtonText = () => {
+                    const button = this.userButtons![buttonI]
+                    assert(button)
+                    button.setText(
+                        `Switch to \\i[${inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'gamepad' : 'controls'}]`
+                    )
+                }
+
+                buttons.push({
+                    name: '',
+                    onPress() {
+                        inputManager.setInputType(
+                            inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+                                ? ig.INPUT_DEVICES.GAMEPAD
+                                : ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+                        )
+                        updateButtonText()
+                        assert(ig.client)
+                        ig.client.updateGamepadForcer()
+                    },
+                })
+                callAfterParent = () => updateButtonText()
+            }
+
+            this.parent(400, 100, buttons)
+            callAfterParent?.()
             this.hook.temporary = true
         },
         openMenu() {
             this.parent()
             ig.canLeavePauseMenu = false
-            this.updateServerStatus()
+            this.updateContent()
         },
         closeMenu() {
             this.parent()
             ig.canLeavePauseMenu = true
         },
-        startStopServer() {
-            if (multi.server) {
-                closePhysicsServerAndSaveState()
-            } else {
-                createPhysicsServerFromCurrentState()
-            }
-        },
-        updateServerStatus() {
-            const startServerButton = this.userButtons![1]
-            if (multi.server) {
-                startServerButton.setText('Stop server')
-            } else {
-                startServerButton.setText('Start server')
-            }
+        updateContent() {
+            this.setContent('Server', [
+                {
+                    content: ['hi'],
+                },
+            ])
         },
     })
 })

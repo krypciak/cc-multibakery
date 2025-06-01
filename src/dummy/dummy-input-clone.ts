@@ -9,14 +9,23 @@ class CloneInputManager implements dummy.InputManager {
     screen: Vec2 = { x: 0, y: 0 }
     ignoreKeyboardInput: Set<string> = new Set()
     ignoreGamepadInput: Set<string> = new Set()
+    inputType!: ig.INPUT_DEVICES | undefined
 
-    constructor(realInput: ig.Input, realGamepadManager: ig.GamepadManager, forceInputType?: ig.INPUT_DEVICES) {
+    constructor(realInput: ig.Input, realGamepadManager: ig.GamepadManager, inputType: ig.INPUT_DEVICES | undefined) {
         this.input = new dummy.input.Clone.Input(realInput, this)
         this.gamepadManager = new dummy.input.Clone.GamepadManager(realGamepadManager, this)
 
-        if (forceInputType == ig.INPUT_DEVICES.GAMEPAD) {
+        this.setInputType(inputType)
+    }
+
+    setInputType(inputType: ig.INPUT_DEVICES | undefined) {
+        this.inputType = inputType
+
+        if (inputType == ig.INPUT_DEVICES.GAMEPAD) {
             this.ignoreKeyboardInput.add('forceInputType')
-        } else if (forceInputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) {
+            this.ignoreGamepadInput.delete('forceInputType')
+        } else if (inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) {
+            this.ignoreKeyboardInput.delete('forceInputType')
             this.ignoreGamepadInput.add('forceInputType')
         }
     }

@@ -18,6 +18,16 @@ export interface ServerSettings {
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
 
+export interface ClientJoinData {
+    username: string
+}
+export function isClientJoinData(data: unknown): data is ClientJoinData {
+    return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
+}
+export type ClientJoinAckData = {
+    status: 'ok' | 'username_taken' | 'invalid_join_data'
+}
+
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     abstract settings: S
 
@@ -31,6 +41,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     unreadyClients: Record<string, Client> = {}
     clients: Record<string, Client> = {}
+    masterUsername?: string
 
     measureTraffic: boolean = false
 
@@ -124,7 +135,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         ig.input.clearPressed()
     }
 
-    onInstanceUpdateError(_inst: InstanceinatorInstance, error: unknown): never {
+    protected onInstanceUpdateError(_inst: InstanceinatorInstance, error: unknown): never {
         this.destroy()
         throw error
     }
@@ -137,7 +148,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.mapsById[map.inst.id] = map
     }
 
-    async joinClient(client: Client) {
+    private async joinClient(client: Client) {
         assert(!this.clients[client.player.username])
         this.clients[client.player.username] = client
         this.clientsById[client.inst.id] = client
@@ -157,6 +168,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         return client
     }
+
+    abstract tryJoinClient(
+        joinData: ClientJoinData,
+        remote: boolean,
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
 
     async leaveClient(client: Client) {
         const id = client.inst.id
@@ -207,4 +223,13 @@ export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => P
             resolve()
         })
     })
+}
+
+export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: ClientJoinAckData) {
+    if (resp.status == 'ok') return
+    let msg!: string
+    assert(resp.status != 'invalid_join_data', 'invalid_join_data??')
+    if (resp.status == 'username_taken') msg = `Error: username "${joinData.username}" is taken.`
+    assert(msg)
+    sc.Dialogs.showErrorDialog(msg)
 }

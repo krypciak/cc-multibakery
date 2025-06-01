@@ -3,31 +3,42 @@ import { prestart } from '../plugin'
 import { waitForScheduledTask } from '../server/server'
 import { Client } from './client'
 
-export function forceGamepad(client: Client) {
-    const input = client.player.inputManager
-    if (!(input instanceof dummy.input.Clone.InputManager)) return
-
+function getGamepadManager(client: Client) {
     const gamepadManager = client.inst.ig.gamepad
     assert(gamepadManager instanceof multi.class.SingleGamepadManager)
+    return gamepadManager
+}
 
-    const clearGamepad = () => {
-        gamepadManager.clearSingleGamepad()
-        client.inst.ig.input.currentDevice = ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
-        waitForGamepad()
-    }
-    const waitForGamepad = () => {
-        waitForScheduledTask(client.inst, () => {
-            sc.inputForcer.setEntry('WAIT_FOR_GAMEPAD', 'Waiting for gamepad', ' ', ' ')
+function clearGamepad(client: Client, startWait: boolean) {
+    getGamepadManager(client).clearSingleGamepad()
+    client.inst.ig.input.currentDevice = ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+
+    if (startWait) waitForGamepad(client)
+}
+
+function waitForGamepad(client: Client) {
+    waitForScheduledTask(client.inst, () => {
+        sc.inputForcer.setEntry('WAIT_FOR_GAMEPAD', 'Waiting for gamepad', ' ', ' ')
+    })
+    multi.class.gamepadAssigner
+        .requestGamepad(client.inst.id, () => {
+            clearGamepad(client, true)
         })
-        multi.class.gamepadAssigner
-            .requestGamepad(client.inst.id, () => {
-                clearGamepad()
-            })
-            .then(gamepad => {
-                gamepadManager.setSingleGamepad(gamepad)
-            })
-    }
-    clearGamepad()
+        .then(gamepad => {
+            getGamepadManager(client).setSingleGamepad(gamepad)
+        })
+}
+
+export function forceGamepad(client: Client) {
+    clearGamepad(client, true)
+}
+
+export function clearForceGamepad(client: Client) {
+    waitForScheduledTask(client.inst, () => {
+        ig.gamepad.activeGamepads[0]?.destroy?.()
+        sc.inputForcer.clearEntry()
+        clearGamepad(client, false)
+    })
 }
 
 declare global {

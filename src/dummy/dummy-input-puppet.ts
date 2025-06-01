@@ -94,7 +94,7 @@ function initInputManager() {
         constructor() {
             const mainInput = new dummy.input.Puppet.Input()
             const mainGamepadManager = new dummy.input.Puppet.GamepadManager()
-            super(mainInput, mainGamepadManager)
+            super(mainInput, mainGamepadManager, undefined)
             this.mainInput = mainInput
             this.mainGamepadManager = mainGamepadManager
         }

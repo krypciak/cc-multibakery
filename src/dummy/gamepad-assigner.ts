@@ -128,10 +128,8 @@ declare global {
 }
 prestart(() => {
     ig.GamepadManager.inject({
-        destroy() {
-            return Promise.all(
-                this.activeGamepads.map(gamepad => gamepad.destroy && gamepad.destroy())
-            ) as unknown as Promise<void>
+        async destroy() {
+            await Promise.all(this.activeGamepads.map(gamepad => gamepad.destroy?.()))
         },
     })
 })

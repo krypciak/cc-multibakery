@@ -1,14 +1,14 @@
 import { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
-import { Server, ServerSettings } from '../server'
-import { Client } from '../../client/client'
+import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import { NetServerInfoPhysics } from '../../client/menu/server-info'
 import { PhysicsHttpServer } from '../../net/web-server'
+import { Client } from '../../client/client'
+import { startRepl } from './shell'
 
 import './physics-server-sender'
-import { startRepl } from './shell'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -24,20 +24,9 @@ export interface PhysicsServerSettings extends ServerSettings {
     netInfo?: NetServerInfoPhysics
 }
 
-export interface ClientJoinData {
-    username: string
-}
-export function isClientJoinData(data: unknown): data is ClientJoinData {
-    return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
-}
-export type ClientJoinAckData = {
-    status: 'ok' | 'username_taken' | 'invalid_join_data'
-}
-
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     netManager?: NetManagerPhysicsServer
     httpServer?: PhysicsHttpServer
-    masterUsername?: string
 
     constructor(public settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
@@ -93,25 +82,21 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (window.crossnode) startRepl()
     }
 
-    async onNetJoin(data: ClientJoinData): Promise<{ client: Client; ackData: ClientJoinAckData }> {
-        const ackData = await this.processNetJoinRequest(data)
-        const client = this.clients[data.username]
-        if (ackData.status == 'ok') assert(client)
-        return { client, ackData: ackData }
-    }
+    async tryJoinClient(
+        joinData: ClientJoinData,
+        remote: boolean
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        const username = joinData.username
+        if (this.clients[username]) return { ackData: { status: 'username_taken' } }
 
-    private async processNetJoinRequest(data: ClientJoinData): Promise<ClientJoinAckData> {
-        const username = data.username
-        if (this.clients[username]) return { status: 'username_taken' }
-
-        await this.createAndJoinClient({
+        const client = await this.createAndJoinClient({
             username,
-            inputType: 'puppet',
-            remote: true,
-            // noShowInstance: true,
-            // forceDraw: true,
+            inputType: remote ? 'puppet' : 'clone',
+            remote,
+            forceInputType: ig.INPUT_DEVICES.GAMEPAD,
         })
-        return { status: 'ok' }
+
+        return { client, ackData: { status: 'ok' } }
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {

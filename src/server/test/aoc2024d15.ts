@@ -328,15 +328,11 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await multi.server.start()
         },
         async postSetup() {
-            const client = new Client({
+            await multi.server.createAndJoinClient({
                 username: 'aoc',
                 inputType: 'puppet',
                 remote: false,
             })
-            await client.init()
-            client.player.mapName = map
-            await multi.server.joinClient(client)
-            await client.teleport()
         },
         update() {
             const ccmap = multi.server.maps[map]

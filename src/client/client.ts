@@ -5,7 +5,7 @@ import { assert } from '../misc/assert'
 import { CCMap } from '../server/ccmap'
 import { prestart } from '../plugin'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
-import { forceGamepad } from './force-gamepad'
+import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
 import { waitForScheduledTask } from '../server/server'
 import {
@@ -89,12 +89,22 @@ export class Client {
             inputManager = new dummy.input.Clone.InputManager(
                 this.inst.ig.input,
                 this.inst.ig.gamepad,
-                this.settings.forceInputType
+                this.settings.forceInputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
             )
         } else assert(false)
         addAddon(this.inst.ig.gamepad, this.inst.ig.game)
 
         return inputManager
+    }
+
+    updateGamepadForcer() {
+        assert(instanceinator.id == this.inst.id)
+        if (!(this.player.inputManager instanceof dummy.input.Clone.InputManager)) return
+        if (this.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD) {
+            forceGamepad(this)
+        } else {
+            clearForceGamepad(this)
+        }
     }
 
     async teleport() {
@@ -161,6 +171,8 @@ export class Client {
             ig.game.currentLoadingResource = loader
 
             initMapInteractEntries(map.inst)
+
+            this.updateGamepadForcer()
         })
         await waitForScheduledTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
@@ -171,9 +183,6 @@ export class Client {
             }
             this.player.dummy.party = this.inst.id - 1
         })
-
-        if (this.settings.inputType == 'clone' && this.settings.forceInputType == ig.INPUT_DEVICES.GAMEPAD)
-            forceGamepad(this)
     }
 
     async destroy() {
