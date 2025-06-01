@@ -32,6 +32,7 @@ export async function createPhysicsServerFromCurrentState() {
     const playerFace = Vec2.create(ig.game.playerEntity.face)
 
     const origMapState = filterProblematicEntityStates(getFullEntityState())
+    const origInputType = ig.input.currentDevice
 
     const server = new PhysicsServer({
         slotName: 'example',
@@ -65,6 +66,7 @@ export async function createPhysicsServerFromCurrentState() {
         username,
         inputType: 'clone',
         remote: false,
+        initialInputType: origInputType,
     })
     server.masterUsername = username
     const client = server.clients[username]

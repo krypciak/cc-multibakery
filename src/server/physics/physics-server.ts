@@ -93,7 +93,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             username,
             inputType: remote ? 'puppet' : 'clone',
             remote,
-            forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+            initialInputType: ig.INPUT_DEVICES.GAMEPAD,
         })
 
         return { client, ackData: { status: 'ok' } }

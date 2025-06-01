@@ -29,7 +29,7 @@ export type ClientSettings = {
 } & (
     | {
           inputType: 'clone'
-          forceInputType?: ig.INPUT_DEVICES
+          initialInputType?: ig.INPUT_DEVICES
       }
     | {
           inputType: 'puppet'
@@ -89,7 +89,7 @@ export class Client {
             inputManager = new dummy.input.Clone.InputManager(
                 this.inst.ig.input,
                 this.inst.ig.gamepad,
-                this.settings.forceInputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+                this.settings.initialInputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
             )
         } else assert(false)
         addAddon(this.inst.ig.gamepad, this.inst.ig.game)
