@@ -2,6 +2,7 @@ import type { Options } from 'ccmodmanager/types/mod-options'
 import Multibakery from './plugin'
 import { RemoteServer } from './server/remote/remote-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
+import { isUsernameValid } from './server/server'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -61,6 +62,7 @@ export function registerOpts() {
                         type: 'INPUT_FIELD',
                         init: `client${(100 + 900 * Math.randomOrig()).floor()}`,
                         changeEvent() {},
+                        isValid: isUsernameValid,
                     },
                 },
             },

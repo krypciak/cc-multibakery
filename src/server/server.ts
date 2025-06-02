@@ -25,7 +25,11 @@ export function isClientJoinData(data: unknown): data is ClientJoinData {
     return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
 }
 export type ClientJoinAckData = {
-    status: 'ok' | 'username_taken' | 'invalid_join_data'
+    status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
+}
+
+export function isUsernameValid(username: string) {
+    return username.length > 0
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> {

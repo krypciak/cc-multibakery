@@ -25,7 +25,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/62bd010fefbe039af090f2cd9dc8d2432b78aa22
       ccmodmanager:
         specifier: github:CCDirectLink/CCModManager
-        version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/a214f0c3fa85cfd162950042816f2c5c962e1b54
+        version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/7c73ab714e39f4e007dfda55fa3abc8b75fe6f76
       crossnode:
         specifier: github:krypciak/crossnode
         version: https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940
@@ -280,8 +280,8 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/62bd010fefbe039af090f2cd9dc8d2432b78aa22}
     version: 0.0.1
 
-  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/a214f0c3fa85cfd162950042816f2c5c962e1b54:
-    resolution: {tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/a214f0c3fa85cfd162950042816f2c5c962e1b54}
+  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/7c73ab714e39f4e007dfda55fa3abc8b75fe6f76:
+    resolution: {tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/7c73ab714e39f4e007dfda55fa3abc8b75fe6f76}
     version: 1.0.3
 
   chalk@4.1.2:
@@ -781,7 +781,7 @@ snapshots:
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/62bd010fefbe039af090f2cd9dc8d2432b78aa22: {}
 
-  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/a214f0c3fa85cfd162950042816f2c5c962e1b54: {}
+  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/7c73ab714e39f4e007dfda55fa3abc8b75fe6f76: {}
 
   chalk@4.1.2:
     dependencies:

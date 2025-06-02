@@ -1,6 +1,6 @@
 import { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
-import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
+import { ClientJoinAckData, ClientJoinData, isUsernameValid, Server, ServerSettings } from '../server'
 import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import { NetServerInfoPhysics } from '../../client/menu/server-info'
@@ -87,6 +87,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         remote: boolean
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
         const username = joinData.username
+
+        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' }}
         if (this.clients[username]) return { ackData: { status: 'username_taken' } }
 
         const client = await this.createAndJoinClient({

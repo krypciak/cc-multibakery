@@ -5,7 +5,7 @@ import {
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
 import { PhysicsServer } from '../../../server/physics/physics-server'
-import { ClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
+import { ClientJoinData, isUsernameValid, showTryNetJoinResponseDialog } from '../../../server/server'
 
 export function openManagerServerPopup(immediately?: boolean) {
     ig.multibakeryManageServerPopup ??= new multi.class.ManageServerPopup()
@@ -49,6 +49,8 @@ prestart(() => {
     })
 })
 
+type MultiPageButtonGuiButtons = ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2]
+
 declare global {
     namespace multi.class {
         interface ManageServerPopup extends modmanager.gui.MultiPageButtonBoxGui {
@@ -67,7 +69,7 @@ prestart(() => {
     multi.class.ManageServerPopup = modmanager.gui.MultiPageButtonBoxGui.extend({
         init() {
             const self = this
-            const buttons: ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2] = []
+            const buttons: MultiPageButtonGuiButtons = []
             buttons.push({
                 name: 'Close',
                 onPress() {
@@ -97,14 +99,29 @@ prestart(() => {
                 buttons.push({
                     name: 'Create client',
                     async onPress() {
-                        const username = 'hi!!'
+                        const dialog = new multi.class.InputFieldDialog(200, 'Enter username', [
+                            {
+                                name: 'Ok',
+                                async onPress() {
+                                    dialog.closeMenu()
+                                    const username = dialog.inputWrapper.inputField.getValueAsString()
 
-                        const joinData: ClientJoinData = { username }
-                        const igBackup = ig
-                        const { ackData } = await multi.server.tryJoinClient(joinData, false)
-                        igBackup.game.scheduledTasks.push(() => {
-                            showTryNetJoinResponseDialog(joinData, ackData)
-                        })
+                                    const joinData: ClientJoinData = { username }
+                                    const igBackup = ig
+                                    const { ackData } = await multi.server.tryJoinClient(joinData, false)
+                                    igBackup.game.scheduledTasks.push(() => {
+                                        showTryNetJoinResponseDialog(joinData, ackData)
+                                    })
+                                },
+                            },
+                            {
+                                name: 'Cancel',
+                                onPress() {
+                                    dialog.closeMenu()
+                                },
+                            },
+                        ])
+                        dialog.openMenu()
                     },
                 })
             }
@@ -112,7 +129,7 @@ prestart(() => {
             let callAfterParent: (() => void) | undefined
 
             const inputManager = ig.client?.player.inputManager
-            if (inputManager && !(inputManager instanceof dummy.input.Puppet.InputManager)) {
+            if (inputManager) {
                 const buttonI = buttons.length
                 const updateButtonText = () => {
                     const button = this.userButtons![buttonI]
@@ -157,6 +174,33 @@ prestart(() => {
                     content: ['hi'],
                 },
             ])
+        },
+    })
+})
+
+declare global {
+    namespace multi.class {
+        interface InputFieldDialog extends modmanager.gui.MultiPageButtonBoxGui {
+            inputWrapper: modmanager.gui.InputFieldWrapper
+        }
+        interface InputFieldDialogConstructor extends ImpactClass<InputFieldDialog> {
+            new (width: number, title: string, buttons: MultiPageButtonGuiButtons): InputFieldDialog
+        }
+        var InputFieldDialog: InputFieldDialogConstructor
+    }
+}
+prestart(() => {
+    multi.class.InputFieldDialog = modmanager.gui.MultiPageButtonBoxGui.extend({
+        init(width, title, buttons) {
+            this.parent(width, 70, buttons)
+
+            this.setContent(title, [{ content: [''] }])
+            this.inputWrapper = new modmanager.gui.InputFieldWrapper('lea', () => {}, width, isUsernameValid)
+        },
+        openMenu() {
+            this.parent()
+            this.scrollContainer.setElement(this.inputWrapper)
+            this.userButtonGroup!.addFocusGui(this.inputWrapper.inputField, 999, 999)
         },
     })
 })

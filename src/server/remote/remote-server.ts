@@ -4,7 +4,7 @@ import { SocketNetManagerRemoteServer } from '../../net/socket'
 import { prestart } from '../../plugin'
 import { applyEntityStates } from '../../state/states'
 import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
-import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
+import { ClientJoinAckData, ClientJoinData, isUsernameValid, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
 import { getDummyUuidByUsername } from '../../dummy/dummy-player'
 import { NetServerInfoRemote } from '../../client/menu/server-info'
@@ -55,6 +55,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         remote: boolean
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
         assert(!remote)
+        assert(isUsernameValid(joinData.username))
 
         const ackData = await this.netManager.sendJoin(joinData)
         let client: Client | undefined
