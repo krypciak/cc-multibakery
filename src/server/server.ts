@@ -20,6 +20,7 @@ export interface ServerSettings {
 
 export interface ClientJoinData {
     username: string
+    initialInputType: ig.INPUT_DEVICES
 }
 export function isClientJoinData(data: unknown): data is ClientJoinData {
     return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'

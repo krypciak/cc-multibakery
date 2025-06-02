@@ -89,14 +89,14 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
         const username = joinData.username
 
-        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' }}
+        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
         if (this.clients[username]) return { ackData: { status: 'username_taken' } }
 
         const client = await this.createAndJoinClient({
             username,
             inputType: remote ? 'puppet' : 'clone',
             remote,
-            initialInputType: ig.INPUT_DEVICES.GAMEPAD,
+            initialInputType: joinData.initialInputType,
         })
 
         return { client, ackData: { status: 'ok' } }

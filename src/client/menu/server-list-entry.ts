@@ -219,7 +219,7 @@ prestart(() => {
                 return sc.Dialogs.showErrorDialog('Unable to reach the server.')
             }
             const username = Opts.clientLogin
-            const joinData: ClientJoinData = { username }
+            const joinData: ClientJoinData = { username, initialInputType: ig.input.currentDevice }
             const resp = await multi.tryJoinRemote(this.serverInfo, joinData)
             showTryNetJoinResponseDialog(joinData, resp)
         },

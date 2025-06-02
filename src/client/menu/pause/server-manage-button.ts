@@ -51,10 +51,10 @@ prestart(() => {
 })
 
 function getIconFromInputType(inputType: ig.INPUT_DEVICES | undefined): string {
-    return inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'gamepad' : 'controls'
+    return inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'controls' : 'gamepad'
 }
 
-type MultiPageButtonGuiButtons = ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2]
+type MultiPageButtonGuiButtons = NonNullable<ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2]>
 
 declare global {
     namespace multi.class {
@@ -70,6 +70,46 @@ declare global {
         var multibakeryManageServerPopup: multi.class.ManageServerPopup
     }
 }
+
+class InputButton {
+    private dialog!: modmanager.gui.MultiPageButtonBoxGui
+
+    constructor(
+        public inputType: ig.INPUT_DEVICES,
+        public onPress: () => void = () => {}
+    ) {}
+
+    private getInputButtonText() {
+        return `\\i[${getIconFromInputType(this.inputType)}]`
+    }
+
+    setDialog(dialog: modmanager.gui.MultiPageButtonBoxGui) {
+        this.dialog = dialog
+    }
+
+    pushConfig(buttons: MultiPageButtonGuiButtons) {
+        const inputButtonI = buttons.length
+        const self = this
+        buttons.push({
+            name: this.getInputButtonText(),
+
+            onPress() {
+                self.inputType =
+                    self.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+                        ? ig.INPUT_DEVICES.GAMEPAD
+                        : ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+
+                assert(self.dialog)
+                const button = self.dialog.userButtons![inputButtonI]
+                assert(button)
+                button.setText(self.getInputButtonText())
+
+                self.onPress()
+            },
+        })
+    }
+}
+
 prestart(() => {
     multi.class.ManageServerPopup = modmanager.gui.MultiPageButtonBoxGui.extend({
         init() {
@@ -104,62 +144,55 @@ prestart(() => {
                 buttons.push({
                     name: 'Create client',
                     async onPress() {
-                        const dialog = new multi.class.InputFieldDialog(200, 'Enter username', [
-                            {
-                                name: 'Ok',
-                                async onPress() {
-                                    dialog.closeMenu()
-                                    const username = dialog.inputWrapper.inputField.getValueAsString()
+                        const buttons: MultiPageButtonGuiButtons = []
+                        buttons.push({
+                            name: 'Ok',
+                            async onPress() {
+                                dialog.closeMenu()
+                                const username = dialog.inputWrapper.inputField.getValueAsString()
 
-                                    const joinData: ClientJoinData = { username }
-                                    const igBackup = ig
-                                    const { ackData } = await multi.server.tryJoinClient(joinData, false)
-                                    igBackup.game.scheduledTasks.push(() => {
-                                        showTryNetJoinResponseDialog(joinData, ackData)
-                                    })
-                                },
+                                const joinData: ClientJoinData = {
+                                    username,
+                                    initialInputType: inputButton.inputType,
+                                }
+                                const igBackup = ig
+                                const { ackData } = await multi.server.tryJoinClient(joinData, false)
+                                igBackup.game.scheduledTasks.push(() => {
+                                    showTryNetJoinResponseDialog(joinData, ackData)
+                                })
                             },
-                            {
-                                name: 'Cancel',
-                                onPress() {
-                                    dialog.closeMenu()
-                                },
+                        })
+
+                        buttons.push({
+                            name: 'Cancel',
+                            onPress() {
+                                dialog.closeMenu()
                             },
-                        ])
+                        })
+
+                        const inputButton = new InputButton(ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE)
+                        inputButton.pushConfig(buttons)
+
+                        const dialog = new multi.class.InputFieldDialog(200, 'Enter username', buttons)
+                        inputButton.setDialog(dialog)
                         dialog.openMenu()
                     },
                 })
             }
 
-            let callAfterParent: (() => void) | undefined
-
             const inputManager = ig.client?.player.inputManager
+            let inputButton: InputButton | undefined
             if (inputManager) {
-                const buttonI = buttons.length
-                const updateButtonText = () => {
-                    const button = this.userButtons![buttonI]
-                    assert(button)
-                    button.setText(`Switch to \\i[${getIconFromInputType(inputManager.inputType)}]`)
-                }
-
-                buttons.push({
-                    name: '',
-                    onPress() {
-                        inputManager.setInputType(
-                            inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
-                                ? ig.INPUT_DEVICES.GAMEPAD
-                                : ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
-                        )
-                        updateButtonText()
-                        assert(ig.client)
-                        ig.client.updateGamepadForcer()
-                    },
+                inputButton = new InputButton(ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE, () => {
+                    inputManager.setInputType(inputButton!.inputType)
+                    assert(ig.client)
+                    ig.client.updateGamepadForcer()
                 })
-                callAfterParent = () => updateButtonText()
+                inputButton.pushConfig(buttons)
             }
 
-            this.parent(400, 100, buttons)
-            callAfterParent?.()
+            this.parent(320, 100, buttons)
+            inputButton?.setDialog(this)
             this.hook.temporary = true
         },
         openMenu() {
