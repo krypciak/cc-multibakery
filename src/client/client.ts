@@ -14,6 +14,7 @@ import {
     createClientPingLabel,
 } from './client-label-draw'
 import { RemoteServer } from '../server/remote/remote-server'
+import { isUsernameValid } from '../misc/username-util'
 
 declare global {
     namespace ig {
@@ -45,7 +46,9 @@ export class Client {
 
     lastPingMs: number = 0
 
-    constructor(public settings: ClientSettings) {}
+    constructor(public settings: ClientSettings) {
+        assert(isUsernameValid(settings.username))
+    }
 
     async init() {
         this.inst = await instanceinator.copy(

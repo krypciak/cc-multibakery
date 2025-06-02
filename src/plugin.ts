@@ -6,6 +6,7 @@ import { PhysicsServer } from './server/physics/physics-server'
 import './misc/modify-prototypes'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { registerOpts } from './options'
+import { isUsernameValid } from './misc/username-util'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -78,5 +79,8 @@ export default class Multibakery implements PluginClass {
         } else if (process.execPath.includes('client')) {
             return
         }
+
+        // TODO: client attaching to fix split screen clients joining remote servers
+        // TODO: add gamepad functionality to server
     }
 }

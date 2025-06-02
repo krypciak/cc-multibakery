@@ -1,11 +1,12 @@
 import { assert } from '../../../misc/assert'
+import { generateRandomUsername, isUsernameValid } from '../../../misc/username-util'
 import { prestart } from '../../../plugin'
 import {
     closePhysicsServerAndSaveState,
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
 import { PhysicsServer } from '../../../server/physics/physics-server'
-import { ClientJoinData, isUsernameValid, showTryNetJoinResponseDialog } from '../../../server/server'
+import { ClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 
 export function openManagerServerPopup(immediately?: boolean) {
     ig.multibakeryManageServerPopup ??= new multi.class.ManageServerPopup()
@@ -48,6 +49,10 @@ prestart(() => {
         },
     })
 })
+
+function getIconFromInputType(inputType: ig.INPUT_DEVICES | undefined): string {
+    return inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'gamepad' : 'controls'
+}
 
 type MultiPageButtonGuiButtons = ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2]
 
@@ -134,9 +139,7 @@ prestart(() => {
                 const updateButtonText = () => {
                     const button = this.userButtons![buttonI]
                     assert(button)
-                    button.setText(
-                        `Switch to \\i[${inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'gamepad' : 'controls'}]`
-                    )
+                    button.setText(`Switch to \\i[${getIconFromInputType(inputManager.inputType)}]`)
                 }
 
                 buttons.push({
@@ -195,12 +198,19 @@ prestart(() => {
             this.parent(width, 70, buttons)
 
             this.setContent(title, [{ content: [''] }])
-            this.inputWrapper = new modmanager.gui.InputFieldWrapper('lea', () => {}, width, isUsernameValid)
+            this.inputWrapper = new modmanager.gui.InputFieldWrapper(
+                generateRandomUsername(),
+                () => {},
+                width,
+                isUsernameValid
+            )
+            this.scrollContainer.scrollPane.removeChildGui(this.scrollContainer.scrollPane.scrollbarV!)
         },
         openMenu() {
             this.parent()
             this.scrollContainer.setElement(this.inputWrapper)
             this.userButtonGroup!.addFocusGui(this.inputWrapper.inputField, 999, 999)
+            this.scrollContainer.setPos(this.scrollContainer.hook.pos.x, this.scrollContainer.hook.pos.y + 1)
         },
     })
 })

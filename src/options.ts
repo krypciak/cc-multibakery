@@ -1,10 +1,12 @@
 import type { Options } from 'ccmodmanager/types/mod-options'
-import Multibakery from './plugin'
+import Multibakery, { poststart } from './plugin'
 import { RemoteServer } from './server/remote/remote-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
-import { isUsernameValid } from './server/server'
+import { generateRandomUsername, isUsernameValid } from './misc/username-util'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
+
+const defaultClientUsername = '@DEFAULT_USERNAME'
 
 export function registerOpts() {
     const opts = {
@@ -60,8 +62,12 @@ export function registerOpts() {
                     },
                     clientLogin: {
                         type: 'INPUT_FIELD',
-                        init: `client${(100 + 900 * Math.randomOrig()).floor()}`,
-                        changeEvent() {},
+                        init: defaultClientUsername,
+                        changeEvent() {
+                            if (Opts.clientLogin == defaultClientUsername) {
+                                Opts.clientLogin = generateRandomUsername()
+                            }
+                        },
                         isValid: isUsernameValid,
                     },
                 },
@@ -180,3 +186,9 @@ export function registerOpts() {
     )
     return opts
 }
+
+poststart(() => {
+    if (Opts.clientLogin == defaultClientUsername) {
+        Opts.clientLogin = defaultClientUsername
+    }
+})

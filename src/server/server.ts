@@ -28,10 +28,6 @@ export type ClientJoinAckData = {
     status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
 }
 
-export function isUsernameValid(username: string) {
-    return username.length > 0
-}
-
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     abstract settings: S
 
