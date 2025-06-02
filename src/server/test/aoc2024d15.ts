@@ -2,7 +2,6 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
 import { waitForScheduledTask } from '../server'
-import { Client } from '../../client/client'
 import { PhysicsServer } from '../physics/physics-server'
 import { InputData } from '../../dummy/dummy-input-puppet'
 
@@ -219,12 +218,12 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         mouseGuiActive: true,
         mouse: { x: 0, y: 0 },
         accel: { x: 0, y: 0, z: 0 },
-        presses: {} as any,
-        keyups: {} as any,
-        locks: {} as any,
-        delayedKeyup: {} as any,
+        presses: {},
+        keyups: {},
+        locks: {},
+        delayedKeyup: [],
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
-        actions: {} as any,
+        actions: {},
     }
     const inp: InputData = ig.copy(emptyInput)
 
@@ -332,10 +331,12 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                 username: 'aoc',
                 inputType: 'puppet',
                 remote: false,
+                mapName: map,
             })
         },
         update() {
             const ccmap = multi.server.maps[map]
+            // console.log(Object.keys(multi.server.maps))
             const p = ccmap.players[0].dummy
             const client = multi.server.clients[p.data.username]
 

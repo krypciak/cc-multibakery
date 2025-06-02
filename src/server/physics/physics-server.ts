@@ -80,7 +80,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             await this.netManager.start()
         }
 
-        if (window.crossnode) startRepl()
+        if (window.crossnode && !window.crossnode.tests) startRepl()
     }
 
     async tryJoinClient(

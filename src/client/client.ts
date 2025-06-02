@@ -27,6 +27,7 @@ export type ClientSettings = {
     remote: boolean
     noShowInstance?: boolean
     forceDraw?: boolean
+    mapName?: string
 } & (
     | {
           inputType: 'clone'
@@ -67,7 +68,7 @@ export class Client {
         determine.append(this.determinism)
 
         const inputManager = this.initInputManager()
-        this.player = new ServerPlayer(this.settings.username, undefined, inputManager)
+        this.player = new ServerPlayer(this.settings.username, this.settings.mapName, inputManager)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)

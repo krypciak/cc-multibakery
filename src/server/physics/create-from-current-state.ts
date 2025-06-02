@@ -59,7 +59,6 @@ export async function createPhysicsServerFromCurrentState() {
     multi.setServer(server)
 
     await server.start()
-    await server.loadMap(origMapName)
 
     const username = Opts.clientLogin
     await server.createAndJoinClient({
@@ -67,6 +66,7 @@ export async function createPhysicsServerFromCurrentState() {
         inputType: 'clone',
         remote: false,
         initialInputType: origInputType,
+        mapName: origMapName,
     })
     server.masterUsername = username
     const client = server.clients[username]
