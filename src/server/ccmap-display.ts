@@ -64,6 +64,7 @@ export class CCMapDisplay {
     }
 
     async setPlayerCameraHandle(player: ServerPlayer) {
+        assert(player)
         await this.setEntityCameraHandle(player.dummy)
     }
 
@@ -100,7 +101,8 @@ prestart(() => {
                             if (ig.input.pressed('special')) {
                                 map.display.currentPlayerI++
                                 if (map.display.currentPlayerI >= map.players.length) map.display.currentPlayerI = 0
-                                map.display.setPlayerCameraHandle(map.players[map.display.currentPlayerI])
+                                const player = map.players[map.display.currentPlayerI]
+                                if (player) map.display.setPlayerCameraHandle(player)
                             }
                         } else {
                             const pos = Vec2.create()
