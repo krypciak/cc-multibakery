@@ -79,6 +79,7 @@ export default class Multibakery implements PluginClass {
             return
         }
 
+        // TODO: fix menu desync
         // TODO: add gamepad functionality to server
     }
 }

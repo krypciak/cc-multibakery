@@ -183,6 +183,8 @@ export class Client {
             initMapInteractEntries(map.inst)
 
             this.updateGamepadForcer()
+
+            sc.model.enterGame()
         })
         await waitForScheduledTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
