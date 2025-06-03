@@ -24,7 +24,7 @@ export function createClientPingLabel(client: Client) {
         condition = () => Opts.showClientMsPing
         getText(): string {
             this.avg.pushValue(client.lastPingMs)
-            const msPing = this.avg.getAverage().floor()
+            const msPing = Math.max(0, this.avg.getAverage().floor())
             return `${msPing}ms`
         }
     }
