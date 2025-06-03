@@ -68,7 +68,12 @@ export class Client {
         determine.append(this.determinism)
 
         const inputManager = this.initInputManager()
-        this.player = new ServerPlayer(this.settings.username, this.settings.mapName, inputManager)
+        this.player = new ServerPlayer(
+            this.settings.username,
+            this.settings.mapName,
+            inputManager,
+            multi.server instanceof RemoteServer
+        )
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)

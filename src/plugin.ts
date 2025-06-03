@@ -79,7 +79,6 @@ export default class Multibakery implements PluginClass {
             return
         }
 
-        // TODO: client attaching to fix split screen clients joining remote servers
         // TODO: add gamepad functionality to server
     }
 }

@@ -6,7 +6,6 @@ import { applyEntityStates } from '../../state/states'
 import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
-import { getDummyUuidByUsername } from '../../dummy/dummy-player'
 import { NetServerInfoRemote } from '../../client/menu/server-info'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { showClientErrorPopup } from '../../client/menu/error-popup'
@@ -26,6 +25,7 @@ export interface RemoteServerSettings extends ServerSettings {
 }
 
 export class RemoteServer extends Server<RemoteServerSettings> {
+    remote = true
     netManager!: SocketNetManagerRemoteServer
 
     constructor(public settings: RemoteServerSettings) {
@@ -87,8 +87,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
-        const unreadyClientPlayers: string[] = Object.keys(this.unreadyClients).map(getDummyUuidByUsername)
-
         const msPing = Date.now() - data.sendAt
         for (const username in this.clients) {
             const client = this.clients[username]
@@ -103,12 +101,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             const prevId = instanceinator.id
             const inst = map.inst
-
-            /* prevent spawning dummies of clients that are initializing at the moment */
-            /* this is ugly, could this be done in a cleaner way? */
-            for (const uuid of unreadyClientPlayers) {
-                if (mapPacket.entities.states?.[uuid]) delete mapPacket.entities.states?.[uuid]
-            }
 
             assert(inst)
             inst.apply()

@@ -31,6 +31,7 @@ export type ClientJoinAckData = {
 
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     abstract settings: S
+    protected abstract remote: boolean
 
     maps: Record<string, CCMap> = {}
     mapsById: Record<number, CCMap> = {}
@@ -40,7 +41,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     serverInst!: InstanceinatorInstance
     serverDeterminism!: DeterMineInstance
 
-    unreadyClients: Record<string, Client> = {}
     clients: Record<string, Client> = {}
     masterUsername?: string
 
@@ -143,7 +143,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     async loadMap(name: string) {
         this.maps[name]?.destroy()
-        const map = new CCMap(name)
+        const map = new CCMap(name, this.remote)
         this.maps[name] = map
         await map.load()
         this.mapsById[map.inst.id] = map
@@ -159,13 +159,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     async createAndJoinClient(settings: ClientSettings) {
         const client = new Client(settings)
 
-        this.unreadyClients[settings.username] = client
-
         await client.init()
         await this.joinClient(client)
         await client.teleport()
-
-        delete this.unreadyClients[settings.username]
 
         return client
     }

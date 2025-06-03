@@ -25,6 +25,7 @@ export interface PhysicsServerSettings extends ServerSettings {
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
+    remote = false
     netManager?: NetManagerPhysicsServer
     httpServer?: PhysicsHttpServer
 

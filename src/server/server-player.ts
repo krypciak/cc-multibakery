@@ -4,6 +4,7 @@ import { teleportPlayerToProperMarker } from '../teleport-fix'
 import { waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics/physics-server'
+import { getDummyUuidByUsername } from '../dummy/dummy-player'
 
 export class ServerPlayer {
     private destroyed: boolean = false
@@ -18,7 +19,8 @@ export class ServerPlayer {
     constructor(
         public username: string,
         public mapName: string = '',
-        public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager()
+        public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager(),
+        private attachDummy: boolean = false
     ) {
         this.dummySettings = {
             inputManager,
@@ -31,9 +33,27 @@ export class ServerPlayer {
         }
     }
 
-    private createPlayer() {
+    private async createPlayer() {
         if (this.dummy) assert(this.dummy._killed)
-        this.dummy = new dummy.DummyPlayer(0, 0, 0, this.dummySettings)
+
+        if (this.attachDummy) {
+            const uuid = getDummyUuidByUsername(this.dummySettings.data.username)
+            this.dummy = await new Promise<dummy.DummyPlayer>(resolve => {
+                const func = () => {
+                    const entity = ig.game.entitiesByUUID[uuid]
+                    if (entity) {
+                        assert(entity instanceof dummy.DummyPlayer)
+                        resolve(entity)
+                    } else {
+                        ig.game.nextScheduledTasks.push(func)
+                    }
+                }
+                func()
+            })
+            this.inputManager.player = this.dummy
+        } else {
+            this.dummy = new dummy.DummyPlayer(0, 0, 0, this.dummySettings)
+        }
         // if (username.includes('luke')) {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
         // }
@@ -54,8 +74,8 @@ export class ServerPlayer {
             assert(map)
         }
         await map.readyPromise
-        await waitForScheduledTask(map.inst, () => {
-            this.createPlayer()
+        await waitForScheduledTask(map.inst, async () => {
+            await this.createPlayer()
         })
         await map.enter(this)
         await waitForScheduledTask(map.inst, () => {

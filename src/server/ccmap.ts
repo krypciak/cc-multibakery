@@ -29,7 +29,7 @@ export class CCMap {
     private readyResolve!: () => void
     noStateAppliedYet: boolean = true
 
-    constructor(public name: string) {
+    constructor(public name: string, private remote: boolean) {
         this.readyPromise = new Promise<void>(resolve => {
             this.readyResolve = () => {
                 this.ready = true
@@ -99,6 +99,8 @@ export class CCMap {
     }
 
     private async enterEntity(e: ig.Entity) {
+        if (this.remote) return
+
         if (e.isPlayer && e instanceof dummy.DummyPlayer && e.gui.crosshair) {
             /* this promise will finish by the end of this function, so there's no need to await it */
             this.enterEntity(e.gui.crosshair)
@@ -133,6 +135,8 @@ export class CCMap {
     }
 
     private async leaveEntity(e: ig.Entity) {
+        if (this.remote) return
+
         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
             /* this promise will finish by the end of this function, so there's no need to await it */
             this.leaveEntity(e.gui.crosshair)
