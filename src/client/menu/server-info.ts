@@ -10,6 +10,7 @@ export interface ServerDetailsRemote extends ServerDetailsBase {
     multibakeryVersion: string
     hasIcon?: boolean
     globalTps: number
+    forceConsistentTickTimes?: boolean
 }
 
 export interface NetServerInfoRemote {

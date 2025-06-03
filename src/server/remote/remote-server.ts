@@ -168,11 +168,13 @@ prestart(() => {
         assert(serverInfo.details)
 
         const server = new RemoteServer({
+            displayServerInstance: Opts.serverDisplayServerInstance,
+            displayMaps: Opts.serverDisplayMaps,
+            displayClientInstances: Opts.serverDisplayClientInstances,
+            displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
+
             globalTps: serverInfo.details.globalTps,
-            displayServerInstance: false,
-            displayMaps: false,
-            displayClientInstances: true,
-            forceConsistentTickTimes: false,
+            forceConsistentTickTimes: serverInfo.details.forceConsistentTickTimes,
             connection: serverInfo.connection,
         })
         multi.setServer(server)

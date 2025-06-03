@@ -80,8 +80,7 @@ function physicsLoop() {
     if (ig.system.frame % ig.system.frameSkip == 0) {
         if (multi.server.settings.forceConsistentTickTimes) {
             const time = ig.Timer._last + 1000 / multi.server.settings.globalTps
-            ig.Timer.time =
-                ig.Timer.time + Math.min((time - ig.Timer._last) / 1e3, ig.Timer.maxStep) * ig.Timer.timeScale
+            ig.Timer.time += Math.min((time - ig.Timer._last) / 1e3, ig.Timer.maxStep) * ig.Timer.timeScale
             ig.Timer._last = time
         } else {
             ig.Timer.step()

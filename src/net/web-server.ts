@@ -25,6 +25,7 @@ export class PhysicsHttpServer {
             hasIcon: !!icon,
             multibakeryVersion: Multibakery.mod.version!.toString(),
             globalTps: multi.server.settings.globalTps,
+            forceConsistentTickTimes: multi.server.settings.forceConsistentTickTimes,
         }
         const serverDetailsString: string = JSON.stringify(serverDetails)
 

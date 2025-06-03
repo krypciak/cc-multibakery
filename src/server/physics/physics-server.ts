@@ -20,7 +20,6 @@ export type PhysicsServerConnectionSettings = {
 
 export interface PhysicsServerSettings extends ServerSettings {
     godmode?: boolean
-    slotName?: string
 
     netInfo?: NetServerInfoPhysics
 }

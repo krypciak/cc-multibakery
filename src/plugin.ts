@@ -6,7 +6,6 @@ import { PhysicsServer } from './server/physics/physics-server'
 import './misc/modify-prototypes'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { registerOpts } from './options'
-import { isUsernameValid } from './misc/username-util'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -54,12 +53,12 @@ export default class Multibakery implements PluginClass {
         if (process.execPath.includes('server')) {
             multi.setServer(
                 new PhysicsServer({
-                    slotName: 'example',
                     globalTps: 60,
                     godmode: true,
                     displayServerInstance: false,
                     displayMaps: true,
                     displayClientInstances: true,
+                    displayRemoteClientInstances: true,
                     forceConsistentTickTimes: false,
                     netInfo: {
                         connection: {
