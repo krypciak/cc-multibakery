@@ -44,7 +44,7 @@ export function createClientConnectionInfoLabel(client: Client) {
     client.inst.labelDrawClasses.push(new ConnectionInfoLabelDrawClass())
 }
 
-export function createClientNetworkPacketTraffic(client: Client) {
+export function createClientNetworkPacketTrafficLabel(client: Client) {
     assert(multi.server instanceof RemoteServer)
     const server = multi.server
 
@@ -82,7 +82,7 @@ export function createClientNetworkPacketTraffic(client: Client) {
     client.inst.labelDrawClasses.push(new NetworkPacketTrafficLabelDrawClass())
 
     class NetworkPacketSizeLabelDrawClass extends BasicLabelDrawClass {
-        condition = () => Opts.showPacketNetworkTraffic
+        condition = () => Opts.showPacketNetworkSize
 
         private lastSent: bigint = 0n
         private lastReceived: bigint = 0n
@@ -100,7 +100,7 @@ export function createClientNetworkPacketTraffic(client: Client) {
             const bSent = bytesSentDiff
             const bReceived = bytesReceivedDiff
 
-            return `packet \\i[keyCode-${ig.KEY.D}] ${bReceived.floor()} B  \\i[keyCode-${ig.KEY.U}] ${bSent.floor()} B`
+            return `\\i[keyCode-${ig.KEY.D}] ${bReceived.floor()} B  \\i[keyCode-${ig.KEY.U}] ${bSent.floor()} B`
         }
     }
     client.inst.labelDrawClasses.push(new NetworkPacketSizeLabelDrawClass())

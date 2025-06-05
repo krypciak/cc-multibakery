@@ -10,7 +10,7 @@ import { initMapInteractEntries } from './map-interact'
 import { waitForScheduledTask } from '../server/server'
 import {
     createClientConnectionInfoLabel,
-    createClientNetworkPacketTraffic,
+    createClientNetworkPacketTrafficLabel,
     createClientPingLabel,
 } from './client-label-draw'
 import { RemoteServer } from '../server/remote/remote-server'
@@ -81,7 +81,7 @@ export class Client {
         if (multi.server instanceof RemoteServer) {
             createClientPingLabel(this)
             createClientConnectionInfoLabel(this)
-            createClientNetworkPacketTraffic(this)
+            createClientNetworkPacketTrafficLabel(this)
         }
     }
 

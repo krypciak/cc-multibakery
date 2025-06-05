@@ -39,10 +39,23 @@ export function registerOpts() {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Show network traffic',
-                        description: 'Shows the nettwork trafic',
+                        description: 'Shows the network trafic per second',
                         changeEvent() {
                             if (multi.server instanceof RemoteServer) {
-                                multi.server.measureTraffic = Opts.showPacketNetworkTraffic
+                                multi.server.measureTraffic =
+                                    Opts.showPacketNetworkTraffic || Opts.showPacketNetworkSize
+                            }
+                        },
+                    },
+                    showPacketNetworkSize: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Show individual traffic',
+                        description: 'Shows the size of individual packets',
+                        changeEvent() {
+                            if (multi.server instanceof RemoteServer) {
+                                multi.server.measureTraffic =
+                                    Opts.showPacketNetworkTraffic || Opts.showPacketNetworkSize
                             }
                         },
                     },
