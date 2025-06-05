@@ -1,6 +1,6 @@
 import { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
-import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
+import { ClientJoinAckData, ClientJoinData, Server, ServerSettings, waitForScheduledTask } from '../server'
 import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import { NetServerInfoPhysics } from '../../client/menu/server-info'
@@ -10,7 +10,6 @@ import { startRepl } from './shell'
 
 import './physics-server-sender'
 import { isUsernameValid } from '../../misc/username-util'
-import { setPauseScreenBlock } from '../remote/ignore-pause-screen'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -121,15 +120,17 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
             const packet = data.input[username]
-            if (packet.exitPauseScreen) {
-                setPauseScreenBlock(inp, false)
 
-                client.inst.apply()
-                sc.model.enterRunning()
-                this.serverInst.apply()
+            if (packet.inPauseScreen) {
+                continue
+            }
+            if (client.inst.ig.inPauseScreen) {
+                waitForScheduledTask(client.inst, () => sc.model.enterRunning())
             }
 
-            inp.mainInputData.pushInput(packet.input)
+            if (packet.input) {
+                inp.mainInputData.pushInput(packet.input)
+            }
             if (packet.gamepad) {
                 inp.mainGamepadManagerData.pushInput(packet.gamepad)
             }

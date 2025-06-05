@@ -1,11 +1,10 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../physics/physics-server'
-import { RemoteServer } from './remote-server'
 
 declare global {
     namespace ig {
-        var justExitedPauseScreen: boolean | undefined
+        var inPauseScreen: boolean | undefined
     }
 }
 
@@ -16,17 +15,21 @@ prestart(() => {
 
             if (!ig.client) return
 
-            if (name == 'DEFAULT') {
+            function trySetBlock(value: boolean) {
                 if (multi.server instanceof PhysicsServer) {
-                    const inp = ig.client.player.inputManager
+                    const inp = ig.client!.player?.inputManager
                     if (inp instanceof dummy.input.Puppet.InputManager) {
-                        setPauseScreenBlock(inp, true)
+                        setPauseScreenBlock(inp, value)
                     }
                 }
+            }
+
+            if (name == 'DEFAULT') {
+                ig.inPauseScreen = true
+                trySetBlock(true)
             } else if (name == 'HIDDEN') {
-                if (multi.server instanceof RemoteServer) {
-                    ig.justExitedPauseScreen = true
-                }
+                ig.inPauseScreen = false
+                trySetBlock(false)
             } else assert(false)
         },
     })

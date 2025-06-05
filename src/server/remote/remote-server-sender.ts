@@ -24,15 +24,24 @@ function send() {
         const client = multi.server.clients[username]
         const inst = client.inst
         assert(inst)
-        const input = dummy.input.Puppet.InputManager.getInputData(inst.ig.input)
-        const gamepad = dummy.input.Puppet.InputManager.getGamepadManagerData(inst.ig.gamepad)
 
-        inputPackets[username] = {
-            input,
-            gamepad,
-            exitPauseScreen: inst.ig.justExitedPauseScreen ? true : undefined,
+        let packet: ClientInputPacket
+
+        if (inst.ig.inPauseScreen) {
+            packet = {
+                inPauseScreen: true,
+            }
+        } else {
+            const input = dummy.input.Puppet.InputManager.getInputData(inst.ig.input)
+            const gamepad = dummy.input.Puppet.InputManager.getGamepadManagerData(inst.ig.gamepad)
+
+            packet = {
+                input,
+                gamepad,
+            }
         }
-        inst.ig.justExitedPauseScreen = false
+
+        inputPackets[username] = packet
     }
 
     const packet: RemoteServerUpdatePacket = {
@@ -47,9 +56,9 @@ export interface RemoteServerUpdatePacket {
 }
 type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
 export interface ClientInputPacket {
-    input: InputData
+    input?: InputData
     gamepad?: GamepadManagerData
-    exitPauseScreen?: boolean
+    inPauseScreen?: boolean
 }
 export function isRemoteServerUpdatePacket(data: any): data is RemoteServerUpdatePacket {
     if (typeof data != 'object' || !data) return false
@@ -70,7 +79,7 @@ function isRemoteServerInputPacket(data: any): data is RemoteServerInputPacket {
         if (typeof packet != 'object' || !packet) return false
 
         const input = packet.input
-        if (typeof input != 'object' || !input) return false
+        if (input && typeof input != 'object') return false
 
         const gamepad = packet.gamepad
         if (gamepad && typeof gamepad != 'object') return false
