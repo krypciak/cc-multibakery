@@ -332,11 +332,9 @@ prestart(() => {
 
             const inMenu = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
             if (inMenu) {
-                inp.ignoreKeyboardInput.add('PAUSED')
-                inp.ignoreGamepadInput.add('PAUSED')
+                inp.block.blockBoth('PAUSED')
             } else {
-                inp.ignoreKeyboardInput.delete('PAUSED')
-                inp.ignoreGamepadInput.delete('PAUSED')
+                inp.block.unblockBoth('PAUSED')
             }
         },
     })

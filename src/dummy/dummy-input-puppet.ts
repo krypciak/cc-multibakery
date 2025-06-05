@@ -1,4 +1,5 @@
 import { prestart } from '../plugin'
+import { InputManagerBlock } from './dummy-input-clone'
 
 export interface InputData {
     isUsingMouse: boolean
@@ -28,6 +29,7 @@ declare global {
     namespace dummy {
         namespace input {
             namespace Puppet {
+                type InputManager = InstanceType<ReturnType<typeof initInputManager>>
                 let InputManager: ReturnType<typeof initInputManager>
             }
         }
@@ -86,15 +88,30 @@ function initInputManager() {
             }
         }
 
-        mainInput: dummy.input.Puppet.Input
-        mainGamepadManager: dummy.input.Puppet.GamepadManager
+        mainInputData: dummy.input.Puppet.Input
+        mainGamepadManagerData: dummy.input.Puppet.GamepadManager
+
+        mainBlock: InputManagerBlock
+
+        mainInput: dummy.input.Clone.Input
+        mainGamepadManager: dummy.input.Clone.GamepadManager
 
         nextGatherInput?: ig.ENTITY.Player.PlayerInput
 
         constructor() {
-            const mainInput = new dummy.input.Puppet.Input()
-            const mainGamepadManager = new dummy.input.Puppet.GamepadManager()
+            const mainInputData = new dummy.input.Puppet.Input()
+            const mainGamepadManagerData: dummy.input.Puppet.GamepadManager = new dummy.input.Puppet.GamepadManager()
+
+            const mainBlock = new InputManagerBlock()
+
+            const mainInput = new dummy.input.Clone.Input(mainInputData, mainBlock)
+            const mainGamepadManager = new dummy.input.Clone.GamepadManager(mainGamepadManagerData, mainBlock)
+
             super(mainInput, mainGamepadManager, undefined)
+
+            this.mainInputData = mainInputData
+            this.mainGamepadManagerData = mainGamepadManagerData
+            this.mainBlock = mainBlock
             this.mainInput = mainInput
             this.mainGamepadManager = mainGamepadManager
         }

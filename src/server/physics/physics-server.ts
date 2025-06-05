@@ -10,6 +10,7 @@ import { startRepl } from './shell'
 
 import './physics-server-sender'
 import { isUsernameValid } from '../../misc/username-util'
+import { setPauseScreenBlock } from '../remote/ignore-pause-screen'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -120,9 +121,17 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
             const packet = data.input[username]
-            inp.mainInput.pushInput(packet.input)
+            if (packet.exitPauseScreen) {
+                setPauseScreenBlock(inp, false)
+
+                client.inst.apply()
+                sc.model.enterRunning()
+                this.serverInst.apply()
+            }
+
+            inp.mainInputData.pushInput(packet.input)
             if (packet.gamepad) {
-                inp.mainGamepadManager.pushInput(packet.gamepad)
+                inp.mainGamepadManagerData.pushInput(packet.gamepad)
             }
         }
     }

@@ -2,37 +2,9 @@ import { prestart } from '../plugin'
 
 import './gamepad-assigner'
 
-class CloneInputManager {
-    player!: dummy.DummyPlayer
-    input: ig.Input
-    gamepadManager: dummy.input.Clone.GamepadManager
-    screen: Vec2 = { x: 0, y: 0 }
-    ignoreKeyboardInput: Set<string> = new Set()
-    ignoreGamepadInput: Set<string> = new Set()
-    inputType!: ig.INPUT_DEVICES | undefined
-
-    constructor(realInput: ig.Input, realGamepadManager: ig.GamepadManager, inputType: ig.INPUT_DEVICES | undefined) {
-        this.input = new dummy.input.Clone.Input(realInput, this)
-        this.gamepadManager = new dummy.input.Clone.GamepadManager(realGamepadManager, this)
-
-        this.setInputType(inputType)
-    }
-
-    setInputType(inputType: ig.INPUT_DEVICES | undefined) {
-        this.inputType = inputType
-
-        if (inputType == ig.INPUT_DEVICES.GAMEPAD) {
-            this.ignoreKeyboardInput.add('forceInputType')
-            this.ignoreGamepadInput.delete('forceInputType')
-        } else if (inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) {
-            this.ignoreKeyboardInput.delete('forceInputType')
-            this.ignoreGamepadInput.add('forceInputType')
-        }
-    }
-
-    gatherInput(): ig.ENTITY.Player.PlayerInput | undefined {
-        return undefined
-    }
+export class InputManagerBlock {
+    private ignoreKeyboardInput: Set<string> = new Set()
+    private ignoreGamepadInput: Set<string> = new Set()
 
     isKeyboardBlocked() {
         return this.ignoreKeyboardInput.size > 0
@@ -40,6 +12,61 @@ class CloneInputManager {
 
     isGamepadBlocked() {
         return this.ignoreGamepadInput.size > 0
+    }
+
+    blockKeyboard(id: string) {
+        this.ignoreKeyboardInput.add(id)
+    }
+    blockGamepad(id: string) {
+        this.ignoreGamepadInput.add(id)
+    }
+    blockBoth(id: string) {
+        this.blockKeyboard(id)
+        this.blockGamepad(id)
+    }
+
+    unblockKeyboard(id: string) {
+        this.ignoreKeyboardInput.delete(id)
+    }
+    unblockGamepad(id: string) {
+        this.ignoreGamepadInput.delete(id)
+    }
+    unblockBoth(id: string) {
+        this.unblockKeyboard(id)
+        this.unblockGamepad(id)
+    }
+}
+
+class CloneInputManager {
+    player!: dummy.DummyPlayer
+    input: ig.Input
+    gamepadManager: dummy.input.Clone.GamepadManager
+    screen: Vec2 = { x: 0, y: 0 }
+    inputType!: ig.INPUT_DEVICES | undefined
+    block = new InputManagerBlock()
+
+    constructor(realInput: ig.Input, realGamepadManager: ig.GamepadManager, inputType: ig.INPUT_DEVICES | undefined) {
+        this.input = new dummy.input.Clone.Input(realInput, this.block)
+        this.gamepadManager = new dummy.input.Clone.GamepadManager(realGamepadManager, this.block)
+
+        this.setInputType(inputType)
+    }
+
+    setInputType(inputType: ig.INPUT_DEVICES | undefined) {
+        this.inputType = inputType
+
+        const id = 'forceInputType'
+        if (inputType == ig.INPUT_DEVICES.GAMEPAD) {
+            this.block.blockKeyboard(id)
+            this.block.unblockGamepad(id)
+        } else if (inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) {
+            this.block.unblockKeyboard(id)
+            this.block.blockGamepad(id)
+        }
+    }
+
+    gatherInput(): ig.ENTITY.Player.PlayerInput | undefined {
+        return undefined
     }
 }
 
@@ -64,10 +91,10 @@ declare global {
     namespace dummy.input.Clone {
         interface Input extends ig.Input {
             realInput: ig.Input
-            manager: dummy.input.Clone.InputManager
+            block: InputManagerBlock
         }
         interface InputConstructor extends ImpactClass<Input> {
-            new (realInput: ig.Input, manager: dummy.input.Clone.InputManager): Input
+            new (realInput: ig.Input, block: InputManagerBlock): Input
         }
         var Input: InputConstructor
     }
@@ -82,9 +109,9 @@ declare global {
 prestart(() => {
     // prettier-ignore
     dummy.input.Clone.Input = ig.Input.extend({
-        init(realInput, manager) {
+        init(realInput, block) {
             this.realInput = realInput
-            this.manager = manager
+            this.block = block
 
             const self = this
 
@@ -104,16 +131,22 @@ prestart(() => {
             })
         },
         state(action) {
-            if (this.manager.isKeyboardBlocked()) return false
+            if (this.block.isKeyboardBlocked()) return false
             return this.realInput.state(action)
         },
         pressed(action) {
-            if (this.manager.isKeyboardBlocked()) return false
+            if (this.block.isKeyboardBlocked()) return false
             return this.realInput.pressed(action)
         },
         keyupd(action) {
-            if (this.manager.isKeyboardBlocked()) return false
+            if (this.block.isKeyboardBlocked()) return false
             return this.realInput.keyupd(action)
+        },
+        mouseOutOfScreen() {
+            return this.realInput.mouseOutOfScreen()
+        },
+        clearPressed() {
+            return this.realInput.clearPressed()
         },
 
         initMouse() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
@@ -122,7 +155,6 @@ prestart(() => {
         mousewheel(_event) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         mousemove(_event) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         mouseout() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
-        mouseOutOfScreen() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         contextmenu(_event) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         isInIframe() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         isInIframeAndUnfocused() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
@@ -135,7 +167,6 @@ prestart(() => {
         bindTouch(_key, _action) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         unbind(_key) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         unbindAll() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
-        clearPressed() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         touchStart(_key, _action) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         touchEnd(_key, _action) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
     })
@@ -145,52 +176,52 @@ declare global {
     namespace dummy.input.Clone {
         interface GamepadManager extends ig.GamepadManager {
             realGM: ig.GamepadManager
-            manager: dummy.input.Clone.InputManager
+            block: InputManagerBlock
         }
         interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
-            new (realGamepadManager: ig.GamepadManager, inputManager: dummy.input.Clone.InputManager): GamepadManager
+            new (realGamepadManager: ig.GamepadManager, block: InputManagerBlock): GamepadManager
         }
         var GamepadManager: GamepadManagerConstructor
     }
 }
 prestart(() => {
     dummy.input.Clone.GamepadManager = ig.GamepadManager.extend({
-        init(realGM, inputManager) {
+        init(realGM, block) {
             this.realGM = realGM
-            this.manager = inputManager
+            this.block = block
             this.gamepads = undefined as any
             this.activeGamepads = realGM.activeGamepads
         },
         isButtonPressed(button) {
-            if (this.manager.isGamepadBlocked()) return false
+            if (this.block.isGamepadBlocked()) return false
             return this.realGM.isButtonPressed(button)
         },
         isButtonReleased(button) {
-            if (this.manager.isGamepadBlocked()) return false
+            if (this.block.isGamepadBlocked()) return false
             return this.realGM.isButtonReleased(button)
         },
         isButtonDown(button) {
-            if (this.manager.isGamepadBlocked()) return false
+            if (this.block.isGamepadBlocked()) return false
             return this.realGM.isButtonDown(button)
         },
         getButtonValue(button) {
-            if (this.manager.isGamepadBlocked()) return 0
+            if (this.block.isGamepadBlocked()) return 0
             return this.realGM.getButtonValue(button)
         },
         getAxesValue(axis, clipDeadZone) {
-            if (this.manager.isGamepadBlocked()) return 0
+            if (this.block.isGamepadBlocked()) return 0
             return this.realGM.getAxesValue(axis, clipDeadZone)
         },
         isAxesDown(axis) {
-            if (this.manager.isGamepadBlocked()) return false
+            if (this.block.isGamepadBlocked()) return false
             return this.realGM.isAxesDown(axis)
         },
         isLeftStickDown() {
-            if (this.manager.isGamepadBlocked()) return false
+            if (this.block.isGamepadBlocked()) return false
             return this.realGM.isLeftStickDown()
         },
         isRightStickDown() {
-            if (this.manager.isGamepadBlocked()) return false
+            if (this.block.isGamepadBlocked()) return false
             return this.realGM.isRightStickDown()
         },
     })

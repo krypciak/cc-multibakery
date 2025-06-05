@@ -30,7 +30,9 @@ function send() {
         inputPackets[username] = {
             input,
             gamepad,
+            exitPauseScreen: inst.ig.justExitedPauseScreen ? true : undefined,
         }
+        inst.ig.justExitedPauseScreen = false
     }
 
     const packet: RemoteServerUpdatePacket = {
@@ -47,6 +49,7 @@ type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
 export interface ClientInputPacket {
     input: InputData
     gamepad?: GamepadManagerData
+    exitPauseScreen?: boolean
 }
 export function isRemoteServerUpdatePacket(data: any): data is RemoteServerUpdatePacket {
     if (typeof data != 'object' || !data) return false

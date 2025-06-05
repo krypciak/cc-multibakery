@@ -275,11 +275,11 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
                     const action = dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'
                     inp.actions[action] = true
                 }
-                input.mainInput.setInput(inp)
+                input.mainInputData.setInput(inp)
             })
         }
     }
-    input.mainInput.setInput(emptyInput)
+    input.mainInputData.setInput(emptyInput)
     waitFrames(8)
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)

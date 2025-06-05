@@ -12,6 +12,7 @@ import { showClientErrorPopup } from '../../client/menu/error-popup'
 import { Opts } from '../../options'
 
 import './remote-server-sender'
+import './ignore-pause-screen'
 
 export type RemoteServerConnectionSettings = {
     host: string
