@@ -2,18 +2,18 @@ import { prestart } from '../plugin'
 import { InputManagerBlock } from './dummy-input-clone'
 
 export interface InputData {
-    isUsingMouse: boolean
-    isUsingKeyboard: boolean
-    ignoreKeyboard: boolean
-    mouseGuiActive: boolean
-    mouse: Vec2
-    accel: Vec3
-    presses: ig.Input['presses']
-    keyups: ig.Input['keyups']
-    locks: ig.Input['locks']
-    delayedKeyup: ig.Input['delayedKeyup']
     currentDevice: ig.Input['currentDevice']
-    actions: ig.Input['actions']
+    isUsingMouse?: boolean
+    isUsingKeyboard?: boolean
+    ignoreKeyboard?: boolean
+    mouseGuiActive?: boolean
+    mouse?: Vec2
+    accel?: Vec3
+    presses?: ig.Input['presses']
+    keyups?: ig.Input['keyups']
+    locks?: ig.Input['locks']
+    delayedKeyup?: ig.Input['delayedKeyup']
+    actions?: ig.Input['actions']
 }
 
 export interface GamepadManagerData {
@@ -54,37 +54,6 @@ function initInputManager() {
                 moveDir: Vec2.create(),
                 lastMoveDir: Vec2.create(),
                 switchMode: false,
-                /* charging crashes */
-            }
-        }
-
-        static getInputData(input: ig.Input): InputData {
-            return {
-                isUsingMouse: input.isUsingMouse,
-                isUsingKeyboard: input.isUsingKeyboard,
-                ignoreKeyboard: input.ignoreKeyboard,
-                mouseGuiActive: input.mouseGuiActive,
-                mouse: input.mouse,
-                accel: input.accel,
-                presses: input.presses,
-                keyups: input.keyups,
-                locks: input.locks,
-                delayedKeyup: input.delayedKeyup,
-                currentDevice: input.currentDevice,
-                actions: input.actions,
-            }
-        }
-
-        static getGamepadManagerData(gamepadmanager: ig.GamepadManager): GamepadManagerData | undefined {
-            const gp = gamepadmanager.activeGamepads[0]
-            if (!gp) return
-            return {
-                buttonDeadzones: gp.buttonDeadzones,
-                axesStates: gp.axesStates,
-                buttonStates: gp.buttonStates,
-                axesDeadzones: gp.axesDeadzones,
-                pressedStates: gp.pressedStates,
-                releasedStates: gp.releasedStates,
             }
         }
 
@@ -132,6 +101,40 @@ prestart(() => {
 }, 4)
 
 declare global {
+    namespace ig {
+        interface Input {
+            getInput(this: this, isUsingGamepad: boolean): InputData
+        }
+    }
+}
+prestart(() => {
+    ig.Input.inject({
+        getInput(isUsingGamepad) {
+            if (isUsingGamepad) {
+                return {
+                    currentDevice: ig.INPUT_DEVICES.GAMEPAD,
+                    presses: this.presses['pause'] ? { pause: true } : undefined,
+                }
+            }
+            return {
+                currentDevice: this.currentDevice,
+                isUsingMouse: this.isUsingMouse,
+                isUsingKeyboard: this.isUsingKeyboard,
+                ignoreKeyboard: this.ignoreKeyboard,
+                mouseGuiActive: this.mouseGuiActive,
+                mouse: this.mouse,
+                accel: this.accel,
+                presses: this.presses,
+                keyups: this.keyups,
+                locks: this.locks,
+                delayedKeyup: this.delayedKeyup,
+                actions: this.actions,
+            }
+        },
+    })
+})
+
+declare global {
     namespace dummy.input.Puppet {
         interface Input extends ig.Input {
             inputQueue: InputData[]
@@ -153,18 +156,18 @@ prestart(() => {
             this.inputQueue = []
         },
         setInput(input) {
-            this.isUsingMouse = input.isUsingMouse
-            this.isUsingKeyboard = input.isUsingKeyboard
-            this.ignoreKeyboard = input.ignoreKeyboard
-            this.mouseGuiActive = input.mouseGuiActive
-            Vec2.assign(this.mouse, input.mouse)
-            Vec3.assign(this.accel, input.accel)
-            this.presses = input.presses
-            this.keyups = input.keyups
-            this.locks = input.locks
-            this.delayedKeyup = input.delayedKeyup
+            this.isUsingMouse = input.isUsingMouse ?? false
+            this.isUsingKeyboard = input.isUsingKeyboard ?? false
+            this.ignoreKeyboard = input.ignoreKeyboard ?? false
+            this.mouseGuiActive = input.mouseGuiActive ?? false
+            Vec2.assign(this.mouse, input.mouse ?? Vec2.create())
+            Vec3.assign(this.accel, input.accel ?? Vec3.create())
+            this.presses = input.presses ?? {}
+            this.keyups = input.keyups ?? {}
+            this.locks = input.locks ?? {}
+            this.delayedKeyup = input.delayedKeyup ?? []
             this.currentDevice = input.currentDevice
-            this.actions = input.actions
+            this.actions = input.actions ?? {}
         },
         pushInput(input) {
             this.inputQueue.push(input)
@@ -181,13 +184,37 @@ prestart(() => {
 }, 5)
 
 declare global {
+    namespace ig {
+        interface GamepadManager {
+            getInput(this: this): GamepadManagerData | undefined
+        }
+    }
+}
+prestart(() => {
+    ig.GamepadManager.inject({
+        getInput() {
+            const gp = this.activeGamepads[0]
+            if (!gp) return
+            return {
+                buttonDeadzones: gp.buttonDeadzones,
+                axesStates: gp.axesStates,
+                buttonStates: gp.buttonStates,
+                axesDeadzones: gp.axesDeadzones,
+                pressedStates: gp.pressedStates,
+                releasedStates: gp.releasedStates,
+            }
+        },
+    })
+})
+
+declare global {
     namespace dummy.input.Puppet {
         interface GamepadManager extends ig.GamepadManager {
-            _lastInput: GamepadManagerData
+            inputQueue: GamepadManagerData[]
 
-            getInput(this: this): GamepadManagerData
             pushInput(this: this, input: GamepadManagerData): void
             setInput(this: this, input: GamepadManagerData): void
+            popInput(this: this): void
         }
         interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
             new (): GamepadManager
@@ -209,14 +236,27 @@ prestart(() => {
                     releasedStates: [] as any,
                 },
             ]
-        },
-        getInput() {
-            return this._lastInput ?? dummy.input.Puppet.InputManager.getGamepadManagerData(this)
+            this.inputQueue = []
         },
         setInput(input) {
-            this._lastInput = input
-            // @ts-expect-error
-            this.activeGamepads[0] = input
+            const gp = this.activeGamepads[0]
+            gp.buttonDeadzones = input.buttonDeadzones
+            gp.axesDeadzones = input.axesDeadzones
+            gp.buttonStates = input.buttonStates
+            gp.axesStates = input.axesStates
+            gp.pressedStates = input.pressedStates
+            gp.releasedStates = input.releasedStates
+        },
+        pushInput(input) {
+            this.inputQueue.push(input)
+            this.popInput()
+        },
+        popInput() {
+            if (this.inputQueue.length > 0) {
+                const ele = this.inputQueue[0]
+                this.inputQueue.splice(0, 1)
+                this.setInput(ele)
+            }
         },
         isSupported() {
             return true

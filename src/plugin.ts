@@ -78,7 +78,5 @@ export default class Multibakery implements PluginClass {
         } else if (process.execPath.includes('client')) {
             return
         }
-
-        // TODO: add gamepad functionality to server
     }
 }

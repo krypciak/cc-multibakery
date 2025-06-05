@@ -32,8 +32,8 @@ function send() {
                 inPauseScreen: true,
             }
         } else {
-            const input = dummy.input.Puppet.InputManager.getInputData(inst.ig.input)
-            const gamepad = dummy.input.Puppet.InputManager.getGamepadManagerData(inst.ig.gamepad)
+            const input = inst.ig.input.getInput(client.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD)
+            const gamepad = inst.ig.gamepad.getInput()
 
             packet = {
                 input,

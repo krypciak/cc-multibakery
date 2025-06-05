@@ -212,19 +212,10 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         }
     }
     const emptyInput: InputData = {
-        isUsingMouse: false,
-        isUsingKeyboard: false,
-        ignoreKeyboard: false,
-        mouseGuiActive: true,
-        mouse: { x: 0, y: 0 },
-        accel: { x: 0, y: 0, z: 0 },
-        presses: {},
-        keyups: {},
-        locks: {},
-        delayedKeyup: [],
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
+        presses: {},
         actions: {},
-    }
+    } satisfies InputData
     const inp: InputData = ig.copy(emptyInput)
 
     const playerInp = dummy.input.Puppet.InputManager.emptyGatherInput()
@@ -266,14 +257,10 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         const pushTime = 23
         for (let frame = 0; frame < pushTime + holdTime; frame++) {
             await waitForScheduledTask(inst, () => {
-                if (frame == 0) {
-                    inp.presses['aim'] = true
-                } else {
-                    inp.actions['aim'] = true
-                }
+                inp.actions!['aim'] = true
                 if (frame >= holdTime) {
                     const action = dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'
-                    inp.actions[action] = true
+                    inp.actions![action] = true
                 }
                 input.mainInputData.setInput(inp)
             })
@@ -283,8 +270,6 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     waitFrames(8)
     if (collided != 'none' && !nextSame) {
         Vec2.mulC(playerInp.moveDir, -1)
-        input.nextGatherInput = playerInp
-        input.nextGatherInput = dummy.input.Puppet.InputManager.emptyGatherInput()
         waitFrames(8)
         // const x = e.coll.pos.x
         // const xo = 1 * 16 + 8
