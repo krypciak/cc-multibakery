@@ -73,11 +73,35 @@ export function createClientNetworkPacketTraffic(client: Client) {
             const bytesReceivedAvg = this.avgReceived.getAverage()
 
             const tps = multi.server.settings.globalTps
-            const kbSent = (bytesSentAvg * tps) / 1024
-            const kbReceived = (bytesReceivedAvg * tps) / 1024
+            const kbSent = (bytesSentAvg * tps * 8) / 1024
+            const kbReceived = (bytesReceivedAvg * tps * 8) / 1024
 
             return `\\i[keyCode-${ig.KEY.D}] ${kbReceived.floor()} kbps  \\i[keyCode-${ig.KEY.U}] ${kbSent.floor()} kbps`
         }
     }
     client.inst.labelDrawClasses.push(new NetworkPacketTrafficLabelDrawClass())
+
+    class NetworkPacketSizeLabelDrawClass extends BasicLabelDrawClass {
+        condition = () => Opts.showPacketNetworkTraffic
+
+        private lastSent: bigint = 0n
+        private lastReceived: bigint = 0n
+
+        getText(): string {
+            const bytesSent = server.netManager.conn?.bytesSent ?? 0n
+            const bytesReceived = server.netManager.conn?.bytesReceived ?? 0n
+
+            const bytesSentDiff = Number(bytesSent - this.lastSent)
+            const bytesReceivedDiff = Number(bytesReceived - this.lastReceived)
+
+            this.lastSent = bytesSent
+            this.lastReceived = bytesReceived
+
+            const bSent = bytesSentDiff
+            const bReceived = bytesReceivedDiff
+
+            return `packet \\i[keyCode-${ig.KEY.D}] ${bReceived.floor()} B  \\i[keyCode-${ig.KEY.U}] ${bSent.floor()} B`
+        }
+    }
+    client.inst.labelDrawClasses.push(new NetworkPacketSizeLabelDrawClass())
 }
