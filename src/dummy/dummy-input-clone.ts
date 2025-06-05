@@ -64,10 +64,6 @@ class CloneInputManager {
             this.block.blockGamepad(id)
         }
     }
-
-    gatherInput(): ig.ENTITY.Player.PlayerInput | undefined {
-        return undefined
-    }
 }
 
 declare global {

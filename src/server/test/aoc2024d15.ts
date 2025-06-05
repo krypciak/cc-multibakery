@@ -202,7 +202,7 @@ ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
     },
 })
 
-async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir: Vec2, nextSame: boolean) {
+async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir: ig.Input.KnownAction) {
     const input = e.inputManager
     assert(input instanceof dummy.input.Puppet.InputManager)
 
@@ -218,23 +218,28 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     } satisfies InputData
     const inp: InputData = ig.copy(emptyInput)
 
-    const playerInp = dummy.input.Puppet.InputManager.emptyGatherInput()
-    playerInp.lastMoveDir = dir
-    playerInp.moveDir = dir
-    playerInp.relativeVel = 1
+    const moveInp = ig.copy(emptyInput)
+    moveInp['actions']![dir] = true
+    moveInp['presses']![dir] = true
+
+    let dirVec!: Vec2
+    if (dir == 'right') dirVec = { x: 1, y: 0 }
+    else if (dir == 'left') dirVec = { x: -1, y: 0 }
+    else if (dir == 'down') dirVec = { x: 0, y: 1 }
+    else if (dir == 'up') dirVec = { x: 0, y: -1 }
 
     await waitFrames(1)
 
-    input.nextGatherInput = playerInp
-    // e.input.setInput(inp)
+    input.mainInputData.setInput(moveInp)
+
     let collided: string = 'none'
     for (let frame = 0; collided == 'none' && frame < 10; frame++) {
         await waitForScheduledTask(inst, () => {
             if (e.coll._collData.collided) {
                 const entities = ig.game.getEntitiesInCircle(
                     {
-                        x: e.coll.pos.x + dir.x * 4,
-                        y: e.coll.pos.y + dir.y * 4,
+                        x: e.coll.pos.x + dirVec.x * 4,
+                        y: e.coll.pos.y + dirVec.y * 4,
                         z: e.coll.pos.z,
                     },
                     4,
@@ -249,39 +254,27 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             }
         })
     }
-    input.nextGatherInput = dummy.input.Puppet.InputManager.emptyGatherInput()
+    input.mainInputData.setInput(emptyInput)
 
     if (collided == 'box') {
-        waitFrames(8)
         const holdTime = 20
         const pushTime = 23
         for (let frame = 0; frame < pushTime + holdTime; frame++) {
             await waitForScheduledTask(inst, () => {
-                inp.actions!['aim'] = true
+                if (frame == 0) {
+                    inp.presses!['aim'] = true
+                } else {
+                    inp.actions!['aim'] = true
+                }
                 if (frame >= holdTime) {
-                    const action = dir.x == 1 ? 'right' : dir.x == -1 ? 'left' : dir.y == 1 ? 'down' : 'up'
-                    inp.actions![action] = true
+                    inp.actions![dir] = true
                 }
                 input.mainInputData.setInput(inp)
             })
         }
     }
+
     input.mainInputData.setInput(emptyInput)
-    waitFrames(8)
-    if (collided != 'none' && !nextSame) {
-        Vec2.mulC(playerInp.moveDir, -1)
-        waitFrames(8)
-        // const x = e.coll.pos.x
-        // const xo = 1 * 16 + 8
-        // const nx = Math.round((x - xo) / 32) * 32 + xo
-        // const y = e.coll.pos.y
-        // const yo = 8 * 16 + 8
-        // const ny = Math.round((y - yo) / 32) * 32 + yo
-        // const nvec = { x: nx, y: ny, z: e.coll.pos.z }
-        // Vec3.assign(e.coll.pos, nvec)
-        // Vec2.sub(nvec, e.coll.pos)
-        // console.log("diff from ideal:", nvec)
-    }
 }
 
 function genTest(name: string, moves: string, map: string, expected: number, part2: boolean = false) {
@@ -358,12 +351,13 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                 } else {
                     this.moveDone = false
                     const move = moves[this.moveI]
-                    let dir!: Vec2
-                    if (move == '>') dir = { x: 1, y: 0 }
-                    else if (move == '<') dir = { x: -1, y: 0 }
-                    else if (move == 'v') dir = { x: 0, y: 1 }
-                    else if (move == '^') dir = { x: 0, y: -1 }
-                    moveDummy(p, client.inst, dir, move == moves[this.moveI + 1]).then(() => {
+                    let dir!: ig.Input.KnownAction
+                    if (move == '>') dir = 'right'
+                    else if (move == '<') dir = 'left'
+                    else if (move == 'v') dir = 'down'
+                    else if (move == '^') dir = 'up'
+
+                    moveDummy(p, client.inst, dir).then(() => {
                         this.moveDone = true
                     })
                 }

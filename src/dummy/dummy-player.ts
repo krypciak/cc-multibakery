@@ -75,9 +75,6 @@ prestart(() => {
             this.parent()
             inputBackup.restore()
         },
-        gatherInput() {
-            return this.inputManager.gatherInput() ?? this.parent()
-        },
         show() {
             const backup = sc.PlayerCrossHairController
             sc.PlayerCrossHairController = dummy.PlayerCrossHairController

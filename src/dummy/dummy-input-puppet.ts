@@ -38,25 +38,6 @@ declare global {
 
 function initInputManager() {
     class PuppetInputManager extends dummy.input.Clone.InputManager {
-        static emptyGatherInput(): ig.ENTITY.Player.PlayerInput {
-            return {
-                thrown: false,
-                melee: false,
-                aimStart: false,
-                aim: false,
-                attack: false,
-                autoThrow: false,
-                charge: false,
-                dashX: 0,
-                dashY: 0,
-                guard: false,
-                relativeVel: 0,
-                moveDir: Vec2.create(),
-                lastMoveDir: Vec2.create(),
-                switchMode: false,
-            }
-        }
-
         mainInputData: dummy.input.Puppet.Input
         mainGamepadManagerData: dummy.input.Puppet.GamepadManager
 
@@ -64,8 +45,6 @@ function initInputManager() {
 
         mainInput: dummy.input.Clone.Input
         mainGamepadManager: dummy.input.Clone.GamepadManager
-
-        nextGatherInput?: ig.ENTITY.Player.PlayerInput
 
         constructor() {
             const mainInputData = new dummy.input.Puppet.Input()
@@ -83,10 +62,6 @@ function initInputManager() {
             this.mainBlock = mainBlock
             this.mainInput = mainInput
             this.mainGamepadManager = mainGamepadManager
-        }
-
-        gatherInput() {
-            return this.nextGatherInput
         }
     }
 
