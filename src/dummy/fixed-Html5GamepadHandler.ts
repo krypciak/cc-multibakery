@@ -1,5 +1,22 @@
 import { assert } from '../misc/assert'
 
+export function defaultGamepadButtonDeadzones() {
+    const deadzones = [] as unknown as ig.Gamepad['buttonDeadzones']
+    deadzones[ig.BUTTONS.LEFT_TRIGGER] = 30 / 255
+    deadzones[ig.BUTTONS.RIGHT_TRIGGER] = 30 / 255
+    return deadzones
+}
+export function defaultGamepadAxesDeadzones() {
+    const deadzones = [] as unknown as ig.Gamepad['axesDeadzones']
+    deadzones[ig.AXES.LEFT_STICK_X] = 7849 / 32767
+    deadzones[ig.AXES.LEFT_STICK_Y] = 7849 / 32767
+    deadzones[ig.AXES.RIGHT_STICK_X] = 8689 / 32767
+    deadzones[ig.AXES.RIGHT_STICK_Y] = 8689 / 32767
+    return deadzones
+}
+
+export const gamepadAxesDeadzones = []
+
 export class Html5GamepadHandler {
     buttonMappings: Record<ig.BUTTONS, number> = {
         [ig.BUTTONS.FACE0]: 0,
@@ -47,12 +64,8 @@ export class Html5GamepadHandler {
             }
             if (!gamepads[id]) {
                 const gamepad = new ig.Gamepad()
-                gamepad.buttonDeadzones[ig.BUTTONS.LEFT_TRIGGER] = 30 / 255
-                gamepad.buttonDeadzones[ig.BUTTONS.RIGHT_TRIGGER] = 30 / 255
-                gamepad.axesDeadzones[ig.AXES.LEFT_STICK_X] = 7849 / 32767
-                gamepad.axesDeadzones[ig.AXES.LEFT_STICK_Y] = 7849 / 32767
-                gamepad.axesDeadzones[ig.AXES.RIGHT_STICK_X] = 8689 / 32767
-                gamepad.axesDeadzones[ig.AXES.RIGHT_STICK_Y] = 8689 / 32767
+                gamepad.axesDeadzones = defaultGamepadAxesDeadzones()
+                gamepad.buttonDeadzones = defaultGamepadButtonDeadzones()
                 gamepads[id] = gamepad
                 this.onConnect(id)
             }

@@ -93,9 +93,7 @@ export class ServerPlayer {
     async destroy() {
         assert(!this.destroyed)
         const map = multi.server.maps[this.mapName]
-        if (map) {
-            await map.leave(this)
-        }
+        await map?.leave(this)
         this.destroyed = true
     }
 }

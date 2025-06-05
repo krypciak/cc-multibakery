@@ -29,7 +29,10 @@ export class CCMap {
     private readyResolve!: () => void
     noStateAppliedYet: boolean = true
 
-    constructor(public name: string, private remote: boolean) {
+    constructor(
+        public name: string,
+        private remote: boolean
+    ) {
         this.readyPromise = new Promise<void>(resolve => {
             this.readyResolve = () => {
                 this.ready = true
@@ -181,9 +184,11 @@ export class CCMap {
 
     async destroy() {
         for (const player of this.players) await player.destroy()
-        assert(instanceinator.id != this.inst.id)
-        instanceinator.delete(this.inst)
-        determine.delete(this.determinism)
+        if (this.inst) {
+            multi.server.serverInst.apply()
+            instanceinator.delete(this.inst)
+        }
+        if (this.determinism) determine.delete(this.determinism)
     }
 }
 

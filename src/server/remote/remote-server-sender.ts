@@ -1,4 +1,9 @@
-import { GamepadManagerData, InputData } from '../../dummy/dummy-input-puppet'
+import {
+    GamepadManagerData,
+    InputData,
+    isGamepadManagerData,
+    isInputData,
+} from '../../dummy/dummy-input-puppet'
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { RemoteServer } from './remote-server'
@@ -78,11 +83,9 @@ function isRemoteServerInputPacket(data: any): data is RemoteServerInputPacket {
         const packet: any = data[username]
         if (typeof packet != 'object' || !packet) return false
 
-        const input = packet.input
-        if (input && typeof input != 'object') return false
+        if (packet.input && !isInputData(packet.input)) return false
 
-        const gamepad = packet.gamepad
-        if (gamepad && typeof gamepad != 'object') return false
+        if (packet.gamepad && !isGamepadManagerData(packet.gamepad)) return false
     }
 
     return true

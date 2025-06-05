@@ -1,5 +1,6 @@
 import { prestart } from '../plugin'
 import { InputManagerBlock } from './dummy-input-clone'
+import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'
 
 export interface InputData {
     currentDevice: ig.Input['currentDevice']
@@ -17,12 +18,10 @@ export interface InputData {
 }
 
 export interface GamepadManagerData {
-    buttonDeadzones: Record<ig.BUTTONS, number>
-    axesDeadzones: Record<ig.BUTTONS, number>
-    buttonStates: Record<ig.BUTTONS, number>
-    axesStates: Record<ig.BUTTONS, number>
-    pressedStates: Record<ig.BUTTONS, boolean>
-    releasedStates: Record<ig.BUTTONS, boolean>
+    buttonStates?: ig.Gamepad['buttonStates']
+    axesStates?: ig.Gamepad['axesStates']
+    pressedStates?: ig.Gamepad['pressedStates']
+    releasedStates?: ig.Gamepad['releasedStates']
 }
 
 declare global {
@@ -75,6 +74,12 @@ prestart(() => {
     initInputManager()
 }, 4)
 
+export function isInputData(data: any): data is InputData {
+    if (typeof data != 'object') return false
+
+    return true
+}
+
 declare global {
     namespace ig {
         interface Input {
@@ -109,7 +114,7 @@ prestart(() => {
             }
 
             return {
-                currentDevice: this.currentDevice,
+                currentDevice: this.currentDevice ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE,
                 isUsingMouse: this.isUsingMouse ? true : undefined,
                 isUsingKeyboard: this.isUsingKeyboard ? true : undefined,
                 ignoreKeyboard: this.ignoreKeyboard ? true : undefined,
@@ -187,17 +192,32 @@ prestart(() => {
         getInput() {
             const gp = this.activeGamepads[0]
             if (!gp) return
+
+            function cleanArray<T>(arr: T[]): T[] | undefined {
+                for (const v of arr) if (v) return arr
+                return undefined
+            }
+
             return {
-                buttonDeadzones: gp.buttonDeadzones,
-                axesStates: gp.axesStates,
-                buttonStates: gp.buttonStates,
-                axesDeadzones: gp.axesDeadzones,
-                pressedStates: gp.pressedStates,
-                releasedStates: gp.releasedStates,
+                axesStates: cleanArray(gp.axesStates),
+                buttonStates: cleanArray(gp.buttonStates),
+                pressedStates: cleanArray(gp.pressedStates),
+                releasedStates: cleanArray(gp.releasedStates),
             }
         },
     })
 })
+
+export function isGamepadManagerData(data: any): data is GamepadManagerData {
+    if (typeof data != 'object') return false
+
+    if (data.buttonStates && (!Array.isArray(data.buttonStates) || data.buttonStates.length > 16)) return false
+    if (data.axesStates && (!Array.isArray(data.axesStates) || data.axesStates.length > 4)) return false
+    if (data.pressedStates && (!Array.isArray(data.pressedStates) || data.pressedStates.length > 16)) return false
+    if (data.releasedStates && (!Array.isArray(data.releasedStates) || data.releasedStates.length > 16)) return false
+
+    return true
+}
 
 declare global {
     namespace dummy.input.Puppet {
@@ -220,24 +240,22 @@ prestart(() => {
             this.activeGamepads = [
                 // @ts-expect-error
                 {
-                    buttonDeadzones: [] as any,
-                    axesDeadzones: [] as any,
-                    buttonStates: [] as any,
-                    axesStates: [] as any,
-                    pressedStates: [] as any,
-                    releasedStates: [] as any,
+                    buttonDeadzones: defaultGamepadButtonDeadzones(),
+                    axesDeadzones: defaultGamepadAxesDeadzones(),
+                    buttonStates: [],
+                    axesStates: [],
+                    pressedStates: [],
+                    releasedStates: [],
                 },
             ]
             this.inputQueue = []
         },
         setInput(input) {
             const gp = this.activeGamepads[0]
-            gp.buttonDeadzones = input.buttonDeadzones
-            gp.axesDeadzones = input.axesDeadzones
-            gp.buttonStates = input.buttonStates
-            gp.axesStates = input.axesStates
-            gp.pressedStates = input.pressedStates
-            gp.releasedStates = input.releasedStates
+            gp.buttonStates = input.buttonStates ?? []
+            gp.axesStates = input.axesStates ?? []
+            gp.pressedStates = input.pressedStates ?? []
+            gp.releasedStates = input.releasedStates ?? []
         },
         pushInput(input) {
             this.inputQueue.push(input)
