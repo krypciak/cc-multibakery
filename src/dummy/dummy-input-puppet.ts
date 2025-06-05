@@ -91,19 +91,36 @@ prestart(() => {
                     presses: this.presses['pause'] ? { pause: true } : undefined,
                 }
             }
+
+            function cleanRecord<T extends Record<string, boolean>>(rec: T): T | undefined {
+                if (Object.keys(rec).length == 0) return undefined
+
+                const newRecord: Record<string, boolean> = {}
+                let atLeastOneKey = false
+                for (const key in rec) {
+                    if (rec[key]) {
+                        newRecord[key] = true
+                        atLeastOneKey = true
+                    }
+                }
+                if (!atLeastOneKey) return undefined
+
+                return newRecord as T
+            }
+
             return {
                 currentDevice: this.currentDevice,
-                isUsingMouse: this.isUsingMouse,
-                isUsingKeyboard: this.isUsingKeyboard,
-                ignoreKeyboard: this.ignoreKeyboard,
-                mouseGuiActive: this.mouseGuiActive,
-                mouse: this.mouse,
-                accel: this.accel,
-                presses: this.presses,
-                keyups: this.keyups,
-                locks: this.locks,
-                delayedKeyup: this.delayedKeyup,
-                actions: this.actions,
+                isUsingMouse: this.isUsingMouse ? true : undefined,
+                isUsingKeyboard: this.isUsingKeyboard ? true : undefined,
+                ignoreKeyboard: this.ignoreKeyboard ? true : undefined,
+                mouseGuiActive: this.mouseGuiActive ? true : undefined,
+                mouse: Vec2.isZero(this.mouse) ? undefined : this.mouse,
+                accel: Vec3.isZero(this.accel) ? undefined : this.accel,
+                presses: cleanRecord(this.presses),
+                keyups: cleanRecord(this.keyups),
+                locks: cleanRecord(this.locks),
+                delayedKeyup: this.delayedKeyup.length == 0 ? undefined : this.delayedKeyup,
+                actions: cleanRecord(this.actions),
             }
         },
     })
