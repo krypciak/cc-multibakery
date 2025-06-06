@@ -117,7 +117,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     async leaveClient(client: Client) {
         await super.leaveClient(client)
-        if (Object.keys(this.clients).length == 0) {
+        if (!this.destroyed && Object.keys(this.clients).length == 0) {
             await multi.destroyAndStartLoop()
         }
     }

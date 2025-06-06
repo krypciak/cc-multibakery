@@ -45,6 +45,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     masterUsername?: string
 
     measureTraffic: boolean = false
+    protected destroyed: boolean = false
 
     async start() {
         instanceinator.displayId = true
@@ -168,7 +169,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     abstract tryJoinClient(
         joinData: ClientJoinData,
-        remote: boolean,
+        remote: boolean
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
 
     async leaveClient(client: Client) {
@@ -190,6 +191,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async destroy() {
+        this.destroyed = true
+
         this.serverInst.apply()
 
         for (const client of Object.values(this.clientsById)) {
