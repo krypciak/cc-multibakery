@@ -3,6 +3,7 @@ import { prestart } from '../plugin'
 
 import * as inputBackup from './dummy-input'
 import './dummy-box-impl'
+import { RemoteServer } from '../server/remote/remote-server'
 
 declare global {
     namespace NodeJS {
@@ -25,8 +26,6 @@ declare global {
         }
         interface DummyPlayer extends ig.ENTITY.Player {
             inputManager: dummy.InputManager
-            crosshairController: dummy.PlayerCrossHairController
-            cameraHandle: any
             data: dummy.DummyPlayer.Data
             itemConsumer: dummy.ItemConsumption
         }
@@ -75,15 +74,6 @@ prestart(() => {
             this.parent()
             inputBackup.restore()
         },
-        show() {
-            const backup = sc.PlayerCrossHairController
-            sc.PlayerCrossHairController = dummy.PlayerCrossHairController
-            this.parent()
-            sc.PlayerCrossHairController = backup
-
-            this.crosshairController = this.gui.crosshair.controller
-            this.crosshairController.inputManager = this.inputManager
-        },
         updateAnimSheet(updateFx) {
             /* disable skins for dummy players */
             const backup = sc.playerSkins
@@ -103,15 +93,15 @@ prestart(() => {
         },
         showChargeEffect(level) {
             /* prevent crashes */
-            if (!this.cameraHandle) this.cameraHandle = { setZoom() {} }
+            if (!this.cameraHandle) this.cameraHandle = { setZoom() {} } as any
             this.parent(level)
-            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
+            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
         },
         clearCharge() {
             /* prevent crashes */
-            this.cameraHandle ??= { setZoom() {} }
+            this.cameraHandle ??= { setZoom() {} } as any
             this.parent()
-            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined
+            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
         },
         isControlBlocked() {
             return this.data.isControlBlocked || this.data.inCutscene || this.parent()
@@ -120,50 +110,32 @@ prestart(() => {
     ig.registerEntityPath(dummy.DummyPlayer, 'dummy.DummyPlayer')
 }, 1)
 
-declare global {
-    namespace dummy {
-        interface PlayerCrossHairController extends sc.PlayerCrossHairController {
-            inputManager?: dummy.InputManager
-            relativeCursorPos?: Vec2
-        }
-        interface PlayerCrossHairControllerConstructor extends ImpactClass<PlayerCrossHairController> {
-            new (): PlayerCrossHairController
-        }
-        var PlayerCrossHairController: PlayerCrossHairControllerConstructor
-    }
-}
 prestart(() => {
-    dummy.PlayerCrossHairController = sc.PlayerCrossHairController.extend({
-        updatePos(crosshair) {
-            this.gamepadMode = this.inputManager!.input.currentDevice == ig.INPUT_DEVICES.GAMEPAD
-            this.parent(crosshair)
-            if (this.gamepadMode || !this.relativeCursorPos) {
-                this.parent(crosshair)
-            } else {
-                Vec2.assign(crosshair.coll.pos, this.relativeCursorPos)
-            }
-        },
-    })
-
     ig.ENTITY.Crosshair.inject({
+        init(x, y, z, settings) {
+            if (settings.thrower instanceof dummy.DummyPlayer) settings.uuid = 'crosshair-' + settings.thrower.uuid
+            this.parent(x, y, z, settings)
+        },
         deferredUpdate() {
             if (!(this.thrower instanceof dummy.DummyPlayer)) return this.parent()
 
-            inputBackup.apply(this.thrower.inputManager)
+            let inp = this.thrower.inputManager
+            if (multi.server instanceof RemoteServer) {
+                const clientInp = multi.server.clients[this.thrower.data.username]?.player?.inputManager
+                if (clientInp?.player) inp = clientInp
+            }
+            inputBackup.apply(inp)
+
             this.parent()
             inputBackup.restore()
         },
     })
-}, 2)
+})
 
 declare global {
     namespace dummy {
         interface PlayerModel extends sc.PlayerModel {
             dummy: dummy.DummyPlayer
-            _playerBackup: ig.ENTITY.Player
-
-            playerBackup(this: this): void
-            playerRestore(this: this): void
         }
         interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
             new (dummy: dummy.DummyPlayer): PlayerModel
@@ -172,27 +144,25 @@ declare global {
     }
 }
 prestart(() => {
+    function replace(this: dummy.PlayerModel, ...args: unknown[]) {
+        const backup = ig.game.playerEntity
+        ig.game.playerEntity = this.dummy
+        // @ts-expect-error
+        const ret = this.parent(...args)
+        ig.game.playerEntity = backup
+        return ret
+    }
+
     dummy.PlayerModel = sc.PlayerModel.extend({
         init(dummy) {
             this.parent()
             this.dummy = dummy
             this.setConfig(sc.model.leaConfig)
         },
-        playerBackup() {
-            this._playerBackup = ig.game.playerEntity
-            ig.game.playerEntity = this.dummy
-        },
-        playerRestore() {
-            ig.game.playerEntity = this._playerBackup
-        },
-        // prettier-ignore
-        updateLoop(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-        // prettier-ignore
-        enterElementalOverload(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-        // prettier-ignore
-        setElementMode(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
-        // prettier-ignore
-        onVarAccess(...args) { this.playerBackup(); const ret = this.parent(...args); this.playerRestore(); return ret; },
+        updateLoop: replace,
+        enterElementalOverload: replace,
+        setElementMode: replace,
+        onVarAccess: replace,
     })
 }, 2)
 

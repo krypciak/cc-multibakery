@@ -13,6 +13,7 @@ import './ig_ENTITY_WallBase'
 import './ig_ENTITY_OLPlatform'
 import './ig_ENTITY_Ball'
 import './sc_CombatProxyEntity'
+import './ig_ENTITY_Crosshair'
 
 interface StateEntityBase {
     getState(): object | undefined
@@ -70,7 +71,8 @@ prestart(() => {
                 let entity: ig.Entity | undefined = ig.game.entitiesByUUID[uuid]
                 if (!entity) {
                     const clazz = ig.entityPathToClass[data.type]
-                    assert('create' in clazz)
+                    if (!('create' in clazz)) continue
+
                     const create = clazz.create as (
                         uuid: string,
                         state: typeof data

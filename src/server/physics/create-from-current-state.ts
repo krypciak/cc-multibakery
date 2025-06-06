@@ -16,7 +16,8 @@ function filterProblematicEntityStates(state: StateUpdatePacket): StateUpdatePac
                 data.type == 'dummy.DummyPlayer' ||
                 data.type == 'sc.CombatProxyEntity' ||
                 data.type == 'ig.ENTITY.Effect' ||
-                data.type == 'ig.ENTITY.Ball'
+                data.type == 'ig.ENTITY.Ball' ||
+                data.type == 'ig.ENTITY.Crosshair'
             ) {
                 delete state.states[uuid]
             }
