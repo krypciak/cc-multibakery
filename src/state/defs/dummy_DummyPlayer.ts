@@ -36,7 +36,23 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
         }
     }
-    if (state.currentAnim) this.currentAnim = state.currentAnim
+    if (state.currentAnim) {
+        if (this.currentAnim != state.currentAnim) {
+            this.currentAnim = state.currentAnim
+
+            if (
+                (this.currentAnim == 'attack' ||
+                    this.currentAnim == 'attackRev' ||
+                    this.currentAnim == 'attackFinisher') &&
+                multi.server instanceof RemoteServer &&
+                this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE &&
+                this.model.getCore(sc.PLAYER_CORE.THROWING) &&
+                sc.options.get('close-circle')
+            ) {
+                this.gui.crosshair.setCircleGlow()
+            }
+        }
+    }
     if (state.currentAnimTimer) this.animState.timer = state.currentAnimTimer
     if (state.face) this.face = state.face
     if (state.accelDir) this.coll.accelDir = state.accelDir

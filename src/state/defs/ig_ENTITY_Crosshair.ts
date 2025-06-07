@@ -44,8 +44,6 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
     this.controller.isAimingOverride = state.isAiming
     this.chargeActive = true
     this.currentCharge = state.currentCharge ?? 0
-
-    this.deferredUpdate()
 }
 
 prestart(() => {
