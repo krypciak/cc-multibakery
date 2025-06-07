@@ -140,7 +140,11 @@ prestart(() => {
     ig.CollEntry.inject({
         // @ts-expect-error
         update() {
-            if (multi.server instanceof RemoteServer) return
+            if (
+                multi.server instanceof RemoteServer &&
+                !(this.entity instanceof ig.ENTITY.Effect || this.entity instanceof ig.ENTITY.Particle)
+            )
+                return
             // @ts-expect-error
             this.parent()
         },

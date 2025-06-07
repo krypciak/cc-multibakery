@@ -36,18 +36,12 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
         }
     }
-    if (state.currentAnim) {
-        this.currentAnim = state.currentAnim
-    }
-    if (state.currentAnimTimer) {
-        this.animState.timer = state.currentAnimTimer
-    }
-    if (state.face) {
-        this.face = state.face
-    }
-    if (state.accelDir) {
-        this.coll.accelDir = state.accelDir
-    }
+    if (state.currentAnim) this.currentAnim = state.currentAnim
+    if (state.currentAnimTimer) this.animState.timer = state.currentAnimTimer
+    if (state.face) this.face = state.face
+    if (state.accelDir) this.coll.accelDir = state.accelDir
+
+    this.gui.crosshair.controller.isAimingOverride
 
     this.updateAnim()
 
