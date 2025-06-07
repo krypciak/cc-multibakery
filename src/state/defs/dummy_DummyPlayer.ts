@@ -24,7 +24,8 @@ function getState(this: dummy.DummyPlayer) {
         currentAnim: this.currentAnim,
         currentAnimTimer: this.animState.timer,
         face: this.face,
-        accelDir: this.coll.accelDir,
+        accelDir: Vec2.isZero(this.coll.accelDir) ? undefined : this.coll.accelDir,
+        animAlpha: this.animState.alpha == 1 ? undefined : this.animState.alpha,
     }
 }
 function setState(this: dummy.DummyPlayer, state: Return) {
@@ -53,11 +54,11 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             }
         }
     }
-    if (state.currentAnimTimer) this.animState.timer = state.currentAnimTimer
-    if (state.face) this.face = state.face
-    if (state.accelDir) this.coll.accelDir = state.accelDir
+    if (state.currentAnimTimer !== undefined) this.animState.timer = state.currentAnimTimer
 
-    this.gui.crosshair.controller.isAimingOverride
+    if (state.face) this.face = state.face
+    this.coll.accelDir = state.accelDir ?? Vec3.create()
+    this.animState.alpha = state.animAlpha ?? 1
 
     this.updateAnim()
 
