@@ -51,6 +51,7 @@ export class ServerPlayer {
                 func()
             })
             this.inputManager.player = this.dummy
+            this.dummy.inputManager = this.inputManager
         } else {
             this.dummy = new dummy.DummyPlayer(0, 0, 0, this.dummySettings)
         }
