@@ -1,4 +1,5 @@
 import {
+    disallowedInputActions,
     GamepadManagerData,
     InputData,
     isGamepadManagerData,
@@ -38,6 +39,11 @@ function send() {
             }
         } else {
             const input = inst.ig.input.getInput(client.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD)
+            for (const action of disallowedInputActions) {
+                delete input.presses?.[action]
+                delete input.actions?.[action]
+            }
+
             const gamepad = inst.ig.gamepad.getInput()
 
             packet = {

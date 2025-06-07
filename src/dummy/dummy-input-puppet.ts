@@ -74,8 +74,17 @@ prestart(() => {
     initInputManager()
 }, 4)
 
+export const disallowedInputActions = ['snapshot', 'savedialog', 'langedit', 'fullscreen'] as const
+
 export function isInputData(data: any): data is InputData {
     if (typeof data != 'object') return false
+
+    if (data) {
+        for (const action of disallowedInputActions) {
+            if (data.presses?.[action]) return false
+            if (data.actions?.[action]) return false
+        }
+    }
 
     return true
 }
