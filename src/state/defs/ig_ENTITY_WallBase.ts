@@ -1,13 +1,15 @@
 import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createUuidStaticEntity } from './entity'
+import { createUuidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
         interface WallBase {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
+
+            lastSent?: Return
         }
         interface WallBaseConstructor {
             create(uuid: string, state: Return): ig.ENTITY.WallBase
@@ -16,21 +18,21 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.WallBase) {
+function getState(this: ig.ENTITY.WallBase, full: boolean) {
     const timer = this.wallBlockers[0]?.timer
     return {
-        active: this.active ? true : undefined,
-        timer: timer > 0 ? timer : undefined,
+        active: isSameAsLast(this, full, this.active, 'active'),
+        timer: isSameAsLast(this, full, timer, 'timer'),
     }
 }
 function setState(this: ig.ENTITY.WallBase, state: Return) {
-    const timer = state.timer ?? 0
-    for (const wallBlocker of this.wallBlockers) {
-        wallBlocker.timer = timer
+    if (state.timer !== undefined) {
+        for (const wallBlocker of this.wallBlockers) {
+            wallBlocker.timer = state.timer
+        }
     }
-    const active = !!state.active
-    if (this.active != active) {
-        this.active = active
+    if (state.active !== undefined && this.active != state.active) {
+        this.active = state.active
         this.updateWallBlockers()
     }
 }
