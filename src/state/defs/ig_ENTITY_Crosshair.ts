@@ -2,7 +2,7 @@ import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import * as inputBackup from '../../dummy/dummy-input'
 import { assert } from '../../misc/assert'
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { isSameAsLast } from './entity'
 
 declare global {
@@ -54,7 +54,7 @@ prestart(() => {
             return `${typeId}${settings.thrower.uuid}`
         },
     })
-    ig.registerEntityTypeId(ig.ENTITY.Crosshair, typeId, 3000)
+    registerEntityTypeId(ig.ENTITY.Crosshair, typeId, 3000)
 
     ig.ENTITY.Crosshair.inject({
         deferredUpdate() {

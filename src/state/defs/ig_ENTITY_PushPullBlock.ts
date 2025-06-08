@@ -1,4 +1,4 @@
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { createUuidStaticEntity, isSameAsLast } from './entity'
@@ -57,7 +57,7 @@ prestart(() => {
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
     }
-    ig.registerEntityTypeId(ig.ENTITY.PushPullBlock, typeId)
+    registerEntityTypeId(ig.ENTITY.PushPullBlock, typeId, undefined, true)
 
     sc.PushPullable.inject({
         stopSound() {

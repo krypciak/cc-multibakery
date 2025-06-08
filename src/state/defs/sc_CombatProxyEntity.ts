@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -81,7 +81,7 @@ prestart(() => {
 
         return entity
     }
-    ig.registerEntityTypeId(sc.CombatProxyEntity, typeId)
+    registerEntityTypeId(sc.CombatProxyEntity, typeId, undefined, true)
 }, 2)
 
 declare global {

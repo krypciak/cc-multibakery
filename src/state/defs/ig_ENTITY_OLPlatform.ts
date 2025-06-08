@@ -1,4 +1,4 @@
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { createUuidStaticEntity, isSameAsLast } from './entity'
 
@@ -59,5 +59,5 @@ prestart(() => {
     ig.ENTITY.OLPlatform.create = () => {
         throw new Error('ig.ENTITY.OLPlatform.create not implemented')
     }
-    ig.registerEntityTypeId(ig.ENTITY.OLPlatform, typeId)
+    registerEntityTypeId(ig.ENTITY.OLPlatform, typeId)
 }, 2)

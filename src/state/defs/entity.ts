@@ -1,7 +1,7 @@
 import { prestart } from '../../plugin'
 import { addStateHandler } from '../states'
 import { assert } from '../../misc/assert'
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../../misc/entity-uuid'
 
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
@@ -37,9 +37,14 @@ prestart(() => {
         get(packet, full) {
             packet.states = {}
             for (const entity of ig.game.entities) {
+                const typeId: EntityTypeId = entity.uuid?.substring(0, 2)
                 if (isStateEntity(entity)) {
                     const state = entity.getState(full)
-                    if (!state) continue
+                    if (
+                        !state ||
+                        (!entitySendEmpty.has(typeId) && Object.values(state).filter(Boolean).length == 0)
+                    )
+                        continue
                     packet.states[entity.uuid] = state
                 }
             }
@@ -51,12 +56,12 @@ prestart(() => {
                 const typeId: EntityTypeId = k.substring(0, 2)
                 return [typeId, k, v] as const
             })
-            states.sort(([typeA], [typeB]) => ig.entityApplyPriority[typeA] - ig.entityApplyPriority[typeB])
+            states.sort(([typeA], [typeB]) => entityApplyPriority[typeA] - entityApplyPriority[typeB])
 
             for (const [typeId, uuid, data] of states) {
                 let entity: ig.Entity | undefined = ig.game.entitiesByUUID[uuid]
                 if (!entity) {
-                    const clazz = ig.entityTypeIdToClass[typeId]
+                    const clazz = entityTypeIdToClass[typeId]
                     if (!('create' in clazz)) continue
 
                     const create = clazz.create as (

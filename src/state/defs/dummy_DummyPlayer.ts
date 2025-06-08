@@ -1,4 +1,4 @@
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { isSameAsLast } from './entity'
@@ -115,14 +115,11 @@ prestart(() => {
         })
         return entity
     }
-    ig.registerEntityTypeId(dummy.DummyPlayer, typeId)
+    registerEntityTypeId(dummy.DummyPlayer, typeId)
 
     dummy.DummyPlayer.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState) return
-
-            this.parent()
         },
     })
 }, 2)

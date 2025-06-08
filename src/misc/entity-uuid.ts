@@ -24,26 +24,27 @@ declare global {
         interface Game {
             entitiesByUUID: Record<string, ig.Entity>
         }
-
-        var entityTypeIdToClass: Record<EntityTypeId, EntityClass>
-        var entityClassIdToTypeId: Record<number, EntityTypeId>
-        var entityApplyPriority: Record<EntityTypeId, number>
-        function registerEntityTypeId(entityClass: EntityClass, prefix: EntityTypeId, applyPriority?: number): void
     }
 }
 
+export const entityTypeIdToClass: Record<EntityTypeId, EntityClass> = {}
+export const entityApplyPriority: Record<EntityTypeId, number> = {}
+export const entitySendEmpty: Set<EntityTypeId> = new Set()
+
+export function registerEntityTypeId(
+    entityClass: EntityClass,
+    typeId: EntityTypeId,
+    applyPriority = 1000,
+    sendEmpty = false
+) {
+    assert(!entityTypeIdToClass[typeId], `entity typeId duplicate! ${typeId}`)
+    entityTypeIdToClass[typeId] = entityClass
+    entityApplyPriority[typeId] = applyPriority
+
+    if (sendEmpty) entitySendEmpty.add(typeId)
+}
+
 prestart(() => {
-    ig.entityTypeIdToClass = {}
-    ig.entityClassIdToTypeId = {}
-    ig.entityApplyPriority = {}
-
-    ig.registerEntityTypeId = function (entityClass, typeId, applyPriority = 1000) {
-        assert(!ig.entityTypeIdToClass[typeId], `entity typeId duplicate! ${typeId}`)
-        ig.entityTypeIdToClass[typeId] = entityClass
-        ig.entityClassIdToTypeId[entityClass.classId] = typeId
-        ig.entityApplyPriority[typeId] = applyPriority
-    }
-
     ig.Game.inject({
         init() {
             this.parent()

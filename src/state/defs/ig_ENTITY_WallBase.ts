@@ -1,4 +1,4 @@
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { createUuidStaticEntity, isSameAsLast } from './entity'
@@ -49,7 +49,7 @@ prestart(() => {
     ig.ENTITY.WallBase.create = () => {
         throw new Error('ig.ENTITY.WallBase.create not implemented')
     }
-    ig.registerEntityTypeId(ig.ENTITY.WallBase, typeId)
+    registerEntityTypeId(ig.ENTITY.WallBase, typeId)
 
     ig.ENTITY.WallBlocker.inject({
         update() {

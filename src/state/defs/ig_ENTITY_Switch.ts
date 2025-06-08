@@ -1,4 +1,4 @@
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { createUuidStaticEntity, isSameAsLast } from './entity'
 
@@ -50,5 +50,5 @@ prestart(() => {
     ig.ENTITY.Switch.create = () => {
         throw new Error('ig.ENTITY.Switch.create not implemented')
     }
-    ig.registerEntityTypeId(ig.ENTITY.Switch, typeId)
+    registerEntityTypeId(ig.ENTITY.Switch, typeId)
 }, 2)

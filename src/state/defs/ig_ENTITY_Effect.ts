@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -140,7 +140,7 @@ prestart(() => {
 
         return entity
     }
-    ig.registerEntityTypeId(ig.ENTITY.Effect, 'ef', 2000)
+    registerEntityTypeId(ig.ENTITY.Effect, 'ef', 2000, true)
 
     ig.ENTITY.Effect.inject({
         update() {

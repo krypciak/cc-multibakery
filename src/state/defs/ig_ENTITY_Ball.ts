@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { isSameAsLast } from './entity'
@@ -86,7 +86,7 @@ prestart(() => {
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)
         return ball
     }
-    ig.registerEntityTypeId(ig.ENTITY.Ball, typeId)
+    registerEntityTypeId(ig.ENTITY.Ball, typeId, undefined, true)
 
     ig.ENTITY.Ball.inject({
         update() {

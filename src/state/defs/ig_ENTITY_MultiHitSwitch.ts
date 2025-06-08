@@ -1,4 +1,4 @@
-import { EntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { createUuidStaticEntity, isSameAsLast } from './entity'
@@ -55,7 +55,7 @@ prestart(() => {
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
-    ig.registerEntityTypeId(ig.ENTITY.MultiHitSwitch, typeId)
+    registerEntityTypeId(ig.ENTITY.MultiHitSwitch, typeId)
 
     ig.ENTITY.MultiHitSwitch.inject({
         update() {
