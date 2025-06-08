@@ -1,15 +1,14 @@
 import { assert } from '../../misc/assert'
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 import { resolveProxyFromType } from './ig_ENTITY_Ball'
 
-export {}
 declare global {
     namespace sc {
         interface CombatProxyEntity {
-            type: 'sc.CombatProxyEntity'
             getState(this: this): Return | undefined
             setState(this: this, state: Return): void
         }
@@ -29,14 +28,22 @@ function getState(this: sc.CombatProxyEntity) {
     }
 }
 function setState(this: sc.CombatProxyEntity, state: Return) {
-    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
-    if (state.dir) Vec2.assign(this.face, state.dir)
+    Vec3.assign(this.coll.pos, state.pos)
+    Vec2.assign(this.face, state.dir)
 
     this.update()
 }
 
 prestart(() => {
-    sc.CombatProxyEntity.inject({ getState, setState })
+    const typeId: EntityTypeId = 'cp'
+    let proxyId = 0
+    sc.CombatProxyEntity.inject({
+        getState,
+        setState,
+        createUuid() {
+            return `${typeId}${proxyId++}`
+        },
+    })
 
     sc.CombatProxyEntity.create = (uuid: string, state: Return) => {
         const { x, y, z } = state.pos!
@@ -62,6 +69,7 @@ prestart(() => {
 
         return entity
     }
+    ig.registerEntityTypeId(sc.CombatProxyEntity, typeId)
 }, 2)
 
 declare global {

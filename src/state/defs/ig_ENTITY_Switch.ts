@@ -1,10 +1,10 @@
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
+import { createUuidStaticEntity } from './entity'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface Switch {
-            type: 'ig.ENTITY.Switch'
             getState(this: this): Return
             setState(this: this, state: Return): void
         }
@@ -14,7 +14,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Switch) {
     return {
         isOn: this.isOn ? true : undefined,
@@ -38,18 +38,16 @@ function setState(this: ig.ENTITY.Switch, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.Switch.inject({ getState, setState })
-    ig.ENTITY.Switch.create = (uuid: string, state) => {
+    const typeId: EntityTypeId = 'sw'
+    ig.ENTITY.Switch.inject({
+        getState,
+        setState,
+        createUuid(x, y, z, settings) {
+            return createUuidStaticEntity(typeId, x, y, z, settings)
+        },
+    })
+    ig.ENTITY.Switch.create = () => {
         throw new Error('ig.ENTITY.Switch.create not implemented')
-        // const entity = ig.game.spawnEntity<ig.ENTITY.Switch, ig.ENTITY.Switch.Settings>(
-        //     ig.ENTITY.Switch,
-        //     0,
-        //     0,
-        //     0,
-        //     {
-        //         uuid,
-        //     }
-        // )
-        // return entity
     }
+    ig.registerEntityTypeId(ig.ENTITY.Switch, typeId)
 }, 2)

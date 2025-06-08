@@ -2,22 +2,19 @@ import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import * as inputBackup from '../../dummy/dummy-input'
 import { assert } from '../../misc/assert'
+import { EntityTypeId } from '../../misc/entity-uuid'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface Crosshair {
-            type: 'ig.ENTITY.Crosshair'
             getState(this: this): Return
             setState(this: this, state: Return): void
-        }
-        interface CrosshairConstructor {
-            priority: number
+            createUuid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string
         }
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Crosshair) {
     assert(this.thrower instanceof dummy.DummyPlayer)
     inputBackup.apply(this.thrower.inputManager)
@@ -33,12 +30,10 @@ function getState(this: ig.ENTITY.Crosshair) {
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {
-    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
+    Vec3.assign(this.coll.pos, state.pos)
 
     const active = !!state.active
-    if (active != this.active) {
-        this.setActive(active)
-    }
+    if (active != this.active) this.setActive(active)
 
     this.special = !!state.special
     this.controller.isAimingOverride = state.isAiming
@@ -47,8 +42,15 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.Crosshair.inject({ getState, setState })
-    ig.ENTITY.Crosshair.priority = 3000
+    const typeId: EntityTypeId = 'cr'
+    ig.ENTITY.Crosshair.inject({
+        getState,
+        setState,
+        createUuid(_x, _y, _z, settings) {
+            return `${typeId}${settings.thrower.uuid}`
+        },
+    })
+    ig.registerEntityTypeId(ig.ENTITY.Crosshair, typeId, 3000)
 
     ig.ENTITY.Crosshair.inject({
         deferredUpdate() {

@@ -1,10 +1,10 @@
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
+import { createUuidStaticEntity } from './entity'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface OLPlatform {
-            type: 'ig.ENTITY.OLPlatform'
             getState(this: this): Return
             setState(this: this, state: Return): void
         }
@@ -14,7 +14,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.OLPlatform) {
     return {
         currentState: this.states.indexOf(this.currentState),
@@ -45,18 +45,16 @@ function setState(this: ig.ENTITY.OLPlatform, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.OLPlatform.inject({ getState, setState })
-    ig.ENTITY.OLPlatform.create = (uuid: string, state) => {
+    const typeId: EntityTypeId = 'ol'
+    ig.ENTITY.OLPlatform.inject({
+        getState,
+        setState,
+        createUuid(x, y, z, settings) {
+            return createUuidStaticEntity(typeId, x, y, z, settings)
+        },
+    })
+    ig.ENTITY.OLPlatform.create = () => {
         throw new Error('ig.ENTITY.OLPlatform.create not implemented')
-        // const entity = ig.game.spawnEntity<ig.ENTITY.OLPlatform, ig.ENTITY.OLPlatform.Settings>(
-        //     ig.ENTITY.OLPlatform,
-        //     0,
-        //     0,
-        //     0,
-        //     {
-        //         uuid,
-        //     }
-        // )
-        // return entity
     }
+    ig.registerEntityTypeId(ig.ENTITY.OLPlatform, typeId)
 }, 2)

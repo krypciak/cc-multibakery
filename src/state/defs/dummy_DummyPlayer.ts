@@ -1,14 +1,14 @@
 import { assert } from '../../misc/assert'
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 
-export {}
 declare global {
     namespace dummy {
         interface DummyPlayer {
-            type: 'dummy.DummyPlayer'
             getState(this: this): Return
             setState(this: this, state: Return): void
+            createUuid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
         }
         interface DummyPlayerConstructor {
             create(uuid: string, state: Return): dummy.DummyPlayer
@@ -16,7 +16,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: dummy.DummyPlayer) {
     return {
         data: this.data,
@@ -28,35 +28,30 @@ function getState(this: dummy.DummyPlayer) {
         animAlpha: this.animState.alpha == 1 ? undefined : this.animState.alpha,
     }
 }
+
 function setState(this: dummy.DummyPlayer, state: Return) {
-    if (state.data) this.data = state.data
-    if (state.pos) {
-        const p1 = this.coll.pos
-        const p2 = state.pos
-        if (!Vec3.equal(p1, p2)) {
-            this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
+    this.data = state.data
+    const p1 = this.coll.pos
+    const p2 = state.pos
+    if (!Vec3.equal(p1, p2)) {
+        this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
+    }
+    if (this.currentAnim != state.currentAnim) {
+        this.currentAnim = state.currentAnim
+
+        if (
+            (this.currentAnim == 'attack' || this.currentAnim == 'attackRev' || this.currentAnim == 'attackFinisher') &&
+            multi.server instanceof RemoteServer &&
+            this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE &&
+            this.model.getCore(sc.PLAYER_CORE.THROWING) &&
+            sc.options.get('close-circle')
+        ) {
+            this.gui.crosshair.setCircleGlow()
         }
     }
-    if (state.currentAnim) {
-        if (this.currentAnim != state.currentAnim) {
-            this.currentAnim = state.currentAnim
+    this.animState.timer = state.currentAnimTimer
 
-            if (
-                (this.currentAnim == 'attack' ||
-                    this.currentAnim == 'attackRev' ||
-                    this.currentAnim == 'attackFinisher') &&
-                multi.server instanceof RemoteServer &&
-                this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE &&
-                this.model.getCore(sc.PLAYER_CORE.THROWING) &&
-                sc.options.get('close-circle')
-            ) {
-                this.gui.crosshair.setCircleGlow()
-            }
-        }
-    }
-    if (state.currentAnimTimer !== undefined) this.animState.timer = state.currentAnimTimer
-
-    if (state.face) this.face = state.face
+    this.face = state.face
     this.coll.accelDir = state.accelDir ?? Vec3.create()
     this.animState.alpha = state.animAlpha ?? 1
 
@@ -89,7 +84,14 @@ function setState(this: dummy.DummyPlayer, state: Return) {
 }
 
 prestart(() => {
-    dummy.DummyPlayer.inject({ getState, setState })
+    const typeId: EntityTypeId = 'du'
+    dummy.DummyPlayer.inject({
+        getState,
+        setState,
+        createUuid(_x, _y, _z, settings) {
+            return `${typeId}${settings.data.username}`
+        },
+    })
     dummy.DummyPlayer.create = (uuid: string, state) => {
         const inputManager = new dummy.input.Puppet.InputManager()
         assert(state.data)
@@ -100,6 +102,7 @@ prestart(() => {
         })
         return entity
     }
+    ig.registerEntityTypeId(dummy.DummyPlayer, typeId)
 
     dummy.DummyPlayer.inject({
         update() {

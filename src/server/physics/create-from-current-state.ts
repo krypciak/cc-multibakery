@@ -4,35 +4,12 @@ import { Opts } from '../../options'
 import { applyEntityStates, getFullEntityState } from '../../state/states'
 import { PhysicsServer } from './physics-server'
 
-function filterProblematicEntityStates(state: StateUpdatePacket): StateUpdatePacket {
-    state.stopEffects = undefined
-    state.clearEffects = undefined
-    state.destroyCombatProxies = undefined
-
-    if (state.states) {
-        for (const uuid in state.states) {
-            const data = state.states[uuid]
-            if (
-                data.type == 'dummy.DummyPlayer' ||
-                data.type == 'sc.CombatProxyEntity' ||
-                data.type == 'ig.ENTITY.Effect' ||
-                data.type == 'ig.ENTITY.Ball' ||
-                data.type == 'ig.ENTITY.Crosshair'
-            ) {
-                delete state.states[uuid]
-            }
-        }
-    }
-
-    return state
-}
-
 export async function createPhysicsServerFromCurrentState() {
     const origMapName = ig.game.mapName
     const playerPos = Vec3.create(ig.game.playerEntity.coll.pos)
     const playerFace = Vec2.create(ig.game.playerEntity.face)
 
-    const origMapState = filterProblematicEntityStates(getFullEntityState())
+    const origMapState = getFullEntityState()
     const origInputType = ig.input.currentDevice
 
     const server = new PhysicsServer({
@@ -97,7 +74,7 @@ export async function closePhysicsServerAndSaveState() {
     const map = multi.server.maps[client.player.mapName]
     assert(map)
     map.inst.apply()
-    const origMapState = filterProblematicEntityStates(getFullEntityState())
+    const origMapState = getFullEntityState()
     multi.server.serverInst.apply()
 
     await multi.destroyAndStartLoop()

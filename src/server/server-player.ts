@@ -4,7 +4,6 @@ import { teleportPlayerToProperMarker } from '../teleport-fix'
 import { waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics/physics-server'
-import { getDummyUuidByUsername } from '../dummy/dummy-player'
 
 export class ServerPlayer {
     private destroyed: boolean = false
@@ -37,7 +36,8 @@ export class ServerPlayer {
         if (this.dummy) assert(this.dummy._killed)
 
         if (this.attachDummy) {
-            const uuid = getDummyUuidByUsername(this.dummySettings.data.username)
+            const uuid = dummy.DummyPlayer.prototype.createUuid.call({} as any, 0, 0, 0, this.dummySettings)
+
             this.dummy = await new Promise<dummy.DummyPlayer>(resolve => {
                 const func = () => {
                     const entity = ig.game.entitiesByUUID[uuid]

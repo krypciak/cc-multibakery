@@ -1,11 +1,11 @@
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
+import { createUuidStaticEntity } from './entity'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface WallBase {
-            type: 'ig.ENTITY.WallBase'
             getState(this: this): Return
             setState(this: this, state: Return): void
         }
@@ -15,7 +15,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.WallBase) {
     const timer = this.wallBlockers[0]?.timer
     return {
@@ -36,20 +36,18 @@ function setState(this: ig.ENTITY.WallBase, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.WallBase.inject({ getState, setState })
-    ig.ENTITY.WallBase.create = (uuid: string, state) => {
+    const typeId: EntityTypeId = 'wb'
+    ig.ENTITY.WallBase.inject({
+        getState,
+        setState,
+        createUuid(x, y, z, settings) {
+            return createUuidStaticEntity(typeId, x, y, z, settings)
+        },
+    })
+    ig.ENTITY.WallBase.create = () => {
         throw new Error('ig.ENTITY.WallBase.create not implemented')
-        // const entity = ig.game.spawnEntity<ig.ENTITY.WallBase, ig.ENTITY.WallBase.Settings>(
-        //     ig.ENTITY.WallBase,
-        //     0,
-        //     0,
-        //     0,
-        //     {
-        //         uuid,
-        //     }
-        // )
-        // return entity
     }
+    ig.registerEntityTypeId(ig.ENTITY.WallBase, typeId)
 
     ig.ENTITY.WallBlocker.inject({
         update() {

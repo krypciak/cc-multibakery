@@ -1,13 +1,11 @@
 import { assert } from '../../misc/assert'
-import { setUuid } from '../../misc/entity-uuid'
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface Ball {
-            type: 'ig.ENTITY.Ball'
             getState(this: this): Return
             setState(this: this, state: Return): void
         }
@@ -17,7 +15,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Ball) {
     const combatant = this.getCombatantRoot()
     assert(combatant)
@@ -29,14 +27,25 @@ function getState(this: ig.ENTITY.Ball) {
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {
-    if (state.pos) {
-        Vec3.assign(this.coll.pos, state.pos)
-    }
+    Vec3.assign(this.coll.pos, state.pos)
     this.update()
 }
 
 prestart(() => {
-    ig.ENTITY.Ball.inject({ getState, setState })
+    const typeId: EntityTypeId = 'ba'
+    let ballId = 0
+    ig.ENTITY.Ball.inject({
+        getState,
+        setState,
+        createUuid() {
+            return `${typeId}${ballId++}`
+        },
+        init(x, y, z, settings) {
+            this.parent(x, y, z, settings)
+            /* ig.ENTITY.Ball creates a new settings object so uuid doesnt get set */
+            this.setUuid(x, y, z, settings)
+        },
+    })
     ig.ENTITY.Ball.create = (uuid: string, state) => {
         assert(state.proxyType)
         const proxy = resolveProxyFromType(state.proxyType)
@@ -62,15 +71,9 @@ prestart(() => {
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)
         return ball
     }
+    ig.registerEntityTypeId(ig.ENTITY.Ball, typeId)
 
-    let ballId = 0
     ig.ENTITY.Ball.inject({
-        init(x, y, z, settings) {
-            this.parent(x, y, z, settings)
-            settings.uuid ??= `ball${ballId++}`
-            /* ig.ENTITY.Ball creates a new settings object so uuid doesnt get set */
-            setUuid.call(this, x, y, z, settings)
-        },
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             if (!ig.settingState) return

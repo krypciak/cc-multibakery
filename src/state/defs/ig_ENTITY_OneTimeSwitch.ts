@@ -1,10 +1,10 @@
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
+import { createUuidStaticEntity } from './entity'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface OneTimeSwitch {
-            type: 'ig.ENTITY.OneTimeSwitch'
             getState(this: this): Return
             setState(this: this, state: Return): void
         }
@@ -14,7 +14,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.OneTimeSwitch) {
     return {
         isOn: this.isOn ? true : undefined,
@@ -37,18 +37,16 @@ function setState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.OneTimeSwitch.inject({ getState, setState })
-    ig.ENTITY.OneTimeSwitch.create = (uuid: string, state) => {
+    const typeId: EntityTypeId = 'ot'
+    ig.ENTITY.OneTimeSwitch.inject({
+        getState,
+        setState,
+        createUuid(x, y, z, settings) {
+            return createUuidStaticEntity(typeId, x, y, z, settings)
+        },
+    })
+    ig.ENTITY.OneTimeSwitch.create = () => {
         throw new Error('ig.ENTITY.OneTimeSwitch.create not implemented')
-        // const entity = ig.game.spawnEntity<ig.ENTITY.OneTimeSwitch, ig.ENTITY.OneTimeSwitch.Settings>(
-        //     ig.ENTITY.OneTimeSwitch,
-        //     0,
-        //     0,
-        //     0,
-        //     {
-        //         uuid,
-        //     }
-        // )
-        // return entity
     }
+    ig.registerEntityTypeId(ig.ENTITY.OneTimeSwitch, typeId)
 }, 2)

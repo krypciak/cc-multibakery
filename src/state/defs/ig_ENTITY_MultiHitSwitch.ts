@@ -1,11 +1,11 @@
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
+import { createUuidStaticEntity } from './entity'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface MultiHitSwitch {
-            type: 'ig.ENTITY.MultiHitSwitch'
             getState(this: this): Return
             setState(this: this, state: Return): void
         }
@@ -15,7 +15,7 @@ declare global {
     }
 }
 
-type Return = Partial<ReturnType<typeof getState>>
+type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.MultiHitSwitch) {
     return {
         currentHits: this.currentHits > 0 ? this.currentHits : undefined,
@@ -42,20 +42,18 @@ function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.MultiHitSwitch.inject({ getState, setState })
-    ig.ENTITY.MultiHitSwitch.create = (uuid: string, state) => {
+    const typeId: EntityTypeId = 'mh'
+    ig.ENTITY.MultiHitSwitch.inject({
+        getState,
+        setState,
+        createUuid(x, y, z, settings) {
+            return createUuidStaticEntity(typeId, x, y, z, settings)
+        },
+    })
+    ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
-        // const entity = ig.game.spawnEntity<ig.ENTITY.MultiHitSwitch, ig.ENTITY.MultiHitSwitch.Settings>(
-        //     ig.ENTITY.MultiHitSwitch,
-        //     0,
-        //     0,
-        //     0,
-        //     {
-        //         uuid,
-        //     }
-        // )
-        // return entity
     }
+    ig.registerEntityTypeId(ig.ENTITY.MultiHitSwitch, typeId)
 
     ig.ENTITY.MultiHitSwitch.inject({
         update() {

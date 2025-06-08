@@ -1,20 +1,18 @@
 import { assert } from '../../misc/assert'
+import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 
-export {}
 declare global {
     namespace ig.ENTITY {
         interface Effect {
-            type: 'ig.ENTITY.Effect'
             getState(this: this): Return | undefined
             setState(this: this, state: Return): void
         }
         interface EffectConstructor {
             create(uuid: string, state: Return): ig.ENTITY.Effect | undefined
-            priority: number
         }
     }
 }
@@ -51,25 +49,6 @@ function getState(this: ig.ENTITY.Effect) {
 }
 function setState(this: ig.ENTITY.Effect, state: Return) {
     if (!this.target) Vec3.assign(this.coll.pos, state.pos)
-    // const { target, target2 } = resolveObjects(state)
-    // this.target = target
-    // this.target2.entity = target2
-    // this.target2.point = state.target2Point
-    // this.target2.align = state.target2Align
-    // this.target2.offset = state.target2Offset
-    // this.noMultiGroup = state.noMultiGroup
-    // this.spriteFilter = state.spriteFilter
-    // this.offset = state.offset
-    // this.rotOffset = state.rotOffset
-    // this.align = state.align
-    // this.angle = state.angle
-    // this.flipX = state.flipX
-    // this.rotateFace = state.rotateFace
-    // this.flipLeftFace = state.flipLeftFace
-    // this.duration = state.duration
-    // this.attachGroup = state.group
-
-    // this.timer = state.timer
 
     this.update()
     this.deferredUpdate()
@@ -119,7 +98,15 @@ class TemporarySet<T> {
 }
 
 prestart(() => {
-    ig.ENTITY.Effect.inject({ getState, setState })
+    const typeId: EntityTypeId = 'ef'
+    let effectId = 0
+    ig.ENTITY.Effect.inject({
+        getState,
+        setState,
+        createUuid() {
+            return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
+        },
+    })
 
     const allEffectsUuidSpawned = new TemporarySet<string>(50)
     ig.ENTITY.Effect.create = (uuid: string, state: Return) => {
@@ -140,21 +127,9 @@ prestart(() => {
 
         return entity
     }
-    ig.ENTITY.Effect.priority = 2000
+    ig.registerEntityTypeId(ig.ENTITY.Effect, 'ef', 2000)
 
-    let effectId = 0
-    function newEffectUuid() {
-        return `Effect${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
-    }
     ig.ENTITY.Effect.inject({
-        init(x, y, z, settings) {
-            settings.uuid ??= newEffectUuid()
-            this.parent(x, y, z, settings)
-        },
-        reset(x, y, z, settings) {
-            settings.uuid ??= newEffectUuid()
-            this.parent(x, y, z, settings)
-        },
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             if (!ig.settingState && ig.lastStatePacket?.states?.[this.uuid]) return
