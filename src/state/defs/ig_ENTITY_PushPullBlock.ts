@@ -1,13 +1,15 @@
 import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createUuidStaticEntity } from './entity'
+import { createUuidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
         interface PushPullBlock {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
+
+            lastSent?: Return
         }
         interface PushPullBlockConstructor {
             create(uuid: string, state: Return): ig.ENTITY.PushPullBlock
@@ -16,9 +18,9 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.PushPullBlock) {
+function getState(this: ig.ENTITY.PushPullBlock, full: boolean) {
     return {
-        pos: this.coll.pos,
+        pos: isSameAsLast(this, full, this.coll.pos, 'pos'),
     }
 }
 function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
@@ -27,16 +29,18 @@ function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
         this.pushPullable.soundHandle = null
     }
 
-    const p1 = this.coll.pos
-    const p2 = state.pos
-    if (!Vec3.equal(p1, p2)) {
-        if (multi.server) {
-            Vec3.assign(this.coll.pos, p2)
-        } else {
-            this.setPos(p2.x, p2.y, p2.z)
-        }
-        this.pushPullable.soundHandle ??= sc.PushPullSounds.Loop.play(true)
-    } else stopSound()
+    if (state.pos) {
+        const p1 = this.coll.pos
+        const p2 = state.pos
+        if (!Vec3.equal(p1, p2)) {
+            if (multi.server) {
+                Vec3.assign(this.coll.pos, p2)
+            } else {
+                this.setPos(p2.x, p2.y, p2.z)
+            }
+            this.pushPullable.soundHandle ??= sc.PushPullSounds.Loop.play(true)
+        } else stopSound()
+    }
 
     this.update()
 }
