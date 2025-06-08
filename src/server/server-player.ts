@@ -13,7 +13,6 @@ export class ServerPlayer {
     ready: boolean = false
 
     mapInteract!: multi.class.ServerPlayer.MapInteract
-    private dummySettings: dummy.DummyPlayer.Settings
 
     constructor(
         public username: string,
@@ -21,22 +20,22 @@ export class ServerPlayer {
         public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager(),
         private attachDummy: boolean = false
     ) {
-        this.dummySettings = {
-            inputManager,
-            data: { username },
-        }
         if (!this.mapName) {
             this.mapName = 'crossedeyes/test'
             this.marker = 'entrance'
-            // this.mapName = 'rhombus-dng/room-1'
         }
     }
 
     private async createPlayer() {
         if (this.dummy) assert(this.dummy._killed)
 
+        const dummySettings: dummy.DummyPlayer.Settings = {
+            inputManager: this.inputManager,
+            data: { username: this.username },
+        }
+
         if (this.attachDummy) {
-            const uuid = dummy.DummyPlayer.prototype.createUuid.call({} as any, 0, 0, 0, this.dummySettings)
+            const uuid = dummy.DummyPlayer.prototype.createUuid.call({} as any, 0, 0, 0, dummySettings)
 
             this.dummy = await new Promise<dummy.DummyPlayer>(resolve => {
                 const func = () => {
@@ -53,7 +52,7 @@ export class ServerPlayer {
             this.inputManager.player = this.dummy
             this.dummy.inputManager = this.inputManager
         } else {
-            this.dummy = new dummy.DummyPlayer(0, 0, 0, this.dummySettings)
+            this.dummy = new dummy.DummyPlayer(0, 0, 0, dummySettings)
         }
         // if (username.includes('luke')) {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)

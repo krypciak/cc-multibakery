@@ -17,7 +17,7 @@ declare global {
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.OLPlatform) {
     return {
-        currentState: this.states.indexOf(this.currentState),
+        currentState: this.states.indexOf(this.currentState) ,
     }
 }
 function setState(this: ig.ENTITY.OLPlatform, state: Return) {

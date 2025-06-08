@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { NetConnection } from '../../net/connection'
 import { SocketNetManagerRemoteServer } from '../../net/socket'
 import { prestart } from '../../plugin'
-import { applyEntityStates } from '../../state/states'
+import { applyStateUpdatePacket } from '../../state/states'
 import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
@@ -95,7 +95,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         }
 
         for (const mapName in data.mapPackets) {
-            const mapPacket = data.mapPackets[mapName]
+            const stateUpdatePacket = data.mapPackets[mapName]
 
             const map = multi.server.maps[mapName]
             if (!map?.ready) continue
@@ -106,7 +106,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             assert(inst)
             inst.apply()
             try {
-                applyEntityStates(mapPacket.entities, data.tick, map.noStateAppliedYet)
+                applyStateUpdatePacket(stateUpdatePacket, data.tick, map.noStateAppliedYet)
             } catch (e) {
                 this.onInstanceUpdateError(inst, e, true)
             }

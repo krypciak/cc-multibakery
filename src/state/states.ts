@@ -12,16 +12,16 @@ declare global {
     }
 }
 
-export function getFullEntityState() {
+export function getStateUpdatePacket(full: boolean) {
     const packet: StateUpdatePacket = {}
 
-    for (const { get } of handlers) get(packet)
+    for (const { get } of handlers) get(packet, full)
 
     return packet
 }
 
 type Handler = {
-    get: (packet: StateUpdatePacket) => void
+    get: (packet: StateUpdatePacket, full: boolean) => void
     set: (packet: StateUpdatePacket) => void
 }
 const handlers: Handler[] = []
@@ -29,7 +29,7 @@ export function addStateHandler(handler: Handler) {
     handlers.push(handler)
 }
 
-export function applyEntityStates(packet: StateUpdatePacket, tick: number, immediately: boolean) {
+export function applyStateUpdatePacket(packet: StateUpdatePacket, tick: number, immediately: boolean) {
     ig.settingState = true
     const backup = ig.system.tick
     ig.system.tick = tick

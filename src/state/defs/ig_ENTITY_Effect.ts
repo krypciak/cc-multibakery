@@ -4,12 +4,15 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
+import { undefinedIfFalsy, undefinedIfVec3Zero } from './entity'
 
 declare global {
     namespace ig.ENTITY {
         interface Effect {
-            getState(this: this): Return | undefined
+            getState(this: this, full: boolean): Return | undefined
             setState(this: this, state: Return): void
+
+            sentEver?: boolean
         }
         interface EffectConstructor {
             create(uuid: string, state: Return): ig.ENTITY.Effect | undefined
@@ -18,37 +21,45 @@ declare global {
 }
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
-function getState(this: ig.ENTITY.Effect) {
+function getState(this: ig.ENTITY.Effect, full: boolean) {
     const effectName = this.effect!.effectName
     const sheetPath = this.effect!.sheet.path
     if (effectName == 'ballTrail') return
-    return {
-        pos: this.coll.pos,
-        effect: {
+
+    let data
+    if (!this.sentEver || full) {
+        data = {
+            pos: this.coll.pos,
             effectName,
             sheetPath,
-        },
-        target: this.target?.uuid,
-        target2: this.target2.entity?.uuid,
-        target2Point: this.target2.point,
-        target2Align: this.target2.align,
-        target2Offset: this.target2.offset,
-        noMultiGroup: this.noMultiGroup,
-        spriteFilter: this.spriteFilter,
-        offset: this.offset,
-        rotOffset: this.rotOffset,
-        align: this.align,
-        angle: this.angle,
-        flipX: this.flipX,
-        rotateFace: this.rotateFace,
-        flipLeftFace: this.flipLeftFace,
-        duration: this.duration,
-        group: this.attachGroup,
-        // callback?: EventCallback,
+            target: undefinedIfFalsy(this.target?.uuid),
+            target2: undefinedIfFalsy(this.target2.entity?.uuid),
+            target2Point: undefinedIfFalsy(this.target2.point),
+            target2Align: undefinedIfFalsy(this.target2.align),
+            target2Offset: undefinedIfVec3Zero(this.target2.offset),
+            noMultiGroup: undefinedIfFalsy(this.noMultiGroup),
+            spriteFilter: undefinedIfFalsy(this.spriteFilter),
+            offset: undefinedIfVec3Zero(this.offset),
+            rotOffset: undefinedIfFalsy(this.rotOffset),
+            align: undefinedIfFalsy(this.align),
+            angle: undefinedIfFalsy(this.angle),
+            flipX: undefinedIfFalsy(this.flipX),
+            rotateFace: undefinedIfFalsy(this.rotateFace),
+            flipLeftFace: undefinedIfFalsy(this.flipLeftFace),
+            duration: this.duration == this.effect?.loopEndTime ? undefined : this.duration,
+            group: undefinedIfFalsy(this.attachGroup),
+        }
+    } else {
+        data = {
+            pos: !this.target ? this.coll.pos : undefined,
+        }
     }
+    this.sentEver = true
+
+    return data
 }
 function setState(this: ig.ENTITY.Effect, state: Return) {
-    if (!this.target) Vec3.assign(this.coll.pos, state.pos)
+    if (!this.target && state.pos) Vec3.assign(this.coll.pos, state.pos)
 
     this.update()
     this.deferredUpdate()
@@ -65,12 +76,10 @@ function resolveObjects(state: Return) {
         target2 = ig.game.entitiesByUUID[state.target2]
         if (!target2) console.warn('target2 not found:', state.target2)
     }
-    let effect
-    if (state.effect) {
-        const sheet = new ig.EffectSheet(state.effect.sheetPath)
-        assert(sheet.effects)
-        effect = sheet.effects[state.effect.effectName]
-    }
+    assert(state.sheetPath)
+    const sheet = new ig.EffectSheet(state.sheetPath)
+    assert(sheet.effects)
+    const effect = sheet.effects[state.effectName]
 
     return { target, target2, effect }
 }
@@ -105,6 +114,10 @@ prestart(() => {
         setState,
         createUuid() {
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
+        },
+        reset(x, y, z, settings) {
+            this.parent(x, y, z, settings)
+            this.sentEver = false
         },
     })
 

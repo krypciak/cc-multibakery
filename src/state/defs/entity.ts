@@ -16,7 +16,7 @@ import './sc_CombatProxyEntity'
 import './ig_ENTITY_Crosshair'
 
 interface StateEntityBase extends ig.Entity {
-    getState(): object | undefined
+    getState(full: boolean): object | undefined
     setState(value: object): void
 }
 
@@ -34,11 +34,11 @@ function isStateEntity(e: ig.Entity): e is StateEntityBase {
 
 prestart(() => {
     addStateHandler({
-        get(packet) {
+        get(packet, full) {
             packet.states = {}
             for (const entity of ig.game.entities) {
                 if (isStateEntity(entity)) {
-                    const state = entity.getState()
+                    const state = entity.getState(full)
                     if (!state) continue
                     packet.states[entity.uuid] = state
                 }
@@ -73,6 +73,16 @@ prestart(() => {
         },
     })
 }, 1001)
+
+export function undefinedIfFalsy<T>(obj: T): T | undefined {
+    return obj ? obj : undefined
+}
+export function undefinedIfVec2Zero(vec: Vec2): Vec2 | undefined {
+    return Vec2.isZero(vec) ? undefined : vec
+}
+export function undefinedIfVec3Zero(vec: Vec3): Vec3 | undefined {
+    return Vec3.isZero(vec) ? undefined : vec
+}
 
 const charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_=+[]{}|;:,.<>?/`~'
 function encodeCustomBase(num: number) {

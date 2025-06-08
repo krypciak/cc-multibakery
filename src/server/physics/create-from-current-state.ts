@@ -1,7 +1,7 @@
 import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
 import { assert } from '../../misc/assert'
 import { Opts } from '../../options'
-import { applyEntityStates, getFullEntityState } from '../../state/states'
+import { applyStateUpdatePacket, getStateUpdatePacket } from '../../state/states'
 import { PhysicsServer } from './physics-server'
 
 export async function createPhysicsServerFromCurrentState() {
@@ -9,7 +9,7 @@ export async function createPhysicsServerFromCurrentState() {
     const playerPos = Vec3.create(ig.game.playerEntity.coll.pos)
     const playerFace = Vec2.create(ig.game.playerEntity.face)
 
-    const origMapState = getFullEntityState()
+    const origMapState = getStateUpdatePacket(true)
     const origInputType = ig.input.currentDevice
 
     const server = new PhysicsServer({
@@ -53,7 +53,7 @@ export async function createPhysicsServerFromCurrentState() {
     const map = server.maps[client.player.mapName]
     assert(map)
     map.inst.apply()
-    applyEntityStates(origMapState, 0, true)
+    applyStateUpdatePacket(origMapState, 0, true)
     server.serverInst.apply()
 
     client.inst.ig.game.scheduledTasks.push(() => {
@@ -74,7 +74,7 @@ export async function closePhysicsServerAndSaveState() {
     const map = multi.server.maps[client.player.mapName]
     assert(map)
     map.inst.apply()
-    const origMapState = getFullEntityState()
+    const origMapState = getStateUpdatePacket(true)
     multi.server.serverInst.apply()
 
     await multi.destroyAndStartLoop()
@@ -82,5 +82,5 @@ export async function closePhysicsServerAndSaveState() {
     Vec3.assign(ig.game.playerEntity.coll.pos, playerPos)
     Vec2.assign(ig.game.playerEntity.face, playerFace)
 
-    applyEntityStates(origMapState, 0, true)
+    applyStateUpdatePacket(origMapState, 0, true)
 }

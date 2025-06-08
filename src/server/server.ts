@@ -154,7 +154,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         assert(!this.clients[client.player.username])
         this.clients[client.player.username] = client
         this.clientsById[client.inst.id] = client
-        await client.player.teleport(client.player.mapName, client.player.marker)
     }
 
     async createAndJoinClient(settings: ClientSettings) {
