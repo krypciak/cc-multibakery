@@ -2,32 +2,40 @@ import { assert } from '../../misc/assert'
 import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
+import { isSameAsLast } from './entity'
+import { TemporarySet } from './ig_ENTITY_Effect'
 
 declare global {
     namespace ig.ENTITY {
         interface Ball {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
+
+            lastSent?: Return
         }
         interface BallConstructor {
-            create(uuid: string, state: Return): ig.ENTITY.Ball
+            create(uuid: string, state: Return): ig.ENTITY.Ball | undefined
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Ball) {
+function getState(this: ig.ENTITY.Ball, full: boolean) {
     const combatant = this.getCombatantRoot()
     assert(combatant)
     return {
-        combatant: combatant.uuid,
-        proxyType: this.proxyType,
-        dir: this.coll.vel,
-        pos: this.coll.pos,
+        ...(!(this as any).lastSent || full
+            ? {
+                  combatant: combatant.uuid,
+                  proxyType: this.proxyType,
+                  dir: this.coll.vel,
+              }
+            : {}),
+        pos: isSameAsLast(this, full, this.coll.pos, 'pos'),
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {
-    Vec3.assign(this.coll.pos, state.pos)
+    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
     this.update()
 }
 
@@ -46,7 +54,14 @@ prestart(() => {
             this.setUuid(x, y, z, settings)
         },
     })
+
+    const allBallsUuidSpawned = new TemporarySet<string>(200)
     ig.ENTITY.Ball.create = (uuid: string, state) => {
+        if (allBallsUuidSpawned.has(uuid)) return
+        allBallsUuidSpawned.push(uuid)
+
+        assert(!ig.game.entitiesByUUID[uuid])
+
         assert(state.proxyType)
         const proxy = resolveProxyFromType(state.proxyType)
         assert(proxy instanceof sc.BallInfo)

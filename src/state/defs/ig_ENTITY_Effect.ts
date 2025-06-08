@@ -84,7 +84,7 @@ function resolveObjects(state: Return) {
     return { target, target2, effect }
 }
 
-class TemporarySet<T> {
+export class TemporarySet<T> {
     private bins: Set<T>[] = [new Set<T>(), new Set<T>()]
     private currentBin = 0
 
