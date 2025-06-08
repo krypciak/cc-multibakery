@@ -122,7 +122,6 @@ export class SocketNetManagerRemoteServer {
         const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket
         socket.on('update', data => server.onNetReceive(this.conn!, data))
         socket.on('disconnect', () => {
-            if (!multi.server) return
             this.stop()
             server.onNetDisconnect()
         })

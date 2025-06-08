@@ -74,6 +74,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async onNetDisconnect() {
+        if (this.destroyed) return
         console.log('server disconnected')
         await multi.destroyAndStartLoop()
         sc.Dialogs.showErrorDialog('Disconnected')
