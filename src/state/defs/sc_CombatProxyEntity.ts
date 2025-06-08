@@ -4,13 +4,16 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
+import { isSameAsLast } from './entity'
 import { resolveProxyFromType } from './ig_ENTITY_Ball'
 
 declare global {
     namespace sc {
         interface CombatProxyEntity {
-            getState(this: this): Return | undefined
+            getState(this: this, full: boolean): Return | undefined
             setState(this: this, state: Return): void
+
+            lastSent?: Return
         }
         interface CombatProxyEntityConstructor {
             create(uuid: string, state: Return): sc.CombatProxyEntity
@@ -19,17 +22,22 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: sc.CombatProxyEntity) {
+function getState(this: sc.CombatProxyEntity, full: boolean) {
+    /* TODO: uhhhhhhh pos is probably set in update call */
     return {
-        pos: this.coll.pos,
-        proxyType: this.proxyType,
-        combatant: this.combatant.uuid,
-        dir: this.face,
+        ...(!(this as any).lastSent || full
+            ? {
+                  proxyType: this.proxyType,
+                  combatant: this.combatant.uuid,
+              }
+            : {}),
+        pos: isSameAsLast(this, true, this.coll.pos, 'pos'),
+        dir: isSameAsLast(this, true, this.face, 'dir'),
     }
 }
 function setState(this: sc.CombatProxyEntity, state: Return) {
-    Vec3.assign(this.coll.pos, state.pos)
-    Vec2.assign(this.face, state.dir)
+    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
+    if (state.dir) Vec2.assign(this.face, state.dir)
 
     this.update()
 }
@@ -41,14 +49,18 @@ prestart(() => {
         getState,
         setState,
         createUuid() {
-            return `${typeId}${proxyId++}`
+            return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${proxyId++}`
         },
     })
 
     sc.CombatProxyEntity.create = (uuid: string, state: Return) => {
-        const { x, y, z } = state.pos!
-
+        assert(state.pos)
         assert(state.combatant)
+        assert(state.proxyType)
+        assert(state.dir)
+
+        const { x, y, z } = state.pos
+
         const combatant = ig.game.entitiesByUUID[state.combatant]
         assert(combatant, `target not found:  ${state.combatant}`)
         assert(combatant instanceof sc.BasicCombatant)
