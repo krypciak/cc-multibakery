@@ -1,13 +1,15 @@
 import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createUuidStaticEntity } from './entity'
+import { createUuidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
         interface MultiHitSwitch {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
+
+            lastSent?: Return
         }
         interface MultiHitSwitchConstructor {
             create(uuid: string, state: Return): ig.ENTITY.MultiHitSwitch
@@ -16,14 +18,14 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.MultiHitSwitch) {
+function getState(this: ig.ENTITY.MultiHitSwitch, full: boolean) {
     return {
-        currentHits: this.currentHits > 0 ? this.currentHits : undefined,
+        currentHits: isSameAsLast(this, full, this.currentHits, 'currentHits'),
     }
 }
 function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
-    const hits = state.currentHits ?? 0
-    if (this.currentHits != hits) {
+    const hits = state.currentHits
+    if (hits !== undefined && this.currentHits != hits) {
         const oldHits = this.currentHits
         this.currentHits = hits
 
