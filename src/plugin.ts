@@ -39,7 +39,6 @@ export default class Multibakery implements PluginClass {
             await import('./server/test/aoc2024d15')
             // await import('./server/test/mouse-simple')
         }
-        // @ts-expect-error
         global.multi = window.multi = initMultiplayer()
 
         await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))

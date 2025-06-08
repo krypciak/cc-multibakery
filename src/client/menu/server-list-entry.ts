@@ -2,6 +2,7 @@ import { assert } from '../../misc/assert'
 import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../plugin'
+import { tryJoinRemote } from '../../server/remote/remote-server'
 import { ClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
 
@@ -220,7 +221,7 @@ prestart(() => {
             }
             const username = Opts.clientLogin
             const joinData: ClientJoinData = { username, initialInputType: ig.input.currentDevice }
-            const resp = await multi.tryJoinRemote(this.serverInfo, joinData)
+            const resp = await tryJoinRemote(this.serverInfo, joinData)
             showTryNetJoinResponseDialog(joinData, resp)
         },
         async updateConnectionStatus() {
