@@ -3,42 +3,46 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import * as inputBackup from '../../dummy/dummy-input'
 import { assert } from '../../misc/assert'
 import { EntityTypeId } from '../../misc/entity-uuid'
+import { isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
         interface Crosshair {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
             createUuid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string
+
+            lastSent?: Return
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Crosshair) {
+function getState(this: ig.ENTITY.Crosshair, full: boolean) {
     assert(this.thrower instanceof dummy.DummyPlayer)
     inputBackup.apply(this.thrower.inputManager)
     const isAiming = this.controller.isAiming()
     inputBackup.restore()
 
     return {
-        pos: this.coll.pos,
-        active: this.active ? true : undefined,
-        special: this.special ? true : undefined,
-        isAiming: isAiming ? true : undefined,
-        currentCharge: this.currentCharge != 0 ? this.currentCharge : undefined,
+        pos: this.active ? isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create) : undefined,
+        active: isSameAsLast(this, full, this.active, 'active'),
+        special: isSameAsLast(this, full, this.special, 'special'),
+        isAiming: isSameAsLast(this, full, isAiming, 'isAiming'),
+        currentCharge: isSameAsLast(this, full, this.currentCharge, 'currentCharge'),
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {
-    Vec3.assign(this.coll.pos, state.pos)
+    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
 
-    const active = !!state.active
-    if (active != this.active) this.setActive(active)
+    if (state.active !== undefined && state.active != this.active) {
+        this.setActive(state.active)
+    }
 
-    this.special = !!state.special
-    this.controller.isAimingOverride = state.isAiming
+    if (state.special !== undefined) this.special = state.special
+    if (state.isAiming !== undefined) this.controller.isAimingOverride = state.isAiming
     this.chargeActive = true
-    this.currentCharge = state.currentCharge ?? 0
+    if (state.currentCharge !== undefined) this.currentCharge = state.currentCharge
 }
 
 prestart(() => {

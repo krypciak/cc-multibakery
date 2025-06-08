@@ -93,7 +93,9 @@ export function isSameAsLast<V>(
 ): V | undefined {
     // @ts-expect-error
     const lastSent = (entity.lastSent ??= {})
-    if (!full && eq(lastSent[key], currValue)) return undefined
+    const lastValue = lastSent[key]
+    const isEq = lastValue === undefined ? currValue === undefined : eq(lastValue, currValue)
+    if (!full && isEq) return undefined
     lastSent[key] = clone(currValue)
     return currValue
 }
