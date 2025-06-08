@@ -1,14 +1,16 @@
-import { assert } from '../../misc/assert'
 import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
+import { isSameAsLast } from './entity'
 
 declare global {
     namespace dummy {
         interface DummyPlayer {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
             createUuid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
+
+            lastSent?: Return
         }
         interface DummyPlayerConstructor {
             create(uuid: string, state: Return): dummy.DummyPlayer
@@ -17,26 +19,37 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: dummy.DummyPlayer) {
+function getState(this: dummy.DummyPlayer, full: boolean) {
     return {
-        data: this.data,
-        pos: this.coll.pos,
-        currentAnim: this.currentAnim,
+        isControlBlocked: isSameAsLast(this, full, this.data.isControlBlocked, 'isControlBlocked'),
+        inCutscene: isSameAsLast(this, full, this.data.inCutscene, 'inCutscene'),
+        currentMenu: isSameAsLast(this, full, this.data.currentMenu, 'currentMenu'),
+        currentSubState: isSameAsLast(this, full, this.data.currentSubState, 'currentSubState'),
+
+        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
+        currentAnim: isSameAsLast(this, full, this.currentAnim, 'currentAnim'),
         currentAnimTimer: this.animState.timer,
-        face: this.face,
-        accelDir: Vec2.isZero(this.coll.accelDir) ? undefined : this.coll.accelDir,
-        animAlpha: this.animState.alpha == 1 ? undefined : this.animState.alpha,
+        face: isSameAsLast(this, full, this.face, 'face', Vec2.equal, Vec2.create),
+        accelDir: isSameAsLast(this, full, this.coll.accelDir, 'accelDir', Vec2.equal, Vec2.create),
+        animAlpha: isSameAsLast(this, full, this.animState.alpha, 'animAlpha'),
     }
 }
 
 function setState(this: dummy.DummyPlayer, state: Return) {
-    this.data = state.data
-    const p1 = this.coll.pos
-    const p2 = state.pos
-    if (!Vec3.equal(p1, p2)) {
-        this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
+    if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
+    if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
+    if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
+    if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
+
+    if (state.pos) {
+        const p1 = this.coll.pos
+        const p2 = state.pos
+        if (!Vec3.equal(p1, p2)) {
+            this.setPos(state.pos.x, state.pos.y, state.pos.z, /* fix weird animation glitches */ p1.z == p2.z)
+        }
     }
-    if (this.currentAnim != state.currentAnim) {
+
+    if (state.currentAnim !== undefined && this.currentAnim != state.currentAnim) {
         this.currentAnim = state.currentAnim
 
         if (
@@ -51,9 +64,9 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     }
     this.animState.timer = state.currentAnimTimer
 
-    this.face = state.face
-    this.coll.accelDir = state.accelDir ?? Vec3.create()
-    this.animState.alpha = state.animAlpha ?? 1
+    if (state.face) this.face = state.face
+    if (state.accelDir) this.coll.accelDir = state.accelDir
+    if (state.animAlpha !== undefined) this.animState.alpha = state.animAlpha
 
     this.updateAnim()
 
@@ -92,12 +105,12 @@ prestart(() => {
             return `${typeId}${settings.data.username}`
         },
     })
-    dummy.DummyPlayer.create = (uuid: string, state) => {
+    dummy.DummyPlayer.create = (uuid: string, _state) => {
         const inputManager = new dummy.input.Puppet.InputManager()
-        assert(state.data)
+        const username = uuid.substring(2)
         const entity = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
             uuid,
-            data: state.data,
+            data: { username },
             inputManager,
         })
         return entity

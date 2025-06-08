@@ -83,6 +83,20 @@ export function undefinedIfVec2Zero(vec: Vec2): Vec2 | undefined {
 export function undefinedIfVec3Zero(vec: Vec3): Vec3 | undefined {
     return Vec3.isZero(vec) ? undefined : vec
 }
+export function isSameAsLast<V>(
+    entity: ig.Entity,
+    full: boolean,
+    currValue: V,
+    key: string,
+    eq: (a: V, b: V) => boolean = (a, b) => a == b,
+    clone: (a: V) => V = a => a
+): V | undefined {
+    // @ts-expect-error
+    const lastSent = (entity.lastSent ??= {})
+    if (!full && eq(lastSent[key], currValue)) return undefined
+    lastSent[key] = clone(currValue)
+    return currValue
+}
 
 const charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_=+[]{}|;:,.<>?/`~'
 function encodeCustomBase(num: number) {
