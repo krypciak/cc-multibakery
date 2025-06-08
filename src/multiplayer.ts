@@ -18,7 +18,6 @@ import './client/menu/pause/server-manage-button'
 
 declare global {
     namespace multi {
-        var headless: boolean
         var server: Server
         function setServer(server: Server): void
         function destroy(): Promise<void>
@@ -33,7 +32,6 @@ declare global {
 
 export function initMultiplayer() {
     return {
-        headless: false,
         server: undefined as any,
         class: {} as any,
         setServer(server: Server) {

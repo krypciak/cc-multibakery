@@ -92,7 +92,7 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
     this.currentLoadingResource = loader
 
     /* stuff below from ig.Game#loadingComplete() */
-    if (!multi.headless) this.preDrawMaps()
+    this.preDrawMaps()
 
     let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
     collisionLayer?.prepare()
