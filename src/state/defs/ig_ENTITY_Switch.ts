@@ -1,12 +1,14 @@
 import { EntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
-import { createUuidStaticEntity } from './entity'
+import { createUuidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
         interface Switch {
-            getState(this: this): Return
+            getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
+
+            lastSent?: Return
         }
         interface SwitchConstructor {
             create(uuid: string, state: Return): ig.ENTITY.Switch
@@ -15,15 +17,14 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Switch) {
+function getState(this: ig.ENTITY.Switch, full: boolean) {
     return {
-        isOn: this.isOn ? true : undefined,
+        isOn: isSameAsLast(this, full, this.isOn, 'isOn'),
     }
 }
 function setState(this: ig.ENTITY.Switch, state: Return) {
-    const isOn = !!state.isOn
-    if (this.isOn != isOn) {
-        this.isOn = isOn
+    if (state.isOn !== undefined && this.isOn != state.isOn) {
+        this.isOn = state.isOn
         const anim = this.isOn ? 'switchOn' : 'switchOff'
         const followUpAnim = this.isOn ? 'on' : 'off'
 
