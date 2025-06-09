@@ -27,7 +27,7 @@ prestart(() => {
         sc.newgame.setActive(true)
         if (!sc.newgame.get('infinite-sp')) sc.newgame.toggle('infinite-sp')
         model.setLevel(99)
-        // model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
+        model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
 
         model.skillPoints.fill(200)
         for (let i = 0; i < 400; i++) {

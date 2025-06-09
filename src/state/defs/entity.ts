@@ -40,10 +40,7 @@ prestart(() => {
                 const typeId: EntityTypeId = entity.uuid?.substring(0, 2)
                 if (isStateEntity(entity)) {
                     const state = entity.getState(full)
-                    if (
-                        !state ||
-                        (!entitySendEmpty.has(typeId) && Object.values(state).filter(Boolean).length == 0)
-                    )
+                    if (!state || (!entitySendEmpty.has(typeId) && Object.values(state).filter(Boolean).length == 0))
                         continue
                     packet.states[entity.uuid] = state
                 }
@@ -103,6 +100,52 @@ export function isSameAsLast<V>(
     if (!full && isEq) return undefined
     lastSent[key] = clone(currValue)
     return currValue
+}
+
+type ArrayDiffEntry<V> = [number, V]
+type ArrayDiff<V> =
+    | {
+          diff: ArrayDiffEntry<V>[]
+      }
+    | {
+          full: V[]
+      }
+export function diffArray<V extends number | string | null | undefined>(
+    entity: ig.Entity,
+    full: boolean,
+    currArr: V[],
+    key: string
+): ArrayDiff<V> | undefined {
+    // @ts-expect-error
+    const lastSent = (entity.lastSent ??= {})
+    const lastArr: V[] = lastSent[key]
+
+    if (full || !lastArr) {
+        lastSent[key] = [...currArr]
+        return { full: currArr }
+    }
+    assert(lastArr.length == currArr.length)
+
+    const diff: ArrayDiffEntry<V>[] = []
+    for (let i = 0; i < currArr.length; i++) {
+        if (currArr[i] != lastArr[i]) {
+            diff.push([i, currArr[i]])
+        }
+    }
+    if (diff.length == 0) return undefined
+    lastSent[key] = [...currArr]
+    return { diff }
+}
+export function applyDiffArray<E, K extends keyof E, V>(obj: E, key: K, diff: ArrayDiff<V>) {
+    if ('full' in diff) {
+        // @ts-expect-error
+        obj[key] = diff.full
+    } else {
+        for (const [i, v] of diff.diff) {
+            // @ts-expect-error
+            obj[key][i] = v
+        }
+    }
 }
 
 const charset = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!@#$%^&*()-_=+[]{}|;:,.<>?/`~'

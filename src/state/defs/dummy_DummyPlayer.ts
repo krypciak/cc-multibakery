@@ -1,7 +1,7 @@
 import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { isSameAsLast } from './entity'
+import { applyDiffArray, diffArray, isSameAsLast } from './entity'
 
 declare global {
     namespace dummy {
@@ -38,6 +38,7 @@ function getState(this: dummy.DummyPlayer, full: boolean) {
         rightArm: isSameAsLast(this, full, this.model.equip.rightArm, 'rightArm'),
         torso: isSameAsLast(this, full, this.model.equip.torso, 'torso'),
         feet: isSameAsLast(this, full, this.model.equip.feet, 'feet'),
+        items: diffArray(this, full, this.model.items, 'items'),
     }
 }
 
@@ -106,6 +107,8 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.rightArm) this.model.equip.rightArm = state.rightArm
     if (state.torso) this.model.equip.torso = state.torso
     if (state.feet) this.model.equip.feet = state.feet
+
+    if (state.items) applyDiffArray(this.model, 'items', state.items)
 }
 
 prestart(() => {
