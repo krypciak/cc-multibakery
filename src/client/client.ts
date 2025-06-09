@@ -15,6 +15,7 @@ import {
 } from './client-label-draw'
 import { RemoteServer } from '../server/remote/remote-server'
 import { isUsernameValid } from '../misc/username-util'
+import { PhysicsServer } from '../server/physics/physics-server'
 
 declare global {
     namespace ig {
@@ -325,6 +326,7 @@ prestart(() => {
     ig.Game.inject({
         deferredUpdate() {
             this.parent()
+            if (!(multi.server instanceof PhysicsServer)) return
             const inp = ig.client?.player?.inputManager
             if (!inp) return
             const menu = sc.menu.currentMenu
