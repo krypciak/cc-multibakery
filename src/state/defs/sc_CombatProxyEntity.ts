@@ -31,8 +31,8 @@ function getState(this: sc.CombatProxyEntity, full: boolean) {
                   combatant: this.combatant.uuid,
               }
             : {}),
-        pos: isSameAsLast(this, true, this.coll.pos, 'pos'),
-        dir: isSameAsLast(this, true, this.face, 'dir'),
+        pos: isSameAsLast(this, true, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
+        dir: isSameAsLast(this, true, this.face, 'dir', Vec2.equal, Vec2.create),
     }
 }
 function setState(this: sc.CombatProxyEntity, state: Return) {

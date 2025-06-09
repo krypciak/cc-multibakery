@@ -32,6 +32,12 @@ function getState(this: dummy.DummyPlayer, full: boolean) {
         face: isSameAsLast(this, full, this.face, 'face', Vec2.equal, Vec2.create),
         accelDir: isSameAsLast(this, full, this.coll.accelDir, 'accelDir', Vec2.equal, Vec2.create),
         animAlpha: isSameAsLast(this, full, this.animState.alpha, 'animAlpha'),
+
+        head: isSameAsLast(this, full, this.model.equip.head, 'head'),
+        leftArm: isSameAsLast(this, full, this.model.equip.leftArm, 'leftArm'),
+        rightArm: isSameAsLast(this, full, this.model.equip.rightArm, 'rightArm'),
+        torso: isSameAsLast(this, full, this.model.equip.torso, 'torso'),
+        feet: isSameAsLast(this, full, this.model.equip.feet, 'feet'),
     }
 }
 
@@ -94,6 +100,12 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             this.stepFx.lastFrame = frame
         }
     } else this.stepFx.lastFrame = -1
+
+    if (state.head) this.model.equip.head = state.head
+    if (state.leftArm) this.model.equip.leftArm = state.leftArm
+    if (state.rightArm) this.model.equip.rightArm = state.rightArm
+    if (state.torso) this.model.equip.torso = state.torso
+    if (state.feet) this.model.equip.feet = state.feet
 }
 
 prestart(() => {

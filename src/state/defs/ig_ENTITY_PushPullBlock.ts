@@ -20,7 +20,7 @@ declare global {
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.PushPullBlock, full: boolean) {
     return {
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos'),
+        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
     }
 }
 function setState(this: ig.ENTITY.PushPullBlock, state: Return) {

@@ -28,6 +28,7 @@ export interface RemoteServerSettings extends ServerSettings {
 export class RemoteServer extends Server<RemoteServerSettings> {
     remote = true
     netManager!: SocketNetManagerRemoteServer
+    notifyReadyMaps?: string[]
 
     constructor(public settings: RemoteServerSettings) {
         console.info('ROLE: RemoteServer')
@@ -114,6 +115,11 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             map.noStateAppliedYet = false
             instanceinator.instances[prevId].apply()
         }
+    }
+
+    async loadMap(name: string) {
+        await super.loadMap(name)
+        ;(this.notifyReadyMaps ??= []).push(name)
     }
 
     async leaveClient(client: Client) {

@@ -46,7 +46,6 @@ export class Client {
     private destroyed: boolean = false
 
     lastPingMs: number = 0
-    shouldSendFullState: boolean = false
 
     constructor(public settings: ClientSettings) {
         assert(isUsernameValid(settings.username))
@@ -120,7 +119,6 @@ export class Client {
 
     async teleport() {
         await this.player.teleport(this.player.mapName, this.player.marker)
-        this.shouldSendFullState = true
         const map = multi.server.maps[this.player.mapName]
         await this.linkMapToInstance(map)
     }

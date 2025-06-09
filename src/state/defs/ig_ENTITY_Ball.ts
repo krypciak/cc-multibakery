@@ -31,7 +31,7 @@ function getState(this: ig.ENTITY.Ball, full: boolean) {
                   dir: this.coll.vel,
               }
             : {}),
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos'),
+        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {

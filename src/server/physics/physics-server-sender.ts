@@ -36,12 +36,9 @@ function send() {
         const map = multi.server.maps[mapName]
         if (!map.inst) continue
 
-        const clients = mapsToSend[mapName]
-        const shoudSendFullState = clients.some(client => client.shouldSendFullState)
-        for (const client of clients) client.shouldSendFullState = false
-
-        mapPackets[mapName] = getMapUpdatePacket(map, shoudSendFullState)
+        mapPackets[mapName] = getMapUpdatePacket(map, multi.server.sendMapFullState.has(mapName))
     }
+    multi.server.sendMapFullState.clear()
 
     for (const conn of connections) {
         const data = getRemoteServerUpdatePacket(conn, mapPackets)
@@ -68,10 +65,13 @@ function getRemoteServerUpdatePacket(
     conn: NetConnection,
     mapPackets: Record<string, StateUpdatePacket>
 ): PhysicsServerUpdatePacket {
+    assert(multi.server instanceof PhysicsServer)
+
+    const readyMaps = multi.server.connectionReadyMaps.get(conn)
     const sendMapPackets: PhysicsServerUpdatePacket['mapPackets'] = {}
     for (const client of conn.clients) {
         const mapName = client.player.mapName
-        if (sendMapPackets[mapName]) continue
+        if (sendMapPackets[mapName] || !readyMaps || !readyMaps.has(mapName)) continue
         sendMapPackets[mapName] = mapPackets[mapName]
     }
 

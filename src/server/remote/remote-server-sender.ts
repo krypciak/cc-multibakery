@@ -57,13 +57,16 @@ function send() {
 
     const packet: RemoteServerUpdatePacket = {
         input: inputPackets,
+        readyMaps: multi.server.notifyReadyMaps,
     }
+    multi.server.notifyReadyMaps = undefined
 
     conn.send('update', packet)
 }
 
 export interface RemoteServerUpdatePacket {
     input: RemoteServerInputPacket
+    readyMaps?: string[]
 }
 type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
 export interface ClientInputPacket {

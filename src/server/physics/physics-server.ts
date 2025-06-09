@@ -29,6 +29,9 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     netManager?: NetManagerPhysicsServer
     httpServer?: PhysicsHttpServer
 
+    connectionReadyMaps: WeakMap<NetConnection, Set<string>> = new WeakMap()
+    sendMapFullState: Set<string> = new Set()
+
     constructor(public settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
         super()
@@ -112,7 +115,20 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.processPacket(conn, data)
     }
 
-    private processPacket(_conn: NetConnection, data: RemoteServerUpdatePacket) {
+    private processPacket(conn: NetConnection, data: RemoteServerUpdatePacket) {
+        if (data.readyMaps) {
+            let entry = this.connectionReadyMaps.get(conn)
+            if (!entry) {
+                entry = new Set()
+                this.connectionReadyMaps.set(conn, entry)
+            }
+            for (const map of data.readyMaps) {
+                if (!entry.has(map)) {
+                    entry.add(map)
+                    this.sendMapFullState.add(map)
+                }
+            }
+        }
         for (const username in data.input) {
             const client = multi.server.clients[username]
             if (!client) continue
