@@ -306,6 +306,11 @@ prestart(() => {
             this.parent(hook)
         },
     })
+    ig.EVENT_STEP.SHOW_TUTORIAL_START.inject({
+        start(data, eventCall) {
+            if (!ig.client) return this.parent(data, eventCall)
+        },
+    })
 })
 
 declare global {
