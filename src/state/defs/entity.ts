@@ -40,7 +40,10 @@ prestart(() => {
                 const typeId: EntityTypeId = entity.uuid?.substring(0, 2)
                 if (isStateEntity(entity)) {
                     const state = entity.getState(full)
-                    if (!state || (!entitySendEmpty.has(typeId) && Object.values(state).filter(Boolean).length == 0))
+                    if (
+                        !state ||
+                        (!entitySendEmpty.has(typeId) && Object.values(state).filter(a => a !== undefined).length == 0)
+                    )
                         continue
                     packet.states[entity.uuid] = state
                 }
@@ -96,6 +99,7 @@ export function isSameAsLast<V>(
     // @ts-expect-error
     const lastSent = (entity.lastSent ??= {})
     const lastValue = lastSent[key]
+
     const isEq = lastValue === undefined ? currValue === undefined : eq(lastValue, currValue)
     if (!full && isEq) return undefined
     lastSent[key] = clone(currValue)
