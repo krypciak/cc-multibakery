@@ -42,14 +42,18 @@ function setState(this: ig.ENTITY.Ball, state: Return) {
 prestart(() => {
     const typeId: EntityTypeId = 'ba'
     let ballId = 0
+    let ignoreUuidCall = false
     ig.ENTITY.Ball.inject({
         getState,
         setState,
         createUuid() {
+            if (ignoreUuidCall) return
             return `${typeId}${ballId++}`
         },
         init(x, y, z, settings) {
+            ignoreUuidCall = true
             this.parent(x, y, z, settings)
+            ignoreUuidCall = false
             /* ig.ENTITY.Ball creates a new settings object so uuid doesnt get set */
             this.setUuid(x, y, z, settings)
         },
