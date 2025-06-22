@@ -1,9 +1,9 @@
 import { assert } from '../../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { TemporarySet } from '../../misc/temporary-set'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { isSameAsLast } from './entity'
-import { TemporarySet } from './ig_ENTITY_Effect'
 
 declare global {
     namespace ig.ENTITY {
