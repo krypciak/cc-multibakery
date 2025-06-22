@@ -13,6 +13,7 @@ import { Opts } from '../../options'
 
 import './remote-server-sender'
 import './ignore-pause-screen'
+import './entity-physics'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -135,39 +136,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 }
 
-/* for client */
 prestart(() => {
     ig.EventManager.inject({
         update() {
             // TEMP fix todo
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             this.clear()
-        },
-    })
-
-    function shouldUpdatePhysicsOn(entity: ig.Entity): boolean {
-        return (
-            !(multi.server instanceof RemoteServer) ||
-            entity instanceof ig.ENTITY.Effect ||
-            entity instanceof ig.ENTITY.Particle ||
-            entity instanceof ig.ENTITY.CopyParticle ||
-            entity instanceof ig.ENTITY.CrosshairDot ||
-            entity instanceof ig.ENTITY.Crosshair
-        )
-    }
-    ig.CollEntry.inject({
-        update() {
-            if (!shouldUpdatePhysicsOn(this.entity)) return
-            this.parent()
-        },
-    })
-    ig.Physics.inject({
-        moveEntity(coll, collisionList) {
-            if (!shouldUpdatePhysicsOn(coll.entity)) {
-                console.log('blocking ig.Physics#moveEntity', findClassName(coll.entity))
-                return
-            }
-            this.parent(coll, collisionList)
         },
     })
 

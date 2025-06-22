@@ -138,6 +138,10 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Effect, typeId, applyPriority: 2000, sendEmpty: true })
 
+    ig.ENTITY.Effect.forceRemotePhysics = true
+    ig.ENTITY.Particle.forceRemotePhysics = true
+    ig.ENTITY.CopyParticle.forceRemotePhysics = true
+
     ig.ENTITY.Effect.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()

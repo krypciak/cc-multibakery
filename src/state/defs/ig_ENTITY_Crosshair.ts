@@ -56,6 +56,9 @@ prestart(() => {
     })
     registerNetEntity({ entityClass: ig.ENTITY.Crosshair, typeId, applyPriority: 3000 })
 
+    ig.ENTITY.Crosshair.forceRemotePhysics = true
+    ig.ENTITY.CrosshairDot.forceRemotePhysics = true
+
     ig.ENTITY.Crosshair.inject({
         deferredUpdate() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
