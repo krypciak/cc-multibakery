@@ -8,13 +8,7 @@ import { TemporarySet } from './ig_ENTITY_Effect'
 declare global {
     namespace ig.ENTITY {
         interface Ball {
-            getState(this: this, full: boolean): Return
-            setState(this: this, state: Return): void
-
             lastSent?: Return
-        }
-        interface BallConstructor {
-            create(netid: string, state: Return): ig.ENTITY.Ball | undefined
         }
     }
 }
@@ -60,7 +54,7 @@ prestart(() => {
     })
 
     const allBallsNetidSpawned = new TemporarySet<string>(200)
-    ig.ENTITY.Ball.create = (netid: string, state) => {
+    ig.ENTITY.Ball.create = (netid: string, state: Return) => {
         if (allBallsNetidSpawned.has(netid)) return
         allBallsNetidSpawned.push(netid)
 

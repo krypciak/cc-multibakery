@@ -9,13 +9,7 @@ import { undefinedIfFalsy, undefinedIfVec3Zero } from './entity'
 declare global {
     namespace ig.ENTITY {
         interface Effect {
-            getState(this: this, full: boolean): Return | undefined
-            setState(this: this, state: Return): void
-
             sentEver?: boolean
-        }
-        interface EffectConstructor {
-            create(netid: string, state: Return): ig.ENTITY.Effect | undefined
         }
     }
 }

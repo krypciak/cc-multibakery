@@ -7,13 +7,7 @@ import { createNetidStaticEntity, isSameAsLast } from './entity'
 declare global {
     namespace ig.ENTITY {
         interface PushPullBlock {
-            getState(this: this, full: boolean): Return
-            setState(this: this, state: Return): void
-
             lastSent?: Return
-        }
-        interface PushPullBlockConstructor {
-            create(netid: string, state: Return): ig.ENTITY.PushPullBlock
         }
     }
 }

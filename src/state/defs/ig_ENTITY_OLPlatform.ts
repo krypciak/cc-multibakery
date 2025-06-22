@@ -5,13 +5,7 @@ import { createNetidStaticEntity, isSameAsLast } from './entity'
 declare global {
     namespace ig.ENTITY {
         interface OLPlatform {
-            getState(this: this, full: boolean): Return
-            setState(this: this, state: Return): void
-
             lastSent?: Return
-        }
-        interface OLPlatformConstructor {
-            create(netid: string, state: Return): ig.ENTITY.OLPlatform
         }
     }
 }

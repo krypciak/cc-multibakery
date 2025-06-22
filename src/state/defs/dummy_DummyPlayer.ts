@@ -6,14 +6,9 @@ import { applyDiffArray, diffArray, isSameAsLast } from './entity'
 declare global {
     namespace dummy {
         interface DummyPlayer {
-            getState(this: this, full: boolean): Return
-            setState(this: this, state: Return): void
             createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
 
             lastSent?: Return
-        }
-        interface DummyPlayerConstructor {
-            create(netid: string, state: Return): dummy.DummyPlayer
         }
     }
 }

@@ -6,13 +6,7 @@ import { createNetidStaticEntity, isSameAsLast } from './entity'
 declare global {
     namespace ig.ENTITY {
         interface Switch {
-            getState(this: this, full: boolean): Return
-            setState(this: this, state: Return): void
-
             lastSent?: Return
-        }
-        interface SwitchConstructor {
-            create(netid: string, state: Return): ig.ENTITY.Switch
         }
     }
 }

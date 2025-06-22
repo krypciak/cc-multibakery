@@ -6,13 +6,7 @@ import { createNetidStaticEntity, isSameAsLast } from './entity'
 declare global {
     namespace ig.ENTITY {
         interface WallBase {
-            getState(this: this, full: boolean): Return
-            setState(this: this, state: Return): void
-
             lastSent?: Return
-        }
-        interface WallBaseConstructor {
-            create(netid: string, state: Return): ig.ENTITY.WallBase
         }
     }
 }

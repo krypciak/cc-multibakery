@@ -13,7 +13,7 @@ import { Opts } from '../../options'
 
 import './remote-server-sender'
 import './ignore-pause-screen'
-import './entity-physics'
+import './entity-physics-forcer'
 
 export type RemoteServerConnectionSettings = {
     host: string

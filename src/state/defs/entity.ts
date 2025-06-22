@@ -15,21 +15,28 @@ import './ig_ENTITY_Ball'
 import './sc_CombatProxyEntity'
 import './ig_ENTITY_Crosshair'
 
-interface StateEntityBase extends ig.Entity {
+declare global {
+    interface StateUpdatePacket {
+        states?: Record<string, object>
+    }
+}
+
+interface StateEntityBase {
     getState(full: boolean): object | undefined
     setState(value: object): void
 }
 
-export type EntityStateEntry = object
-
-declare global {
-    interface StateUpdatePacket {
-        states?: Record<string, EntityStateEntry>
-    }
+function isStateEntity(e: ig.Entity): e is StateEntityBase & ig.Entity {
+    return (e.getState && e.setState) as unknown as boolean
 }
 
-function isStateEntity(e: ig.Entity): e is StateEntityBase {
-    return 'getState' in e && 'setState' in e
+declare global {
+    namespace ig {
+        interface Entity extends Partial<StateEntityBase> {}
+    }
+    interface ImpactClass<Instance> {
+        create?(netid: string, state: unknown): ig.Entity | undefined
+    }
 }
 
 prestart(() => {
@@ -62,13 +69,9 @@ prestart(() => {
                 let entity: ig.Entity | undefined = ig.game.entitiesByNetid[netid]
                 if (!entity) {
                     const clazz = entityTypeIdToClass[typeId]
-                    if (!('create' in clazz)) continue
+                    if (!clazz.create) continue
 
-                    const create = clazz.create as (
-                        netid: string,
-                        state: typeof data
-                    ) => InstanceType<typeof clazz> | undefined
-                    entity = create(netid, data)
+                    entity = clazz.create(netid, data)
                     if (!entity) continue
                 }
                 assert(entity)

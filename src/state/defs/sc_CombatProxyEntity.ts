@@ -10,13 +10,7 @@ import { resolveProxyFromType } from './ig_ENTITY_Ball'
 declare global {
     namespace sc {
         interface CombatProxyEntity {
-            getState(this: this, full: boolean): Return | undefined
-            setState(this: this, state: Return): void
-
             lastSent?: Return
-        }
-        interface CombatProxyEntityConstructor {
-            create(netid: string, state: Return): sc.CombatProxyEntity
         }
     }
 }
