@@ -1,7 +1,7 @@
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { applyDiffArray, diffArray, isSameAsLast } from './entity'
+import { applyDiffArray, diffArray, isSameAsLast } from './state-util'
 
 declare global {
     namespace dummy {

@@ -5,7 +5,7 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
-import { undefinedIfFalsy, undefinedIfVec3Zero } from './entity'
+import { undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
 
 declare global {
     namespace ig.ENTITY {

@@ -2,7 +2,8 @@ import { assert } from '../../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createNetidStaticEntity, isSameAsLast } from './entity'
+import { createNetidStaticEntity, } from './entity'
+import { isSameAsLast } from './state-util'
 
 declare global {
     namespace ig.ENTITY {

@@ -4,7 +4,7 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
-import { isSameAsLast } from './entity'
+import { isSameAsLast } from './state-util'
 import { resolveProxyFromType } from './proxy-util'
 
 declare global {
