@@ -62,9 +62,6 @@ importers:
       ultimate-crosscode-typedefs:
         specifier: github:krypciak/ultimate-crosscode-typedefs
         version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/34fe8d2b966048e2749b00697e35c898baf4d7ac
-      uuid-by-string:
-        specifier: ^4.0.0
-        version: 4.0.0
 
 packages:
 
@@ -442,12 +439,6 @@ packages:
   isarray@1.0.0:
     resolution: {integrity: sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==}
 
-  js-md5@0.7.3:
-    resolution: {integrity: sha512-ZC41vPSTLKGwIRjqDh8DfXoCrdQIyBgspJVPXHBGu4nZlAEvG3nf+jO9avM9RmLiGakg7vz974ms99nEV0tmTQ==}
-
-  js-sha1@0.6.0:
-    resolution: {integrity: sha512-01gwBFreYydzmU9BmZxpVk6svJJHrVxEN3IOiGl6VO93bVKYETJ0sIth6DASI6mIFdt7NmfX9UiByRzsYHGU9w==}
-
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
@@ -616,9 +607,6 @@ packages:
 
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
-
-  uuid-by-string@4.0.0:
-    resolution: {integrity: sha512-88ZSfcSkN04juiLqSsuyteqlSrXNFdsEPzSv3urnElDXNsZUXQN0smeTnh99x2DE15SCUQNgqKBfro54CuzHNQ==}
 
   vary@1.1.2:
     resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
@@ -975,10 +963,6 @@ snapshots:
 
   isarray@1.0.0: {}
 
-  js-md5@0.7.3: {}
-
-  js-sha1@0.6.0: {}
-
   math-intrinsics@1.1.0: {}
 
   mime-db@1.52.0: {}
@@ -1175,11 +1159,6 @@ snapshots:
   url-join@4.0.1: {}
 
   util-deprecate@1.0.2: {}
-
-  uuid-by-string@4.0.0:
-    dependencies:
-      js-md5: 0.7.3
-      js-sha1: 0.6.0
 
   vary@1.1.2: {}
 

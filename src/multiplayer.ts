@@ -2,7 +2,7 @@ import { Server } from './server/server'
 import { assert } from './misc/assert'
 
 // import './misc/skip-title-screen'
-import './misc/entity-uuid'
+import './misc/entity-netid'
 import './game-loop'
 import './misc/godmode'
 import './dummy/dummy-player'

@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -16,7 +16,7 @@ declare global {
             lastSent?: Return
         }
         interface CombatProxyEntityConstructor {
-            create(uuid: string, state: Return): sc.CombatProxyEntity
+            create(netid: string, state: Return): sc.CombatProxyEntity
         }
     }
 }
@@ -28,7 +28,7 @@ function getState(this: sc.CombatProxyEntity, full: boolean) {
         ...(!(this as any).lastSent || full
             ? {
                   proxyType: this.proxyType,
-                  combatant: this.combatant.uuid,
+                  combatant: this.combatant.netid,
               }
             : {}),
         pos: isSameAsLast(this, true, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
@@ -48,12 +48,12 @@ prestart(() => {
     sc.CombatProxyEntity.inject({
         getState,
         setState,
-        createUuid() {
+        createNetid() {
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${proxyId++}`
         },
     })
 
-    sc.CombatProxyEntity.create = (uuid: string, state: Return) => {
+    sc.CombatProxyEntity.create = (netid: string, state: Return) => {
         assert(state.pos)
         assert(state.combatant)
         assert(state.proxyType)
@@ -61,7 +61,7 @@ prestart(() => {
 
         const { x, y, z } = state.pos
 
-        const combatant = ig.game.entitiesByUUID[state.combatant]
+        const combatant = ig.game.entitiesByNetid[state.combatant]
         assert(combatant, `target not found:  ${state.combatant}`)
         assert(combatant instanceof sc.BasicCombatant)
 
@@ -70,18 +70,18 @@ prestart(() => {
         const data: sc.CombatProxyEntity.Data = proxy.data
 
         const settings: sc.CombatProxyEntity.Settings = {
-            uuid,
+            netid,
             dir: state.dir,
             combatant,
             data,
         }
-        assert(!ig.game.entitiesByUUID[uuid])
+        assert(!ig.game.entitiesByNetid[netid])
         const entity = ig.game.spawnEntity(sc.CombatProxyEntity, x, y, z, settings)
-        assert(ig.game.entitiesByUUID[uuid])
+        assert(ig.game.entitiesByNetid[netid])
 
         return entity
     }
-    registerEntityTypeId(sc.CombatProxyEntity, typeId, undefined, true)
+    registerNetEntity(sc.CombatProxyEntity, typeId, undefined, true)
 }, 2)
 
 declare global {
@@ -100,8 +100,8 @@ prestart(() => {
         },
         set(packet) {
             if (!packet.destroyCombatProxies) return
-            for (const uuid of packet.destroyCombatProxies) {
-                const entity = ig.game.entitiesByUUID[uuid]
+            for (const netid of packet.destroyCombatProxies) {
+                const entity = ig.game.entitiesByNetid[netid]
                 if (!entity) {
                     continue
                 }
@@ -114,7 +114,7 @@ prestart(() => {
     sc.CombatProxyEntity.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && !ig.lastStatePacket?.states?.[this.uuid]) return
+            if (!ig.settingState && !ig.lastStatePacket?.states?.[this.netid]) return
 
             ignoreDestroy = true
             this.parent()
@@ -123,7 +123,7 @@ prestart(() => {
         destroy(type) {
             if (multi.server instanceof PhysicsServer && !this.destroyType) {
                 ig.destroyCombatProxies ??= []
-                ig.destroyCombatProxies.push(this.uuid)
+                ig.destroyCombatProxies.push(this.netid)
             } else if (multi.server instanceof RemoteServer) {
                 if (ignoreDestroy) return
             }

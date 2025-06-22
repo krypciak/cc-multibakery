@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { isSameAsLast } from './entity'
@@ -14,7 +14,7 @@ declare global {
             lastSent?: Return
         }
         interface BallConstructor {
-            create(uuid: string, state: Return): ig.ENTITY.Ball | undefined
+            create(netid: string, state: Return): ig.ENTITY.Ball | undefined
         }
     }
 }
@@ -26,7 +26,7 @@ function getState(this: ig.ENTITY.Ball, full: boolean) {
     return {
         ...(!(this as any).lastSent || full
             ? {
-                  combatant: combatant.uuid,
+                  combatant: combatant.netid,
                   proxyType: this.proxyType,
                   dir: this.coll.vel,
               }
@@ -42,29 +42,29 @@ function setState(this: ig.ENTITY.Ball, state: Return) {
 prestart(() => {
     const typeId: EntityTypeId = 'ba'
     let ballId = 0
-    let ignoreUuidCall = false
+    let ignoreNetidCall = false
     ig.ENTITY.Ball.inject({
         getState,
         setState,
-        createUuid() {
-            if (ignoreUuidCall) return
+        createNetid() {
+            if (ignoreNetidCall) return
             return `${typeId}${ballId++}`
         },
         init(x, y, z, settings) {
-            ignoreUuidCall = true
+            ignoreNetidCall = true
             this.parent(x, y, z, settings)
-            ignoreUuidCall = false
-            /* ig.ENTITY.Ball creates a new settings object so uuid doesnt get set */
-            this.setUuid(x, y, z, settings)
+            ignoreNetidCall = false
+            /* ig.ENTITY.Ball creates a new settings object so netid doesnt get set */
+            this.setNetid(x, y, z, settings)
         },
     })
 
-    const allBallsUuidSpawned = new TemporarySet<string>(200)
-    ig.ENTITY.Ball.create = (uuid: string, state) => {
-        if (allBallsUuidSpawned.has(uuid)) return
-        allBallsUuidSpawned.push(uuid)
+    const allBallsNetidSpawned = new TemporarySet<string>(200)
+    ig.ENTITY.Ball.create = (netid: string, state) => {
+        if (allBallsNetidSpawned.has(netid)) return
+        allBallsNetidSpawned.push(netid)
 
-        assert(!ig.game.entitiesByUUID[uuid])
+        assert(!ig.game.entitiesByNetid[netid])
 
         assert(state.proxyType)
         const proxy = resolveProxyFromType(state.proxyType)
@@ -72,7 +72,7 @@ prestart(() => {
         const ballInfo: sc.BallInfo.Data = proxy.data
 
         assert(state.combatant)
-        const combatant = ig.game.entitiesByUUID[state.combatant]
+        const combatant = ig.game.entitiesByNetid[state.combatant]
         assert(combatant)
         assert(combatant instanceof ig.ENTITY.Combatant)
 
@@ -84,13 +84,13 @@ prestart(() => {
             params: combatant.params,
             party: combatant.party,
             combatant,
-            uuid,
+            netid: netid,
         }
 
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)
         return ball
     }
-    registerEntityTypeId(ig.ENTITY.Ball, typeId, undefined, true)
+    registerNetEntity(ig.ENTITY.Ball, typeId, undefined, true)
 
     ig.ENTITY.Ball.inject({
         update() {

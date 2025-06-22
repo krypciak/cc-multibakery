@@ -1,6 +1,6 @@
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
-import { createUuidStaticEntity, isSameAsLast } from './entity'
+import { createNetidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
@@ -11,7 +11,7 @@ declare global {
             lastSent?: Return
         }
         interface OLPlatformConstructor {
-            create(uuid: string, state: Return): ig.ENTITY.OLPlatform
+            create(netid: string, state: Return): ig.ENTITY.OLPlatform
         }
     }
 }
@@ -52,12 +52,12 @@ prestart(() => {
     ig.ENTITY.OLPlatform.inject({
         getState,
         setState,
-        createUuid(x, y, z, settings) {
-            return createUuidStaticEntity(typeId, x, y, z, settings)
+        createNetid(x, y, z, settings) {
+            return createNetidStaticEntity(typeId, x, y, z, settings)
         },
     })
     ig.ENTITY.OLPlatform.create = () => {
         throw new Error('ig.ENTITY.OLPlatform.create not implemented')
     }
-    registerEntityTypeId(ig.ENTITY.OLPlatform, typeId)
+    registerNetEntity(ig.ENTITY.OLPlatform, typeId)
 }, 2)

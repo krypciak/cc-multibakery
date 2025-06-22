@@ -131,7 +131,7 @@ export class Client {
         cig.game.size = mig.game.size
         cig.game.mapName = mig.game.mapName
         cig.game.entities = mig.game.entities
-        cig.game.entitiesByUUID = mig.game.entitiesByUUID
+        cig.game.entitiesByNetid = mig.game.entitiesByNetid
         cig.game.mapEntities = mig.game.mapEntities
         cig.game.shownEntities = mig.game.shownEntities
         cig.game.freeEntityIds = mig.game.freeEntityIds

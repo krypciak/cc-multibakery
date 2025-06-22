@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -15,7 +15,7 @@ declare global {
             sentEver?: boolean
         }
         interface EffectConstructor {
-            create(uuid: string, state: Return): ig.ENTITY.Effect | undefined
+            create(netid: string, state: Return): ig.ENTITY.Effect | undefined
         }
     }
 }
@@ -28,8 +28,8 @@ function getState(this: ig.ENTITY.Effect, full: boolean) {
             pos: this.coll.pos,
             effectName: this.effect!.effectName,
             sheetPath: this.effect!.sheet.path,
-            target: undefinedIfFalsy(this.target?.uuid),
-            target2: undefinedIfFalsy(this.target2.entity?.uuid),
+            target: undefinedIfFalsy(this.target?.netid),
+            target2: undefinedIfFalsy(this.target2.entity?.netid),
             target2Point: undefinedIfFalsy(this.target2.point),
             target2Align: undefinedIfFalsy(this.target2.align),
             target2Offset: undefinedIfVec3Zero(this.target2.offset),
@@ -64,12 +64,12 @@ function setState(this: ig.ENTITY.Effect, state: Return) {
 function resolveObjects(state: Return) {
     let target
     if (state.target) {
-        target = ig.game.entitiesByUUID[state.target]
+        target = ig.game.entitiesByNetid[state.target]
         if (!target) console.warn('target not found:', state.target)
     }
     let target2
     if (state.target2) {
-        target2 = ig.game.entitiesByUUID[state.target2]
+        target2 = ig.game.entitiesByNetid[state.target2]
         if (!target2) console.warn('target2 not found:', state.target2)
     }
     assert(state.sheetPath)
@@ -108,7 +108,7 @@ prestart(() => {
     ig.ENTITY.Effect.inject({
         getState,
         setState,
-        createUuid() {
+        createNetid() {
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
         },
         reset(x, y, z, settings) {
@@ -117,10 +117,10 @@ prestart(() => {
         },
     })
 
-    const allEffectsUuidSpawned = new TemporarySet<string>(50)
-    ig.ENTITY.Effect.create = (uuid: string, state: Return) => {
-        if (allEffectsUuidSpawned.has(uuid)) return
-        allEffectsUuidSpawned.push(uuid)
+    const allEffectsNetidSpawned = new TemporarySet<string>(50)
+    ig.ENTITY.Effect.create = (netid: string, state: Return) => {
+        if (allEffectsNetidSpawned.has(netid)) return
+        allEffectsNetidSpawned.push(netid)
 
         const { target, target2, effect } = resolveObjects(state)
         const { x, y, z } = state.pos!
@@ -128,26 +128,26 @@ prestart(() => {
             effect,
             target,
             target2,
-            uuid,
+            netid,
         })
-        assert(!ig.game.entitiesByUUID[uuid])
+        assert(!ig.game.entitiesByNetid[netid])
         const entity = ig.game.spawnEntity(ig.ENTITY.Effect, x, y, z, settings)
-        assert(ig.game.entitiesByUUID[uuid])
+        assert(ig.game.entitiesByNetid[netid])
 
         return entity
     }
-    registerEntityTypeId(ig.ENTITY.Effect, 'ef', 2000, true)
+    registerNetEntity(ig.ENTITY.Effect, 'ef', 2000, true)
 
     ig.ENTITY.Effect.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && ig.lastStatePacket?.states?.[this.uuid]) return
+            if (!ig.settingState && ig.lastStatePacket?.states?.[this.netid]) return
 
             this.parent()
         },
         deferredUpdate() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && ig.lastStatePacket?.states?.[this.uuid]) return
+            if (!ig.settingState && ig.lastStatePacket?.states?.[this.netid]) return
 
             this.parent()
         },
@@ -170,10 +170,10 @@ prestart(() => {
         },
         set(packet) {
             if (!packet.clearEffects) return
-            for (const [uuid, withTheSameGroup] of packet.clearEffects) {
-                const entity = ig.game.entitiesByUUID[uuid]
+            for (const [netid, withTheSameGroup] of packet.clearEffects) {
+                const entity = ig.game.entitiesByNetid[netid]
                 if (!entity) {
-                    // console.warn('entity', uuid, 'not found, tried to effect clear')
+                    // console.warn('entity', netid, 'not found, tried to effect clear')
                     continue
                 }
                 ig.EffectTools.clearEffects(entity, withTheSameGroup)
@@ -185,7 +185,7 @@ prestart(() => {
         orig(entity, withTheSameGroup)
         if (!(multi.server instanceof PhysicsServer)) return
         ig.clearEffects ??= []
-        ig.clearEffects.push([entity.uuid, withTheSameGroup])
+        ig.clearEffects.push([entity.netid, withTheSameGroup])
     }
 })
 
@@ -206,10 +206,10 @@ prestart(() => {
         },
         set(packet) {
             if (!packet.stopEffects) return
-            for (const uuid of packet.stopEffects) {
-                const entity = ig.game.entitiesByUUID[uuid]
+            for (const netid of packet.stopEffects) {
+                const entity = ig.game.entitiesByNetid[netid]
                 if (!entity) {
-                    // console.warn('effect', uuid, 'not found, tried to stop')
+                    // console.warn('effect', netid, 'not found, tried to stop')
                     continue
                 }
                 assert(entity instanceof ig.ENTITY.Effect)
@@ -222,7 +222,8 @@ prestart(() => {
             this.parent()
             if (!(multi.server instanceof PhysicsServer)) return
             ig.stopEffects ??= []
-            ig.stopEffects.push(this.uuid)
+            ig.stopEffects.push(this.netid)
+            console.log('stopping', this.netid, this.effect?.effectName)
         },
     })
 })

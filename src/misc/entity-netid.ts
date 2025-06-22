@@ -11,18 +11,18 @@ declare global {
     namespace ig {
         namespace Entity {
             interface Settings {
-                uuid?: string
+                netid?: string
             }
         }
         interface Entity {
-            uuid: string
+            netid: string
 
-            createUuid(this: this, x: number, y: number, z: number, settings: ig.Entity.Settings): string | void
-            setUuid(this: this, x: number, y: number, z: number, settings: ig.Entity.Settings): void
+            createNetid(this: this, x: number, y: number, z: number, settings: ig.Entity.Settings): string | void
+            setNetid(this: this, x: number, y: number, z: number, settings: ig.Entity.Settings): void
         }
 
         interface Game {
-            entitiesByUUID: Record<string, ig.Entity>
+            entitiesByNetid: Record<string, ig.Entity>
         }
     }
 }
@@ -31,7 +31,7 @@ export const entityTypeIdToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
 export const entitySendEmpty: Set<EntityTypeId> = new Set()
 
-export function registerEntityTypeId(
+export function registerNetEntity(
     entityClass: EntityClass,
     typeId: EntityTypeId,
     applyPriority = 1000,
@@ -48,35 +48,35 @@ prestart(() => {
     ig.Game.inject({
         init() {
             this.parent()
-            this.entitiesByUUID = {}
+            this.entitiesByNetid = {}
         },
     })
 
     ig.Entity.inject({
         init(x, y, z, settings) {
             this.parent(x, y, z, settings)
-            this.setUuid(x, y, z, settings)
+            this.setNetid(x, y, z, settings)
         },
         reset(x, y, z, settings) {
             this.parent(x, y, z, settings)
-            this.setUuid(x, y, z, settings)
+            this.setNetid(x, y, z, settings)
         },
-        createUuid() {},
-        setUuid(x, y, z, settings) {
-            const uuid = settings.uuid ?? this.createUuid(x, y, z, settings)
-            if (!uuid) return
+        createNetid() {},
+        setNetid(x, y, z, settings) {
+            const netid = settings.netid ?? this.createNetid(x, y, z, settings)
+            if (!netid) return
 
-            if (ig.game.entitiesByUUID[this.uuid]) {
-                delete ig.game.entitiesByUUID[this.uuid]
+            if (ig.game.entitiesByNetid[this.netid]) {
+                delete ig.game.entitiesByNetid[this.netid]
             }
 
-            assert(!ig.game.entitiesByUUID[uuid], 'Entity uuid overlap')
-            this.uuid = uuid
-            ig.game.entitiesByUUID[this.uuid] = this
+            assert(!ig.game.entitiesByNetid[netid], 'Entity netid overlap')
+            this.netid = netid
+            ig.game.entitiesByNetid[this.netid] = this
         },
         onKill() {
             this.parent()
-            if (this.uuid) delete ig.game.entitiesByUUID[this.uuid]
+            if (this.netid) delete ig.game.entitiesByNetid[this.netid]
         },
     })
 }, 0)

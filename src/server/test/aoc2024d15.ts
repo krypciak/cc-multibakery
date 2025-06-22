@@ -99,21 +99,21 @@ function recursiveMoveCheck(
     const retList: sc.AocPushPullable[] = [this]
 
     if (depth > 100) throw new Error('oopsie daisy depth')
-    //console.log('rec depth:', depth, ', uuid:', this.entity.uuid, 'isPushingBlocked:', isPushingBlocked)
-    collList = collList.filter(coll => coll.entity.uuid != this.entity.uuid)
+    //console.log('rec depth:', depth, ', netid:', this.entity.netid, 'isPushingBlocked:', isPushingBlocked)
+    collList = collList.filter(coll => coll.entity.netid != this.entity.netid)
     if (collList.some(coll => !(coll.entity instanceof ig.ENTITY.AocBox))) return []
     if (collList.length == 0 && isPushingBlocked) return []
     const prevLen = collList.length
-    collList = collList.filter(coll => !previous.has(coll.entity.uuid))
+    collList = collList.filter(coll => !previous.has(coll.entity.netid))
 
-    previous.add(this.entity.uuid)
-    if (checkLinked && this.entity.linked && !previous.has(this.entity.linked.uuid)) {
+    previous.add(this.entity.netid)
+    if (checkLinked && this.entity.linked && !previous.has(this.entity.linked.netid)) {
         if (!isPulling || vx == 0) {
             //console.log('adding linked coll')
             collList.push(this.entity.linked.coll)
         }
-        //console.log('adding linked: ', this.entity.linked.uuid, 'isPulling:', isPulling, 'vx:', vx, 'vy:', vy)
-        previous.add(this.entity.linked.uuid)
+        //console.log('adding linked: ', this.entity.linked.netid, 'isPulling:', isPulling, 'vx:', vx, 'vy:', vy)
+        previous.add(this.entity.linked.netid)
         retList.push(this.entity.linked.pushPullable)
     }
     if (checkLinked && isPushingBlocked && prevLen > 0 && collList.length == 0) return retList
@@ -121,7 +121,7 @@ function recursiveMoveCheck(
     if (collList.length > 0) {
         for (const coll of collList) {
             const box = coll.entity as ig.ENTITY.AocBox
-            if (box.uuid != this.entity.linked?.uuid && previous.has(box.uuid)) continue
+            if (box.netid != this.entity.linked?.netid && previous.has(box.netid)) continue
 
             const ret = recursiveMoveCheck.call(box.pushPullable, vx, vy, isPulling, previous, depth + 1, checkLinked)
             if (ret.length == 0) return []

@@ -1,7 +1,7 @@
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createUuidStaticEntity, isSameAsLast } from './entity'
+import { createNetidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
@@ -12,7 +12,7 @@ declare global {
             lastSent?: Return
         }
         interface MultiHitSwitchConstructor {
-            create(uuid: string, state: Return): ig.ENTITY.MultiHitSwitch
+            create(netid: string, state: Return): ig.ENTITY.MultiHitSwitch
         }
     }
 }
@@ -48,14 +48,14 @@ prestart(() => {
     ig.ENTITY.MultiHitSwitch.inject({
         getState,
         setState,
-        createUuid(x, y, z, settings) {
-            return createUuidStaticEntity(typeId, x, y, z, settings)
+        createNetid(x, y, z, settings) {
+            return createNetidStaticEntity(typeId, x, y, z, settings)
         },
     })
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
-    registerEntityTypeId(ig.ENTITY.MultiHitSwitch, typeId)
+    registerNetEntity(ig.ENTITY.MultiHitSwitch, typeId)
 
     ig.ENTITY.MultiHitSwitch.inject({
         update() {

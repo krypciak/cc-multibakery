@@ -35,11 +35,11 @@ export class ServerPlayer {
         }
 
         if (this.attachDummy) {
-            const uuid = dummy.DummyPlayer.prototype.createUuid.call({} as any, 0, 0, 0, dummySettings)
+            const netid = dummy.DummyPlayer.prototype.createNetid.call({} as any, 0, 0, 0, dummySettings)
 
             this.dummy = await new Promise<dummy.DummyPlayer>(resolve => {
                 const func = () => {
-                    const entity = ig.game.entitiesByUUID[uuid]
+                    const entity = ig.game.entitiesByNetid[netid]
                     if (entity) {
                         assert(entity instanceof dummy.DummyPlayer)
                         resolve(entity)

@@ -1,7 +1,7 @@
 import { prestart } from '../../plugin'
 import { addStateHandler } from '../states'
 import { assert } from '../../misc/assert'
-import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../../misc/entity-uuid'
+import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../../misc/entity-netid'
 
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
@@ -37,7 +37,7 @@ prestart(() => {
         get(packet, full) {
             packet.states = {}
             for (const entity of ig.game.entities) {
-                const typeId: EntityTypeId = entity.uuid?.substring(0, 2)
+                const typeId: EntityTypeId = entity.netid?.substring(0, 2)
                 if (isStateEntity(entity)) {
                     const state = entity.getState(full)
                     if (
@@ -45,7 +45,7 @@ prestart(() => {
                         (!entitySendEmpty.has(typeId) && Object.values(state).filter(a => a !== undefined).length == 0)
                     )
                         continue
-                    packet.states[entity.uuid] = state
+                    packet.states[entity.netid] = state
                 }
             }
         },
@@ -58,17 +58,17 @@ prestart(() => {
             })
             states.sort(([typeA], [typeB]) => entityApplyPriority[typeA] - entityApplyPriority[typeB])
 
-            for (const [typeId, uuid, data] of states) {
-                let entity: ig.Entity | undefined = ig.game.entitiesByUUID[uuid]
+            for (const [typeId, netid, data] of states) {
+                let entity: ig.Entity | undefined = ig.game.entitiesByNetid[netid]
                 if (!entity) {
                     const clazz = entityTypeIdToClass[typeId]
                     if (!('create' in clazz)) continue
 
                     const create = clazz.create as (
-                        uuid: string,
+                        netid: string,
                         state: typeof data
                     ) => InstanceType<typeof clazz> | undefined
-                    entity = create(uuid, data)
+                    entity = create(netid, data)
                     if (!entity) continue
                 }
                 assert(entity)
@@ -164,7 +164,7 @@ function encodeCustomBase(num: number) {
     return str
 }
 
-export function createUuidStaticEntity(
+export function createNetidStaticEntity(
     typeId: string,
     x: number,
     y: number,

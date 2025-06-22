@@ -1,4 +1,4 @@
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { applyDiffArray, diffArray, isSameAsLast } from './entity'
@@ -8,12 +8,12 @@ declare global {
         interface DummyPlayer {
             getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
-            createUuid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
+            createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
 
             lastSent?: Return
         }
         interface DummyPlayerConstructor {
-            create(uuid: string, state: Return): dummy.DummyPlayer
+            create(netid: string, state: Return): dummy.DummyPlayer
         }
     }
 }
@@ -124,21 +124,21 @@ prestart(() => {
     dummy.DummyPlayer.inject({
         getState,
         setState,
-        createUuid(_x, _y, _z, settings) {
+        createNetid(_x, _y, _z, settings) {
             return `${typeId}${settings.data.username}`
         },
     })
-    dummy.DummyPlayer.create = (uuid: string, _state) => {
+    dummy.DummyPlayer.create = (netid: string, _state) => {
         const inputManager = new dummy.input.Puppet.InputManager()
-        const username = uuid.substring(2)
+        const username = netid.substring(2)
         const entity = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
-            uuid,
+            netid,
             data: { username },
             inputManager,
         })
         return entity
     }
-    registerEntityTypeId(dummy.DummyPlayer, typeId)
+    registerNetEntity(dummy.DummyPlayer, typeId)
 
     dummy.DummyPlayer.inject({
         update() {

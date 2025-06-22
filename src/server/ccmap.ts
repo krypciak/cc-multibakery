@@ -109,7 +109,7 @@ export class CCMap {
             this.enterEntity(e.gui.crosshair)
         }
         await waitForScheduledTask(this.inst, () => {
-            ig.game.entitiesByUUID[e.uuid] = e
+            ig.game.entitiesByNetid[e.netid] = e
 
             const oldColl = e.coll
             e.coll = new ig.CollEntry(e)
@@ -147,7 +147,7 @@ export class CCMap {
 
         await waitForScheduledTask(this.inst, () => {
             ig.game.entities.erase(e)
-            delete ig.game.entitiesByUUID[e.uuid]
+            delete ig.game.entitiesByNetid[e.netid]
             e.clearEntityAttached()
 
             /* ig.game.removeEntity(e) */

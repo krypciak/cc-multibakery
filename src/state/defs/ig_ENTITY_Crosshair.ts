@@ -2,7 +2,7 @@ import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
 import * as inputBackup from '../../dummy/dummy-input'
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { isSameAsLast } from './entity'
 
 declare global {
@@ -10,7 +10,7 @@ declare global {
         interface Crosshair {
             getState(this: this, full: boolean): Return
             setState(this: this, state: Return): void
-            createUuid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string
+            createNetid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string
 
             lastSent?: Return
         }
@@ -50,11 +50,11 @@ prestart(() => {
     ig.ENTITY.Crosshair.inject({
         getState,
         setState,
-        createUuid(_x, _y, _z, settings) {
-            return `${typeId}${settings.thrower.uuid}`
+        createNetid(_x, _y, _z, settings) {
+            return `${typeId}${settings.thrower.netid}`
         },
     })
-    registerEntityTypeId(ig.ENTITY.Crosshair, typeId, 3000)
+    registerNetEntity(ig.ENTITY.Crosshair, typeId, 3000)
 
     ig.ENTITY.Crosshair.inject({
         deferredUpdate() {

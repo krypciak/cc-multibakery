@@ -28,8 +28,7 @@
         "socket.io-client": "^4.8.1",
         "spdy": "^4.0.2",
         "typescript": "^5.8.3",
-        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
-        "uuid-by-string": "^4.0.0"
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
     },
     "pnpm": {
         "onlyBuiltDependencies": ["esbuild", "node"]

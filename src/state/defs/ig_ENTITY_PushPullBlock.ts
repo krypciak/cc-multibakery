@@ -1,8 +1,8 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createUuidStaticEntity, isSameAsLast } from './entity'
+import { createNetidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
     namespace ig.ENTITY {
@@ -13,7 +13,7 @@ declare global {
             lastSent?: Return
         }
         interface PushPullBlockConstructor {
-            create(uuid: string, state: Return): ig.ENTITY.PushPullBlock
+            create(netid: string, state: Return): ig.ENTITY.PushPullBlock
         }
     }
 }
@@ -51,14 +51,14 @@ prestart(() => {
     ig.ENTITY.PushPullBlock.inject({
         getState,
         setState,
-        createUuid(x, y, z, settings) {
-            return createUuidStaticEntity(typeId, x, y, z, settings)
+        createNetid(x, y, z, settings) {
+            return createNetidStaticEntity(typeId, x, y, z, settings)
         },
     })
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
     }
-    registerEntityTypeId(ig.ENTITY.PushPullBlock, typeId, undefined, true)
+    registerNetEntity(ig.ENTITY.PushPullBlock, typeId, undefined, true)
 
     sc.PushPullable.inject({
         stopSound() {

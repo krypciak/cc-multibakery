@@ -37,9 +37,9 @@ declare global {
                 boxHideSmall?: boolean
 
                 removeAll(this: this): void
-                removeFor(this: this, uuid: string, skipTransition?: boolean): void
+                removeFor(this: this, netid: string, skipTransition?: boolean): void
                 addFor(this: this, player: dummy.DummyPlayer, skipTransition?: boolean): void
-                updateText(this: this, uuid: string, newText: string): void
+                updateText(this: this, netid: string, newText: string): void
             }
             interface BoxGuiAddonConstructor extends ImpactClass<BoxGuiAddon> {
                 new (
@@ -74,17 +74,17 @@ prestart(() => {
             addAddon(this, game)
         },
         removeAll() {
-            for (const uuid in this.guiRefs) this.removeFor(uuid)
+            for (const netid in this.guiRefs) this.removeFor(netid)
         },
-        removeFor(uuid, skipTransition = false) {
-            const gui = this.guiRefs[uuid]
+        removeFor(netid, skipTransition = false) {
+            const gui = this.guiRefs[netid]
             if (!gui) return
 
-            delete this.guiRefs[uuid]
+            delete this.guiRefs[netid]
             gui.doStateTransition(gui.hideSmall ? 'HIDDEN_SMALL' : 'HIDDEN', skipTransition, true)
         },
         addFor(player, skipTransition = false) {
-            assert(!this.guiRefs[player.uuid])
+            assert(!this.guiRefs[player.netid])
             const gui = new sc.SmallEntityBox(
                 player,
                 this.textGetter(player),
@@ -95,28 +95,28 @@ prestart(() => {
             gui.hideSmall = !!this.boxHideSmall
             gui.doStateTransition('DEFAULT', skipTransition)
 
-            this.guiRefs[player.uuid] = gui
+            this.guiRefs[player.netid] = gui
             ig.gui.addGuiElement(gui)
         },
-        updateText(uuid, newText) {
-            const gui = this.guiRefs[uuid]
+        updateText(netid, newText) {
+            const gui = this.guiRefs[netid]
             if (gui.textGui && gui.textGui.text?.toString() != newText) {
                 gui.textGui.setText(newText)
                 gui.setSize(gui.textGui.hook.size.x + 16, 11)
             }
         },
         onPostUpdate() {
-            const uuidsPresent: Record<string, boolean> = {}
+            const netidsPresent: Record<string, boolean> = {}
             for (const player of ig.game.getEntitiesByType(dummy.DummyPlayer)) {
-                uuidsPresent[player.uuid] = true
+                netidsPresent[player.netid] = true
 
-                if (!this.guiRefs[player.uuid] && this.condition(player)) this.addFor(player)
+                if (!this.guiRefs[player.netid] && this.condition(player)) this.addFor(player)
             }
-            for (const uuid in this.guiRefs) {
-                const player = ig.game.entitiesByUUID[uuid] as dummy.DummyPlayer
-                if (!uuidsPresent[uuid] || !this.condition(player)) {
-                    this.removeFor(uuid)
-                } else this.updateText(uuid, this.textGetter(player))
+            for (const netid in this.guiRefs) {
+                const player = ig.game.entitiesByNetid[netid] as dummy.DummyPlayer
+                if (!netidsPresent[netid] || !this.condition(player)) {
+                    this.removeFor(netid)
+                } else this.updateText(netid, this.textGetter(player))
             }
         },
     })
