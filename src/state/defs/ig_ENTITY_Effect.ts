@@ -22,16 +22,12 @@ declare global {
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
 function getState(this: ig.ENTITY.Effect, full: boolean) {
-    const effectName = this.effect!.effectName
-    const sheetPath = this.effect!.sheet.path
-    if (effectName == 'ballTrail') return
-
     let data
     if (!this.sentEver || full) {
         data = {
             pos: this.coll.pos,
-            effectName,
-            sheetPath,
+            effectName: this.effect!.effectName,
+            sheetPath: this.effect!.sheet.path,
             target: undefinedIfFalsy(this.target?.uuid),
             target2: undefinedIfFalsy(this.target2.entity?.uuid),
             target2Point: undefinedIfFalsy(this.target2.point),

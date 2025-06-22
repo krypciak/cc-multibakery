@@ -64,5 +64,9 @@ prestart(() => {
             /* skip this.currentHits decreasing */
             ig.AnimatedEntity.prototype.update.call(this)
         },
+        ballHit(ball) {
+            if (!(multi.server instanceof RemoteServer)) return this.parent(ball)
+            return false
+        },
     })
 }, 2)

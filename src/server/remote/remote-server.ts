@@ -144,16 +144,58 @@ prestart(() => {
             this.clear()
         },
     })
+
+    function shouldUpdatePhysicsOn(entity: ig.Entity): boolean {
+        return (
+            !(multi.server instanceof RemoteServer) ||
+            entity instanceof ig.ENTITY.Effect ||
+            entity instanceof ig.ENTITY.Particle ||
+            entity instanceof ig.ENTITY.CopyParticle ||
+            entity instanceof ig.ENTITY.CrosshairDot ||
+            entity instanceof ig.ENTITY.Crosshair
+        )
+    }
     ig.CollEntry.inject({
-        // @ts-expect-error
         update() {
-            if (
-                multi.server instanceof RemoteServer &&
-                !(this.entity instanceof ig.ENTITY.Effect || this.entity instanceof ig.ENTITY.Particle)
-            )
-                return
-            // @ts-expect-error
+            if (!shouldUpdatePhysicsOn(this.entity)) return
             this.parent()
+        },
+    })
+    ig.Physics.inject({
+        moveEntity(coll, collisionList) {
+            if (!shouldUpdatePhysicsOn(coll.entity)) {
+                console.log('blocking ig.Physics#moveEntity', findClassName(coll.entity))
+                return
+            }
+            this.parent(coll, collisionList)
+        },
+    })
+
+    dummy.DummyPlayer.inject({
+        setAction(action, keepState, noStateReset) {
+            if (!(multi.server instanceof RemoteServer)) return this.parent(action, keepState, noStateReset)
+            /* TODO: figure this out when event stuff */
+            console.log('blocking player action', action)
+        },
+    })
+
+    ig.Game.inject({
+        spawnEntity(entity, x, y, z, settings, showAppearEffects) {
+            if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
+                const isOk =
+                    typeof entity === 'function'
+                        ? entity == ig.ENTITY.CopyParticle ||
+                          entity == ig.ENTITY.Particle ||
+                          entity == ig.ENTITY.OffsetParticle
+                        : false
+                if (!isOk) {
+                    console.groupCollapsed('local entity spawn!', findClassName(entity))
+                    console.warn(settings)
+                    console.trace()
+                    console.groupEnd()
+                }
+            }
+            return this.parent(entity, x, y, z, settings, showAppearEffects)
         },
     })
 }, 3)

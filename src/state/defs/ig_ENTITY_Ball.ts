@@ -99,6 +99,9 @@ prestart(() => {
 
             this.parent()
         },
+        onBounce(pos, collData) {
+            if (!(multi.server instanceof RemoteServer)) this.parent(pos, collData)
+        },
     })
 }, 2)
 

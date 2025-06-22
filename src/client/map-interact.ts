@@ -210,4 +210,4 @@ prestart(() => {
             this.player = undefined
         },
     })
-})
+}, 1000)

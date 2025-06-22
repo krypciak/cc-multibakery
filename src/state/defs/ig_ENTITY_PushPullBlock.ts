@@ -1,3 +1,4 @@
+import { assert } from '../../misc/assert'
 import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -75,3 +76,24 @@ prestart(() => {
         },
     })
 }, 2)
+
+prestart(() => {
+    sc.PushPullable.inject({
+        onUpdate() {
+            if (!(multi.server instanceof RemoteServer) || !ig.game.playerEntity) return this.parent()
+            /* dont let it change the player position */
+            const backupPos = Vec3.create(ig.game.playerEntity.coll.pos)
+            assert(backupPos)
+            this.parent()
+            Vec3.assign(ig.game.playerEntity.coll.pos, backupPos)
+        },
+        onDeferredUpdate() {
+            if (!(multi.server instanceof RemoteServer) || !ig.game.playerEntity) return this.parent()
+            /* dont let it change the player position */
+            const backupPos = Vec3.create(ig.game.playerEntity.coll.pos)
+            assert(backupPos)
+            this.parent()
+            Vec3.assign(ig.game.playerEntity.coll.pos, backupPos)
+        },
+    })
+})

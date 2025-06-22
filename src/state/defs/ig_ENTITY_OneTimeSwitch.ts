@@ -1,5 +1,6 @@
 import { EntityTypeId, registerEntityTypeId } from '../../misc/entity-uuid'
 import { prestart } from '../../plugin'
+import { RemoteServer } from '../../server/remote/remote-server'
 import { createUuidStaticEntity, isSameAsLast } from './entity'
 
 declare global {
@@ -50,4 +51,14 @@ prestart(() => {
         throw new Error('ig.ENTITY.OneTimeSwitch.create not implemented')
     }
     registerEntityTypeId(ig.ENTITY.OneTimeSwitch, typeId)
+
+    ig.ENTITY.OneTimeSwitch.inject({
+        ballHit(ball) {
+            if (!(multi.server instanceof RemoteServer)) return this.parent(ball)
+            return false
+        },
+        varsChanged() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+        },
+    })
 }, 2)
