@@ -37,18 +37,6 @@ function getState(this: dummy.DummyPlayer, full: boolean) {
     }
 }
 
-prestart(() => {
-    dummy.DummyPlayer.inject({
-        init(x, y, z, settings) {
-            this.parent(x, y, z, settings)
-        },
-        setPos(x, y, z, moveDelta) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(x, y, z, moveDelta)
-            this.parent(x, y, z, moveDelta)
-        },
-    })
-})
-
 function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
     if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
