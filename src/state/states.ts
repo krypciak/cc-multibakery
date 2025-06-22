@@ -2,7 +2,7 @@ declare global {
     interface StateUpdatePacket {}
 }
 
-import './defs/entity'
+import './entity'
 
 declare global {
     namespace ig {

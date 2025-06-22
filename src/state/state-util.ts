@@ -1,4 +1,4 @@
-import { assert } from '../../misc/assert'
+import { assert } from '../misc/assert'
 
 export function undefinedIfFalsy<T>(obj: T): T | undefined {
     return obj ? obj : undefined

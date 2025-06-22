@@ -1,10 +1,10 @@
-import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
-import { TemporarySet } from '../../misc/temporary-set'
-import { prestart } from '../../plugin'
-import { PhysicsServer } from '../../server/physics/physics-server'
-import { RemoteServer } from '../../server/remote/remote-server'
-import { addStateHandler } from '../states'
+import { assert } from '../misc/assert'
+import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
+import { TemporarySet } from '../misc/temporary-set'
+import { prestart } from '../plugin'
+import { PhysicsServer } from '../server/physics/physics-server'
+import { RemoteServer } from '../server/remote/remote-server'
+import { addStateHandler } from './states'
 import { undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
 
 declare global {

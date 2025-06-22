@@ -1,8 +1,8 @@
-import { prestart } from '../../plugin'
-import { RemoteServer } from '../../server/remote/remote-server'
-import * as inputBackup from '../../dummy/dummy-input'
-import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { prestart } from '../plugin'
+import { RemoteServer } from '../server/remote/remote-server'
+import * as inputBackup from '../dummy/dummy-input'
+import { assert } from '../misc/assert'
+import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { isSameAsLast } from './state-util'
 
 declare global {

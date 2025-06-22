@@ -1,8 +1,8 @@
-import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
-import { TemporarySet } from '../../misc/temporary-set'
-import { prestart } from '../../plugin'
-import { RemoteServer } from '../../server/remote/remote-server'
+import { assert } from '../misc/assert'
+import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
+import { TemporarySet } from '../misc/temporary-set'
+import { prestart } from '../plugin'
+import { RemoteServer } from '../server/remote/remote-server'
 import { isSameAsLast } from './state-util'
 import { resolveProxyFromType } from './proxy-util'
 

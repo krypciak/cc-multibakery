@@ -1,8 +1,8 @@
-import { prestart } from '../../plugin'
-import { addStateHandler } from '../states'
-import { assert } from '../../misc/assert'
-import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../../misc/entity-netid'
-import { encodeJsonSafeNumber } from '../../misc/json-safe-encoding'
+import { prestart } from '../plugin'
+import { addStateHandler } from './states'
+import { assert } from '../misc/assert'
+import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../misc/entity-netid'
+import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
 
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'

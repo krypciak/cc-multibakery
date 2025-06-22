@@ -1,5 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../plugin'
+import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
+import { prestart } from '../plugin'
 import { createNetidStaticEntity } from './entity'
 import { isSameAsLast } from './state-util'
 
