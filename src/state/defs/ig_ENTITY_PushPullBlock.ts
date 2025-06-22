@@ -58,7 +58,7 @@ prestart(() => {
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
     }
-    registerNetEntity(ig.ENTITY.PushPullBlock, typeId, undefined, true)
+    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, typeId, sendEmpty: true })
 
     sc.PushPullable.inject({
         stopSound() {

@@ -81,7 +81,7 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity(sc.CombatProxyEntity, typeId, undefined, true)
+    registerNetEntity({ entityClass: sc.CombatProxyEntity, typeId, sendEmpty: true })
 }, 2)
 
 declare global {

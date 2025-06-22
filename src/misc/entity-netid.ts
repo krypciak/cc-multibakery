@@ -31,15 +31,17 @@ export const entityTypeIdToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
 export const entitySendEmpty: Set<EntityTypeId> = new Set()
 
-export function registerNetEntity(
-    entityClass: EntityClass,
-    typeId: EntityTypeId,
-    applyPriority = 1000,
-    sendEmpty = false
-) {
+interface RegisterNetEntitySettings {
+    entityClass: EntityClass
+    typeId: EntityTypeId
+    applyPriority?: number
+    sendEmpty?: boolean
+}
+
+export function registerNetEntity({ entityClass, typeId, applyPriority, sendEmpty }: RegisterNetEntitySettings) {
     assert(!entityTypeIdToClass[typeId], `entity typeId duplicate! ${typeId}`)
     entityTypeIdToClass[typeId] = entityClass
-    entityApplyPriority[typeId] = applyPriority
+    entityApplyPriority[typeId] = applyPriority ?? 1000
 
     if (sendEmpty) entitySendEmpty.add(typeId)
 }

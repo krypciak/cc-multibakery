@@ -54,7 +54,7 @@ prestart(() => {
             return `${typeId}${settings.thrower.netid}`
         },
     })
-    registerNetEntity(ig.ENTITY.Crosshair, typeId, 3000)
+    registerNetEntity({ entityClass: ig.ENTITY.Crosshair, typeId, applyPriority: 3000 })
 
     ig.ENTITY.Crosshair.inject({
         deferredUpdate() {

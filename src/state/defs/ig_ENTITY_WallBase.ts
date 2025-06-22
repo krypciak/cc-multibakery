@@ -49,7 +49,7 @@ prestart(() => {
     ig.ENTITY.WallBase.create = () => {
         throw new Error('ig.ENTITY.WallBase.create not implemented')
     }
-    registerNetEntity(ig.ENTITY.WallBase, typeId)
+    registerNetEntity({ entityClass: ig.ENTITY.WallBase, typeId })
 
     ig.ENTITY.WallBlocker.inject({
         update() {

@@ -59,5 +59,5 @@ prestart(() => {
     ig.ENTITY.OLPlatform.create = () => {
         throw new Error('ig.ENTITY.OLPlatform.create not implemented')
     }
-    registerNetEntity(ig.ENTITY.OLPlatform, typeId)
+    registerNetEntity({ entityClass: ig.ENTITY.OLPlatform, typeId })
 }, 2)

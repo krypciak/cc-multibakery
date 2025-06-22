@@ -55,7 +55,7 @@ prestart(() => {
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
-    registerNetEntity(ig.ENTITY.MultiHitSwitch, typeId)
+    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, typeId })
 
     ig.ENTITY.MultiHitSwitch.inject({
         update() {

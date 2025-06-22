@@ -136,7 +136,7 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity(ig.ENTITY.Effect, 'ef', 2000, true)
+    registerNetEntity({ entityClass: ig.ENTITY.Effect, typeId, applyPriority: 2000, sendEmpty: true })
 
     ig.ENTITY.Effect.inject({
         update() {

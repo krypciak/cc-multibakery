@@ -50,7 +50,7 @@ prestart(() => {
     ig.ENTITY.OneTimeSwitch.create = () => {
         throw new Error('ig.ENTITY.OneTimeSwitch.create not implemented')
     }
-    registerNetEntity(ig.ENTITY.OneTimeSwitch, typeId)
+    registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch, typeId })
 
     ig.ENTITY.OneTimeSwitch.inject({
         ballHit(ball) {

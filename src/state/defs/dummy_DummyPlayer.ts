@@ -138,7 +138,7 @@ prestart(() => {
         })
         return entity
     }
-    registerNetEntity(dummy.DummyPlayer, typeId)
+    registerNetEntity({ entityClass: dummy.DummyPlayer, typeId })
 
     dummy.DummyPlayer.inject({
         update() {
