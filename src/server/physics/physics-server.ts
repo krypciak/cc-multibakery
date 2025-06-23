@@ -7,9 +7,9 @@ import { NetServerInfoPhysics } from '../../client/menu/server-info'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client } from '../../client/client'
 import { startRepl } from './shell'
+import { isUsernameValid } from '../../misc/username-util'
 
 import './physics-server-sender'
-import { isUsernameValid } from '../../misc/username-util'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -41,33 +41,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.start()
 
         this.baseInst.display = false
-
-        if (!window.crossnode?.options.test) {
-            // await this.createAndJoinClient({
-            //     username: `lea_${1}`,
-            //     inputType: 'clone',
-            // })
-            // await this.createAndJoinClient({
-            //     username: `lea_${2}`,
-            //     inputType: 'clone',
-            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
-            // })
-            // await this.createAndJoinClient({
-            //     username: `lea_${3}`,
-            //     inputType: 'clone',
-            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
-            // })
-            // let promises = []
-            // for (let i = 2; i <= 20; i++) {
-            //     promises.push(
-            //         this.createAndJoinClient({
-            //             username: `lea_${i}`,
-            //             noShowInstance: true,
-            //         })
-            //     )
-            // }
-            // await Promise.all(promises)
-        }
 
         const netInfo = this.settings.netInfo
         if (netInfo) {

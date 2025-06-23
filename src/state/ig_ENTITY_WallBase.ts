@@ -1,7 +1,7 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { createNetidStaticEntity, } from './entity'
+import { createNetidStaticEntity } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
@@ -47,10 +47,6 @@ prestart(() => {
     registerNetEntity({ entityClass: ig.ENTITY.WallBase, typeId })
 
     ig.ENTITY.WallBlocker.inject({
-        update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            /* prevent this.timer from ticking */
-        },
         setActive(isBaseActive, isActive) {
             if (!ig.settingStateImmediately) return this.parent(isBaseActive, isActive)
 
@@ -58,6 +54,15 @@ prestart(() => {
             this.sounds = undefined
             this.parent(isBaseActive, isActive)
             this.sounds = soundsBackup
+        },
+    })
+
+    if (!REMOTE) return
+
+    ig.ENTITY.WallBlocker.inject({
+        update() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            /* prevent this.timer from ticking */
         },
     })
 }, 2)

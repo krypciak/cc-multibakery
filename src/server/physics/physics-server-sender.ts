@@ -6,13 +6,13 @@ import { getStateUpdatePacket } from '../../state/states'
 import { CCMap } from '../ccmap'
 import { PhysicsServer } from './physics-server'
 
-let i = -1
 prestart(() => {
+    if (!PHYSICS) return
     ig.Game.inject({
         update() {
             this.parent()
             if (multi.server instanceof PhysicsServer && instanceinator.id == multi.server.serverInst.id) {
-                if (i++ % 1 == 0) send()
+                send()
             }
         },
     })

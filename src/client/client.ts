@@ -323,6 +323,7 @@ declare global {
     }
 }
 prestart(() => {
+    if (!PHYSICS) return
     ig.Game.inject({
         deferredUpdate() {
             this.parent()

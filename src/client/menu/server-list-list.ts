@@ -42,6 +42,8 @@ declare global {
 }
 
 prestart(() => {
+    if (!REMOTE) return
+
     multi.class.ServerList.SORT_ORDER = {
         NAME: 0,
     } as const

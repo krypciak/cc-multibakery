@@ -123,6 +123,8 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: dummy.DummyPlayer, typeId })
 
+    if (!REMOTE) return
+
     dummy.DummyPlayer.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()

@@ -124,20 +124,22 @@ prestart(() => {
 
             const isMaster = ig.client && ig.client.player.username == multi.server.masterUsername
 
-            if (!multi.server) {
-                buttons.push({
-                    name: 'Start server',
-                    onPress() {
-                        createPhysicsServerFromCurrentState()
-                    },
-                })
-            } else if (multi.server instanceof PhysicsServer && isMaster) {
-                buttons.push({
-                    name: 'Stop server',
-                    onPress() {
-                        closePhysicsServerAndSaveState()
-                    },
-                })
+            if (PHYSICS) {
+                if (!multi.server) {
+                    buttons.push({
+                        name: 'Start server',
+                        onPress() {
+                            createPhysicsServerFromCurrentState()
+                        },
+                    })
+                } else if (multi.server instanceof PhysicsServer && isMaster) {
+                    buttons.push({
+                        name: 'Stop server',
+                        onPress() {
+                            closePhysicsServerAndSaveState()
+                        },
+                    })
+                }
             }
 
             if (isMaster) {

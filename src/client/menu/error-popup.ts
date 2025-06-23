@@ -5,6 +5,8 @@ import { assert } from '../../misc/assert'
 import { RemoteServer } from '../../server/remote/remote-server'
 
 prestart(() => {
+    if (!REMOTE) return
+
     ig.System.inject({
         error(error) {
             if (!(multi.server instanceof RemoteServer)) return this.parent(error)
@@ -30,7 +32,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance, whenApplingPacke
 
     const infoText =
         `ccV: ${version},   cclV: ${isCCL3 ? '3' : '2'},  OS: ${os},   platform: ${platform},   ` +
-        `nwjsV: ${nwjsVersion},   browserV: ${browserVersion} ${map ? `,   map: ${map}` : ''}` +
+        `nwjsV: ${nwjsVersion},   browserV: ${browserVersion}${map ? `,   map: ${map}` : ''}` +
         '\n' +
         `instance: ${instName},  whenApplyingPacket: ${whenApplingPacket},  connection: ${connectionInfo}` +
         '\n\n' +

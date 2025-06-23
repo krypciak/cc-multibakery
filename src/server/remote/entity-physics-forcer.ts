@@ -8,6 +8,8 @@ declare global {
 }
 
 prestart(() => {
+    if (!REMOTE) return
+
     function shouldUpdatePhysicsOn(entity: ig.Entity): boolean | undefined {
         if (!(multi.server instanceof RemoteServer)) return true
 

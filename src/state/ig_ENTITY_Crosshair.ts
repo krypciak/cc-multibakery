@@ -57,6 +57,8 @@ prestart(() => {
     ig.ENTITY.Crosshair.forceRemotePhysics = true
     ig.ENTITY.CrosshairDot.forceRemotePhysics = true
 
+    if (!REMOTE) return
+
     ig.ENTITY.Crosshair.inject({
         deferredUpdate() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()

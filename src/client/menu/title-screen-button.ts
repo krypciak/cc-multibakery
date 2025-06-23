@@ -8,6 +8,8 @@ declare global {
     }
 }
 prestart(() => {
+    if (!REMOTE) return
+
     sc.TitleScreenButtonGui.inject({
         init() {
             this.parent()

@@ -104,26 +104,36 @@ prestart(() => {
             }
         },
     })
-    let ignoreDestroy = false
-    sc.CombatProxyEntity.inject({
-        update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && !ig.lastStatePacket?.states?.[this.netid]) return
+    if (PHYSICS) {
+        sc.CombatProxyEntity.inject({
+            destroy(type) {
+                if (multi.server instanceof PhysicsServer && !this.destroyType) {
+                    ig.destroyCombatProxies ??= []
+                    ig.destroyCombatProxies.push(this.netid)
+                }
+                this.parent(type)
+            },
+        })
+    }
+    if (REMOTE) {
+        let ignoreDestroy = false
+        sc.CombatProxyEntity.inject({
+            destroy(type) {
+                if (multi.server instanceof RemoteServer) {
+                    if (ignoreDestroy) return
+                }
+                this.parent(type)
+            },
+            update() {
+                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!ig.settingState && !ig.lastStatePacket?.states?.[this.netid]) return
 
-            ignoreDestroy = true
-            this.parent()
-            ignoreDestroy = false
-        },
-        destroy(type) {
-            if (multi.server instanceof PhysicsServer && !this.destroyType) {
-                ig.destroyCombatProxies ??= []
-                ig.destroyCombatProxies.push(this.netid)
-            } else if (multi.server instanceof RemoteServer) {
-                if (ignoreDestroy) return
-            }
-            this.parent(type)
-        },
-    })
+                ignoreDestroy = true
+                this.parent()
+                ignoreDestroy = false
+            },
+        })
+    }
 })
 
 declare global {
@@ -148,6 +158,7 @@ prestart(() => {
 })
 
 prestart(() => {
+    if (!REMOTE) return
     ig.ACTION_STEP.SHOW_EFFECT.inject({
         start(actor: ig.ActorEntity) {
             /* dont spawn proxies on remote server because ig.ENTITY.Effect is already being handled */

@@ -87,6 +87,8 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Ball, typeId, sendEmpty: true })
 
+    if (!REMOTE) return
+
     ig.ENTITY.Ball.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
@@ -99,4 +101,3 @@ prestart(() => {
         },
     })
 }, 2)
-

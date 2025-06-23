@@ -10,6 +10,7 @@ import { prestart } from '../../plugin'
 import { RemoteServer } from './remote-server'
 
 prestart(() => {
+    if (!REMOTE) return
     ig.Game.inject({
         update() {
             this.parent()

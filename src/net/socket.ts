@@ -51,10 +51,13 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     }
 
     async start() {
+        assert(PHYSICS)
+        assert(PHYSICSNET)
+        if (!PHYSICS || !PHYSICSNET) return
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
-        const { Server } = await import('socket.io')
+        const { Server } = PHYSICS && PHYSICSNET && (await import('socket.io'))
         this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
             // cors: {
@@ -105,6 +108,9 @@ export class SocketNetManagerRemoteServer {
     ) {}
 
     async connect() {
+        assert(REMOTE)
+        if (!REMOTE) return
+
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
@@ -113,10 +119,12 @@ export class SocketNetManagerRemoteServer {
 
         let ioclient: typeof import('socket.io-client')
         if (ig.platform == ig.PLATFORM_TYPES.BROWSER) {
+            assert(BROWSER)
             // @ts-expect-error
             ioclient = window.io
         } else if (ig.platform == ig.PLATFORM_TYPES.DESKTOP) {
-            ioclient = await import('socket.io-client')
+            assert(!BROWSER)
+            ioclient = REMOTE && !BROWSER && (await import('socket.io-client'))
         } else assert(false, 'Unsupported platform')
 
         const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket

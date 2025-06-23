@@ -3,9 +3,13 @@
     "version": "0.0.1",
     "type": "module",
     "scripts": {
-        "start": "npx esbuild --target=es2018 --log-override:bigint=silent --format=esm --platform=node --bundle --sourcemap=inline --outfile=plugin.js src/plugin.ts",
-        "watch": "npx esbuild --target=es2018 --log-override:bigint=silent --format=esm --platform=node --bundle --sourcemap=inline --watch --outfile=plugin.js src/plugin.ts",
-        "build": "npx esbuild --target=es2018 --log-override:bigint=silent --format=esm --platform=node --bundle --outfile=plugin.js --minify-syntax --minify-whitespace src/plugin.ts",
+        "start": "bun build.ts build",
+        "watch": "bun build.ts watch",
+        "build": "bun build.ts build minifySyntax=true minifyWhitespace=true",
+        "buildRemote": "bun build.ts build minifySyntax=true minifyWhitespace=true physics=false extraTreeShaking=true",
+        "buildRemoteBrowser": "bun build.ts build minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
+        "buildPhysics": "bun build.ts build minifySyntax=true minifyWhitespace=true remote=false extraTreeShaking=true",
+        "buildPhysicsNetless": "bun build.ts build minifySyntax=true minifyWhitespace=true remote=false physicsnet=false extraTreeShaking=true",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 500 --bracket-same-line",
         "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"
@@ -14,14 +18,15 @@
         "@types/http-server": "^0.12.4",
         "@types/jquery": "^3.5.32",
         "@types/node": "^11.15.54",
+        "bun": "^1.2.17",
         "cc-determine": "github:krypciak/cc-determine",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "ccmodmanager": "github:CCDirectLink/CCModManager",
         "crossnode": "github:krypciak/crossnode",
-        "esbuild": "^0.25.4",
+        "esbuild": "^0.25.5",
         "http-server": "^14.1.1",
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
-        "node": "^22.15.1",
+        "node": "^22.16.0",
         "prettier": "3.2.5",
         "setimmediate": "^1.0.5",
         "socket.io": "^4.8.1",
@@ -31,6 +36,10 @@
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
     },
     "pnpm": {
-        "onlyBuiltDependencies": ["esbuild", "node"]
+        "onlyBuiltDependencies": [
+            "bun",
+            "esbuild",
+            "node"
+        ]
     }
 }

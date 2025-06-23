@@ -55,6 +55,8 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, typeId, sendEmpty: true })
 
+    if (!REMOTE) return
+
     sc.PushPullable.inject({
         stopSound() {
             /* fix ig.ENTITY.PushPullBlock#update stopping the sound that was just played in setState */
@@ -73,6 +75,8 @@ prestart(() => {
 }, 2)
 
 prestart(() => {
+    if (!REMOTE) return
+
     sc.PushPullable.inject({
         onUpdate() {
             if (!(multi.server instanceof RemoteServer) || !ig.game.playerEntity) return this.parent()

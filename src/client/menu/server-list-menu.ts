@@ -2,7 +2,6 @@ import Multibakery, { poststart, prestart } from '../../plugin'
 
 import './title-screen-button'
 import './server-list-list'
-import { uniqueSort } from 'jquery'
 
 declare global {
     namespace sc {
@@ -29,6 +28,8 @@ declare global {
 }
 const menuId = 'multibakery_login'
 prestart(() => {
+    if (!REMOTE) return
+
     multi.class.ServerList = {} as any
 
     multi.class.ServerList.Menu = sc.ListInfoMenu.extend({
@@ -115,5 +116,6 @@ prestart(() => {
     }
 }, 10)
 poststart(() => {
+    if (!REMOTE) return
     ig.lang.labels.sc.gui.menu['menu-titles'][menuId] = 'Server list'
 })

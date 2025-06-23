@@ -12,6 +12,10 @@ export class PhysicsHttpServer {
     constructor(public netInfo: NetServerInfoPhysics) {}
 
     async start() {
+        assert(PHYSICS)
+        assert(PHYSICSNET)
+        if (!PHYSICS || !PHYSICSNET) return
+
         const fs: typeof import('fs') = (0, eval)('require("fs")')
 
         let icon: ArrayBuffer | undefined
@@ -31,7 +35,7 @@ export class PhysicsHttpServer {
 
         const httpRoot = this.netInfo.connection.httpRoot
 
-        const { createServer } = await import('http-server')
+        const { createServer } = PHYSICS && PHYSICSNET && (await import('http-server'))
         const httpServer = createServer({
             root: httpRoot,
             cache: 60 * 60 * 24,

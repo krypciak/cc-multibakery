@@ -115,6 +115,8 @@ prestart(() => {
     ig.ENTITY.Particle.forceRemotePhysics = true
     ig.ENTITY.CopyParticle.forceRemotePhysics = true
 
+    if (!REMOTE) return
+
     ig.ENTITY.Effect.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
@@ -157,6 +159,8 @@ prestart(() => {
             }
         },
     })
+
+    if (!PHYSICS) return
     const orig = ig.EffectTools.clearEffects
     ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
         orig(entity, withTheSameGroup)
@@ -194,6 +198,8 @@ prestart(() => {
             }
         },
     })
+
+    if (!PHYSICS) return
     ig.ENTITY.Effect.inject({
         stop() {
             this.parent()

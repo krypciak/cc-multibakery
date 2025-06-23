@@ -3,9 +3,9 @@ import ccmod from '../ccmod.json'
 import { Mod1 } from 'cc-determine/src/types'
 import { initMultiplayer } from './multiplayer'
 import { PhysicsServer } from './server/physics/physics-server'
-import './misc/modify-prototypes'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { registerOpts } from './options'
+import './misc/modify-prototypes'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -17,6 +17,14 @@ let poststartFunctions: [() => void | Promise<void>, number][]
 export function poststart(func: () => void | Promise<void>, priority: number = 100) {
     poststartFunctions ??= []
     poststartFunctions.push([func, priority])
+}
+
+declare global {
+    /* build constants */
+    const PHYSICS: boolean
+    const PHYSICSNET: boolean
+    const REMOTE: boolean
+    const BROWSER: boolean
 }
 
 export default class Multibakery implements PluginClass {
@@ -35,9 +43,8 @@ export default class Multibakery implements PluginClass {
     async prestart() {
         registerOpts()
 
-        if (window.crossnode?.options.test) {
+        if (PHYSICS && window.crossnode?.options.test) {
             await import('./server/test/aoc2024d15')
-            // await import('./server/test/mouse-simple')
         }
         global.multi = window.multi = initMultiplayer()
 
@@ -49,7 +56,7 @@ export default class Multibakery implements PluginClass {
 
         if (window.crossnode?.options.test) return
 
-        if (process.execPath.includes('server')) {
+        if (PHYSICS && process.execPath.includes('server')) {
             multi.setServer(
                 new PhysicsServer({
                     globalTps: 60,
@@ -74,7 +81,7 @@ export default class Multibakery implements PluginClass {
                 })
             )
             multi.server.start()
-        } else if (process.execPath.includes('client')) {
+        } else if (REMOTE && process.execPath.includes('client')) {
             return
         }
     }

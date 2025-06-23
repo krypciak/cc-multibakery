@@ -1,12 +1,10 @@
 import { assert } from '../../misc/assert'
 import { NetConnection } from '../../net/connection'
 import { SocketNetManagerRemoteServer } from '../../net/socket'
-import { prestart } from '../../plugin'
 import { applyStateUpdatePacket } from '../../state/states'
 import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
-import { NetServerInfoRemote } from '../../client/menu/server-info'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { showClientErrorPopup } from '../../client/menu/error-popup'
 import { Opts } from '../../options'
@@ -14,6 +12,7 @@ import { Opts } from '../../options'
 import './remote-server-sender'
 import './ignore-pause-screen'
 import './entity-physics-forcer'
+import './injects'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -37,6 +36,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async start() {
+        assert(REMOTE)
+        if (!REMOTE) return
+
         await super.start()
 
         const connS = this.settings.connection
@@ -134,73 +136,4 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await this.netManager.destroy?.()
         await super.destroy()
     }
-}
-
-prestart(() => {
-    ig.EventManager.inject({
-        update() {
-            // TEMP fix todo
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            this.clear()
-        },
-    })
-
-    dummy.DummyPlayer.inject({
-        setAction(action, keepState, noStateReset) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(action, keepState, noStateReset)
-            /* TODO: figure this out when event stuff */
-            console.log('blocking player action', action)
-        },
-    })
-
-    ig.Game.inject({
-        spawnEntity(entity, x, y, z, settings, showAppearEffects) {
-            if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
-                const isOk =
-                    typeof entity === 'function'
-                        ? entity == ig.ENTITY.CopyParticle ||
-                          entity == ig.ENTITY.Particle ||
-                          entity == ig.ENTITY.OffsetParticle
-                        : false
-                if (!isOk) {
-                    console.groupCollapsed('local entity spawn!', findClassName(entity))
-                    console.warn(settings)
-                    console.trace()
-                    console.groupEnd()
-                }
-            }
-            return this.parent(entity, x, y, z, settings, showAppearEffects)
-        },
-    })
-}, 3)
-
-export async function tryJoinRemote(
-    serverInfo: NetServerInfoRemote,
-    joinData: ClientJoinData
-): Promise<ClientJoinAckData> {
-    {
-        const server = multi.server
-        assert(!server)
-    }
-    assert(serverInfo.details)
-
-    const server = new RemoteServer({
-        displayServerInstance: Opts.serverDisplayServerInstance,
-        displayMaps: Opts.serverDisplayMaps,
-        displayClientInstances: Opts.serverDisplayClientInstances,
-        displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
-
-        globalTps: serverInfo.details.globalTps,
-        forceConsistentTickTimes: serverInfo.details.forceConsistentTickTimes,
-        connection: serverInfo.connection,
-    })
-    multi.setServer(server)
-    await server.start()
-    server.masterUsername = joinData.username
-
-    const { ackData } = await server.tryJoinClient(joinData, false)
-    if (ackData.status != 'ok') {
-        await multi.destroyAndStartLoop()
-    }
-    return ackData
 }

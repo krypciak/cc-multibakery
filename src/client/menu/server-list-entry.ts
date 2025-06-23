@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../plugin'
-import { tryJoinRemote } from '../../server/remote/remote-server'
+import { tryJoinRemote } from '../../server/remote/try-join-remote'
 import { ClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
 
@@ -57,6 +57,8 @@ const COLOR = {
 type COLOR = (typeof COLOR)[keyof typeof COLOR]
 
 prestart(() => {
+    if (!REMOTE) return
+
     multi.class.ServerList.ListEntry = ig.FocusGui.extend({
         ninepatch: new ig.NinePatch('media/gui/CCModManager.png', {
             width: 42,

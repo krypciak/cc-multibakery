@@ -52,6 +52,8 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, typeId })
 
+    if (!REMOTE) return
+
     ig.ENTITY.MultiHitSwitch.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()

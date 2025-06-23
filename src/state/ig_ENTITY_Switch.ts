@@ -48,6 +48,8 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Switch, typeId })
 
+    if (!REMOTE) return
+
     ig.ENTITY.Switch.inject({
         ballHit(ball) {
             if (!(multi.server instanceof RemoteServer)) return this.parent(ball)
