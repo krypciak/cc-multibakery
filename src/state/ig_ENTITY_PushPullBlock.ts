@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { createNetidStaticEntity, } from './entity'
+import { createNetidStaticEntity } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
@@ -34,6 +34,7 @@ function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
             } else {
                 this.setPos(p2.x, p2.y, p2.z)
             }
+            /* TODO: push sound looping */
             this.pushPullable.soundHandle ??= sc.PushPullSounds.Loop.play(true)
         } else stopSound()
     }

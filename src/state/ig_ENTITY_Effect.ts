@@ -75,6 +75,8 @@ function resolveObjects(state: Return) {
     return { target, target2, effect }
 }
 
+let particles: ig.EntityConstructor[]
+
 prestart(() => {
     const typeId: EntityTypeId = 'ef'
     let effectId = 0
@@ -90,9 +92,10 @@ prestart(() => {
         },
     })
 
-    const effectsKilledBefore = new TemporarySet<string>(400)
+    const effectsSpawnedBefore = new TemporarySet<string>(400)
     ig.ENTITY.Effect.create = (netid: string, state: Return) => {
-        if (effectsKilledBefore.has(netid)) return
+        if (effectsSpawnedBefore.has(netid)) return
+        effectsSpawnedBefore.push(netid)
 
         const { target, target2, effect } = resolveObjects(state)
         const { x, y, z } = state.pos!
@@ -102,7 +105,6 @@ prestart(() => {
             target2,
             netid,
         })
-        console.log(netid, 'hasTarget:', !!target)
         assert(!ig.game.entitiesByNetid[netid])
         const entity = ig.game.spawnEntity(ig.ENTITY.Effect, x, y, z, settings)
         assert(ig.game.entitiesByNetid[netid])
@@ -118,11 +120,23 @@ prestart(() => {
     })
 
     ig.ENTITY.Effect.forceRemotePhysics = true
-    ig.ENTITY.Particle.forceRemotePhysics = true
-    ig.ENTITY.CopyParticle.forceRemotePhysics = true
-    ig.ENTITY.OffsetParticle.forceRemotePhysics = true
-    // @ts-expect-error
-    ig.ENTITY.DebrisParticle.forceRemotePhysics = true
+
+    particles = [
+        ig.ENTITY.Particle,
+        // @ts-expect-error
+        ig.ENTITY.FaceParticle,
+        ig.ENTITY.CopyParticle,
+        // @ts-expect-error
+        ig.ENTITY.DebrisParticle,
+        ig.ENTITY.OffsetParticle,
+        ig.ENTITY.RhombusParticle,
+        ig.ENTITY.HomingParticle,
+        // @ts-expect-error
+        ig.ENTITY.LaserParticle,
+    ]
+    for (const clazz of particles) {
+        clazz.forceRemotePhysics = true
+    }
 
     if (!REMOTE) return
 
@@ -138,10 +152,6 @@ prestart(() => {
             if (!ig.settingState && ig.lastStatePacket?.states?.[this.netid]) return
 
             this.parent()
-        },
-        onKill(levelChange) {
-            this.parent(levelChange)
-            effectsKilledBefore.push(this.netid)
         },
     })
 }, 2)
@@ -247,3 +257,7 @@ prestart(() => {
         },
     })
 })
+
+export function isParticleClass(clazz: ig.EntityConstructor): boolean {
+    return particles.includes(clazz)
+}

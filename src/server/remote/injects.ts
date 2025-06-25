@@ -1,4 +1,5 @@
 import { prestart } from '../../plugin'
+import { isParticleClass } from '../../state/ig_ENTITY_Effect'
 import { RemoteServer } from './remote-server'
 
 prestart(() => {
@@ -23,14 +24,7 @@ prestart(() => {
     ig.Game.inject({
         spawnEntity(entity, x, y, z, settings, showAppearEffects) {
             if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
-                const isOk =
-                    typeof entity === 'function'
-                        ? entity == ig.ENTITY.CopyParticle ||
-                          entity == ig.ENTITY.Particle ||
-                          entity == ig.ENTITY.OffsetParticle ||
-                          // @ts-expect-error
-                          entity == ig.ENTITY.DebrisParticle
-                        : false
+                const isOk = typeof entity === 'function' ? isParticleClass(entity) : false
                 if (!isOk) {
                     console.groupCollapsed('local entity spawn!', findClassName(entity))
                     console.warn(settings)

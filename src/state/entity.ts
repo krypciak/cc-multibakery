@@ -16,7 +16,9 @@ import './ig_ENTITY_OLPlatform'
 import './ig_ENTITY_Ball'
 import './sc_CombatProxyEntity'
 import './ig_ENTITY_Crosshair'
+import './ig_ENTITY_Enemy'
 import './ig_ENTITY_CombatantMarble'
+/* TODO: sc.ItemDropEntity */
 
 declare global {
     interface StateUpdatePacket {
