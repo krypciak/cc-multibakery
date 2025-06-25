@@ -13,6 +13,7 @@ import './remote-server-sender'
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
+import { TemporarySet } from '../../misc/temporary-set'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -48,6 +49,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         await this.netManager.connect()
         this.measureTraffic = Opts.showPacketNetworkTraffic
+
+        TemporarySet.resetAll()
     }
 
     protected onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown, whenApplingPacket?: boolean): never {
