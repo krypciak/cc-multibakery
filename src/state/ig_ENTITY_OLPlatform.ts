@@ -18,7 +18,7 @@ function getState(this: ig.ENTITY.OLPlatform, full: boolean) {
     }
 }
 function setState(this: ig.ENTITY.OLPlatform, state: Return) {
-    if (state.currentState) {
+    if (state.currentState !== undefined) {
         const platformState = this.states[state.currentState]
 
         if (platformState && platformState != this.currentState) {
