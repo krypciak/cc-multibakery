@@ -49,7 +49,8 @@ prestart(() => {
         getState,
         setState,
         createNetid(_x, _y, _z, settings) {
-            return `${typeId}${settings.thrower.netid}`
+            assert(settings.thrower instanceof dummy.DummyPlayer)
+            return `${typeId}${settings.thrower.data.username}`
         },
     })
     registerNetEntity({ entityClass: ig.ENTITY.Crosshair, typeId, applyPriority: 3000 })

@@ -103,10 +103,6 @@ prestart(() => {
 
 prestart(() => {
     ig.ENTITY.Crosshair.inject({
-        init(x, y, z, settings) {
-            if (settings.thrower instanceof dummy.DummyPlayer) settings.netid = 'crosshair-' + settings.thrower.netid
-            this.parent(x, y, z, settings)
-        },
         deferredUpdate() {
             if (!(this.thrower instanceof dummy.DummyPlayer)) return this.parent()
 
