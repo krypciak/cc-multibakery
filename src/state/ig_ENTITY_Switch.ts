@@ -1,7 +1,7 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { createNetidStaticEntity, } from './entity'
+import { createNetidStatic, } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
@@ -40,13 +40,13 @@ prestart(() => {
         getState,
         setState,
         createNetid(x, y, z, settings) {
-            return createNetidStaticEntity(typeId, x, y, z, settings)
+            return createNetidStatic(typeId, x, y, z, settings)
         },
     })
     ig.ENTITY.Switch.create = () => {
         throw new Error('ig.ENTITY.Switch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Switch, typeId })
+    registerNetEntity({ entityClass: ig.ENTITY.Switch, typeId, netidStatic: true })
 
     if (!REMOTE) return
 

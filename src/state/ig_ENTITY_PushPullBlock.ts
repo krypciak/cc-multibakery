@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { createNetidStaticEntity } from './entity'
+import { createNetidStatic } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
@@ -48,13 +48,13 @@ prestart(() => {
         getState,
         setState,
         createNetid(x, y, z, settings) {
-            return createNetidStaticEntity(typeId, x, y, z, settings)
+            return createNetidStatic(typeId, x, y, z, settings)
         },
     })
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, typeId, sendEmpty: true })
+    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, typeId, sendEmpty: true, netidStatic: true })
 
     if (!REMOTE) return
 

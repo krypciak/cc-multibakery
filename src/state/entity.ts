@@ -32,7 +32,7 @@ interface StateEntityBase {
 }
 
 function isStateEntity(e: ig.Entity): e is StateEntityBase & ig.Entity {
-    return (e.getState && e.setState) as unknown as boolean
+    return e.netid as unknown as boolean
 }
 
 declare global {
@@ -88,7 +88,7 @@ prestart(() => {
     })
 }, 1001)
 
-export function createNetidStaticEntity(
+export function createNetidStatic(
     typeId: string,
     x: number,
     y: number,

@@ -8,7 +8,7 @@ import { isSameAsLast } from './state-util'
 declare global {
     namespace ig.ENTITY {
         interface Crosshair {
-            createNetid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string
+            createNetid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string | undefined
 
             lastSent?: Return
         }
@@ -17,10 +17,13 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Crosshair, full: boolean) {
-    assert(this.thrower instanceof dummy.DummyPlayer)
-    inputBackup.apply(this.thrower.inputManager)
-    const isAiming = this.controller.isAiming()
-    inputBackup.restore()
+    let isAiming = false
+    if (this.thrower instanceof dummy.DummyPlayer) {
+        assert(this.thrower instanceof dummy.DummyPlayer)
+        inputBackup.apply(this.thrower.inputManager)
+        isAiming = this.controller.isAiming()
+        inputBackup.restore()
+    }
 
     return {
         pos: this.active ? isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create) : undefined,
@@ -49,7 +52,7 @@ prestart(() => {
         getState,
         setState,
         createNetid(_x, _y, _z, settings) {
-            assert(settings.thrower instanceof dummy.DummyPlayer)
+            if (!(settings.thrower instanceof dummy.DummyPlayer)) return
             return `${typeId}${settings.thrower.data.username}`
         },
     })

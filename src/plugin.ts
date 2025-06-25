@@ -42,6 +42,9 @@ export default class Multibakery implements PluginClass {
     }
 }
 
+/* TODO: bump nax-ccuilib version */
+/* TODO: bump ccmodmanager version */
+
 poststart(() => {
     if (window.crossnode?.options.test) return
 

@@ -1,7 +1,7 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { createNetidStaticEntity } from './entity'
+import { createNetidStatic } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
@@ -44,13 +44,13 @@ prestart(() => {
         getState,
         setState,
         createNetid(x, y, z, settings) {
-            return createNetidStaticEntity(typeId, x, y, z, settings)
+            return createNetidStatic(typeId, x, y, z, settings)
         },
     })
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, typeId })
+    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, typeId, netidStatic: true })
 
     if (!REMOTE) return
 

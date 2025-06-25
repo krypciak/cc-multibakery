@@ -1,8 +1,19 @@
 import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
 import { assert } from '../../misc/assert'
+import { entityNetidStatic } from '../../misc/entity-netid'
 import { Opts } from '../../options'
+import { getEntityTypeId } from '../../state/entity'
 import { applyStateUpdatePacket, getStateUpdatePacket } from '../../state/states'
 import { PhysicsServer } from './physics-server'
+
+function filterOutProblematicEntityStates(packet: StateUpdatePacket) {
+    if (packet.states) {
+        for (const netid in packet.states) {
+            if (!entityNetidStatic.has(getEntityTypeId(netid))) continue
+            delete packet.states[netid]
+        }
+    }
+}
 
 export async function createPhysicsServerFromCurrentState() {
     const origMapName = ig.game.mapName
@@ -10,6 +21,7 @@ export async function createPhysicsServerFromCurrentState() {
     const playerFace = Vec2.create(ig.game.playerEntity.face)
 
     const origMapState = getStateUpdatePacket(true)
+    filterOutProblematicEntityStates(origMapState)
     const origInputType = ig.input.currentDevice
 
     const server = new PhysicsServer({
@@ -58,6 +70,7 @@ export async function createPhysicsServerFromCurrentState() {
 
     client.inst.ig.game.scheduledTasks.push(() => {
         sc.model.enterPause()
+        ig.multibakeryManageServerPopup = undefined
         openManagerServerPopup(true)
     })
 }
@@ -75,6 +88,7 @@ export async function closePhysicsServerAndSaveState() {
     assert(map)
     map.inst.apply()
     const origMapState = getStateUpdatePacket(true)
+    filterOutProblematicEntityStates(origMapState)
     multi.server.serverInst.apply()
 
     await multi.destroyAndStartLoop()

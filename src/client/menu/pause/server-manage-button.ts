@@ -42,7 +42,7 @@ declare global {
         var ManageServerPopup: ManageServerPopupConstructor
     }
     namespace ig {
-        var multibakeryManageServerPopup: multi.class.ManageServerPopup
+        var multibakeryManageServerPopup: multi.class.ManageServerPopup | undefined
     }
 }
 

@@ -94,4 +94,4 @@ prestart(() => {
             if (this.netid) delete ig.game.entitiesByNetid[this.netid]
         },
     })
-}, 0)
+}, 1)
