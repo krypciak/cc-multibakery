@@ -40,7 +40,7 @@ importers:
         version: 14.1.1
       nax-ccuilib:
         specifier: github:krypciak/nax-ccuilib
-        version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/3541433a7f15748bb88da70cc7b2f467d67cff19
+        version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b1cdbb8368ee5a82372011eccfc5fa740eb84b43
       node:
         specifier: ^22.16.0
         version: 22.16.0
@@ -529,8 +529,8 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/3541433a7f15748bb88da70cc7b2f467d67cff19:
-    resolution: {tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/3541433a7f15748bb88da70cc7b2f467d67cff19}
+  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b1cdbb8368ee5a82372011eccfc5fa740eb84b43:
+    resolution: {tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b1cdbb8368ee5a82372011eccfc5fa740eb84b43}
     version: 1.4.1
 
   negotiator@0.6.3:
@@ -1090,7 +1090,7 @@ snapshots:
 
   ms@2.1.3: {}
 
-  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/3541433a7f15748bb88da70cc7b2f467d67cff19: {}
+  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b1cdbb8368ee5a82372011eccfc5fa740eb84b43: {}
 
   negotiator@0.6.3: {}
 

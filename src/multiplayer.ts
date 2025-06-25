@@ -1,5 +1,6 @@
 import { Server } from './server/server'
 import { assert } from './misc/assert'
+import { prestart } from './plugin'
 
 // import './misc/skip-title-screen'
 import './misc/entity-netid'
@@ -30,7 +31,7 @@ declare global {
     }
 }
 
-export function initMultiplayer() {
+function initMultiplayer() {
     return {
         server: undefined as any,
         class: {} as any,
@@ -48,3 +49,7 @@ export function initMultiplayer() {
         },
     }
 }
+
+prestart(() => {
+    global.multi = window.multi = initMultiplayer()
+}, 0)

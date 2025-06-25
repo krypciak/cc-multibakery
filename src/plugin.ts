@@ -1,11 +1,12 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import ccmod from '../ccmod.json'
 import { Mod1 } from 'cc-determine/src/types'
-import { initMultiplayer } from './multiplayer'
 import { PhysicsServer } from './server/physics/physics-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
-import { registerOpts } from './options'
+import './multiplayer'
+import './options'
 import './misc/modify-prototypes'
+import './tests'
 
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
@@ -17,14 +18,6 @@ let poststartFunctions: [() => void | Promise<void>, number][]
 export function poststart(func: () => void | Promise<void>, priority: number = 100) {
     poststartFunctions ??= []
     poststartFunctions.push([func, priority])
-}
-
-declare global {
-    /* build constants */
-    const PHYSICS: boolean
-    const PHYSICSNET: boolean
-    const REMOTE: boolean
-    const BROWSER: boolean
 }
 
 export default class Multibakery implements PluginClass {
@@ -41,48 +34,43 @@ export default class Multibakery implements PluginClass {
     }
 
     async prestart() {
-        registerOpts()
-
-        if (PHYSICS && window.crossnode?.options.test) {
-            await import('./server/test/aoc2024d15')
-        }
-        global.multi = window.multi = initMultiplayer()
-
         await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
     }
 
     async poststart() {
         await Promise.all((poststartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
-
-        if (window.crossnode?.options.test) return
-
-        if (PHYSICS && process.execPath.includes('server')) {
-            multi.setServer(
-                new PhysicsServer({
-                    globalTps: 60,
-                    godmode: true,
-                    displayServerInstance: false,
-                    displayMaps: true,
-                    displayClientInstances: true,
-                    displayRemoteClientInstances: true,
-                    forceConsistentTickTimes: false,
-                    netInfo: {
-                        connection: {
-                            httpPort: DEFAULT_HTTP_PORT,
-                            httpRoot: '../cc-bundle-inst/ccbundler/dist',
-                            type: 'socket',
-                        },
-                        details: {
-                            title: 'dev',
-                            description: 'dev server',
-                            iconPath: './assets/mods/cc-multibakery/icon/icon.png',
-                        },
-                    },
-                })
-            )
-            multi.server.start()
-        } else if (REMOTE && process.execPath.includes('client')) {
-            return
-        }
     }
 }
+
+poststart(() => {
+    if (window.crossnode?.options.test) return
+
+    if (PHYSICS && process.execPath.includes('server')) {
+        multi.setServer(
+            new PhysicsServer({
+                globalTps: 60,
+                godmode: true,
+                displayServerInstance: false,
+                displayMaps: true,
+                displayClientInstances: true,
+                displayRemoteClientInstances: true,
+                forceConsistentTickTimes: false,
+                netInfo: {
+                    connection: {
+                        httpPort: DEFAULT_HTTP_PORT,
+                        httpRoot: '../cc-bundle-inst/ccbundler/dist',
+                        type: 'socket',
+                    },
+                    details: {
+                        title: 'dev',
+                        description: 'dev server',
+                        iconPath: './assets/mods/cc-multibakery/icon/icon.png',
+                    },
+                },
+            })
+        )
+        multi.server.start()
+    } else if (REMOTE && process.execPath.includes('client')) {
+        return
+    }
+}, 999)

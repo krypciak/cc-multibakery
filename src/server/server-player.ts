@@ -100,7 +100,7 @@ export class ServerPlayer {
 
 prestart(() => {
     multi.class.ServerPlayer = {} as any
-}, 0)
+}, 1)
 declare global {
     namespace multi.class.ServerPlayer {
         interface MapInteract extends sc.MapInteract {
