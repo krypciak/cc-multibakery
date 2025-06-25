@@ -3,7 +3,7 @@ import type {} from 'cc-instanceinator/src/plugin'
 import type {} from 'crossnode/crossnode'
 import type {} from 'ccmodmanager/types/plugin'
 import type {} from 'ccmodmanager/types/gui/menu'
-import type {} from 'nax-ccuilib/src/ui/title-screen/title-screen-api'
+import type {} from 'nax-ccuilib/src/ui/pause-screen/pause-screen-api'
 
 declare global {
     /* build constants */

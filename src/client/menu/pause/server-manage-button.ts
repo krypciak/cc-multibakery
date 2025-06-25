@@ -20,27 +20,10 @@ export function openManagerServerPopup(immediately?: boolean) {
 declare global {
     namespace sc {
         interface PauseScreenGui {
-            multibakeryManageServerButton: sc.ButtonGui
             multibakeryManageServerPopup: multi.class.ManageServerPopup
         }
     }
 }
-prestart(() => {
-    sc.PauseScreenGui.inject({
-        init() {
-            this.parent()
-
-            this.multibakeryManageServerButton = new sc.ButtonGui('\\i[help2]' + 'Manage server')
-
-            this.multibakeryManageServerButton.setPos(3, 3)
-
-            this.buttonGroup.addFocusGui(this.multibakeryManageServerButton, 999, 999)
-            this.multibakeryManageServerButton.onButtonPress = () => openManagerServerPopup()
-            this.buttonInteract.addGlobalButton(this.multibakeryManageServerButton, () => sc.control.menuHotkeyHelp2())
-            this.addChildGui(this.multibakeryManageServerButton)
-        },
-    })
-})
 
 function getIconFromInputType(inputType: ig.INPUT_DEVICES | undefined): string {
     return inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'controls' : 'gamepad'

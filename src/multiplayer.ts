@@ -13,9 +13,7 @@ import './misc/paused-virtual'
 import './misc/disable-fkeys'
 import './misc/disallow-singleplayer'
 import './client/menu/server-list-menu'
-import './client/menu/pause/version'
-import './client/menu/pause/leave-server-button'
-import './client/menu/pause/server-manage-button'
+import './client/menu/pause/pause-screen'
 
 declare global {
     namespace multi {
