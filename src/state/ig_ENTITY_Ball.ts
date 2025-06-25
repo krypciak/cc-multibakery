@@ -74,7 +74,7 @@ prestart(() => {
             params: combatant.params,
             party: combatant.party,
             combatant,
-            netid: netid,
+            netid,
         }
 
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)

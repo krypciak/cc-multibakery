@@ -16,6 +16,7 @@ import './ig_ENTITY_OLPlatform'
 import './ig_ENTITY_Ball'
 import './sc_CombatProxyEntity'
 import './ig_ENTITY_Crosshair'
+import './ig_ENTITY_CombatantMarble'
 
 declare global {
     interface StateUpdatePacket {
