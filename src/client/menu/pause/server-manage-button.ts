@@ -20,9 +20,6 @@ export function openManagerServerPopup(immediately?: boolean) {
 declare global {
     namespace sc {
         interface PauseScreenGui {
-            /* from archipelago mod CCMultiworldRandomizer */
-            apSettingsButton?: sc.ButtonGui
-
             multibakeryManageServerButton: sc.ButtonGui
             multibakeryManageServerPopup: multi.class.ManageServerPopup
         }
@@ -35,12 +32,7 @@ prestart(() => {
 
             this.multibakeryManageServerButton = new sc.ButtonGui('\\i[help2]' + 'Manage server')
 
-            let y = 3
-            // @ts-ignore from archipelago mod CCMultiworldRandomizer
-            if (sc.multiworld) {
-                y = 30
-            }
-            this.multibakeryManageServerButton.setPos(3, y)
+            this.multibakeryManageServerButton.setPos(3, 3)
 
             this.buttonGroup.addFocusGui(this.multibakeryManageServerButton, 999, 999)
             this.multibakeryManageServerButton.onButtonPress = () => openManagerServerPopup()
