@@ -261,3 +261,18 @@ prestart(() => {
 export function isParticleClass(clazz: ig.EntityConstructor): boolean {
     return particles.includes(clazz)
 }
+
+prestart(() => {
+    if (!PHYSICS) return
+
+    ig.EFFECT_ENTRY.COPY_SPRITE.inject({
+        start(entity) {
+            if (multi.server instanceof PhysicsServer && entity.target && !entity.target.netid) {
+                console.warn(
+                    `entity.target (${findClassName(entity.target)}) is not an net entity! on ig.EFFECT_ENTRY.COPY_SPRITE#start, clients will crash!`
+                )
+            }
+            this.parent(entity)
+        },
+    })
+})
