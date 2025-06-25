@@ -27,7 +27,9 @@ prestart(() => {
                     typeof entity === 'function'
                         ? entity == ig.ENTITY.CopyParticle ||
                           entity == ig.ENTITY.Particle ||
-                          entity == ig.ENTITY.OffsetParticle
+                          entity == ig.ENTITY.OffsetParticle ||
+                          // @ts-expect-error
+                          entity == ig.ENTITY.DebrisParticle
                         : false
                 if (!isOk) {
                     console.groupCollapsed('local entity spawn!', findClassName(entity))

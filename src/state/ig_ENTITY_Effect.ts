@@ -1,11 +1,11 @@
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { TemporarySet } from '../misc/temporary-set'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { addStateHandler } from './states'
 import { undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
+import { TemporarySet } from '../misc/temporary-set'
 
 declare global {
     namespace ig.ENTITY {
@@ -90,10 +90,9 @@ prestart(() => {
         },
     })
 
-    const allEffectsNetidSpawned = new TemporarySet<string>(50)
+    const effectsKilledBefore = new TemporarySet<string>(400)
     ig.ENTITY.Effect.create = (netid: string, state: Return) => {
-        if (allEffectsNetidSpawned.has(netid)) return
-        allEffectsNetidSpawned.push(netid)
+        if (effectsKilledBefore.has(netid)) return
 
         const { target, target2, effect } = resolveObjects(state)
         const { x, y, z } = state.pos!
@@ -103,6 +102,7 @@ prestart(() => {
             target2,
             netid,
         })
+        console.log(netid, 'hasTarget:', !!target)
         assert(!ig.game.entitiesByNetid[netid])
         const entity = ig.game.spawnEntity(ig.ENTITY.Effect, x, y, z, settings)
         assert(ig.game.entitiesByNetid[netid])
@@ -120,6 +120,9 @@ prestart(() => {
     ig.ENTITY.Effect.forceRemotePhysics = true
     ig.ENTITY.Particle.forceRemotePhysics = true
     ig.ENTITY.CopyParticle.forceRemotePhysics = true
+    ig.ENTITY.OffsetParticle.forceRemotePhysics = true
+    // @ts-expect-error
+    ig.ENTITY.DebrisParticle.forceRemotePhysics = true
 
     if (!REMOTE) return
 
@@ -135,6 +138,10 @@ prestart(() => {
             if (!ig.settingState && ig.lastStatePacket?.states?.[this.netid]) return
 
             this.parent()
+        },
+        onKill(levelChange) {
+            this.parent(levelChange)
+            effectsKilledBefore.push(this.netid)
         },
     })
 }, 2)

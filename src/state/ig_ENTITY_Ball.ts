@@ -1,6 +1,5 @@
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { TemporarySet } from '../misc/temporary-set'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { isSameAsLast } from './state-util'
@@ -54,11 +53,7 @@ prestart(() => {
         },
     })
 
-    const allBallsNetidSpawned = new TemporarySet<string>(200)
     ig.ENTITY.Ball.create = (netid: string, state: Return) => {
-        if (allBallsNetidSpawned.has(netid)) return
-        allBallsNetidSpawned.push(netid)
-
         assert(!ig.game.entitiesByNetid[netid])
 
         assert(state.proxyType)
