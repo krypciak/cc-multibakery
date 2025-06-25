@@ -154,7 +154,13 @@ prestart(() => {
             ig.clearEffects = undefined
         },
         set(packet) {
+            for (const player of ig.game.entities) {
+                if (!(player instanceof dummy.DummyPlayer)) continue
+                ig.EffectTools.clearEffects(player, 'modeAura')
+            }
+
             if (!packet.clearEffects) return
+
             for (const [netid, withTheSameGroup] of packet.clearEffects) {
                 const entity = ig.game.entitiesByNetid[netid]
                 if (!entity) {
@@ -171,6 +177,7 @@ prestart(() => {
     ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
         orig(entity, withTheSameGroup)
         if (!entity.netid || !(multi.server instanceof PhysicsServer)) return
+        if (withTheSameGroup == 'modeAura') return
         ig.clearEffects ??= []
         ig.clearEffects.push([entity.netid, withTheSameGroup])
     }
