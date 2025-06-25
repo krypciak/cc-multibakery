@@ -30,20 +30,33 @@ declare global {
 export const entityTypeIdToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
 export const entitySendEmpty: Set<EntityTypeId> = new Set()
+export const entityIgnoreDeath: Set<EntityTypeId> = new Set()
+export const entityNetidStatic: Set<EntityTypeId> = new Set()
 
 interface RegisterNetEntitySettings {
     entityClass: EntityClass
     typeId: EntityTypeId
     applyPriority?: number
     sendEmpty?: boolean
+    ignoreDeath?: boolean
+    netidStatic?: boolean
 }
 
-export function registerNetEntity({ entityClass, typeId, applyPriority, sendEmpty }: RegisterNetEntitySettings) {
+export function registerNetEntity({
+    entityClass,
+    typeId,
+    applyPriority,
+    sendEmpty,
+    ignoreDeath,
+    netidStatic,
+}: RegisterNetEntitySettings) {
     assert(!entityTypeIdToClass[typeId], `entity typeId duplicate! ${typeId}`)
     entityTypeIdToClass[typeId] = entityClass
     entityApplyPriority[typeId] = applyPriority ?? 1000
 
     if (sendEmpty) entitySendEmpty.add(typeId)
+    if (ignoreDeath) entityIgnoreDeath.add(typeId)
+    if (netidStatic) entityNetidStatic.add(typeId)
 }
 
 prestart(() => {

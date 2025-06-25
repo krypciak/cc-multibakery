@@ -109,7 +109,13 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Effect, typeId, applyPriority: 2000, sendEmpty: true })
+    registerNetEntity({
+        entityClass: ig.ENTITY.Effect,
+        typeId,
+        applyPriority: 2000,
+        sendEmpty: true,
+        ignoreDeath: true,
+    })
 
     ig.ENTITY.Effect.forceRemotePhysics = true
     ig.ENTITY.Particle.forceRemotePhysics = true
@@ -164,7 +170,7 @@ prestart(() => {
     const orig = ig.EffectTools.clearEffects
     ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
         orig(entity, withTheSameGroup)
-        if (!(multi.server instanceof PhysicsServer)) return
+        if (!entity.netid || !(multi.server instanceof PhysicsServer)) return
         ig.clearEffects ??= []
         ig.clearEffects.push([entity.netid, withTheSameGroup])
     }
@@ -206,7 +212,6 @@ prestart(() => {
             if (!(multi.server instanceof PhysicsServer)) return
             ig.stopEffects ??= []
             ig.stopEffects.push(this.netid)
-            console.log('stopping', this.netid, this.effect?.effectName)
         },
     })
 })
