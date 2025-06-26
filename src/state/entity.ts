@@ -18,7 +18,7 @@ import './sc_CombatProxyEntity'
 import './ig_ENTITY_Crosshair'
 import './ig_ENTITY_Enemy'
 import './ig_ENTITY_CombatantMarble'
-/* TODO: sc.ItemDropEntity */
+import './sc_ItemDropEntity'
 
 declare global {
     interface StateUpdatePacket {
@@ -96,4 +96,10 @@ export function createNetidStatic(
     _settings: ig.Entity.Settings
 ): string {
     return typeId + encodeJsonSafeNumber(Number(`${x}${y}${z}`))
+}
+
+export function createFakeEffectSheet(): ig.EffectSheet {
+    return {
+        spawnOnTarget: (_name, _target, _settings) => ({ coll: { time: {} } }),
+    } as ig.EffectSheet
 }

@@ -1,6 +1,7 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
+import { createFakeEffectSheet } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
@@ -50,10 +51,8 @@ prestart(() => {
         init(x, y, z, settings) {
             if (!(multi.server instanceof RemoteServer)) return this.parent(x, y, z, settings)
 
-            const backup = this.effects.spawnOnTarget
-            this.effects.spawnOnTarget = () => ({ coll: { time: {} } }) as any
+            this.effects = createFakeEffectSheet()
             this.parent(x, y, z, settings)
-            this.effects.spawnOnTarget = backup
         },
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()

@@ -7,7 +7,7 @@ prestart(() => {
 
     ig.EventManager.inject({
         update() {
-            // TEMP fix todo
+            // TODO: TEMP fix
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             this.clear()
         },
@@ -16,8 +16,6 @@ prestart(() => {
     dummy.DummyPlayer.inject({
         setAction(action, keepState, noStateReset) {
             if (!(multi.server instanceof RemoteServer)) return this.parent(action, keepState, noStateReset)
-            /* TODO: figure this out when event stuff */
-            console.log('blocking player action', action)
         },
     })
 
