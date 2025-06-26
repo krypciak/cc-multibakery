@@ -9,7 +9,7 @@ import { PhysicsServer } from './physics-server'
 function filterOutProblematicEntityStates(packet: StateUpdatePacket) {
     if (packet.states) {
         for (const netid in packet.states) {
-            if (!entityNetidStatic.has(getEntityTypeId(netid))) continue
+            if (entityNetidStatic.has(getEntityTypeId(netid))) continue
             delete packet.states[netid]
         }
     }
