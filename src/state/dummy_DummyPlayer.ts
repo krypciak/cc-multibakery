@@ -1,3 +1,4 @@
+import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
@@ -27,6 +28,8 @@ function getState(this: dummy.DummyPlayer, full: boolean) {
         face: isSameAsLast(this, full, this.face, 'face', Vec2.equal, Vec2.create),
         accelDir: isSameAsLast(this, full, this.coll.accelDir, 'accelDir', Vec2.equal, Vec2.create),
         animAlpha: isSameAsLast(this, full, this.animState.alpha, 'animAlpha'),
+
+        interactObject: isSameAsLast(this, full, this.interactObject?.entity?.netid, 'interactObject'),
 
         head: isSameAsLast(this, full, this.model.equip.head, 'head'),
         leftArm: isSameAsLast(this, full, this.model.equip.leftArm, 'leftArm'),
@@ -92,6 +95,12 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             this.stepFx.lastFrame = frame
         }
     } else this.stepFx.lastFrame = -1
+
+    if (state.interactObject) {
+        const entity = ig.game.entitiesByNetid[state.interactObject]
+        assert('pushPullable' in entity && entity.pushPullable instanceof sc.PushPullable)
+        this.interactObject = entity.pushPullable
+    } else this.interactObject = null
 
     if (state.head) this.model.equip.head = state.head
     if (state.leftArm) this.model.equip.leftArm = state.leftArm
