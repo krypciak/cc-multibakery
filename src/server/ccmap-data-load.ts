@@ -2,7 +2,7 @@ import { waitForScheduledTask } from './server'
 import { prestart } from '../plugin'
 
 type Layer = keyof typeof ig.MAP
-export const setDataFromLevelData = function (this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<unknown> {
+export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
     /* mostly stolen from ig.Game#loadLevel */
 
     ig.game.mapName = mapName
@@ -57,7 +57,7 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
     }
     this.size.x = sizeX
     this.size.y = sizeY
-    // this.physics.mapCleared()
+    this.physics.mapCleared()
     this.physics.mapLoaded()
 
     for (const entity of data.entities) {
@@ -119,12 +119,11 @@ export const setDataFromLevelData = function (this: ig.Game, mapName: string, da
 prestart(() => {
     ig.Loadable.inject({
         loadingFinished(success) {
-            if (
-                this._instanceId == instanceinator.id ||
-                !(this instanceof sc.Character || this instanceof ig.PropSheet)
-            ) {
+            if (this._instanceId == instanceinator.id) {
                 return this.parent(success)
             }
+            if (success) this.loaded = true
+            else this.failed = true
             waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
                 this.loadingFinished(success)
             })

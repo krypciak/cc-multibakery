@@ -42,8 +42,37 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         this.baseInst.display = false
 
+        if (!window.crossnode?.options.test) {
+            // await this.createAndJoinClient({
+            //     username: `lea_${1}`,
+            //     inputType: 'clone',
+            //     remote: false,
+            // })
+            // this.masterUsername = `lea_${1}`
+            // await this.createAndJoinClient({
+            //     username: `lea_${2}`,
+            //     inputType: 'clone',
+            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+            // })
+            // await this.createAndJoinClient({
+            //     username: `lea_${3}`,
+            //     inputType: 'clone',
+            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+            // })
+            // let promises = []
+            // for (let i = 2; i <= 20; i++) {
+            //     promises.push(
+            //         this.createAndJoinClient({
+            //             username: `lea_${i}`,
+            //             noShowInstance: true,
+            //         })
+            //     )
+            // }
+            // await Promise.all(promises)
+        }
+
         const netInfo = this.settings.netInfo
-        if (netInfo) {
+        if (PHYSICSNET && netInfo) {
             this.httpServer = new PhysicsHttpServer(netInfo)
             await this.httpServer.start()
 

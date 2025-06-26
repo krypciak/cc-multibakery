@@ -93,6 +93,8 @@ export async function closePhysicsServerAndSaveState() {
 
     await multi.destroyAndStartLoop()
 
+    if (!ig.game.playerEntity) return
+
     Vec3.assign(ig.game.playerEntity.coll.pos, playerPos)
     Vec2.assign(ig.game.playerEntity.face, playerFace)
 
