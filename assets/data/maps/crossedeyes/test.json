@@ -4,290 +4,34 @@
     "mapWidth": 100,
     "mapHeight": 80,
     "masterLevel": 2,
-    "attributes": {
-        "saveMode": "ENABLED",
-        "volume": 1,
-        "bgm": "",
-        "cameraInBounds": true,
-        "map-sounds": "",
-        "mapStyle": "cold-dng",
-        "weather": "NONE",
-        "area": "bergen-trails",
-        "npcRunners": ""
-    },
+    "attributes": { "saveMode": "ENABLED", "volume": 1, "bgm": "", "cameraInBounds": true, "map-sounds": "", "mapStyle": "cold-dng", "weather": "NONE", "area": "bergen-trails", "npcRunners": "" },
     "screen": { "x": 44, "y": 405 },
     "entities": [
-        {
-            "type": "JumpPanelFar",
-            "x": 736,
-            "y": 687,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 4, "panelType": "EAST", "jumpDistance": "16" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 736,
-            "y": 703,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 5, "panelType": "EAST", "jumpDistance": "16" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 736,
-            "y": 671,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 6, "panelType": "EAST", "jumpDistance": "16" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 1000,
-            "y": 671,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 7, "panelType": "WEST", "jumpDistance": "16" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 1000,
-            "y": 687,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 8, "panelType": "WEST", "jumpDistance": "16" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 1000,
-            "y": 703,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 9, "panelType": "WEST", "jumpDistance": "16" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 64,
-            "y": 647,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 10, "panelType": "NORTH", "jumpDistance": "18" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 80,
-            "y": 647,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 11, "panelType": "NORTH", "jumpDistance": "18" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 96,
-            "y": 647,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 12, "panelType": "NORTH", "jumpDistance": "18" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 64,
-            "y": 351,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 13, "panelType": "SOUTH", "jumpDistance": "18" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 80,
-            "y": 351,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 14, "panelType": "SOUTH", "jumpDistance": "18" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 96,
-            "y": 351,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 15, "panelType": "SOUTH", "jumpDistance": "18" }
-        },
-        {
-            "type": "BounceBlock",
-            "x": 118,
-            "y": 202,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 22,
-                "blockType": "slopeSW",
-                "group": "a",
-                "name": "bb2"
-            }
-        },
-        {
-            "type": "Switch",
-            "x": 172,
-            "y": 206,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 24, "name": "s1", "variable": "tmp.s1" }
-        },
-        {
-            "type": "OneTimeSwitch",
-            "x": 200,
-            "y": 206,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 26,
-                "name": "ots1",
-                "switchType": "default",
-                "variable": "tmp.ots1",
-                "addValue": ""
-            }
-        },
-        {
-            "type": "MultiHitSwitch",
-            "x": 231,
-            "y": 207,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 27,
-                "name": "mhs1",
-                "switchType": "default",
-                "variable": "tmp.mhs1"
-            }
-        },
-        {
-            "type": "BounceSwitch",
-            "x": 96,
-            "y": 226,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 28, "group": "a", "name": "bs2" }
-        },
-        {
-            "type": "Door",
-            "x": 1074,
-            "y": 712,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 29,
-                "name": "door1",
-                "doorType": "DEFAULT",
-                "dir": "NORTH",
-                "map": "crossedeyes/test",
-                "marker": "door1",
-                "transitionType": "REGULAR"
-            }
-        },
-        {
-            "type": "TeleportField",
-            "x": 1193,
-            "y": 711,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 30,
-                "name": "tpf1",
-                "dir": "NORTH",
-                "map": "crossedeyes/test",
-                "teleportLabel": {
-                    "en_US": "CrossedEyes Test Map",
-                    "de_DE": "",
-                    "ja_JP": "",
-                    "ko_KR": "",
-                    "zh_CN": "",
-                    "zh_TW": ""
-                },
-                "marker": "tpf1",
-                "longTelCond": false
-            }
-        },
-        {
-            "type": "TeleportGround",
-            "x": 1314,
-            "y": 715,
-            "level": 2,
-            "settings": {
-                "size": { "x": 32, "y": 16 },
-                "mapId": 31,
-                "zHeight": 32,
-                "dir": "SOUTH",
-                "map": "crossedeyes/test",
-                "name": "tpg1",
-                "marker": "tpg1"
-            }
-        },
-        {
-            "type": "WallHorizontal",
-            "x": 269,
-            "y": 208,
-            "level": 2,
-            "settings": {
-                "size": { "x": 32, "y": 8 },
-                "mapId": 32,
-                "leftEnd": "STOP",
-                "rightEnd": "STOP",
-                "collType": "BLOCK",
-                "wallZHeight": 32,
-                "condition": "!tmp.s1"
-            }
-        },
-        {
-            "type": "WallHorizontal",
-            "x": 314,
-            "y": 208,
-            "level": 2,
-            "settings": {
-                "size": { "x": 32, "y": 8 },
-                "mapId": 34,
-                "leftEnd": "STOP",
-                "rightEnd": "STOP",
-                "collType": "NPBLOCK",
-                "wallZHeight": 32,
-                "condition": "!tmp.s1"
-            }
-        },
-        {
-            "type": "EventTrigger",
-            "x": 375,
-            "y": 138,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 38,
-                "event": [
-                    {
-                        "entity": { "player": true },
-                        "action": [{ "type": "REDUCE_HP", "basedOn": "MAX_HP", "factor": 1 }],
-                        "type": "DO_ACTION"
-                    }
-                ],
-                "eventType": "INTERRUPTABLE",
-                "startCondition": "tmp.die",
-                "triggerType": "ALWAYS",
-                "name": "dieEvent",
-                "loadCondition": true,
-                "endCondition": "false"
-            }
-        },
-        {
-            "type": "FloorSwitch",
-            "x": 372,
-            "y": 205,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 39,
-                "name": "fs1",
-                "switchType": "WHILE_ON_TOP",
-                "variable": "tmp.die"
-            }
-        },
-        {
-            "type": "Marker",
-            "x": 943,
-            "y": 462,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 40,
-                "name": "entrance",
-                "dir": "NORTH",
-                "spawnCondition": "true"
-            }
-        },
+        { "type": "JumpPanelFar", "x": 736, "y": 687, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 4, "panelType": "EAST", "jumpDistance": "16" } },
+        { "type": "JumpPanelFar", "x": 736, "y": 703, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 5, "panelType": "EAST", "jumpDistance": "16" } },
+        { "type": "JumpPanelFar", "x": 736, "y": 671, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 6, "panelType": "EAST", "jumpDistance": "16" } },
+        { "type": "JumpPanelFar", "x": 1000, "y": 671, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 7, "panelType": "WEST", "jumpDistance": "16" } },
+        { "type": "JumpPanelFar", "x": 1000, "y": 687, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 8, "panelType": "WEST", "jumpDistance": "16" } },
+        { "type": "JumpPanelFar", "x": 1000, "y": 703, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 9, "panelType": "WEST", "jumpDistance": "16" } },
+        { "type": "JumpPanelFar", "x": 64, "y": 647, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 10, "panelType": "NORTH", "jumpDistance": "18" } },
+        { "type": "JumpPanelFar", "x": 80, "y": 647, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 11, "panelType": "NORTH", "jumpDistance": "18" } },
+        { "type": "JumpPanelFar", "x": 96, "y": 647, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 12, "panelType": "NORTH", "jumpDistance": "18" } },
+        { "type": "JumpPanelFar", "x": 64, "y": 351, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 13, "panelType": "SOUTH", "jumpDistance": "18" } },
+        { "type": "JumpPanelFar", "x": 80, "y": 351, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 14, "panelType": "SOUTH", "jumpDistance": "18" } },
+        { "type": "JumpPanelFar", "x": 96, "y": 351, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 15, "panelType": "SOUTH", "jumpDistance": "18" } },
+        { "type": "BounceBlock", "x": 118, "y": 202, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 22, "blockType": "slopeSW", "group": "a", "name": "bb2" } },
+        { "type": "Switch", "x": 172, "y": 206, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 24, "name": "s1", "variable": "tmp.s1" } },
+        { "type": "OneTimeSwitch", "x": 200, "y": 206, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 26, "name": "ots1", "switchType": "default", "variable": "tmp.ots1", "addValue": "" } },
+        { "type": "MultiHitSwitch", "x": 231, "y": 207, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 27, "name": "mhs1", "switchType": "default", "variable": "tmp.mhs1" } },
+        { "type": "BounceSwitch", "x": 96, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 28, "group": "a", "name": "bs2" } },
+        { "type": "Door", "x": 1074, "y": 712, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 29, "name": "door1", "doorType": "DEFAULT", "dir": "NORTH", "map": "crossedeyes/test", "marker": "door1", "transitionType": "REGULAR" } },
+        { "type": "TeleportField", "x": 1193, "y": 711, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 30, "name": "tpf1", "dir": "NORTH", "map": "crossedeyes/test", "teleportLabel": { "en_US": "CrossedEyes Test Map", "de_DE": "", "ja_JP": "", "ko_KR": "", "zh_CN": "", "zh_TW": "" }, "marker": "tpf1", "longTelCond": false } },
+        { "type": "TeleportGround", "x": 1314, "y": 715, "level": 2, "settings": { "size": { "x": 32, "y": 16 }, "mapId": 31, "zHeight": 32, "dir": "SOUTH", "map": "crossedeyes/test", "name": "tpg1", "marker": "tpg1" } },
+        { "type": "WallHorizontal", "x": 269, "y": 208, "level": 2, "settings": { "size": { "x": 32, "y": 8 }, "mapId": 32, "leftEnd": "STOP", "rightEnd": "STOP", "collType": "BLOCK", "wallZHeight": 32, "condition": "!tmp.s1" } },
+        { "type": "WallHorizontal", "x": 314, "y": 208, "level": 2, "settings": { "size": { "x": 32, "y": 8 }, "mapId": 34, "leftEnd": "STOP", "rightEnd": "STOP", "collType": "NPBLOCK", "wallZHeight": 32, "condition": "!tmp.s1" } },
+        { "type": "EventTrigger", "x": 375, "y": 138, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 38, "event": [{ "entity": { "player": true }, "action": [{ "type": "REDUCE_HP", "basedOn": "MAX_HP", "factor": 1 }], "type": "DO_ACTION" }], "eventType": "INTERRUPTABLE", "startCondition": "tmp.die", "triggerType": "ALWAYS", "name": "dieEvent", "loadCondition": true, "endCondition": "false" } },
+        { "type": "FloorSwitch", "x": 372, "y": 205, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 39, "name": "fs1", "switchType": "WHILE_ON_TOP", "variable": "tmp.die" } },
+        { "type": "Marker", "x": 943, "y": 462, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 40, "name": "entrance", "dir": "NORTH", "spawnCondition": "true" } },
         {
             "type": "Elevator",
             "x": 1261,
@@ -298,38 +42,8 @@
                 "elevatorType": "cargoShip",
                 "condition": null,
                 "destinations": [
-                    {
-                        "label": {
-                            "de_DE": "",
-                            "en_US": "CrossedEyes test map",
-                            "langUid": 0,
-                            "fr_FR": "",
-                            "zh_CN": "",
-                            "ja_JP": "",
-                            "ko_KR": "",
-                            "zh_TW": ""
-                        },
-                        "zMoveOffset": -48,
-                        "teleportMarker": "elevator1",
-                        "teleportMap": "crossedeyes/test",
-                        "activeCondition": "true"
-                    },
-                    {
-                        "label": {
-                            "de_DE": "",
-                            "en_US": "Door",
-                            "langUid": 0,
-                            "fr_FR": "",
-                            "zh_CN": "",
-                            "ja_JP": "",
-                            "ko_KR": "",
-                            "zh_TW": ""
-                        },
-                        "zMoveOffset": -48,
-                        "teleportMarker": "door1",
-                        "teleportMap": "crossedeyes/test",
-                        "activeCondition": "null"
-                    }
+                    { "label": { "de_DE": "", "en_US": "CrossedEyes test map", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "zMoveOffset": -48, "teleportMarker": "elevator1", "teleportMap": "crossedeyes/test", "activeCondition": "true" },
+                    { "label": { "de_DE": "", "en_US": "Door", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "zMoveOffset": -48, "teleportMarker": "door1", "teleportMap": "crossedeyes/test", "activeCondition": "null" }
                 ],
                 "blockEventCondition": "map.destroyBoxes",
                 "marker": "",
@@ -339,19 +53,7 @@
                 "faceDir": "SOUTH"
             }
         },
-        {
-            "type": "FloorSwitch",
-            "x": 763,
-            "y": 201,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 43,
-                "name": "fse0",
-                "variable": "tmp.sideMsg0",
-                "switchType": "WHILE_ON_TOP"
-            }
-        },
+        { "type": "FloorSwitch", "x": 763, "y": 201, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 43, "name": "fse0", "variable": "tmp.sideMsg0", "switchType": "WHILE_ON_TOP" } },
         {
             "type": "EventTrigger",
             "x": 764,
@@ -366,22 +68,9 @@
                         "withElse": false,
                         "condition": "tmp.sideMsg0Cond",
                         "thenStep": [
-                            {
-                                "person": { "person": "main.sergey", "expression": "JOKING" },
-                                "message": { "en_US": "UuUuUuUuUu ballllllls UuUuUuUuUu", "langUid": 0 },
-                                "type": "SHOW_SIDE_MSG"
-                            },
-                            {
-                                "person": { "person": "main.lea", "expression": "COMPLEX" },
-                                "message": { "en_US": "no" },
-                                "type": "SHOW_SIDE_MSG"
-                            },
-                            {
-                                "type": "CHANGE_VAR_BOOL",
-                                "varName": "tmp.sideMsg0Cond",
-                                "changeType": "set",
-                                "value": false
-                            }
+                            { "person": { "person": "main.sergey", "expression": "JOKING" }, "message": { "en_US": "UuUuUuUuUu ballllllls UuUuUuUuUu", "langUid": 0 }, "type": "SHOW_SIDE_MSG" },
+                            { "person": { "person": "main.lea", "expression": "COMPLEX" }, "message": { "en_US": "no" }, "type": "SHOW_SIDE_MSG" },
+                            { "type": "CHANGE_VAR_BOOL", "varName": "tmp.sideMsg0Cond", "changeType": "set", "value": false }
                         ]
                     }
                 ],
@@ -393,53 +82,9 @@
                 "endCondition": "false"
             }
         },
-        {
-            "type": "EventTrigger",
-            "x": 765,
-            "y": 150,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 45,
-                "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.sideMsg0Cond", "changeType": "set", "value": true }],
-                "name": "sideMsgCondEvent0",
-                "eventType": "INTERRUPTABLE",
-                "startCondition": "!tmp.sideMsg0",
-                "endCondition": "false",
-                "triggerType": "ALWAYS",
-                "loadCondition": true
-            }
-        },
-        {
-            "type": "FloorSwitch",
-            "x": 800,
-            "y": 202,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 46,
-                "name": "fse1",
-                "variable": "tmp.sideMsg1",
-                "switchType": "WHILE_ON_TOP"
-            }
-        },
-        {
-            "type": "EventTrigger",
-            "x": 801,
-            "y": 103,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 47,
-                "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.sideMsg1Cond", "changeType": "set", "value": true }],
-                "name": "sideMsgCondEvent1",
-                "eventType": "INTERRUPTABLE",
-                "startCondition": "!tmp.sideMsg1",
-                "endCondition": "false",
-                "triggerType": "ALWAYS",
-                "loadCondition": true
-            }
-        },
+        { "type": "EventTrigger", "x": 765, "y": 150, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 45, "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.sideMsg0Cond", "changeType": "set", "value": true }], "name": "sideMsgCondEvent0", "eventType": "INTERRUPTABLE", "startCondition": "!tmp.sideMsg0", "endCondition": "false", "triggerType": "ALWAYS", "loadCondition": true } },
+        { "type": "FloorSwitch", "x": 800, "y": 202, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 46, "name": "fse1", "variable": "tmp.sideMsg1", "switchType": "WHILE_ON_TOP" } },
+        { "type": "EventTrigger", "x": 801, "y": 103, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 47, "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.sideMsg1Cond", "changeType": "set", "value": true }], "name": "sideMsgCondEvent1", "eventType": "INTERRUPTABLE", "startCondition": "!tmp.sideMsg1", "endCondition": "false", "triggerType": "ALWAYS", "loadCondition": true } },
         {
             "type": "EventTrigger",
             "x": 801,
@@ -454,17 +99,8 @@
                         "withElse": false,
                         "condition": "tmp.sideMsg1Cond",
                         "thenStep": [
-                            {
-                                "person": { "person": "main.sergey", "expression": "INTENSE1" },
-                                "message": { "en_US": "*intensive writing of ccmodmanager5*", "langUid": 0 },
-                                "type": "SHOW_SIDE_MSG"
-                            },
-                            {
-                                "type": "CHANGE_VAR_BOOL",
-                                "varName": "tmp.sideMsg1Cond",
-                                "changeType": "set",
-                                "value": false
-                            }
+                            { "person": { "person": "main.sergey", "expression": "INTENSE1" }, "message": { "en_US": "*intensive writing of ccmodmanager5*", "langUid": 0 }, "type": "SHOW_SIDE_MSG" },
+                            { "type": "CHANGE_VAR_BOOL", "varName": "tmp.sideMsg1Cond", "changeType": "set", "value": false }
                         ]
                     }
                 ],
@@ -476,89 +112,13 @@
                 "endCondition": "false"
             }
         },
-        {
-            "type": "WallVertical",
-            "x": 1216,
-            "y": 251,
-            "level": 2,
-            "settings": {
-                "size": { "x": 8, "y": 57 },
-                "mapId": 59,
-                "topEnd": "STOP",
-                "bottomEnd": "STOP",
-                "collType": "BLOCK",
-                "wallZHeight": 32,
-                "name": "wallCage",
-                "condition": "!tmp.cage"
-            }
-        },
-        {
-            "type": "Switch",
-            "x": 1197,
-            "y": 327,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 60, "name": "s1", "variable": "tmp.cage" }
-        },
-        {
-            "type": "Switch",
-            "x": 1228,
-            "y": 326,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 61, "name": "s1", "variable": "tmp.cage" }
-        },
-        {
-            "type": "EnemyCounter",
-            "x": 1281,
-            "y": 258,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 62,
-                "enemyGroup": "cage",
-                "enemyCount": 3,
-                "name": "enemyCounter",
-                "postVariable": "tmp.cage"
-            }
-        },
-        {
-            "type": "BounceBlock",
-            "x": 65,
-            "y": 202,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 63,
-                "blockType": "slopeSE",
-                "group": "a",
-                "name": "bb3"
-            }
-        },
-        {
-            "type": "BounceBlock",
-            "x": 67,
-            "y": 252,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 64,
-                "blockType": "slopeNE",
-                "group": "a",
-                "name": "bb4"
-            }
-        },
-        {
-            "type": "BounceBlock",
-            "x": 97,
-            "y": 252,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 65,
-                "blockType": "slopeNW",
-                "group": "a",
-                "name": "bb5"
-            }
-        },
+        { "type": "WallVertical", "x": 1216, "y": 251, "level": 2, "settings": { "size": { "x": 8, "y": 57 }, "mapId": 59, "topEnd": "STOP", "bottomEnd": "STOP", "collType": "BLOCK", "wallZHeight": 32, "name": "wallCage", "condition": "!tmp.cage" } },
+        { "type": "Switch", "x": 1197, "y": 327, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 60, "name": "s1", "variable": "tmp.cage" } },
+        { "type": "Switch", "x": 1228, "y": 326, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 61, "name": "s1", "variable": "tmp.cage" } },
+        { "type": "EnemyCounter", "x": 1281, "y": 258, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 62, "enemyGroup": "cage", "enemyCount": 3, "name": "enemyCounter", "postVariable": "tmp.cage" } },
+        { "type": "BounceBlock", "x": 65, "y": 202, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 63, "blockType": "slopeSE", "group": "a", "name": "bb3" } },
+        { "type": "BounceBlock", "x": 67, "y": 252, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 64, "blockType": "slopeNE", "group": "a", "name": "bb4" } },
+        { "type": "BounceBlock", "x": 97, "y": 252, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 65, "blockType": "slopeNW", "group": "a", "name": "bb5" } },
         {
             "type": "EventTrigger",
             "x": 419,
@@ -567,23 +127,7 @@
             "settings": {
                 "size": { "x": 16, "y": 16 },
                 "mapId": 68,
-                "event": [
-                    {
-                        "type": "IF",
-                        "withElse": false,
-                        "condition": "tmp.lvlupCond",
-                        "thenStep": [
-                            { "type": "ADD_PLAYER_EXP", "level": -1, "exp": -1000 },
-                            { "type": "CROSSEDEYES_LEVEL_UP" },
-                            {
-                                "type": "CHANGE_VAR_BOOL",
-                                "varName": "tmp.lvlupCond",
-                                "changeType": "set",
-                                "value": false
-                            }
-                        ]
-                    }
-                ],
+                "event": [{ "type": "IF", "withElse": false, "condition": "tmp.lvlupCond", "thenStep": [{ "type": "ADD_PLAYER_EXP", "level": -1, "exp": -1000 }, { "type": "CROSSEDEYES_LEVEL_UP" }, { "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlupCond", "changeType": "set", "value": false }] }],
                 "eventType": "INTERRUPTABLE",
                 "startCondition": "tmp.lvlup",
                 "triggerType": "ALWAYS",
@@ -592,30 +136,8 @@
                 "endCondition": "false"
             }
         },
-        {
-            "type": "EventTrigger",
-            "x": 420,
-            "y": 144,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 69,
-                "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlupCond", "changeType": "set", "value": true }],
-                "name": "lvlupCondEvent0",
-                "eventType": "INTERRUPTABLE",
-                "startCondition": "!tmp.lvlup",
-                "endCondition": "false",
-                "triggerType": "ALWAYS",
-                "loadCondition": true
-            }
-        },
-        {
-            "type": "Switch",
-            "x": 408,
-            "y": 205,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 70, "name": "s2", "variable": "tmp.lvlup" }
-        },
+        { "type": "EventTrigger", "x": 420, "y": 144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 69, "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlupCond", "changeType": "set", "value": true }], "name": "lvlupCondEvent0", "eventType": "INTERRUPTABLE", "startCondition": "!tmp.lvlup", "endCondition": "false", "triggerType": "ALWAYS", "loadCondition": true } },
+        { "type": "Switch", "x": 408, "y": 205, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 70, "name": "s2", "variable": "tmp.lvlup" } },
         {
             "type": "OLPlatform",
             "x": 192,
@@ -638,36 +160,8 @@
                 "shape": "RECTANGLE"
             }
         },
-        {
-            "type": "Chest",
-            "x": 298,
-            "y": 211,
-            "level": 0,
-            "settings": {
-                "name": "",
-                "chestType": "Default",
-                "amount": 3,
-                "variable": "map.chestOpen1",
-                "mapId": 72,
-                "item": "1",
-                "spawnCondition": "map.chests"
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 331,
-            "y": 328,
-            "level": 2,
-            "settings": {
-                "name": "chest1",
-                "chestType": "Default",
-                "amount": 3,
-                "variable": "",
-                "mapId": 73,
-                "item": "1",
-                "spawnCondition": ""
-            }
-        },
+        { "type": "Chest", "x": 298, "y": 211, "level": 0, "settings": { "name": "", "chestType": "Default", "amount": 3, "variable": "map.chestOpen1", "mapId": 72, "item": "1", "spawnCondition": "map.chests" } },
+        { "type": "Chest", "x": 331, "y": 328, "level": 2, "settings": { "name": "chest1", "chestType": "Default", "amount": 3, "variable": "", "mapId": 73, "item": "1", "spawnCondition": "" } },
         {
             "type": "EventTrigger",
             "x": 170,
@@ -694,120 +188,13 @@
                 "endCondition": "false"
             }
         },
-        {
-            "type": "Analyzable",
-            "x": 284,
-            "y": 328,
-            "level": 2,
-            "settings": {
-                "name": "anal1",
-                "color": "YELLOW",
-                "showType": "DEFAULT",
-                "text": {
-                    "en_US": "Watch CrossCode: the movie. I swear it's great!",
-                    "de_DE": "",
-                    "fr_FR": "fr_FR",
-                    "langUid": 0,
-                    "zh_CN": "",
-                    "ko_KR": "",
-                    "ja_JP": "",
-                    "zh_TW": ""
-                },
-                "mapId": 76,
-                "visible": "",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 365,
-            "y": 328,
-            "level": 2,
-            "settings": {
-                "name": "chest2_head",
-                "chestType": "Default",
-                "amount": 1,
-                "variable": "",
-                "mapId": 77,
-                "item": "657",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 406,
-            "y": 329,
-            "level": 2,
-            "settings": {
-                "name": "chest3_arm",
-                "chestType": "Default",
-                "amount": 1,
-                "variable": "",
-                "mapId": 78,
-                "item": "577",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 448,
-            "y": 329,
-            "level": 2,
-            "settings": {
-                "name": "chest4_arm",
-                "chestType": "Default",
-                "amount": 1,
-                "variable": "",
-                "mapId": 79,
-                "item": "607",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 492,
-            "y": 329,
-            "level": 2,
-            "settings": {
-                "name": "chest5_arm",
-                "chestType": "Default",
-                "amount": 1,
-                "variable": "",
-                "mapId": 80,
-                "item": "114",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 532,
-            "y": 329,
-            "level": 2,
-            "settings": {
-                "name": "chest6_torso",
-                "chestType": "Default",
-                "amount": 1,
-                "variable": "",
-                "mapId": 81,
-                "item": "583",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Chest",
-            "x": 577,
-            "y": 330,
-            "level": 2,
-            "settings": {
-                "name": "chest7_feet",
-                "chestType": "Default",
-                "amount": 1,
-                "variable": "",
-                "mapId": 82,
-                "item": "596",
-                "spawnCondition": ""
-            }
-        },
+        { "type": "Analyzable", "x": 284, "y": 328, "level": 2, "settings": { "name": "anal1", "color": "YELLOW", "showType": "DEFAULT", "text": { "en_US": "Watch CrossCode: the movie. I swear it's great!", "de_DE": "", "fr_FR": "fr_FR", "langUid": 0, "zh_CN": "", "ko_KR": "", "ja_JP": "", "zh_TW": "" }, "mapId": 76, "visible": "", "spawnCondition": "" } },
+        { "type": "Chest", "x": 365, "y": 328, "level": 2, "settings": { "name": "chest2_head", "chestType": "Default", "amount": 1, "variable": "", "mapId": 77, "item": "657", "spawnCondition": "" } },
+        { "type": "Chest", "x": 406, "y": 329, "level": 2, "settings": { "name": "chest3_arm", "chestType": "Default", "amount": 1, "variable": "", "mapId": 78, "item": "577", "spawnCondition": "" } },
+        { "type": "Chest", "x": 448, "y": 329, "level": 2, "settings": { "name": "chest4_arm", "chestType": "Default", "amount": 1, "variable": "", "mapId": 79, "item": "607", "spawnCondition": "" } },
+        { "type": "Chest", "x": 492, "y": 329, "level": 2, "settings": { "name": "chest5_arm", "chestType": "Default", "amount": 1, "variable": "", "mapId": 80, "item": "114", "spawnCondition": "" } },
+        { "type": "Chest", "x": 532, "y": 329, "level": 2, "settings": { "name": "chest6_torso", "chestType": "Default", "amount": 1, "variable": "", "mapId": 81, "item": "583", "spawnCondition": "" } },
+        { "type": "Chest", "x": 577, "y": 330, "level": 2, "settings": { "name": "chest7_feet", "chestType": "Default", "amount": 1, "variable": "", "mapId": 82, "item": "596", "spawnCondition": "" } },
         {
             "type": "DynamicPlatform",
             "x": 115,
@@ -826,21 +213,9 @@
                         "duration": 0,
                         "playOnce": false,
                         "action": [
-                            {
-                                "newPos": { "x": 115, "y": 430, "lvl": "2" },
-                                "duration": 3,
-                                "keySpline": "EASE_IN_OUT",
-                                "timePerTile": false,
-                                "type": "INTERPOLATE_POSITION"
-                            },
+                            { "newPos": { "x": 115, "y": 430, "lvl": "2" }, "duration": 3, "keySpline": "EASE_IN_OUT", "timePerTile": false, "type": "INTERPOLATE_POSITION" },
                             { "time": 0.5, "type": "WAIT" },
-                            {
-                                "newPos": { "x": 275, "y": 430, "lvl": "2" },
-                                "duration": 3,
-                                "keySpline": "EASE_IN_OUT",
-                                "timePerTile": false,
-                                "type": "INTERPOLATE_POSITION"
-                            },
+                            { "newPos": { "x": 275, "y": 430, "lvl": "2" }, "duration": 3, "keySpline": "EASE_IN_OUT", "timePerTile": false, "type": "INTERPOLATE_POSITION" },
                             { "time": 0.5, "type": "WAIT" }
                         ]
                     }
@@ -851,62 +226,11 @@
                 "pauseAnimation": "redOff"
             }
         },
-        {
-            "type": "BallChanger",
-            "x": 63,
-            "y": 275,
-            "level": 2,
-            "settings": {
-                "changerType": { "type": "CHANGE_SPEED", "settings": { "factor": 0.25 } },
-                "name": "bc1",
-                "mapId": 85
-            }
-        },
-        {
-            "type": "BallChanger",
-            "x": 88,
-            "y": 275,
-            "level": 2,
-            "settings": {
-                "changerType": { "type": "RESET_SPEED", "settings": { "factor": 2.5 } },
-                "name": "bc2",
-                "mapId": 86
-            }
-        },
-        {
-            "type": "BallChanger",
-            "x": 114,
-            "y": 275,
-            "level": 2,
-            "settings": {
-                "changerType": { "type": "CHANGE_DIR", "settings": { "dir": "SOUTH" } },
-                "name": "bc3",
-                "mapId": 87
-            }
-        },
-        {
-            "type": "BallChanger",
-            "x": 62,
-            "y": 299,
-            "level": 2,
-            "settings": {
-                "changerType": { "type": "CHANGE_ELEMENT", "settings": { "element": "HEAT" } },
-                "name": "bc4",
-                "mapId": 88
-            }
-        },
-        {
-            "type": "Switch",
-            "x": 570,
-            "y": 417,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 92,
-                "name": "s_reloadmap",
-                "variable": "tmp.reloadmap"
-            }
-        },
+        { "type": "BallChanger", "x": 63, "y": 275, "level": 2, "settings": { "changerType": { "type": "CHANGE_SPEED", "settings": { "factor": 0.25 } }, "name": "bc1", "mapId": 85 } },
+        { "type": "BallChanger", "x": 88, "y": 275, "level": 2, "settings": { "changerType": { "type": "RESET_SPEED", "settings": { "factor": 2.5 } }, "name": "bc2", "mapId": 86 } },
+        { "type": "BallChanger", "x": 114, "y": 275, "level": 2, "settings": { "changerType": { "type": "CHANGE_DIR", "settings": { "dir": "SOUTH" } }, "name": "bc3", "mapId": 87 } },
+        { "type": "BallChanger", "x": 62, "y": 299, "level": 2, "settings": { "changerType": { "type": "CHANGE_ELEMENT", "settings": { "element": "HEAT" } }, "name": "bc4", "mapId": 88 } },
+        { "type": "Switch", "x": 570, "y": 417, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 92, "name": "s_reloadmap", "variable": "tmp.reloadmap" } },
         {
             "type": "EventTrigger",
             "x": 513,
@@ -933,95 +257,15 @@
                 "endCondition": "false"
             }
         },
-        {
-            "type": "EventTrigger",
-            "x": 570,
-            "y": 380,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 94,
-                "event": [{ "type": "CROSSEDEYES_RELOAD_LEVEL" }],
-                "eventType": "INTERRUPTABLE",
-                "startCondition": "tmp.reloadmap",
-                "triggerType": "ONCE_PER_ENTRY",
-                "name": "reloadmap",
-                "loadCondition": true,
-                "endCondition": "false"
-            }
-        },
-        {
-            "type": "HiddenBlock",
-            "x": 163,
-            "y": 216,
-            "level": 0,
-            "settings": {
-                "name": "",
-                "size": { "x": 32, "y": 48 },
-                "shape": "RECTANGLE",
-                "heightShape": "EAST_UP",
-                "zHeight": 32,
-                "terrain": "",
-                "mapId": 95
-            }
-        },
-        {
-            "type": "HiddenBlock",
-            "x": 528,
-            "y": 1104,
-            "level": 2,
-            "settings": {
-                "name": "stairs1",
-                "size": { "x": 32, "y": 48 },
-                "shape": "RECTANGLE",
-                "heightShape": "EAST_UP",
-                "zHeight": 32,
-                "terrain": "",
-                "mapId": 96
-            }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 832,
-            "y": 352,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 100, "panelType": "SOUTH", "jumpDistance": "48" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 816,
-            "y": 352,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 101, "panelType": "SOUTH", "jumpDistance": "48" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 848,
-            "y": 352,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 102, "panelType": "SOUTH", "jumpDistance": "48" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 816,
-            "y": 1032,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 112, "panelType": "NORTH", "jumpDistance": "48" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 832,
-            "y": 1032,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 113, "panelType": "NORTH", "jumpDistance": "48" }
-        },
-        {
-            "type": "JumpPanelFar",
-            "x": 848,
-            "y": 1032,
-            "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 114, "panelType": "NORTH", "jumpDistance": "48" }
-        },
+        { "type": "EventTrigger", "x": 570, "y": 380, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 94, "event": [{ "type": "CROSSEDEYES_RELOAD_LEVEL" }], "eventType": "INTERRUPTABLE", "startCondition": "tmp.reloadmap", "triggerType": "ONCE_PER_ENTRY", "name": "reloadmap", "loadCondition": true, "endCondition": "false" } },
+        { "type": "HiddenBlock", "x": 163, "y": 216, "level": 0, "settings": { "name": "", "size": { "x": 32, "y": 48 }, "shape": "RECTANGLE", "heightShape": "EAST_UP", "zHeight": 32, "terrain": "", "mapId": 95 } },
+        { "type": "HiddenBlock", "x": 528, "y": 1104, "level": 2, "settings": { "name": "stairs1", "size": { "x": 32, "y": 48 }, "shape": "RECTANGLE", "heightShape": "EAST_UP", "zHeight": 32, "terrain": "", "mapId": 96 } },
+        { "type": "JumpPanelFar", "x": 832, "y": 352, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 100, "panelType": "SOUTH", "jumpDistance": "48" } },
+        { "type": "JumpPanelFar", "x": 816, "y": 352, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 101, "panelType": "SOUTH", "jumpDistance": "48" } },
+        { "type": "JumpPanelFar", "x": 848, "y": 352, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 102, "panelType": "SOUTH", "jumpDistance": "48" } },
+        { "type": "JumpPanelFar", "x": 816, "y": 1032, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 112, "panelType": "NORTH", "jumpDistance": "48" } },
+        { "type": "JumpPanelFar", "x": 832, "y": 1032, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 113, "panelType": "NORTH", "jumpDistance": "48" } },
+        { "type": "JumpPanelFar", "x": 848, "y": 1032, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 114, "panelType": "NORTH", "jumpDistance": "48" } },
         {
             "type": "XenoDialog",
             "x": 617,
@@ -1038,14 +282,7 @@
                             {
                                 "entity": { "player": true },
                                 "action": [
-                                    {
-                                        "target": { "x": 616, "y": 234, "lvl": "2" },
-                                        "maxTime": 0,
-                                        "distance": 0,
-                                        "precise": false,
-                                        "planOnly": false,
-                                        "type": "NAVIGATE_TO_POINT"
-                                    },
+                                    { "target": { "x": 616, "y": 234, "lvl": "2" }, "maxTime": 0, "distance": 0, "precise": false, "planOnly": false, "type": "NAVIGATE_TO_POINT" },
                                     { "face": "NORTH", "rotate": true, "rotateSpeed": 3, "type": "SET_FACE" }
                                 ],
                                 "repeating": false,
@@ -1053,46 +290,12 @@
                                 "keepState": false,
                                 "type": "DO_ACTION"
                             },
-                            {
-                                "side": "LEFT",
-                                "order": 0,
-                                "clearSide": false,
-                                "type": "ADD_MSG_PERSON",
-                                "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
-                            },
-                            {
-                                "side": "RIGHT",
-                                "order": 0,
-                                "clearSide": false,
-                                "type": "ADD_MSG_PERSON",
-                                "person": { "person": "main.lea", "expression": "DEFAULT" }
-                            },
-                            {
-                                "message": { "en_US": "Oh! W-Why hello S-S-Seeker!" },
-                                "autoContinue": false,
-                                "type": "SHOW_MSG",
-                                "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
-                            },
-                            {
-                                "message": { "en_US": "Hi!" },
-                                "autoContinue": false,
-                                "type": "SHOW_MSG",
-                                "person": { "person": "main.lea", "expression": "EXCITED" }
-                            },
-                            {
-                                "message": {
-                                    "en_US": "After all this years, I have finally found a way to cross-the-codes!"
-                                },
-                                "autoContinue": false,
-                                "type": "SHOW_MSG",
-                                "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" }
-                            },
-                            {
-                                "message": { "en_US": "...?" },
-                                "autoContinue": false,
-                                "type": "SHOW_MSG",
-                                "person": { "person": "main.lea", "expression": "SURPRISED_TOWARD" }
-                            },
+                            { "side": "LEFT", "order": 0, "clearSide": false, "type": "ADD_MSG_PERSON", "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" } },
+                            { "side": "RIGHT", "order": 0, "clearSide": false, "type": "ADD_MSG_PERSON", "person": { "person": "main.lea", "expression": "DEFAULT" } },
+                            { "message": { "en_US": "Oh! W-Why hello S-S-Seeker!" }, "autoContinue": false, "type": "SHOW_MSG", "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" } },
+                            { "message": { "en_US": "Hi!" }, "autoContinue": false, "type": "SHOW_MSG", "person": { "person": "main.lea", "expression": "EXCITED" } },
+                            { "message": { "en_US": "After all this years, I have finally found a way to cross-the-codes!" }, "autoContinue": false, "type": "SHOW_MSG", "person": { "person": "misc.henry-researcher", "expression": "DEFAULT" } },
+                            { "message": { "en_US": "...?" }, "autoContinue": false, "type": "SHOW_MSG", "person": { "person": "main.lea", "expression": "SURPRISED_TOWARD" } },
                             { "side": "ALL", "type": "CLEAR_MSG" }
                         ]
                     }
@@ -1101,196 +304,16 @@
                 "spawnCondition": "true"
             }
         },
-        {
-            "type": "PushPullBlock",
-            "x": 619,
-            "y": 331,
-            "level": 2,
-            "settings": { "name": "", "pushPullType": "Large", "mapId": 124 }
-        },
-        {
-            "type": "Destructible",
-            "x": 510,
-            "y": 476,
-            "level": 2,
-            "settings": { "name": "", "desType": "boxMedium", "enemyInfo": null, "spawnCondition": null, "mapId": 89 }
-        },
-        {
-            "type": "Destructible",
-            "x": 507,
-            "y": 517,
-            "level": 2,
-            "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 }
-        },
-        {
-            "type": "Destructible",
-            "x": 510,
-            "y": 441,
-            "level": 2,
-            "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 }
-        },
-        {
-            "type": "ScalableProp",
-            "x": 1216,
-            "y": 205,
-            "level": 2,
-            "settings": {
-                "size": { "x": 160, "y": 8 },
-                "mapId": 54,
-                "patternOffset": { "x": 0, "y": 0 },
-                "propConfig": {
-                    "sheet": "arid",
-                    "name": "wireFenceH",
-                    "ends": { "west": "WEST_DOWN", "east": "EAST_DOWN" }
-                }
-            }
-        },
-        {
-            "type": "ScalableProp",
-            "x": 1216,
-            "y": 348,
-            "level": 2,
-            "settings": {
-                "size": { "x": 160, "y": 8 },
-                "mapId": 55,
-                "patternOffset": { "x": 0, "y": 0 },
-                "propConfig": {
-                    "sheet": "arid",
-                    "name": "wireFenceH",
-                    "ends": { "west": "WEST_END", "east": "EAST_END" }
-                }
-            }
-        },
-        {
-            "type": "ScalableProp",
-            "x": 1368,
-            "y": 204,
-            "level": 2,
-            "settings": {
-                "size": { "x": 8, "y": 152 },
-                "mapId": 56,
-                "patternOffset": { "x": 0, "y": 0 },
-                "propConfig": {
-                    "sheet": "arid",
-                    "name": "wireFenceV",
-                    "ends": { "north": "NORTH_END", "south": "SOUTH_END" }
-                }
-            }
-        },
-        {
-            "type": "ScalableProp",
-            "x": 1216,
-            "y": 308,
-            "level": 2,
-            "settings": {
-                "size": { "x": 8, "y": 48 },
-                "mapId": 57,
-                "patternOffset": { "x": 0, "y": 0 },
-                "propConfig": {
-                    "sheet": "arid",
-                    "name": "wireFenceV",
-                    "ends": { "north": "NORTH_END", "south": "SOUTH_END" }
-                }
-            }
-        },
-        {
-            "type": "ScalableProp",
-            "x": 1216,
-            "y": 204,
-            "level": 2,
-            "settings": {
-                "size": { "x": 8, "y": 48 },
-                "mapId": 58,
-                "patternOffset": { "x": 0, "y": 0 },
-                "propConfig": {
-                    "sheet": "arid",
-                    "name": "wireFenceV",
-                    "ends": { "north": "NORTH_END", "south": "SOUTH_END" }
-                }
-            }
-        },
-        {
-            "type": "NPC",
-            "x": 663,
-            "y": 205,
-            "level": 2,
-            "settings": {
-                "name": "trader-trade_sets",
-                "characterName": "cross-worlds.pentafist-male-dark",
-                "npcStates": [
-                    {
-                        "reactType": "FIXED_POS",
-                        "face": "SOUTH",
-                        "action": [],
-                        "hidden": false,
-                        "condition": "",
-                        "config": "normal",
-                        "event": { "trade": { "trader": "autumnSets" } }
-                    }
-                ],
-                "mapId": 115
-            }
-        },
-        {
-            "type": "NPC",
-            "x": 619,
-            "y": 205,
-            "level": 2,
-            "settings": {
-                "name": "henry",
-                "characterName": "misc.henry-researcher",
-                "mapId": 123,
-                "npcStates": [
-                    {
-                        "reactType": "FIXED_FACE",
-                        "face": "SOUTH",
-                        "action": [],
-                        "hidden": false,
-                        "condition": "true",
-                        "config": "sit"
-                    }
-                ]
-            }
-        },
-        {
-            "type": "Prop",
-            "x": 256,
-            "y": 330,
-            "level": 2,
-            "settings": {
-                "name": "beltSign",
-                "interact": {
-                    "icon": "INFO",
-                    "hoverText": {
-                        "en_US": "Equip Consciousness",
-                        "de_DE": "",
-                        "fr_FR": "",
-                        "langUid": 0,
-                        "zh_CN": "",
-                        "ja_JP": "",
-                        "ko_KR": "",
-                        "zh_TW": ""
-                    }
-                },
-                "mapId": 84,
-                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
-                "propAnim": "unsolved",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Prop",
-            "x": 648,
-            "y": 218,
-            "level": 2,
-            "settings": {
-                "name": "",
-                "propType": { "sheet": "trading-autumn", "name": "boothNoChair" },
-                "propAnim": "trade",
-                "spawnCondition": null,
-                "mapId": 116
-            }
-        },
+        { "type": "PushPullBlock", "x": 619, "y": 331, "level": 2, "settings": { "name": "", "pushPullType": "Large", "mapId": 124 } },
+        { "type": "Destructible", "x": 510, "y": 476, "level": 2, "settings": { "name": "", "desType": "boxMedium", "enemyInfo": null, "spawnCondition": null, "mapId": 89 } },
+        { "type": "Destructible", "x": 507, "y": 517, "level": 2, "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 } },
+        { "type": "ScalableProp", "x": 1216, "y": 205, "level": 2, "settings": { "size": { "x": 160, "y": 8 }, "mapId": 54, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceH", "ends": { "west": "WEST_DOWN", "east": "EAST_DOWN" } } } },
+        { "type": "ScalableProp", "x": 1216, "y": 348, "level": 2, "settings": { "size": { "x": 160, "y": 8 }, "mapId": 55, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceH", "ends": { "west": "WEST_END", "east": "EAST_END" } } } },
+        { "type": "ScalableProp", "x": 1368, "y": 204, "level": 2, "settings": { "size": { "x": 8, "y": 152 }, "mapId": 56, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceV", "ends": { "north": "NORTH_END", "south": "SOUTH_END" } } } },
+        { "type": "ScalableProp", "x": 1216, "y": 308, "level": 2, "settings": { "size": { "x": 8, "y": 48 }, "mapId": 57, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceV", "ends": { "north": "NORTH_END", "south": "SOUTH_END" } } } },
+        { "type": "ScalableProp", "x": 1216, "y": 204, "level": 2, "settings": { "size": { "x": 8, "y": 48 }, "mapId": 58, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceV", "ends": { "north": "NORTH_END", "south": "SOUTH_END" } } } },
+        { "type": "NPC", "x": 663, "y": 205, "level": 2, "settings": { "name": "trader-trade_sets", "characterName": "cross-worlds.pentafist-male-dark", "npcStates": [{ "reactType": "FIXED_POS", "face": "SOUTH", "action": [], "hidden": false, "condition": "", "config": "normal", "event": { "trade": { "trader": "autumnSets" } } }], "mapId": 115 } },
+        { "type": "NPC", "x": 619, "y": 205, "level": 2, "settings": { "name": "henry", "characterName": "misc.henry-researcher", "mapId": 123, "npcStates": [{ "reactType": "FIXED_FACE", "face": "SOUTH", "action": [], "hidden": false, "condition": "true", "config": "sit" }] } },
         {
             "type": "NPC",
             "x": 707,
@@ -1304,201 +327,35 @@
                         "reactType": "FIXED_POS",
                         "face": "SOUTH",
                         "action": [
-                            {
-                                "anim": "person2Folded",
-                                "wait": false,
-                                "viaWalkConfig": false,
-                                "type": "SHOW_ANIMATION",
-                                "followUp": null
-                            },
+                            { "anim": "person2Folded", "wait": false, "viaWalkConfig": false, "type": "SHOW_ANIMATION", "followUp": null },
                             { "time": 1, "type": "WAIT" }
                         ],
                         "hidden": false,
                         "condition": "",
                         "config": "normal",
                         "event": [
-                            {
-                                "side": "LEFT",
-                                "order": 0,
-                                "clearSide": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "ADD_MSG_PERSON"
-                            },
-                            {
-                                "side": "RIGHT",
-                                "order": 0,
-                                "clearSide": false,
-                                "person": { "person": "main.lea", "expression": "DEFAULT" },
-                                "type": "ADD_MSG_PERSON"
-                            },
-                            {
-                                "message": {
-                                    "de_DE": "",
-                                    "en_US": "Test interact",
-                                    "langUid": 0,
-                                    "fr_FR": "",
-                                    "zh_CN": "",
-                                    "ja_JP": "",
-                                    "ko_KR": "",
-                                    "zh_TW": ""
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "de_DE": "",
-                                    "en_US": "I'm bald",
-                                    "langUid": 0,
-                                    "fr_FR": "",
-                                    "zh_CN": "",
-                                    "ja_JP": "",
-                                    "ko_KR": "",
-                                    "zh_TW": ""
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" },
-                                "type": "SHOW_MSG"
-                            },
-                            {
-                                "message": {
-                                    "de_DE": "...?",
-                                    "en_US": "...?",
-                                    "langUid": 57,
-                                    "fr_FR": "...?",
-                                    "zh_CN": "…？",
-                                    "ja_JP": "...？",
-                                    "ko_KR": "...?",
-                                    "zh_TW": "…？"
-                                },
-                                "autoContinue": false,
-                                "person": { "person": "main.lea", "expression": "EXCITED" },
-                                "type": "SHOW_MSG"
-                            }
+                            { "side": "LEFT", "order": 0, "clearSide": false, "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" }, "type": "ADD_MSG_PERSON" },
+                            { "side": "RIGHT", "order": 0, "clearSide": false, "person": { "person": "main.lea", "expression": "DEFAULT" }, "type": "ADD_MSG_PERSON" },
+                            { "message": { "de_DE": "", "en_US": "Test interact", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "autoContinue": false, "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" }, "type": "SHOW_MSG" },
+                            { "message": { "de_DE": "", "en_US": "I'm bald", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "autoContinue": false, "person": { "person": "cargo-crew.male-bald", "expression": "DEFAULT" }, "type": "SHOW_MSG" },
+                            { "message": { "de_DE": "...?", "en_US": "...?", "langUid": 57, "fr_FR": "...?", "zh_CN": "…？", "ja_JP": "...？", "ko_KR": "...?", "zh_TW": "…？" }, "autoContinue": false, "person": { "person": "main.lea", "expression": "EXCITED" }, "type": "SHOW_MSG" }
                         ]
                     }
                 ],
                 "mapId": 35
             }
         },
-        {
-            "type": "Enemy",
-            "x": 1315,
-            "y": 233,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 51,
-                "enemyInfo": {
-                    "party": "ENEMY",
-                    "level": 1,
-                    "face": "SOUTH",
-                    "state": "IDLE",
-                    "type": "meerkat-alt",
-                    "group": "cage"
-                }
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1050,
-            "y": 470,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 3,
-                "enemyInfo": { "type": "baggy-kun", "face": "SOUTH", "party": "ENEMY" }
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1185,
-            "y": 210,
-            "level": 2,
-            "settings": {
-                "name": "bot1",
-                "enemyInfo": {
-                    "type": "target-bot",
-                    "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" },
-                    "state": ""
-                },
-                "spawnCondition": null,
-                "enemyType": "target-bot",
-                "mapId": 18
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1151,
-            "y": 211,
-            "level": 2,
-            "settings": {
-                "name": "bot2",
-                "enemyInfo": {
-                    "type": "target-bot",
-                    "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" },
-                    "state": "DO_HIT",
-                    "group": ""
-                },
-                "spawnCondition": null,
-                "enemyType": "target-bot",
-                "mapId": 19
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1113,
-            "y": 210,
-            "level": 2,
-            "settings": {
-                "name": "bot3",
-                "enemyInfo": {
-                    "type": "target-bot",
-                    "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" },
-                    "state": "DO_NOT_HIT",
-                    "group": ""
-                },
-                "spawnCondition": null,
-                "enemyType": "target-bot",
-                "mapId": 20
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1016,
-            "y": 211,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 52,
-                "enemyInfo": {
-                    "party": "PLAYER",
-                    "level": 1,
-                    "face": "SOUTH",
-                    "state": "",
-                    "type": "heat.special.brew-machine"
-                }
-            }
-        },
-        {
-            "type": "Enemy",
-            "x": 1243,
-            "y": 226,
-            "level": 2,
-            "settings": {
-                "size": { "x": 16, "y": 16 },
-                "mapId": 53,
-                "enemyInfo": {
-                    "party": "ENEMY",
-                    "level": 1,
-                    "face": "SOUTH",
-                    "state": "IDLE",
-                    "type": "jungle.blob",
-                    "group": "cage"
-                }
-            }
-        }
+        { "type": "Destructible", "x": 510, "y": 441, "level": 2, "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 } },
+        { "type": "Prop", "x": 256, "y": 330, "level": 2, "settings": { "name": "beltSign", "interact": { "icon": "INFO", "hoverText": { "en_US": "Equip Consciousness", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } }, "mapId": 84, "propType": { "sheet": "dungeon-ar", "name": "taskSign" }, "propAnim": "unsolved", "spawnCondition": "" } },
+        { "type": "Prop", "x": 648, "y": 218, "level": 2, "settings": { "name": "", "propType": { "sheet": "trading-autumn", "name": "boothNoChair" }, "propAnim": "trade", "spawnCondition": null, "mapId": 116 } },
+        { "type": "Enemy", "x": 1315, "y": 233, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 51, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "meerkat-alt", "group": "cage" } } },
+        { "type": "Enemy", "x": 1050, "y": 470, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 3, "enemyInfo": { "type": "baggy-kun", "face": "SOUTH", "party": "ENEMY" } } },
+        { "type": "Enemy", "x": 1185, "y": 210, "level": 2, "settings": { "name": "bot1", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 18 } },
+        { "type": "Enemy", "x": 1151, "y": 211, "level": 2, "settings": { "name": "bot2", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 19 } },
+        { "type": "Enemy", "x": 1113, "y": 210, "level": 2, "settings": { "name": "bot3", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_NOT_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 20 } },
+        { "type": "Enemy", "x": 1016, "y": 211, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 52, "enemyInfo": { "party": "PLAYER", "level": 1, "face": "SOUTH", "state": "", "type": "heat.special.brew-machine" } } },
+        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage" } } },
+        { "type": "Enemy", "x": 1333, "y": 290, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 125, "enemyInfo": { "type": "penguin", "group": "cage", "level": 2, "party": "ENEMY", "face": "NORTH" } } }
     ],
     "layer": [
         {

@@ -8,7 +8,13 @@ import { isSameAsLast } from './state-util'
 declare global {
     namespace ig.ENTITY {
         interface Crosshair {
-            createNetid(this: this, x: number, y: number, z: number, settings: ig.ENTITY.Crosshair.Settings): string | undefined
+            createNetid(
+                this: this,
+                x: number,
+                y: number,
+                z: number,
+                settings: ig.ENTITY.Crosshair.Settings
+            ): string | undefined
 
             lastSent?: Return
         }

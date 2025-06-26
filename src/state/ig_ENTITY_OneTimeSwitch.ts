@@ -1,7 +1,7 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { createNetidStatic, } from './entity'
+import { createNetidStatic } from './entity'
 import { isSameAsLast } from './state-util'
 
 declare global {
