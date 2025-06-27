@@ -32,7 +32,7 @@ function getState(this: ig.ENTITY.Crosshair, full: boolean) {
     }
 
     return {
-        pos: this.active ? isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create) : undefined,
+        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
         active: isSameAsLast(this, full, this.active, 'active'),
         special: isSameAsLast(this, full, this.special, 'special'),
         isAiming: isSameAsLast(this, full, isAiming, 'isAiming'),
@@ -42,7 +42,7 @@ function getState(this: ig.ENTITY.Crosshair, full: boolean) {
 function setState(this: ig.ENTITY.Crosshair, state: Return) {
     if (state.pos) Vec3.assign(this.coll.pos, state.pos)
 
-    if (state.active !== undefined && state.active != this.active) {
+    if (state.active !== undefined) {
         this.setActive(state.active)
     }
 

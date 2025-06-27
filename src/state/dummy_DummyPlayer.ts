@@ -55,7 +55,6 @@ function setState(this: dummy.DummyPlayer, state: Return) {
 
         if (
             (this.currentAnim == 'attack' || this.currentAnim == 'attackRev' || this.currentAnim == 'attackFinisher') &&
-            multi.server instanceof RemoteServer &&
             this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE &&
             this.model.getCore(sc.PLAYER_CORE.THROWING) &&
             sc.options.get('close-circle')
