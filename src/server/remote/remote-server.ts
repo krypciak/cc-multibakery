@@ -5,8 +5,6 @@ import { applyStateUpdatePacket } from '../../state/states'
 import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
-import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { showClientErrorPopup } from '../../client/menu/error-popup'
 import { Opts } from '../../options'
 
 import './remote-server-sender'
@@ -51,11 +49,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.measureTraffic = Opts.showPacketNetworkTraffic
 
         TemporarySet.resetAll()
-    }
-
-    protected onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown, whenApplingPacket?: boolean): never {
-        showClientErrorPopup(inst, error, whenApplingPacket)
-        super.onInstanceUpdateError(inst, error)
     }
 
     async tryJoinClient(
@@ -116,7 +109,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             try {
                 applyStateUpdatePacket(stateUpdatePacket, data.tick, map.noStateAppliedYet)
             } catch (e) {
-                this.onInstanceUpdateError(inst, e, true)
+                this.onInstanceUpdateError(inst, e)
             }
             map.noStateAppliedYet = false
             instanceinator.instances[prevId].apply()
@@ -136,7 +129,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async destroy() {
-        await this.netManager.destroy?.()
         await super.destroy()
+        await this.netManager.destroy?.()
     }
 }

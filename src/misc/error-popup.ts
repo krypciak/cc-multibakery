@@ -1,40 +1,41 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type {} from 'ccmodmanager/types/local-mods'
-import Multibakery, { prestart } from '../../plugin'
-import { assert } from '../../misc/assert'
-import { RemoteServer } from '../../server/remote/remote-server'
+import Multibakery, { prestart } from '../plugin'
+import { RemoteServer } from '../server/remote/remote-server'
 
 prestart(() => {
-    if (!REMOTE) return
-
     ig.System.inject({
         error(error) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(error)
+            if (!multi.server) return this.parent(error)
             throw error
         },
     })
 })
 
-function gatherInfo(err: unknown, inst: InstanceinatorInstance, whenApplingPacket?: boolean) {
+function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const isCCL3 = Multibakery.mod.isCCL3
     const version = ig.game.getVersion()
     const platform = ig.getPlatformName(ig.platform)
     const os = ig.OS
     const nwjsVersion = ig.nwjsVersion && ig.nwjsVersion[0]
     const browserVersion = ig.browserVersion
-    const map = ig.game.mapName
-    const stackTrace = err instanceof Error ? err.stack ?? '' : ''
+    const stackTrace = err instanceof Error ? err.stack ?? 'empty stack??' : 'not an error??'
     const instName = inst.name
 
     const server = multi.server
-    assert(server instanceof RemoteServer)
-    const connectionInfo = server.netManager?.conn?.getConnectionInfo()
+    let serverTypeSpecificInfo: string
+    if (server instanceof RemoteServer) {
+        const connectionInfo = server.netManager?.conn?.getConnectionInfo()
+        serverTypeSpecificInfo = `${connectionInfo ? `connection: ${connectionInfo}` : ''}`
+    } else {
+        serverTypeSpecificInfo = `physics ay`
+    }
 
     const infoText =
         `ccV: ${version},   cclV: ${isCCL3 ? '3' : '2'},  OS: ${os},   platform: ${platform},   ` +
-        `nwjsV: ${nwjsVersion},   browserV: ${browserVersion}${map ? `,   map: ${map}` : ''}` +
+        `nwjsV: ${nwjsVersion},   browserV: ${browserVersion},   instance: ${instName}` +
         '\n' +
-        `instance: ${instName},  whenApplyingPacket: ${whenApplingPacket},  connection: ${connectionInfo}` +
+        serverTypeSpecificInfo +
         '\n\n' +
         `${stackTrace}`
 
@@ -47,7 +48,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance, whenApplingPacke
 }
 
 let shown: boolean
-export function showClientErrorPopup(inst: InstanceinatorInstance, err: unknown, whenApplingPacket?: boolean) {
+export function showServerErrorPopup(inst: InstanceinatorInstance, err: unknown) {
     if (shown) return
     shown = true
     const hide = () => {
@@ -55,7 +56,7 @@ export function showClientErrorPopup(inst: InstanceinatorInstance, err: unknown,
         document.body.removeChild(div)
     }
 
-    const { infoText, modsText } = gatherInfo(err, inst, whenApplingPacket)
+    const { infoText, modsText } = gatherInfo(err, inst)
 
     const bg = '#1d1f21'
     const fg = '#fcfcfc'

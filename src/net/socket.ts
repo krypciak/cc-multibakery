@@ -70,6 +70,9 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         this.io.on('connection', async socket => {
             const connection = new SocketNetConnection(socket, () => {
                 this.connections.erase(connection)
+
+                if (!multi.server || multi.server != server || server.destroyed) return
+
                 server.onNetDisconnect(connection)
             })
             this.connections.push(connection)
@@ -131,6 +134,8 @@ export class SocketNetManagerRemoteServer {
         socket.on('update', data => server.onNetReceive(this.conn!, data))
         socket.on('disconnect', () => {
             this.stop()
+            if (!multi.server || multi.server != server || server.destroyed) return
+
             server.onNetDisconnect()
         })
         return new Promise<void>(resolve => {

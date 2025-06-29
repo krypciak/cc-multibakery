@@ -5,6 +5,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
+import { showServerErrorPopup } from '../misc/error-popup'
 
 export interface ServerSettings {
     globalTps: number
@@ -45,7 +46,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     masterUsername?: string
 
     measureTraffic: boolean = false
-    protected destroyed: boolean = false
+    destroyed: boolean = false // or destroying
 
     async start() {
         instanceinator.displayId = true
@@ -137,8 +138,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         ig.input.clearPressed()
     }
 
-    protected onInstanceUpdateError(_inst: InstanceinatorInstance, error: unknown): never {
-        this.destroy()
+    protected onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown): never {
+        showServerErrorPopup(inst, error)
+        multi.destroyAndStartLoop()
         throw error
     }
 
@@ -190,6 +192,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async destroy() {
+        if (this.destroyed) return
         this.destroyed = true
 
         this.serverInst.apply()

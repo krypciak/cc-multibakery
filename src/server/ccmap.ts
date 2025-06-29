@@ -178,10 +178,6 @@ export class CCMap {
         })
     }
 
-    update() {
-        for (const player of this.players) player.update()
-    }
-
     async destroy() {
         for (const player of this.players) await player.destroy()
         if (this.inst) {
