@@ -75,7 +75,7 @@ export async function createPhysicsServerFromCurrentState() {
     })
 }
 
-export async function closePhysicsServerAndSaveState() {
+export function closePhysicsServerAndSaveState() {
     assert(multi.server instanceof PhysicsServer)
     assert(multi.server.masterUsername)
     const client = multi.server.clients[multi.server.masterUsername]
@@ -91,7 +91,7 @@ export async function closePhysicsServerAndSaveState() {
     filterOutProblematicEntityStates(origMapState)
     multi.server.serverInst.apply()
 
-    await multi.destroyAndStartLoop()
+    multi.destroyAndStartLoop()
 
     if (!ig.game.playerEntity) return
 

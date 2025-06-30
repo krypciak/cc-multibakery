@@ -30,7 +30,7 @@ class GamepadAssigner {
         this.handler = new Html5GamepadHandler(
             id => {
                 const gamepad = this.gamepads[id]
-                gamepad.destroy = async () => {
+                gamepad.destroy = () => {
                     newId(id)
                 }
                 newId(id)
@@ -119,17 +119,17 @@ prestart(() => {
 declare global {
     namespace ig {
         interface GamepadManager {
-            destroy(this: this): Promise<void>
+            destroy(this: this): void
         }
         interface Gamepad {
-            destroy?(this: this): Promise<void>
+            destroy?(this: this): void
         }
     }
 }
 prestart(() => {
     ig.GamepadManager.inject({
-        async destroy() {
-            await Promise.all(this.activeGamepads.map(gamepad => gamepad.destroy?.()))
+        destroy() {
+            for (const gamepad of this.activeGamepads) gamepad.destroy?.()
         },
     })
 })

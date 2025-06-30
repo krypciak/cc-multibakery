@@ -30,7 +30,7 @@ export async function tryJoinRemote(
 
     const { ackData } = await server.tryJoinClient(joinData, false)
     if (ackData.status != 'ok') {
-        await multi.destroyAndStartLoop()
+        multi.destroyAndStartLoop()
     }
     return ackData
 }

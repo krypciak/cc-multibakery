@@ -95,8 +95,8 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         await this.io.close()
     }
 
-    async destroy() {
-        await this.stop()
+    destroy() {
+        this.stop()
     }
 }
 
@@ -158,12 +158,12 @@ export class SocketNetManagerRemoteServer {
         return ack
     }
 
-    async stop() {
+    stop() {
         this.conn?.close()
     }
 
-    async destroy() {
-        await this.stop()
+    destroy() {
+        this.stop()
     }
 }
 

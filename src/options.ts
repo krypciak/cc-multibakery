@@ -185,6 +185,12 @@ function registerOpts() {
                             return index + 60
                         },
                     },
+                    physicsAttemptCrashRecovery: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Attempt crash recovery',
+                        description: '',
+                    },
                 },
             },
         },

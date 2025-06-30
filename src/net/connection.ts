@@ -18,6 +18,6 @@ export interface NetManagerPhysicsServer {
     connections: NetConnection[]
 
     start(): Promise<void>
-    stop(): Promise<void>
-    destroy(): Promise<void>
+    stop(): void
+    destroy(): void
 }

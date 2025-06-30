@@ -10,6 +10,7 @@ import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
 
 import './physics-server-sender'
+import { Opts } from '../../options'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -20,7 +21,7 @@ export type PhysicsServerConnectionSettings = {
 
 export interface PhysicsServerSettings extends ServerSettings {
     godmode?: boolean
-
+    attemptCrashRecovery?: boolean
     netInfo?: NetServerInfoPhysics
 }
 
@@ -41,6 +42,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.start()
 
         this.baseInst.display = false
+        this.attemptCrashRecovery = this.settings.attemptCrashRecovery ?? Opts.physicsAttemptCrashRecovery
 
         if (!window.crossnode?.options.test) {
             // await this.createAndJoinClient({
@@ -161,9 +163,9 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    async destroy() {
-        await this.netManager?.destroy()
-        await this.httpServer?.destroy()
-        await super.destroy()
+    destroy() {
+        super.destroy()
+        this.netManager?.destroy()
+        this.httpServer?.destroy()
     }
 }

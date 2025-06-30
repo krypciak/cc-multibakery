@@ -30,6 +30,14 @@ export type ClientJoinAckData = {
     status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
 }
 
+export interface GameLoopUpdateable {
+    inst: InstanceinatorInstance
+    determinism: DeterMineInstance
+
+    update(): void
+    deferredUpdate(): void
+}
+
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     abstract settings: S
     protected abstract remote: boolean
@@ -46,6 +54,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     masterUsername?: string
 
     measureTraffic: boolean = false
+    attemptCrashRecovery: boolean = false
     destroyed: boolean = false // or destroying
 
     async start() {
@@ -69,35 +78,30 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         multi.class.gamepadAssigner.initialize()
     }
 
+    private applyUpdateable(obj: GameLoopUpdateable): boolean {
+        if (!obj.inst) return false
+
+        copyTickInfo(this.serverInst, obj.inst)
+        obj.inst.apply()
+        determine.apply(obj.determinism)
+
+        return true
+    }
+
     update() {
         multi.class.gamepadAssigner.update()
 
-        const updateWrapper = () => {
-            try {
-                ig.game.update()
-            } catch (e) {
-                this.onInstanceUpdateError(instanceinator.instances[instanceinator.id], e)
-            }
-        }
-
-        updateWrapper()
-
-        const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; update?(): void }) => {
-            if (!obj.inst) return
-            copyTickInfo(this.serverInst, obj.inst)
-            obj.inst.apply()
-            determine.apply(obj.determinism)
-            obj.update?.()
-            updateWrapper()
-        }
+        ig.game.update()
 
         for (const name in this.maps) {
             const map = this.maps[name]
-            run(map)
+            if (this.applyUpdateable(map)) map.update()
+            if (!multi.server) return
         }
         for (const clientId in this.clients) {
             const client = this.clients[clientId]
-            run(client)
+            if (this.applyUpdateable(client)) client.update()
+            if (!multi.server) return
         }
 
         this.serverInst.apply()
@@ -105,32 +109,17 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     deferredUpdate() {
-        const updateWrapper = () => {
-            try {
-                ig.game.deferredUpdate()
-            } catch (e) {
-                this.onInstanceUpdateError(instanceinator.instances[instanceinator.id], e)
-            }
-        }
-
-        updateWrapper()
-
-        const run = (obj: { inst: InstanceinatorInstance; determinism: DeterMineInstance; update?(): void }) => {
-            if (!obj.inst) return
-            copyTickInfo(this.serverInst, obj.inst)
-            obj.inst.apply()
-            determine.apply(obj.determinism)
-            updateWrapper()
-            ig.input.clearPressed()
-        }
+        ig.game.deferredUpdate()
 
         for (const name in this.maps) {
             const map = this.maps[name]
-            run(map)
+            if (this.applyUpdateable(map)) map.deferredUpdate()
+            if (!multi.server) return
         }
         for (const clientId in this.clients) {
             const client = this.clients[clientId]
-            run(client)
+            if (this.applyUpdateable(client)) client.deferredUpdate()
+            if (!multi.server) return
         }
 
         this.serverInst.apply()
@@ -138,7 +127,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         ig.input.clearPressed()
     }
 
-    protected onInstanceUpdateError(inst: InstanceinatorInstance, error: unknown): never {
+    onInstanceUpdateError(error: unknown): never {
+        const inst = instanceinator.instances[instanceinator.id]
         showServerErrorPopup(inst, error)
         multi.destroyAndStartLoop()
         throw error
@@ -150,6 +140,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.maps[name] = map
         await map.load()
         this.mapsById[map.inst.id] = map
+    }
+
+    async unloadMap(map: CCMap) {
+        assert(map)
+        delete this.maps[map.name]
+        delete this.mapsById[map.inst.id]
+        map.destroy()
     }
 
     private async joinClient(client: Client) {
@@ -173,12 +170,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         remote: boolean
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
 
-    async leaveClient(client: Client) {
+    leaveClient(client: Client) {
+        /* TODO: communicate socket that closed?? */
         const id = client.inst.id
         assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
         delete this.clientsById[id]
         delete this.clients[client.player.username]
-        await client.destroy()
+        client.destroy()
     }
 
     private safeguardServerInstance() {
@@ -191,20 +189,20 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         })
     }
 
-    async destroy() {
+    destroy() {
         if (this.destroyed) return
         this.destroyed = true
 
         this.serverInst.apply()
 
         for (const client of Object.values(this.clientsById)) {
-            await this.leaveClient(client)
+            this.leaveClient(client)
         }
 
         ig.system.stopRunLoop()
 
         for (const map of Object.values(this.maps)) {
-            await map.destroy()
+            map.destroy()
         }
         determine.apply(determine.instances[0])
         this.baseInst.apply()

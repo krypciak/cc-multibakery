@@ -73,10 +73,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         return { client, ackData }
     }
 
-    async onNetDisconnect() {
+    onNetDisconnect() {
         if (this.destroyed) return
         console.log('server disconnected')
-        await multi.destroyAndStartLoop()
+        multi.destroyAndStartLoop()
         sc.Dialogs.showErrorDialog('Disconnected')
     }
 
@@ -109,7 +109,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             try {
                 applyStateUpdatePacket(stateUpdatePacket, data.tick, map.noStateAppliedYet)
             } catch (e) {
-                this.onInstanceUpdateError(inst, e)
+                this.onInstanceUpdateError(e)
             }
             map.noStateAppliedYet = false
             instanceinator.instances[prevId].apply()
@@ -122,14 +122,14 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async leaveClient(client: Client) {
-        await super.leaveClient(client)
+        super.leaveClient(client)
         if (!this.destroyed && Object.keys(this.clients).length == 0) {
-            await multi.destroyAndStartLoop()
+            multi.destroyAndStartLoop()
         }
     }
 
-    async destroy() {
-        await super.destroy()
-        await this.netManager.destroy?.()
+    destroy() {
+        super.destroy()
+        this.netManager.destroy?.()
     }
 }

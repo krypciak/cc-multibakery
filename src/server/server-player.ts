@@ -65,7 +65,7 @@ export class ServerPlayer {
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
         this.ready = false
         let map = multi.server.maps[this.mapName]
-        if (map && this.dummy) await map.leave(this)
+        if (map && this.dummy) map.leave(this)
         this.mapName = mapName
         map = multi.server.maps[this.mapName]
         if (!map) {
@@ -90,10 +90,10 @@ export class ServerPlayer {
         this.mapInteract?.onPreUpdate()
     }
 
-    async destroy() {
+    destroy() {
         assert(!this.destroyed)
         const map = multi.server.maps[this.mapName]
-        await map?.leave(this)
+        map?.leave(this)
         this.destroyed = true
     }
 }

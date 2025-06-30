@@ -1,5 +1,5 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { waitForScheduledTask } from './server'
+import { GameLoopUpdateable, waitForScheduledTask } from './server'
 import { assert } from '../misc/assert'
 import { ServerPlayer } from './server-player'
 import { CCMapDisplay } from './ccmap-display'
@@ -15,14 +15,14 @@ declare global {
     }
 }
 
-export class CCMap {
+export class CCMap implements GameLoopUpdateable {
     rawLevelData!: sc.MapModel.Map
 
     players: ServerPlayer[] = []
 
     inst!: InstanceinatorInstance
-    display!: CCMapDisplay
     determinism!: DeterMineInstance
+    display!: CCMapDisplay
 
     ready: boolean = false
     readyPromise: Promise<void>
@@ -70,6 +70,30 @@ export class CCMap {
         this.readyResolve()
     }
 
+    attemptRecovery(e: unknown) {
+        if (!multi.server.attemptCrashRecovery) throw e
+
+        console.error(`ccmap crashed, inst: ${instanceinator.id}`, e)
+        multi.server.unloadMap(this)
+    }
+
+    update() {
+        try {
+            ig.game.update()
+        } catch (e) {
+            this.attemptRecovery(e)
+        }
+    }
+
+    deferredUpdate() {
+        try {
+            ig.game.deferredUpdate()
+            ig.input.clearPressed()
+        } catch (e) {
+            this.attemptRecovery(e)
+        }
+    }
+
     private async readLevelData() {
         return new Promise<sc.MapModel.Map>(resolve => {
             $.ajax({
@@ -92,12 +116,12 @@ export class CCMap {
         this.display.onPlayerCountChange(true)
     }
 
-    async leave(player: ServerPlayer) {
+    leave(player: ServerPlayer) {
         const prevLen = this.players.length
         this.players.erase(player)
         if (prevLen == this.players.length) return
 
-        await this.leaveEntity(player.dummy)
+        this.leaveEntity(player.dummy)
         this.display.onPlayerCountChange(false)
     }
 
@@ -137,7 +161,7 @@ export class CCMap {
         })
     }
 
-    private async leaveEntity(e: ig.Entity) {
+    private leaveEntity(e: ig.Entity) {
         if (this.remote) return
 
         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
@@ -145,41 +169,49 @@ export class CCMap {
             this.leaveEntity(e.gui.crosshair)
         }
 
-        await waitForScheduledTask(this.inst, () => {
-            ig.game.entities.erase(e)
-            delete ig.game.entitiesByNetid[e.netid]
-            e.clearEntityAttached()
+        this.inst.apply()
+        determine.apply(this.determinism)
 
-            /* ig.game.removeEntity(e) */
-            e.name && delete ig.game.namedEntities[e.name]
+        ig.game.entities.erase(e)
+        delete ig.game.entitiesByNetid[e.netid]
+        e.clearEntityAttached()
 
-            // e._killed = e.coll._killed = true
+        /* ig.game.removeEntity(e) */
+        e.name && delete ig.game.namedEntities[e.name]
 
-            /* consequence of ig.game.detachEntity(e) */
+        // e._killed = e.coll._killed = true
 
-            if (e.id) {
-                ig.game.physics.removeCollEntry(e.coll)
-                // this.physics.collEntryMap.forEach(a =>
-                //     a.forEach(a =>
-                //         a.forEach(c => {
-                //             if (c.entity === e) {
-                //                 a.erase(e.coll)
-                //             }
-                //         })
-                //     )
-                // )
-                /* reactivate it cuz removeCollEntry set it to false */
-                e.coll._active = true
+        /* consequence of ig.game.detachEntity(e) */
 
-                ig.game.shownEntities[e.id] = null
-                // this.freeEntityIds.push(e.id)
-                // e.id = 0
-            }
-        })
+        if (e.id) {
+            ig.game.physics.removeCollEntry(e.coll)
+            // this.physics.collEntryMap.forEach(a =>
+            //     a.forEach(a =>
+            //         a.forEach(c => {
+            //             if (c.entity === e) {
+            //                 a.erase(e.coll)
+            //             }
+            //         })
+            //     )
+            // )
+            /* reactivate it cuz removeCollEntry set it to false */
+            e.coll._active = true
+
+            ig.game.shownEntities[e.id] = null
+            // this.freeEntityIds.push(e.id)
+            // e.id = 0
+        }
+
+        multi.server.serverInst.apply()
+        determine.apply(multi.server.serverDeterminism)
     }
 
-    async destroy() {
-        for (const player of this.players) await player.destroy()
+    destroy() {
+        for (const player of this.players) {
+            const client = multi.server.clients[player.username]
+            assert(client)
+            multi.server.leaveClient(client)
+        }
         if (this.inst) {
             multi.server.serverInst.apply()
             instanceinator.delete(this.inst)

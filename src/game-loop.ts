@@ -57,7 +57,7 @@ prestart(() => {
                 physicsLoop()
                 draw()
             } catch (err) {
-                ig.system.error(err as Error)
+                multi.server?.onInstanceUpdateError(err)
             }
         },
     })
@@ -71,7 +71,7 @@ function draw() {
             ig.game.finalDraw()
         }
     }
-    multi.server.serverInst.apply()
+    multi.server?.serverInst.apply()
 }
 
 let previousMusicTime = 0
@@ -116,25 +116,21 @@ prestart(() => {
     ig.Game.inject({
         run() {
             if (!multi.server) return this.parent()
+
             assert(instanceinator.id == multi.server.serverInst.id)
 
-            if (ig.system.hasFocusLost() && this.fullyStopped) {
-                ig.soundManager.update()
-            } else {
+            if (!(ig.system.hasFocusLost() && this.fullyStopped)) {
                 this.fullyStopped = false
 
                 const tick = ig.system.actualTick
                 let nextTick = tick
-
-                var contextBackup = ig.system.context
-                ig.system.context = null
 
                 if (ig.perf.update) {
                     for (this.firstUpdateLoop = true; nextTick > 0; ) {
                         ig.system.actualTick = Math.min(0.05, nextTick)
                         ig.system.tick = ig.system.actualTick * ig.system.timeFactor
 
-                        update()
+                        multi.server.update()
 
                         this.firstUpdateLoop = false
                         nextTick = nextTick - ig.system.actualTick
@@ -145,21 +141,12 @@ prestart(() => {
                 }
                 this.firstUpdateLoop = true
 
-                deferredUpdate()
-
-                ig.soundManager.update()
-                ig.system.context = contextBackup
+                multi.server.deferredUpdate()
             }
+            ig.soundManager.update()
         },
     })
 })
-
-function update() {
-    multi.server.update()
-}
-function deferredUpdate() {
-    multi.server.deferredUpdate()
-}
 
 export function copyTickInfo(from: InstanceinatorInstance, to: InstanceinatorInstance) {
     to.ig.system.frame = from.ig.system.frame

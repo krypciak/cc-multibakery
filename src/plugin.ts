@@ -55,6 +55,7 @@ poststart(() => {
                 displayClientInstances: true,
                 displayRemoteClientInstances: true,
                 forceConsistentTickTimes: false,
+                attemptCrashRecovery: false,
                 netInfo: {
                     connection: {
                         httpPort: DEFAULT_HTTP_PORT,

@@ -81,11 +81,11 @@ export class PhysicsHttpServer {
         this.httpServer.listen(this.netInfo.connection.httpPort)
     }
 
-    async stop() {
+    stop() {
         this.httpServer.close()
     }
 
-    async destroy() {
+    destroy() {
         this.stop()
     }
 }

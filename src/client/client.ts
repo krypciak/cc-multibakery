@@ -107,6 +107,32 @@ export class Client {
         return inputManager
     }
 
+    private attemptRecovery(e: unknown) {
+        if (!multi.server.attemptCrashRecovery) throw e
+
+        assert(this.player)
+        const map = multi.server.maps[this.player.mapName]
+        assert(map)
+        map.attemptRecovery(e)
+    }
+
+    update() {
+        try {
+            ig.game.update()
+        } catch (e) {
+            this.attemptRecovery(e)
+        }
+    }
+
+    deferredUpdate() {
+        try {
+            ig.game.deferredUpdate()
+            ig.input.clearPressed()
+        } catch (e) {
+            this.attemptRecovery(e)
+        }
+    }
+
     updateGamepadForcer() {
         assert(instanceinator.id == this.inst.id)
         if (this.player.inputManager instanceof dummy.input.Puppet.InputManager) return
@@ -199,13 +225,17 @@ export class Client {
         })
     }
 
-    async destroy() {
+    destroy() {
         if (this.destroyed) return
         this.destroyed = true
         if (this.inst.ig.gamepad.destroy) {
-            await this.inst.ig.gamepad.destroy()
+            this.inst.ig.gamepad.destroy()
         }
-        await this.player.destroy()
+        this.player.destroy()
+
+        multi.server.serverInst.apply()
+        determine.apply(multi.server.serverDeterminism)
+
         instanceinator.delete(this.inst)
         determine.delete(this.determinism)
     }

@@ -34,7 +34,7 @@ function send() {
 
     for (const mapName in mapsToSend) {
         const map = multi.server.maps[mapName]
-        if (!map.inst) continue
+        if (!map?.inst) continue
 
         mapPackets[mapName] = getMapUpdatePacket(map, multi.server.sendMapFullState.has(mapName))
     }
