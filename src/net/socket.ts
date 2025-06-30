@@ -60,9 +60,9 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         const { Server } = PHYSICS && PHYSICSNET && (await import('socket.io'))
         this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
-            // cors: {
-            //     origin: `*`,
-            // },
+            cors: {
+                origin: `*`,
+            },
         })
 
         const server = multi.server
