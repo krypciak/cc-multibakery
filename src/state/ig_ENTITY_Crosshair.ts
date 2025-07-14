@@ -17,6 +17,7 @@ declare global {
             ): string | undefined
 
             lastSent?: Return
+            justThrown?: boolean
         }
     }
 }
@@ -30,6 +31,8 @@ function getState(this: ig.ENTITY.Crosshair, full: boolean) {
         isAiming = this.controller.isAiming()
         inputBackup.restore()
     }
+    const justThrown = this.justThrown
+    this.justThrown = false
 
     return {
         pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
@@ -37,6 +40,7 @@ function getState(this: ig.ENTITY.Crosshair, full: boolean) {
         special: isSameAsLast(this, full, this.special, 'special'),
         isAiming: isSameAsLast(this, full, isAiming, 'isAiming'),
         currentCharge: isSameAsLast(this, full, this.currentCharge, 'currentCharge'),
+        justThrown: isSameAsLast(this, full, justThrown, 'thrown'),
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {
@@ -49,7 +53,13 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
     if (state.special !== undefined) this.special = state.special
     if (state.isAiming !== undefined) this.controller.isAimingOverride = state.isAiming
     this.chargeActive = true
-    if (state.currentCharge !== undefined) this.currentCharge = state.currentCharge
+    if (state.currentCharge !== undefined) {
+        this.currentCharge = state.currentCharge
+    }
+
+    if (state.justThrown) {
+        this.doBlink = true
+    }
 }
 
 prestart(() => {
@@ -67,20 +77,28 @@ prestart(() => {
     ig.ENTITY.Crosshair.forceRemotePhysics = true
     ig.ENTITY.CrosshairDot.forceRemotePhysics = true
 
-    if (!REMOTE) return
+    if (REMOTE) {
+        ig.ENTITY.Crosshair.inject({
+            deferredUpdate() {
+                if (!(multi.server instanceof RemoteServer)) return this.parent()
 
-    ig.ENTITY.Crosshair.inject({
-        deferredUpdate() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+                const backup = this.controller.updatePos
+                this.controller.updatePos = () => {}
 
-            const backup = this.controller.updatePos
-            this.controller.updatePos = () => {}
+                this.parent()
 
-            this.parent()
-
-            this.controller.updatePos = backup
-        },
-    })
+                this.controller.updatePos = backup
+            },
+        })
+    }
+    if (PHYSICS) {
+        ig.ENTITY.Crosshair.inject({
+            setThrown() {
+                this.justThrown = true
+                return this.parent()
+            },
+        })
+    }
 }, 2)
 
 declare global {
