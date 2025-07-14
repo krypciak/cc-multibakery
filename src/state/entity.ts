@@ -22,7 +22,7 @@ import './ig_ENTITY_CombatantMarble'
 import './sc_ItemDropEntity'
 import './ig_ENTITY_Chest'
 
-import './sound/entity-hit'
+import './entity-hit-effect'
 
 declare global {
     interface StateUpdatePacket {

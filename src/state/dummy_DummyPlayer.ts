@@ -1,8 +1,8 @@
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
+import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
-import { addIgnoredEffects } from './ig_ENTITY_Effect'
 import { applyDiffArray, diffArray, isSameAsLast } from './state-util'
 
 declare global {
@@ -153,22 +153,16 @@ prestart(() => {
         })
     }
     if (PHYSICS) {
-        addIgnoredEffects(
-            'chargeLevel1',
-            'chargeLevel2',
-            'chargeLevel3',
-            'chargeLevel1cold',
-            'chargeLevel2cold',
-            'chargeLevel3cold',
-            'chargeLevel1shock',
-            'chargeLevel2shock',
-            'chargeLevel3shock',
-            'chargeLevel1heat',
-            'chargeLevel2heat',
-            'chargeLevel3heat',
-            'chargeLevel1wave',
-            'chargeLevel2wave',
-            'chargeLevel3wave'
-        )
+        sc.Combat.inject({
+            showCharge(target, chargeLevelEffectName, element) {
+                if (!(multi.server instanceof PhysicsServer)) return this.parent(target, chargeLevelEffectName, element)
+
+                assert(!ig.ignoreEffectNetid)
+                ig.ignoreEffectNetid = true
+                const ret = this.parent(target, chargeLevelEffectName, element)
+                ig.ignoreEffectNetid = false
+                return ret
+            },
+        })
     }
 }, 2)

@@ -13,6 +13,9 @@ declare global {
             sentEver?: boolean
         }
     }
+    namespace ig {
+        var ignoreEffectNetid: boolean | undefined
+    }
 }
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
@@ -77,13 +80,6 @@ function resolveObjects(state: Return) {
 
 let particles: ig.EntityConstructor[]
 
-const ignoredEffects = new Set<string>([])
-export function addIgnoredEffects(...effects: string[]) {
-    for (const effect of effects) {
-        ignoredEffects.add(effect)
-    }
-}
-
 prestart(() => {
     const typeId: EntityTypeId = 'ef'
     let effectId = 0
@@ -92,8 +88,9 @@ prestart(() => {
         setState,
         createNetid() {
             if (!this.effect) return
-            const effectName = this.effect.effectName
-            if (ignoredEffects.has(effectName)) return undefined
+            if (ig.ignoreEffectNetid) return undefined
+
+            console.log('local effect netid spawn:', this.effect.effectName)
 
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
         },
@@ -102,6 +99,7 @@ prestart(() => {
             this.setNetid(x, y, z, settings)
         },
         reset(x, y, z, settings) {
+            this.effect = undefined
             this.parent(x, y, z, settings)
             this.setNetid(x, y, z, settings)
             this.sentEver = false
