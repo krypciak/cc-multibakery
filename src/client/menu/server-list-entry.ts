@@ -3,7 +3,7 @@ import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../plugin'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'
-import { ClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
+import { ClientJoinData, showTryNetJoinResponseDialog, waitForScheduledTask } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
 
 interface ServerImageConfig {
@@ -141,8 +141,12 @@ prestart(() => {
             this.updateIcon()
             this.updateHighlightWidth()
         },
-        updateIcon() {
-            this.getIconConfig().then(config => this.setIcon(config))
+        async updateIcon() {
+            const id = instanceinator.id
+            const config = await this.getIconConfig()
+            await waitForScheduledTask(instanceinator.instances[id], () => {
+                this.setIcon(config)
+            })
         },
         async getIconConfig() {
             if (this.serverInfo.details?.hasIcon) {
