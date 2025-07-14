@@ -2,6 +2,7 @@ import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
+import { addIgnoredEffects } from './ig_ENTITY_Effect'
 import { applyDiffArray, diffArray, isSameAsLast } from './state-util'
 
 declare global {
@@ -16,6 +17,8 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: dummy.DummyPlayer, full: boolean) {
+    const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
+
     return {
         isControlBlocked: isSameAsLast(this, full, this.data.isControlBlocked, 'isControlBlocked'),
         inCutscene: isSameAsLast(this, full, this.data.inCutscene, 'inCutscene'),
@@ -37,6 +40,8 @@ function getState(this: dummy.DummyPlayer, full: boolean) {
         torso: isSameAsLast(this, full, this.model.equip.torso, 'torso'),
         feet: isSameAsLast(this, full, this.model.equip.feet, 'feet'),
         items: diffArray(this, full, this.model.items, 'items'),
+
+        charge: isSameAsLast(this, full, chargeLevel, 'charge'),
     }
 }
 
@@ -108,6 +113,15 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.feet) this.model.equip.feet = state.feet
 
     if (state.items) applyDiffArray(this.model, 'items', state.items)
+
+    if (state.charge !== undefined) {
+        if (state.charge == 0) {
+            this.charging.time = 1
+            this.clearCharge()
+        } else {
+            this.showChargeEffect(state.charge)
+        }
+    }
 }
 
 prestart(() => {
@@ -131,11 +145,30 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: dummy.DummyPlayer, typeId })
 
-    if (!REMOTE) return
-
-    dummy.DummyPlayer.inject({
-        update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-        },
-    })
+    if (REMOTE) {
+        dummy.DummyPlayer.inject({
+            update() {
+                if (!(multi.server instanceof RemoteServer)) return this.parent()
+            },
+        })
+    }
+    if (PHYSICS) {
+        addIgnoredEffects(
+            'chargeLevel1',
+            'chargeLevel2',
+            'chargeLevel3',
+            'chargeLevel1cold',
+            'chargeLevel2cold',
+            'chargeLevel3cold',
+            'chargeLevel1shock',
+            'chargeLevel2shock',
+            'chargeLevel3shock',
+            'chargeLevel1heat',
+            'chargeLevel2heat',
+            'chargeLevel3heat',
+            'chargeLevel1wave',
+            'chargeLevel2wave',
+            'chargeLevel3wave'
+        )
+    }
 }, 2)

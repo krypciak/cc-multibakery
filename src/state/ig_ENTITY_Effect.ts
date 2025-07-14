@@ -77,6 +77,13 @@ function resolveObjects(state: Return) {
 
 let particles: ig.EntityConstructor[]
 
+const ignoredEffects = new Set<string>([])
+export function addIgnoredEffects(...effects: string[]) {
+    for (const effect of effects) {
+        ignoredEffects.add(effect)
+    }
+}
+
 prestart(() => {
     const typeId: EntityTypeId = 'ef'
     let effectId = 0
@@ -84,10 +91,19 @@ prestart(() => {
         getState,
         setState,
         createNetid() {
+            if (!this.effect) return
+            const effectName = this.effect.effectName
+            if (ignoredEffects.has(effectName)) return undefined
+
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
+        },
+        init(x, y, z, settings) {
+            this.parent(x, y, z, settings)
+            this.setNetid(x, y, z, settings)
         },
         reset(x, y, z, settings) {
             this.parent(x, y, z, settings)
+            this.setNetid(x, y, z, settings)
             this.sentEver = false
         },
     })
@@ -108,6 +124,8 @@ prestart(() => {
         assert(!ig.game.entitiesByNetid[netid])
         const entity = ig.game.spawnEntity(ig.ENTITY.Effect, x, y, z, settings)
         assert(ig.game.entitiesByNetid[netid])
+
+        console.log(state.sheetPath, state.effectName)
 
         return entity
     }

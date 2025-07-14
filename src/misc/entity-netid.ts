@@ -79,7 +79,10 @@ prestart(() => {
         createNetid() {},
         setNetid(x, y, z, settings) {
             const netid = settings.netid ?? this.createNetid(x, y, z, settings)
-            if (!netid) return
+            if (!netid) {
+                this.netid = undefined as any
+                return
+            }
 
             if (ig.game.entitiesByNetid[this.netid]) {
                 delete ig.game.entitiesByNetid[this.netid]

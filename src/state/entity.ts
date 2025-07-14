@@ -5,7 +5,7 @@ import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass
 import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
 
 import './entity-death'
-import './entity-hit-sound'
+
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
 import './ig_ENTITY_PushPullBlock'
@@ -22,6 +22,8 @@ import './ig_ENTITY_CombatantMarble'
 import './sc_ItemDropEntity'
 import './ig_ENTITY_Chest'
 
+import './sound/entity-hit'
+
 declare global {
     interface StateUpdatePacket {
         states?: Record<string, object>
@@ -34,7 +36,7 @@ interface StateEntityBase {
 }
 
 function isStateEntity(e: ig.Entity): e is StateEntityBase & ig.Entity {
-    return e.netid as unknown as boolean
+    return !!e.netid
 }
 
 declare global {

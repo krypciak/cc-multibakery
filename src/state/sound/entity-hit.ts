@@ -1,7 +1,8 @@
-import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
-import { createFakeEffectSheet } from './entity'
-import { addStateHandler } from './states'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../plugin'
+import { PhysicsServer } from '../../server/physics/physics-server'
+import { createFakeEffectSheet } from '../entity'
+import { addStateHandler } from '../states'
 
 /*                entity hitPos hitDegree       hitElement  shielded */
 type HitConfig = [string, Vec3, sc.ATTACK_TYPE, sc.ELEMENT, boolean]
@@ -54,7 +55,7 @@ prestart(() => {
                 ignoreSounds,
                 spriteFilter
             )
-            if (!ignoreSounds) {
+            if (!ignoreSounds && multi.server instanceof PhysicsServer) {
                 assert(entity.netid)
                 ig.entityHitPackets ??= []
                 ig.entityHitPackets.push([entity.netid, hitPos, hitDegree, hitElement, shielded])
