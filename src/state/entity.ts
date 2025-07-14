@@ -5,6 +5,7 @@ import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass
 import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
 
 import './entity-death'
+import './entity-hit-sound'
 import './dummy_DummyPlayer'
 import './ig_ENTITY_Effect'
 import './ig_ENTITY_PushPullBlock'
@@ -99,8 +100,12 @@ export function createNetidStatic(
     return typeId + encodeJsonSafeNumber(Number(`${x}${y}${z}`))
 }
 
+const fakeEffect = { coll: { time: {} }, setIgnoreSlowdown() {} }
+const fakeEffectSheet = {
+    spawnOnTarget: (_name, _target, _settings) => fakeEffect,
+    spawnFixed: (_name, _x, _y, _z, _target, _settings) => fakeEffect,
+} as ig.EffectSheet
+
 export function createFakeEffectSheet(): ig.EffectSheet {
-    return {
-        spawnOnTarget: (_name, _target, _settings) => ({ coll: { time: {} } }),
-    } as ig.EffectSheet
+    return fakeEffectSheet
 }

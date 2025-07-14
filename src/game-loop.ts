@@ -133,7 +133,7 @@ prestart(() => {
                         multi.server.update()
 
                         this.firstUpdateLoop = false
-                        nextTick = nextTick - ig.system.actualTick
+                        nextTick -= ig.system.actualTick
                     }
 
                     ig.system.actualTick = tick
