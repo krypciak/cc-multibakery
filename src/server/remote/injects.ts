@@ -30,6 +30,12 @@ prestart(() => {
                     console.groupEnd()
                 }
             }
+            // if (entity == ig.ENTITY.Effect || entity == 'Effect') {
+            //     const set = settings as ig.ENTITY.Effect.Settings
+            //     console.groupCollapsed(set.effect?.effectName, set.netid)
+            //     console.trace()
+            //     console.groupEnd()
+            // }
             return this.parent(entity, x, y, z, settings, showAppearEffects)
         },
     })

@@ -90,7 +90,7 @@ prestart(() => {
             if (!this.effect) return
             if (ig.ignoreEffectNetid) return undefined
 
-            console.log('local effect netid spawn:', this.effect.effectName)
+            // console.log('local effect netid spawn:', this.effect.effectName)
 
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
         },
@@ -123,7 +123,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(ig.ENTITY.Effect, x, y, z, settings)
         assert(ig.game.entitiesByNetid[netid])
 
-        console.log(state.sheetPath, state.effectName)
+        // console.log(state.sheetPath, state.effectName)
 
         return entity
     }

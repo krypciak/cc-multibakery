@@ -82,17 +82,28 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Ball, typeId, sendEmpty: true })
 
-    if (!REMOTE) return
+    if (REMOTE) {
+        ig.ENTITY.Ball.inject({
+            update() {
+                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!ig.settingState) return
 
-    ig.ENTITY.Ball.inject({
-        update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState) return
+                this.parent()
+            },
+            onBounce(pos, collData) {
+                if (!(multi.server instanceof RemoteServer)) this.parent(pos, collData)
+            },
+        })
+    }
+    if (PHYSICS) {
+        ig.ENTITY.Ball.inject({
+            setBallInfo(ballInfo, setFactors) {
+                if (!(multi.server instanceof RemoteServer)) this.parent(ballInfo, setFactors)
 
-            this.parent()
-        },
-        onBounce(pos, collData) {
-            if (!(multi.server instanceof RemoteServer)) this.parent(pos, collData)
-        },
-    })
+                ig.ignoreEffectNetid = true
+                this.parent(ballInfo, setFactors)
+                ig.ignoreEffectNetid = false
+            },
+        })
+    }
 }, 2)
