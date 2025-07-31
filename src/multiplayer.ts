@@ -11,7 +11,6 @@ import './teleport-fix'
 import './state/states'
 import './misc/paused-virtual'
 import './misc/disable-fkeys'
-import './misc/disallow-singleplayer'
 import './client/menu/server-list-menu'
 import './client/menu/pause/pause-screen'
 
