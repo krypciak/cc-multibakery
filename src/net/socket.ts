@@ -121,8 +121,7 @@ export class SocketNetManagerRemoteServer {
         assert(server instanceof RemoteServer)
 
         let ioclient: typeof import('socket.io-client')
-        if (ig.platform == ig.PLATFORM_TYPES.BROWSER) {
-            assert(BROWSER)
+        if ('io' in window) {
             // @ts-expect-error
             ioclient = window.io
         } else if (ig.platform == ig.PLATFORM_TYPES.DESKTOP) {
@@ -130,7 +129,7 @@ export class SocketNetManagerRemoteServer {
             ioclient = REMOTE && !BROWSER && (await import('socket.io-client'))
         } else assert(false, 'Unsupported platform')
 
-        const socket = ioclient.io(`ws://${this.host}:${this.port}`) as ClientSocket
+        const socket = ioclient.io(`${this.host}:${this.port}`, { secure: true }) as ClientSocket
         socket.on('update', data => server.onNetReceive(this.conn!, data))
         socket.on('disconnect', () => {
             this.stop()

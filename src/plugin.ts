@@ -59,7 +59,12 @@ poststart(() => {
                 netInfo: {
                     connection: {
                         httpPort: DEFAULT_HTTP_PORT,
-                        httpRoot: '../cc-bundle-inst/ccbundler/dist',
+                        httpRoot: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/dist',
+                        https: {
+                            cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2.pem',
+                            key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2-key.pem',
+                        },
+                        ccbundler: true,
                         type: 'socket',
                     },
                     details: {

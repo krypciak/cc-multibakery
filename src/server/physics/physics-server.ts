@@ -15,6 +15,8 @@ import { Opts } from '../../options'
 export type PhysicsServerConnectionSettings = {
     httpPort: number
     httpRoot?: string
+    ccbundler?: boolean
+    https?: import('https').ServerOptions
 } & {
     type: 'socket'
 }

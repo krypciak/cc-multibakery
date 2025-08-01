@@ -3,6 +3,7 @@ import { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server
 import Multibakery from '../plugin'
 import { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
+import { HandleFunction } from 'cc-bundler/src/http-server/http-module'
 
 export const DEFAULT_HTTP_PORT = 33405
 
@@ -34,6 +35,21 @@ export class PhysicsHttpServer {
         const serverDetailsString: string = JSON.stringify(serverDetails)
 
         const httpRoot = this.netInfo.connection.httpRoot
+        const ccbundler = this.netInfo.connection.ccbundler
+
+        let ccbundlerHandleFunction: HandleFunction | undefined
+        if (ccbundler) {
+            const ccbundlerHttpModule =
+                PHYSICS && PHYSICSNET && (await import('cc-bundler/src/http-server/http-module'))
+
+            ccbundlerHttpModule.setAllowedDbs([
+                'https://raw.githubusercontent.com/CCDirectLink/CCModDB/stable',
+                'https://raw.githubusercontent.com/CCDirectLink/CCModDB/testing',
+            ])
+            await ccbundlerHttpModule.updateValidUrlSet()
+
+            ccbundlerHandleFunction = ccbundlerHttpModule.handleFunction
+        }
 
         const { createServer } = PHYSICS && PHYSICSNET && (await import('http-server'))
         const httpServer = createServer({
@@ -43,7 +59,9 @@ export class PhysicsHttpServer {
             showDotfiles: false,
             showDir: 'false',
             gzip: true,
+            https: this.netInfo.connection.https,
             before: [
+                ...(ccbundler ? [ccbundlerHandleFunction!] : []),
                 (req: IncomingMessage, res: ServerResponse) => {
                     if (req.url == '/details') {
                         res.writeHead(200, {
@@ -91,7 +109,7 @@ export class PhysicsHttpServer {
 }
 
 export async function getServerDetailsAndPing(connection: RemoteServerConnectionSettings) {
-    const obj = await fetchUrlWithPing(`http://${connection.host}:${connection.port}/details`)
+    const obj = await fetchUrlWithPing(`https://${connection.host}:${connection.port}/details`)
     if (!obj) return
     return {
         ping: obj.ping,
@@ -100,7 +118,7 @@ export async function getServerDetailsAndPing(connection: RemoteServerConnection
 }
 
 export async function getServerIcon(connection: RemoteServerConnectionSettings): Promise<HTMLImageElement> {
-    const reqUrl = `http://${connection.host}:${connection.port}/icon`
+    const reqUrl = `https://${connection.host}:${connection.port}/icon`
     const res = await fetch(reqUrl)
     assert(res.status == 200)
     const blob = await res.blob()
