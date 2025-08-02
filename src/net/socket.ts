@@ -129,7 +129,10 @@ export class SocketNetManagerRemoteServer {
             ioclient = REMOTE && !BROWSER && (await import('socket.io-client'))
         } else assert(false, 'Unsupported platform')
 
-        const socket = ioclient.io(`${this.host}:${this.port}`, { secure: true }) as ClientSocket
+        const socket = ioclient.io(`https://${this.host}:${this.port}`, {
+            secure: true,
+            rejectUnauthorized: false,
+        }) as ClientSocket
         socket.on('update', data => server.onNetReceive(this.conn!, data))
         socket.on('disconnect', () => {
             this.stop()
