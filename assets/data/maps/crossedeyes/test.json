@@ -115,7 +115,7 @@
         { "type": "WallVertical", "x": 1216, "y": 251, "level": 2, "settings": { "size": { "x": 8, "y": 57 }, "mapId": 59, "topEnd": "STOP", "bottomEnd": "STOP", "collType": "BLOCK", "wallZHeight": 32, "name": "wallCage", "condition": "!tmp.cage" } },
         { "type": "Switch", "x": 1197, "y": 327, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 60, "name": "s1", "variable": "tmp.cage" } },
         { "type": "Switch", "x": 1228, "y": 326, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 61, "name": "s1", "variable": "tmp.cage" } },
-        { "type": "EnemyCounter", "x": 1281, "y": 258, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 62, "enemyGroup": "cage", "enemyCount": 3, "name": "enemyCounter", "postVariable": "tmp.cage" } },
+        { "type": "EnemyCounter", "x": 1281, "y": 258, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 62, "enemyGroup": "cage", "enemyCount": 2, "name": "enemyCounter", "postVariable": "tmp.cage" } },
         { "type": "BounceBlock", "x": 65, "y": 202, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 63, "blockType": "slopeSE", "group": "a", "name": "bb3" } },
         { "type": "BounceBlock", "x": 67, "y": 252, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 64, "blockType": "slopeNE", "group": "a", "name": "bb4" } },
         { "type": "BounceBlock", "x": 97, "y": 252, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 65, "blockType": "slopeNW", "group": "a", "name": "bb5" } },
@@ -307,6 +307,7 @@
         { "type": "PushPullBlock", "x": 619, "y": 331, "level": 2, "settings": { "name": "", "pushPullType": "Large", "mapId": 124 } },
         { "type": "Destructible", "x": 510, "y": 476, "level": 2, "settings": { "name": "", "desType": "boxMedium", "enemyInfo": null, "spawnCondition": null, "mapId": 89 } },
         { "type": "Destructible", "x": 507, "y": 517, "level": 2, "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 } },
+        { "type": "Destructible", "x": 510, "y": 441, "level": 2, "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 } },
         { "type": "ScalableProp", "x": 1216, "y": 205, "level": 2, "settings": { "size": { "x": 160, "y": 8 }, "mapId": 54, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceH", "ends": { "west": "WEST_DOWN", "east": "EAST_DOWN" } } } },
         { "type": "ScalableProp", "x": 1216, "y": 348, "level": 2, "settings": { "size": { "x": 160, "y": 8 }, "mapId": 55, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceH", "ends": { "west": "WEST_END", "east": "EAST_END" } } } },
         { "type": "ScalableProp", "x": 1368, "y": 204, "level": 2, "settings": { "size": { "x": 8, "y": 152 }, "mapId": 56, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceV", "ends": { "north": "NORTH_END", "south": "SOUTH_END" } } } },
@@ -314,6 +315,8 @@
         { "type": "ScalableProp", "x": 1216, "y": 204, "level": 2, "settings": { "size": { "x": 8, "y": 48 }, "mapId": 58, "patternOffset": { "x": 0, "y": 0 }, "propConfig": { "sheet": "arid", "name": "wireFenceV", "ends": { "north": "NORTH_END", "south": "SOUTH_END" } } } },
         { "type": "NPC", "x": 663, "y": 205, "level": 2, "settings": { "name": "trader-trade_sets", "characterName": "cross-worlds.pentafist-male-dark", "npcStates": [{ "reactType": "FIXED_POS", "face": "SOUTH", "action": [], "hidden": false, "condition": "", "config": "normal", "event": { "trade": { "trader": "autumnSets" } } }], "mapId": 115 } },
         { "type": "NPC", "x": 619, "y": 205, "level": 2, "settings": { "name": "henry", "characterName": "misc.henry-researcher", "mapId": 123, "npcStates": [{ "reactType": "FIXED_FACE", "face": "SOUTH", "action": [], "hidden": false, "condition": "true", "config": "sit" }] } },
+        { "type": "Prop", "x": 256, "y": 330, "level": 2, "settings": { "name": "beltSign", "interact": { "icon": "INFO", "hoverText": { "en_US": "Equip Consciousness", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } }, "mapId": 84, "propType": { "sheet": "dungeon-ar", "name": "taskSign" }, "propAnim": "unsolved", "spawnCondition": "" } },
+        { "type": "Prop", "x": 648, "y": 218, "level": 2, "settings": { "name": "", "propType": { "sheet": "trading-autumn", "name": "boothNoChair" }, "propAnim": "trade", "spawnCondition": null, "mapId": 116 } },
         {
             "type": "NPC",
             "x": 707,
@@ -345,17 +348,13 @@
                 "mapId": 35
             }
         },
-        { "type": "Destructible", "x": 510, "y": 441, "level": 2, "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 } },
-        { "type": "Prop", "x": 256, "y": 330, "level": 2, "settings": { "name": "beltSign", "interact": { "icon": "INFO", "hoverText": { "en_US": "Equip Consciousness", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } }, "mapId": 84, "propType": { "sheet": "dungeon-ar", "name": "taskSign" }, "propAnim": "unsolved", "spawnCondition": "" } },
-        { "type": "Prop", "x": 648, "y": 218, "level": 2, "settings": { "name": "", "propType": { "sheet": "trading-autumn", "name": "boothNoChair" }, "propAnim": "trade", "spawnCondition": null, "mapId": 116 } },
         { "type": "Enemy", "x": 1315, "y": 233, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 51, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "meerkat-alt", "group": "cage" } } },
         { "type": "Enemy", "x": 1050, "y": 470, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 3, "enemyInfo": { "type": "baggy-kun", "face": "SOUTH", "party": "ENEMY" } } },
         { "type": "Enemy", "x": 1185, "y": 210, "level": 2, "settings": { "name": "bot1", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 18 } },
         { "type": "Enemy", "x": 1151, "y": 211, "level": 2, "settings": { "name": "bot2", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 19 } },
         { "type": "Enemy", "x": 1113, "y": 210, "level": 2, "settings": { "name": "bot3", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_NOT_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 20 } },
         { "type": "Enemy", "x": 1016, "y": 211, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 52, "enemyInfo": { "party": "PLAYER", "level": 1, "face": "SOUTH", "state": "", "type": "heat.special.brew-machine" } } },
-        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage" } } },
-        { "type": "Enemy", "x": 1333, "y": 290, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 125, "enemyInfo": { "type": "penguin", "group": "cage", "level": 2, "party": "ENEMY", "face": "NORTH" } } }
+        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage" } } }
     ],
     "layer": [
         {
