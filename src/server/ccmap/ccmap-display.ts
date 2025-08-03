@@ -1,8 +1,8 @@
-import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../plugin'
 import { CCMap } from './ccmap'
-import { Server, waitForScheduledTask } from './server'
-import { ServerPlayer } from './server-player'
+import { waitForScheduledTask } from '../server'
+import { ServerPlayer } from '../server-player'
 
 export class CCMapDisplay {
     camera!: ig.Camera.TargetHandle

@@ -3,7 +3,7 @@ import { assert } from '../../misc/assert'
 import { NetConnection } from '../../net/connection'
 import { prestart } from '../../plugin'
 import { getStateUpdatePacket } from '../../state/states'
-import { CCMap } from '../ccmap'
+import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
 
 prestart(() => {

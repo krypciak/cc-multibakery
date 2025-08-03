@@ -1,13 +1,13 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { GameLoopUpdateable, waitForScheduledTask } from './server'
-import { assert } from '../misc/assert'
-import { ServerPlayer } from './server-player'
+import { GameLoopUpdateable, waitForScheduledTask } from '../server'
+import { assert } from '../../misc/assert'
+import { ServerPlayer } from '../server-player'
 import { CCMapDisplay } from './ccmap-display'
 import { setDataFromLevelData } from './ccmap-data-load'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
-import { prestart } from '../plugin'
-import { forceConditionalLightOnInst } from '../client/conditional-light'
-import * as inputBackup from '../dummy/dummy-input'
+import { prestart } from '../../plugin'
+import { forceConditionalLightOnInst } from '../../client/conditional-light'
+import * as inputBackup from '../../dummy/dummy-input'
 
 declare global {
     namespace ig {
@@ -169,38 +169,11 @@ export class CCMap implements GameLoopUpdateable {
             this.leaveEntity(e.gui.crosshair)
         }
 
+        assert(instanceinator.id == multi.server.serverInst.id)
         this.inst.apply()
         determine.apply(this.determinism)
 
-        ig.game.entities.erase(e)
-        delete ig.game.entitiesByNetid[e.netid]
-        e.clearEntityAttached()
-
-        /* ig.game.removeEntity(e) */
-        e.name && delete ig.game.namedEntities[e.name]
-
-        // e._killed = e.coll._killed = true
-
-        /* consequence of ig.game.detachEntity(e) */
-
-        if (e.id) {
-            ig.game.physics.removeCollEntry(e.coll)
-            // this.physics.collEntryMap.forEach(a =>
-            //     a.forEach(a =>
-            //         a.forEach(c => {
-            //             if (c.entity === e) {
-            //                 a.erase(e.coll)
-            //             }
-            //         })
-            //     )
-            // )
-            /* reactivate it cuz removeCollEntry set it to false */
-            e.coll._active = true
-
-            ig.game.shownEntities[e.id] = null
-            // this.freeEntityIds.push(e.id)
-            // e.id = 0
-        }
+        e.kill()
 
         multi.server.serverInst.apply()
         determine.apply(multi.server.serverDeterminism)
@@ -281,7 +254,6 @@ prestart(() => {
     })
 
     dummy.DummyPlayer.inject({
-        kill(_levelChange) {},
         _onDeathHit(a) {
             if (!multi.server || !(this instanceof dummy.DummyPlayer)) return this.parent(a)
 

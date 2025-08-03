@@ -1,9 +1,9 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
-import { teleportPlayerToProperMarker } from '../teleport-fix'
 import { waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics/physics-server'
+import { teleportPlayerToProperMarker } from './ccmap/teleport-fix'
 
 export class ServerPlayer {
     private destroyed: boolean = false
@@ -19,12 +19,7 @@ export class ServerPlayer {
         public mapName: string = '',
         public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager(),
         private attachDummy: boolean = false
-    ) {
-        if (!this.mapName) {
-            this.mapName = 'crossedeyes/test'
-            this.marker = 'entrance'
-        }
-    }
+    ) {}
 
     private async createPlayer() {
         if (this.dummy) assert(this.dummy._killed)
@@ -63,6 +58,7 @@ export class ServerPlayer {
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
+        assert(instanceinator.id == multi.server.serverInst.id)
         this.ready = false
         let map = multi.server.maps[this.mapName]
         if (map && this.dummy) map.leave(this)

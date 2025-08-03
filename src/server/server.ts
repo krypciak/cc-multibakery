@@ -1,6 +1,6 @@
 import { DeterMineInstance } from 'cc-determine/src/instance'
 import { copyTickInfo, startGameLoop } from '../game-loop'
-import { CCMap } from './ccmap'
+import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
@@ -160,7 +160,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         await client.init()
         await this.joinClient(client)
-        await client.teleport()
+        // const mapName = 'crossedeyes/test'
+        const marker = 'entrance'
+        const mapName = 'rhombus-dng/room-1'
+        await client.teleport(mapName, marker)
 
         return client
     }

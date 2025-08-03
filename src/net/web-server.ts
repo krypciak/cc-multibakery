@@ -19,7 +19,7 @@ export class PhysicsHttpServer {
 
         const fs: typeof import('fs') = (0, eval)('require("fs")')
 
-        let icon: ArrayBuffer | undefined
+        let icon: Buffer | undefined
         if (this.netInfo.details.iconPath) {
             icon = await fs.promises.readFile(this.netInfo.details.iconPath)
         }

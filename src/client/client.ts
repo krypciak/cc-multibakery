@@ -2,7 +2,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { ServerPlayer } from '../server/server-player'
 import { assert } from '../misc/assert'
-import { CCMap } from '../server/ccmap'
+import { CCMap } from '../server/ccmap/ccmap'
 import { prestart } from '../plugin'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
@@ -144,8 +144,8 @@ export class Client {
         }
     }
 
-    async teleport() {
-        await this.player.teleport(this.player.mapName, this.player.marker)
+    async teleport(mapName: string, marker: Nullable<string> | undefined) {
+        await this.player.teleport(mapName, marker)
         const map = multi.server.maps[this.player.mapName]
         await this.linkMapToInstance(map)
     }
@@ -221,7 +221,7 @@ export class Client {
                     sc.Model.notifyObserver(client.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
                 }
             }
-            this.player.dummy.party = this.inst.id - 1
+            this.player.dummy.party = sc.COMBATANT_PARTY.PLAYER // this.inst.id - 1
         })
     }
 

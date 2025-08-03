@@ -1,5 +1,5 @@
-import { waitForScheduledTask } from './server'
-import { prestart } from '../plugin'
+import { waitForScheduledTask } from '../server'
+import { prestart } from '../../plugin'
 
 type Layer = keyof typeof ig.MAP
 export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
