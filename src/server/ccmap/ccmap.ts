@@ -112,7 +112,6 @@ export class CCMap implements GameLoopUpdateable {
         player.mapName = this.name
         this.players.push(player)
 
-        await this.enterEntity(player.dummy)
         this.display.onPlayerCountChange(true)
     }
 
@@ -123,42 +122,6 @@ export class CCMap implements GameLoopUpdateable {
 
         this.leaveEntity(player.dummy)
         this.display.onPlayerCountChange(false)
-    }
-
-    private async enterEntity(e: ig.Entity) {
-        if (this.remote) return
-
-        if (e.isPlayer && e instanceof dummy.DummyPlayer && e.gui.crosshair) {
-            /* this promise will finish by the end of this function, so there's no need to await it */
-            this.enterEntity(e.gui.crosshair)
-        }
-        await waitForScheduledTask(this.inst, () => {
-            ig.game.entitiesByNetid[e.netid] = e
-
-            const oldColl = e.coll
-            e.coll = new ig.CollEntry(e)
-            e.coll.setType(oldColl.type)
-            e.coll.weight = oldColl.weight
-            e.coll.friction = oldColl.friction
-            e.coll.accelSpeed = oldColl.accelSpeed
-            e.coll.maxVel = oldColl.maxVel
-            e.coll.float = oldColl.float
-            e.coll.shadow = oldColl.shadow
-            Vec3.assign(e.coll.pos, oldColl.pos)
-            Vec3.assign(e.coll.size, oldColl.size)
-
-            if (e.name) {
-                assert(!ig.game.namedEntities[e.mapId], 'map enterEntity namedEntities collision!')
-                ig.game.namedEntities[e.name] = e
-            }
-            if (e.mapId) {
-                assert(!ig.game.mapEntities[e.mapId], 'map enterEntity mapId collision!')
-                ig.game.mapEntities[e.mapId] = e
-            }
-            ig.game.entities.push(e)
-            e._hidden = true
-            e.show()
-        })
     }
 
     private leaveEntity(e: ig.Entity) {

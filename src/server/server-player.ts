@@ -47,7 +47,7 @@ export class ServerPlayer {
             this.inputManager.player = this.dummy
             this.dummy.inputManager = this.inputManager
         } else {
-            this.dummy = new dummy.DummyPlayer(0, 0, 0, dummySettings)
+            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
         }
         // if (username.includes('luke')) {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)

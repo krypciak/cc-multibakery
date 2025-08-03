@@ -160,9 +160,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         await client.init()
         await this.joinClient(client)
-        // const mapName = 'crossedeyes/test'
+        // const mapName = 'rhombus-dng/room-1'
+        const mapName = 'crossedeyes/test'
         const marker = 'entrance'
-        const mapName = 'rhombus-dng/room-1'
         await client.teleport(mapName, marker)
 
         return client
