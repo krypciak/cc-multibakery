@@ -15,6 +15,9 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
     for (const addon of this.addons.levelLoadStart) addon.onLevelLoadStart(data)
     this.minLevelZ = 1e5
     this.maxLevel = data.levels.length
+
+    ig.vars.onLevelChange(data.name)
+    this.levels = {}
     this.levels.first = { maps: [] }
     for (let i = 0; i < data.levels.length; i++) {
         this.minLevelZ = Math.min(this.minLevelZ, data.levels[i].height)
