@@ -16,6 +16,7 @@ import {
 import { RemoteServer } from '../server/remote/remote-server'
 import { isUsernameValid } from '../misc/username-util'
 import { PhysicsServer } from '../server/physics/physics-server'
+import { addCombatantParty } from '../misc/combatant-party-api'
 
 declare global {
     namespace ig {
@@ -221,7 +222,7 @@ export class Client {
                     sc.Model.notifyObserver(client.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
                 }
             }
-            this.player.dummy.party = sc.COMBATANT_PARTY.PLAYER // this.inst.id - 1
+            this.player.dummy.party = addCombatantParty(`player${this.inst.id}`)
         })
     }
 
