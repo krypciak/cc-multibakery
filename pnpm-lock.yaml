@@ -70,7 +70,7 @@ importers:
         version: 5.8.3
       ultimate-crosscode-typedefs:
         specifier: github:krypciak/ultimate-crosscode-typedefs
-        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/7aa06a0c217bcfe0935b09528a79810a93c7afe6
+        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/8a8f92fc16e42ac24f7ef95b283f7954a1afa07d
 
 packages:
 
@@ -943,8 +943,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/7aa06a0c217bcfe0935b09528a79810a93c7afe6:
-    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/7aa06a0c217bcfe0935b09528a79810a93c7afe6}
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/8a8f92fc16e42ac24f7ef95b283f7954a1afa07d:
+    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/8a8f92fc16e42ac24f7ef95b283f7954a1afa07d}
     version: 0.0.1
     engines: {node: '>=10.0.0'}
 
@@ -1857,7 +1857,7 @@ snapshots:
 
   typescript@5.8.3: {}
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/7aa06a0c217bcfe0935b09528a79810a93c7afe6:
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/8a8f92fc16e42ac24f7ef95b283f7954a1afa07d:
     dependencies:
       '@types/jquery': 1.10.45
       '@types/node': 11.15.54

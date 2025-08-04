@@ -172,7 +172,6 @@ export class Client {
 
         cig.game.physics = mig.game.physics
 
-        // cig.game.events = this.player.eventManager
         cig.vars = mig.vars
 
         removeAddon(cig.light, cig.game)
@@ -190,11 +189,12 @@ export class Client {
         cig.game.playerEntity = this.player.dummy
 
         const csc = this.inst.sc
-        // const msc = map.inst.sc
+        const msc = map.inst.sc
 
         rehookObservers(csc.model.player.params, this.player.dummy.model.params)
         rehookObservers(csc.model.player, this.player.dummy.model)
         csc.model.player = this.player.dummy.model
+        csc.pvp = msc.pvp
 
         await waitForScheduledTask(this.inst, () => {
             sc.model.enterNewGame()
@@ -303,6 +303,7 @@ prestart(() => {
 
     // @ts-expect-error
     sc.Model.notifyObserver = function (model: sc.Model & ig.Class, message: number, data?: unknown) {
+        // console.log('nofifyObserver', findClassName(model), message, data)
         // function rev<K extends string | number, V extends string | number>(rec: Record<K, V>): Record<V, K> {
         //     return Object.fromEntries(Object.entries(rec).map(([a, b]) => [b as V, a as K]))
         // }

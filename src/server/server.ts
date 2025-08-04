@@ -60,8 +60,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     destroyed: boolean = false // or destroying
 
     async start() {
-        instanceinator.displayId = true
-        instanceinator.displayFps = true
+        instanceinator.displayId = false
+        instanceinator.displayFps = false
 
         this.baseInst = instanceinator.instances[0]
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)

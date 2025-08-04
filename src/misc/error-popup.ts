@@ -19,7 +19,12 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const os = ig.OS
     const nwjsVersion = ig.nwjsVersion && ig.nwjsVersion[0]
     const browserVersion = ig.browserVersion
-    const stackTrace = err instanceof Error ? err.stack ?? 'empty stack??' : 'not an error??'
+    const stackTrace =
+        err instanceof Error
+            ? err.stack ?? 'empty stack??'
+            : typeof err == 'object' && err && 'message' in err
+              ? err.message
+              : 'not an error??'
     const instName = inst.name
 
     const server = multi.server

@@ -220,6 +220,8 @@ prestart(() => {
         _onDeathHit(a) {
             if (!multi.server || !(this instanceof dummy.DummyPlayer)) return this.parent(a)
 
+            if (sc.pvp.isCombatantInPvP(this)) return this.parent(a)
+
             if (this.dying == sc.DYING_STATE.ALIVE) {
                 this.dying = sc.DYING_STATE.KILL_HIT
                 // sc.combat.onCombatantDeathHit(a, this)
