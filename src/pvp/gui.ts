@@ -2,6 +2,8 @@ import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { PvpTeam } from './pvp'
 
+import './combatant-gui-fix'
+
 prestart(() => {
     sc.CombatUpperHud.inject({
         init() {
@@ -15,11 +17,6 @@ prestart(() => {
         },
     })
 })
-
-function getPlayerHeadIdx(player: dummy.DummyPlayer): number {
-    const playerName = player.model.config.name
-    return sc.party.models[playerName].getHeadIdx()
-}
 
 declare global {
     namespace sc.CombatUpperHud.CONTENT_GUI {
@@ -44,7 +41,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
     }
 
     function drawTeamHeads(this: sc.CombatUpperHud.CONTENT_GUI.PVP, team: PvpTeam, left: boolean) {
-        const heads: number[] = team.players.map(getPlayerHeadIdx)
+        const heads: number[] = team.players.map(player => player.getHeadIdx())
         if (left) x += (heads.length - 1) * 16
         this._renderHeads(renderer, x + (left ? 24 : 0), left, heads)
         if (left) x += 16
@@ -101,3 +98,65 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
         },
     })
 }
+
+prestart(() => {
+    ig.GUI.StatusBar.inject({
+        updateSubHpHandler() {
+            if (!sc.pvp.multiplayerPvp) return this.parent()
+
+            const target = this.target
+            if (!sc.pvp.isCombatantInPvP(target)) return
+
+            assert(target instanceof dummy.DummyPlayer)
+
+            const type: 'PVP' = 'PVP'
+            if (this.subHpType == type) return
+
+            if (this.subHpHandler) {
+                this.subHpHandler.remove()
+                this.subHpHandler = null
+            }
+            this.subHpType = type
+
+            const targetAsEnemy = target as unknown as ig.ENTITY.Enemy
+            targetAsEnemy.visibility = {
+                analyzable: false,
+                hpBar: sc.ENEMY_HP_BAR.VISIBLE,
+            }
+            targetAsEnemy.enemyType = {
+                hpBreaks: [] as sc.EnemyType.HpBreak[],
+            } satisfies Partial<sc.EnemyType> as sc.EnemyType
+
+            this.subHpHandler = new sc.SUB_HP_EDITOR[type](targetAsEnemy)
+            ig.gui.addGuiElement(this.subHpHandler)
+            this.subHpHandler.initWithParams()
+        },
+    })
+})
+
+declare global {
+    namespace sc.SUB_HP_EDITOR {
+        interface PVP {
+            order: number
+        }
+    }
+    namespace ig {
+        var pvpHpBarOrder: number
+    }
+}
+
+prestart(() => {
+    sc.SUB_HP_EDITOR.PVP.inject({
+        init(enemy) {
+            this.parent(enemy)
+            if (!multi.server) return
+
+            sc.pvp.pushHpBar(this)
+        },
+        remove(immediately) {
+            this.parent(immediately)
+            if (!multi.server) return
+            sc.pvp.eraseHpBar(this)
+        },
+    })
+})

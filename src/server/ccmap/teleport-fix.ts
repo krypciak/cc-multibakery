@@ -72,8 +72,7 @@ prestart(() => {
             assert(player.isPlayer, 'that is just ridiculous ig.EVENT_STEP.TELEPORT')
             assert(player instanceof dummy.DummyPlayer)
 
-            const client = multi.server.clients[player.data.username]
-            assert(client)
+            const client = player.getClient()
 
             const destMapName = this.map.replace(/\./g, '/')
 

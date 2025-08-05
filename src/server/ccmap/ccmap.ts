@@ -8,11 +8,17 @@ import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import * as inputBackup from '../../dummy/dummy-input'
+import { Client } from '../../client/client'
 
 declare global {
     namespace ig {
         var ccmap: CCMap | undefined
     }
+}
+
+export type OnLinkChange = {
+    onLink: (client: Client) => void
+    onDestroy: (client: Client) => void
 }
 
 export class CCMap implements GameLoopUpdateable {
@@ -28,6 +34,7 @@ export class CCMap implements GameLoopUpdateable {
     readyPromise: Promise<void>
     private readyResolve!: () => void
     noStateAppliedYet: boolean = true
+    onLinkChange: OnLinkChange[] = []
 
     constructor(
         public name: string,
@@ -111,8 +118,6 @@ export class CCMap implements GameLoopUpdateable {
     async enter(player: ServerPlayer) {
         player.mapName = this.name
         this.players.push(player)
-
-        this.display.onPlayerCountChange(true)
     }
 
     leave(player: ServerPlayer) {
@@ -121,7 +126,6 @@ export class CCMap implements GameLoopUpdateable {
         if (prevLen == this.players.length) return
 
         this.leaveEntity(player.dummy)
-        this.display.onPlayerCountChange(false)
     }
 
     private leaveEntity(e: ig.Entity) {
@@ -142,10 +146,28 @@ export class CCMap implements GameLoopUpdateable {
         determine.apply(multi.server.serverDeterminism)
     }
 
+    private getAllInstances(includeMapInst?: boolean) {
+        const insts = this.players.map(player => player.getClient().inst)
+        if (includeMapInst) insts.push(this.inst)
+        return insts
+    }
+
+    forEachPlayerInst<T>(func: () => T, includeMapInst?: boolean): T[] {
+        const prevId = instanceinator.id
+
+        const arr = this.getAllInstances(includeMapInst).map(inst => {
+            inst.apply()
+            return func()
+        })
+
+        instanceinator.instances[prevId].apply()
+
+        return arr
+    }
+
     destroy() {
         for (const player of this.players) {
-            const client = multi.server.clients[player.username]
-            assert(client)
+            const client = player.getClient()
             multi.server.leaveClient(client)
         }
         if (this.inst) {

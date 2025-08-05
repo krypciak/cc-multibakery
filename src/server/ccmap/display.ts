@@ -9,7 +9,9 @@ export class CCMapDisplay {
     cameraTarget!: ig.Camera.TargetHandle.Target
     currentPlayerI: number = 0
 
-    constructor(public map: CCMap) {}
+    constructor(public map: CCMap) {
+        map.onLinkChange.push(this)
+    }
 
     removeUnneededGuis() {
         for (let i = ig.gui.guiHooks.length - 1; i >= 0; i--) {
@@ -68,13 +70,15 @@ export class CCMapDisplay {
         await this.setEntityCameraHandle(player.dummy)
     }
 
-    async onPlayerCountChange(enter: boolean) {
+    onLink() {
         if (!multi.server.settings.displayMaps) return
 
-        if (enter && this.map.players.length == 1) {
+        if (this.map.players.length == 1) {
             this.setPlayerCameraHandle(this.map.players[0])
         }
     }
+
+    onDestroy() {}
 }
 
 // camera movement and player follow switching

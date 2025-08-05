@@ -48,7 +48,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.attemptCrashRecovery = this.settings.attemptCrashRecovery ?? Opts.physicsAttemptCrashRecovery
 
         if (!window.crossnode?.options.test) {
-           // await this.createAndJoinClient({
+            // await this.createAndJoinClient({
             //     username: `lea_${1}`,
             //     inputType: 'clone',
             //     remote: false,
@@ -92,7 +92,9 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         if (window.crossnode && !window.crossnode.tests) startRepl()
 
-        stagePvp()
+        if (!window.crossnode?.options.test) {
+            stagePvp()
+        }
     }
 
     async tryJoinClient(

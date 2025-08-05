@@ -314,9 +314,8 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         },
         update() {
             const ccmap = multi.server.maps[map]
-            // console.log(Object.keys(multi.server.maps))
             const p = ccmap.players[0].dummy
-            const client = multi.server.clients[p.data.username]
+            const client = p.getClient()
 
             // waitForScheduledTask(ccmap.inst, () => {
             //     const path = `/home/krypek/Temp/frames/${frame.toString().padStart(5, '0')}.png`

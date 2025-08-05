@@ -70,12 +70,7 @@ export class Client {
         determine.append(this.determinism)
 
         const inputManager = this.initInputManager()
-        this.player = new ServerPlayer(
-            this.settings.username,
-            this.settings.mapName,
-            inputManager,
-            multi.server instanceof RemoteServer
-        )
+        this.player = new ServerPlayer(this.settings.username, inputManager, multi.server instanceof RemoteServer)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
@@ -112,8 +107,7 @@ export class Client {
         if (!multi.server.attemptCrashRecovery) throw e
 
         assert(this.player)
-        const map = multi.server.maps[this.player.mapName]
-        assert(map)
+        const map = this.player.getMap()
         map.attemptRecovery(e)
     }
 
@@ -147,8 +141,10 @@ export class Client {
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
         await this.player.teleport(mapName, marker)
-        const map = multi.server.maps[this.player.mapName]
+        const map = this.player.getMap()
         await this.linkMapToInstance(map)
+
+        for (const obj of map.onLinkChange) obj.onLink(this)
     }
 
     private async linkMapToInstance(map: CCMap) {
@@ -233,6 +229,7 @@ export class Client {
             this.inst.ig.gamepad.destroy()
         }
         this.player.destroy()
+        for (const obj of this.player.getMap().onLinkChange) obj.onDestroy(this)
 
         multi.server.serverInst.apply()
         determine.apply(multi.server.serverDeterminism)

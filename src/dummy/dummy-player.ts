@@ -4,6 +4,8 @@ import { prestart } from '../plugin'
 import * as inputBackup from './dummy-input'
 import './dummy-box-impl'
 import { RemoteServer } from '../server/remote/remote-server'
+import { Client } from '../client/client'
+import { CCMap } from '../server/ccmap/ccmap'
 
 declare global {
     namespace NodeJS {
@@ -28,6 +30,10 @@ declare global {
             inputManager: dummy.InputManager
             data: dummy.DummyPlayer.Data
             itemConsumer: dummy.ItemConsumption
+
+            getHeadIdx(this: this): number
+            getClient(this: this): Client
+            getMap(this: this): CCMap
         }
         interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
             new (x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): DummyPlayer
@@ -61,6 +67,19 @@ prestart(() => {
             this.charging.fx = new sc.CombatCharge(this, true)
             sc.combat.addActiveCombatant(this)
         },
+        getHeadIdx() {
+            const playerName = this.model.config.name
+            return sc.party.models[playerName].getHeadIdx()
+        },
+        getClient() {
+            const client = multi.server.clients[this.data.username]
+            assert(client)
+            return client
+        },
+        getMap() {
+            return this.getClient().player.getMap()
+        },
+
         update() {
             inputBackup.apply(this.inputManager)
             this.parent()

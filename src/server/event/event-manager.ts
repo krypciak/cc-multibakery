@@ -25,7 +25,7 @@ prestart(() => {
             if (!player) return this.parent(event, runType, onStart, onEnd, input, callEntity, data)
 
             assert(player instanceof dummy.DummyPlayer)
-            const client = multi.server.clients[player.data.username]
+            const client = player.getClient()
 
             const prevId = instanceinator.id
             client.inst.apply()

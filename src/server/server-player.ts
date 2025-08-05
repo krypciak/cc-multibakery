@@ -4,11 +4,14 @@ import { waitForScheduledTask } from './server'
 import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics/physics-server'
 import { teleportPlayerToProperMarker } from './ccmap/teleport-fix'
+import { Client } from '../client/client'
+import { CCMap } from './ccmap/ccmap'
 
 export class ServerPlayer {
     private destroyed: boolean = false
 
     dummy!: dummy.DummyPlayer
+    mapName: string = ''
     marker: string | undefined = undefined
     ready: boolean = false
 
@@ -16,7 +19,6 @@ export class ServerPlayer {
 
     constructor(
         public username: string,
-        public mapName: string = '',
         public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager(),
         private attachDummy: boolean = false
     ) {}
@@ -66,8 +68,7 @@ export class ServerPlayer {
         map = multi.server.maps[this.mapName]
         if (!map) {
             await multi.server.loadMap(this.mapName)
-            map = multi.server.maps[this.mapName]
-            assert(map)
+            map = this.getMap()
         }
         await map.readyPromise
         await waitForScheduledTask(map.inst, async () => {
@@ -84,6 +85,16 @@ export class ServerPlayer {
 
     update() {
         this.mapInteract?.onPreUpdate()
+    }
+
+    getClient(): Client {
+        return this.dummy.getClient()
+    }
+
+    getMap(): CCMap {
+        const map = multi.server.maps[this.mapName]
+        assert(map)
+        return map
     }
 
     destroy() {

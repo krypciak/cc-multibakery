@@ -74,10 +74,7 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
 prestart(() => {
     function getClients(): Client[] {
         if (!ig.ccmap) return []
-        return ig.ccmap.players
-            .map(player => player.username)
-            .map(username => multi.server.clients[username])
-            .filter(client => client instanceof Client)
+        return ig.ccmap.players.map(player => player.getClient())
     }
     sc.MapInteract.inject({
         addEntry(entry) {
@@ -144,8 +141,7 @@ prestart(() => {
         onSkipInteract(msg) {
             if (!multi.server || ig.ccmap) return this.parent(msg)
             assert(ig.client)
-            const map = multi.server.maps[ig.client.player.mapName]
-            assert(map)
+            const map = ig.client.player.getMap()
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {
                 if (this.textGui.textBlock.isFinished()) {

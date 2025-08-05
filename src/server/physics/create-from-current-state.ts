@@ -84,8 +84,7 @@ export function closePhysicsServerAndSaveState() {
     const playerPos = Vec3.create(client.player.dummy.coll.pos)
     const playerFace = Vec2.create(client.player.dummy.face)
 
-    const map = multi.server.maps[client.player.mapName]
-    assert(map)
+    const map = client.player.getMap()
     map.inst.apply()
     const origMapState = getStateUpdatePacket(true)
     filterOutProblematicEntityStates(origMapState)

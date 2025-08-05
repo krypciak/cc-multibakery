@@ -1,4 +1,3 @@
-import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
 import { addCombatantParty } from '../misc/combatant-party-api'
 import { prestart } from '../plugin'
@@ -6,6 +5,7 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import { waitForScheduledTask } from '../server/server'
 
 import './gui'
+import { CCMap } from '../server/ccmap/ccmap'
 
 export interface PvpTeam {
     name: string
@@ -19,14 +19,18 @@ declare global {
             multiplayerPvp?: boolean
             teams: PvpTeam[]
             roundGuis: Record<number, sc.PvpRoundGui>
+            map: CCMap
+            hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
 
             createPvpTeam(this: this, name: string, players: dummy.DummyPlayer[]): PvpTeam
             startMultiplayerPvp(this: this, winPoints: number, teams: PvpTeam[]): void
-            getAllPlayers(this: this): dummy.DummyPlayer[]
-            getAllInstances(this: this, includeCurrent?: boolean): InstanceinatorInstance[]
-            forEachInst<T>(this: this, func: () => T, includeCurrent?: boolean): T[]
             removeRoundGuis(this: this): void
             getOnlyTeamAlive(this: this): PvpTeam | undefined
+            getAllPlayers(this: this): dummy.DummyPlayer[]
+            pushHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
+            eraseHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
+            rearrangeHpBars(this: this): void
+            removeHpBars(this: this): void
         }
     }
 }
@@ -49,6 +53,7 @@ prestart(() => {
             this.multiplayerPvp = true
             this.teams = teams
             this.roundGuis = {}
+            this.hpBars = []
 
             this.state = 1
             this.round = 0
@@ -62,33 +67,15 @@ prestart(() => {
 
             this.enemies = []
 
-            this.forEachInst(() => {
+            this.map = this.teams[0].players[0].getMap()
+
+            this.map.forEachPlayerInst(() => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
                 sc.model.setCombatMode(true, true)
             }, true)
         },
-        getAllPlayers() {
-            return this.teams.flatMap(team => team.players)
-        },
-        getAllInstances(includeCurrent) {
-            const insts = this.getAllPlayers().map(player => multi.server.clients[player.data.username].inst)
-            if (includeCurrent) insts.push(instanceinator.instances[instanceinator.id])
-            return insts
-        },
-        forEachInst(func, includeCurrent) {
-            const prevId = instanceinator.id
-
-            const arr = this.getAllInstances(includeCurrent).map(inst => {
-                inst.apply()
-                return func()
-            })
-
-            instanceinator.instances[prevId].apply()
-
-            return arr
-        },
         removeRoundGuis() {
-            this.forEachInst(() => {
+            this.map.forEachPlayerInst(() => {
                 const id = instanceinator.id
                 this.roundGuis[id]?.remove()
             }, true)
@@ -105,6 +92,40 @@ prestart(() => {
 
                 return winningTeam
             }
+        },
+        getAllPlayers() {
+            return this.teams.flatMap(team => team.players)
+        },
+        pushHpBar(bar) {
+            bar.order = ig.pvpHpBarOrder++
+            ;(this.hpBars[instanceinator.id] ??= []).push(bar)
+            this.rearrangeHpBars()
+        },
+        eraseHpBar(bar) {
+            this.hpBars[instanceinator.id].erase(bar)
+            this.rearrangeHpBars()
+        },
+        rearrangeHpBars() {
+            for (let hpBars of Object.values(this.hpBars)) {
+                hpBars = hpBars.sort((a, b) => a.order - b.order)
+                for (let i = 0; i < hpBars.length; i++) {
+                    const bar = hpBars[i]
+                    const y = i * 15 + 5
+                    bar.setPos(bar.hook.pos.x, y)
+                }
+            }
+        },
+        removeHpBars() {
+            const prevId = instanceinator.id
+            for (const [id, hpBars] of Object.entriesT(this.hpBars)) {
+                instanceinator.instances[id].apply()
+                for (let i = hpBars.length - 1; i >= 0; i--) {
+                    const bar = hpBars[i]
+                    bar.remove()
+                }
+            }
+            instanceinator.instances[prevId].apply()
+            this.hpBars = {}
         },
 
         start(winPoints, enemies) {
@@ -150,7 +171,7 @@ prestart(() => {
             this.state = 3
             ig.game.varsChangedDeferred()
 
-            this.forEachInst(() => {
+            this.map.forEachPlayerInst(() => {
                 const koGui = new sc.PvpKoGui()
                 ig.gui.addGuiElement(koGui)
             }, true)
@@ -172,7 +193,7 @@ prestart(() => {
             this.round += 1
 
             this.roundGuis = Object.fromEntries(
-                this.forEachInst(() => {
+                this.map.forEachPlayerInst(() => {
                     const roundGui = new sc.PvpRoundGui(this.round, autoContinue)
                     ig.gui.addGuiElement(roundGui)
                     return [instanceinator.id, roundGui]
@@ -198,10 +219,12 @@ prestart(() => {
 
             this.state = 0
 
-            this.forEachInst(() => {
+            this.map.forEachPlayerInst(() => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
                 sc.model.setCombatMode(false, true)
             }, true)
+
+            this.removeHpBars()
         },
         // onVarAccess different team points??
         onPostUpdate() {
@@ -215,16 +238,18 @@ prestart(() => {
         onReset() {
             this.parent()
 
+            this.map.forEachPlayerInst(() => {
+                sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
+            })
+
             this.multiplayerPvp = false
             this.teams = []
+            this.map = undefined as any
+            this.removeHpBars()
             this.removeRoundGuis()
         },
     })
 })
-
-export function wait(ms: number): Promise<void> {
-    return new Promise(resolve => setTimeout(resolve, ms))
-}
 
 export async function stagePvp() {
     assert(multi.server instanceof PhysicsServer)
@@ -251,14 +276,10 @@ export async function stagePvp() {
         })
     )
 
-    const masterUsername = teams[0].players[0].data.username
-    multi.server.masterUsername = masterUsername
+    const masterPlayer = teams[0].players[0]
+    multi.server.masterUsername = masterPlayer.data.username
 
-    const masterClient = multi.server.clients[masterUsername]
-    assert(masterClient)
-
-    const map = multi.server.maps[masterClient.player.mapName]
-    assert(map)
+    const map = masterPlayer.getMap()
 
     await waitForScheduledTask(map.inst, () => {
         sc.pvp.startMultiplayerPvp(winningPoints, teams)
