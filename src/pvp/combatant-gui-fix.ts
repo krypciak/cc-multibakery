@@ -1,6 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { OnLinkChange } from '../server/ccmap/ccmap'
+import { waitForScheduledTask } from '../server/server'
 
 declare global {
     namespace ig.ENTITY {
@@ -46,7 +47,6 @@ prestart(() => {
                 },
                 onDestroy(client) {
                     const id = client.inst.id
-                    self.statusGuis[id].remove()
                     delete self.statusGuis[id]
                 },
             }

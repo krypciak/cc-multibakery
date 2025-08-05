@@ -2,6 +2,7 @@ import { prestart } from '../../../plugin'
 import { assert } from '../../../misc/assert'
 import { PhysicsServer } from '../../../server/physics/physics-server'
 import { closePhysicsServerAndSaveState } from '../../../server/physics/create-from-current-state'
+import { waitForScheduledTask } from '../../../server/server'
 
 declare global {
     namespace sc {
@@ -49,7 +50,10 @@ prestart(() => {
                             if (isMaster) {
                                 closePhysicsServerAndSaveState()
                             } else {
-                                multi.server.leaveClient(ig.client)
+                                const client = ig.client
+                                waitForScheduledTask(multi.server.serverInst, () => {
+                                    multi.server.leaveClient(client)
+                                })
                             }
                         }
                     })
