@@ -69,27 +69,26 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
     }
     this.renderer.mapCleared()
 
-    let resolve: () => void
-    const promise = new Promise<void>(res => (resolve = res))
-
     const loader = new (this.mapLoader || ig.Loader)()
-    loader.onEnd = function (this: ig.Loader) {
-        scheduleTask(instanceinator.instances[this._instanceId], () => {
-            /* this.finalize() */
-            this.prevResourcesCnt = ig.resources.length
-            ig.resources.length = 0
-            clearInterval(this._intervalId)
+    const promise = new Promise<void>(resolve => {
+        loader.onEnd = function (this: ig.Loader) {
+            scheduleTask(instanceinator.instances[this._instanceId], () => {
+                /* this.finalize() */
+                this.prevResourcesCnt = ig.resources.length
+                ig.resources.length = 0
+                clearInterval(this._intervalId)
 
-            ig.ready = true
+                ig.ready = true
 
-            ig.game.loadingComplete()
+                ig.game.loadingComplete()
 
-            this._loadCallbackBound = null
-            ig.loading = false
+                this._loadCallbackBound = null
+                ig.loading = false
 
-            resolve()
-        })
-    }.bind(loader)
+                resolve()
+            })
+        }.bind(loader)
+    })
 
     loader.load()
     this.currentLoadingResource = loader

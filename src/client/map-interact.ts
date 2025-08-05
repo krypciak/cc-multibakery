@@ -126,7 +126,7 @@ prestart(() => {
             if (this._instanceId == instanceinator.id) return this.parent()
 
             scheduleTask(instanceinator.instances[this._instanceId], () => {
-                this.onEventEnd()
+                this.onEventStart()
             })
         },
         onEventEnd() {
