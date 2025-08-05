@@ -12,6 +12,7 @@ import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
 import { TemporarySet } from '../../misc/temporary-set'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -101,18 +102,14 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const map = multi.server.maps[mapName]
             if (!map?.ready) continue
 
-            const prevId = instanceinator.id
-            const inst = map.inst
-
-            assert(inst)
-            inst.apply()
-            try {
-                applyStateUpdatePacket(stateUpdatePacket, data.tick, map.noStateAppliedYet)
-            } catch (e) {
-                this.onInstanceUpdateError(e)
-            }
-            map.noStateAppliedYet = false
-            instanceinator.instances[prevId].apply()
+            runTask(map.inst, () => {
+                try {
+                    applyStateUpdatePacket(stateUpdatePacket, data.tick, map.noStateAppliedYet)
+                } catch (e) {
+                    this.onInstanceUpdateError(e)
+                }
+                map.noStateAppliedYet = false
+            })
         }
     }
 

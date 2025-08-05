@@ -1,6 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from './misc/assert'
 import { prestart } from './plugin'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
 
 export {}
 declare global {
@@ -64,14 +65,13 @@ prestart(() => {
 })
 
 function draw() {
-    for (const inst of Object.values(instanceinator.instances)) {
-        inst.apply()
+    runTasks(Object.values(instanceinator.instances), () => {
         if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && ig.perf.draw) {
             ig.game.draw()
             ig.game.finalDraw()
         }
-    }
-    multi.server?.serverInst.apply()
+    })
+    if (multi.server) assert(instanceinator.id == multi.server?.serverInst.id)
 }
 
 let previousMusicTime = 0

@@ -1,3 +1,4 @@
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { findSetByEntityByVars } from './vars'
@@ -27,14 +28,9 @@ prestart(() => {
             assert(player instanceof dummy.DummyPlayer)
             const client = player.getClient()
 
-            const prevId = instanceinator.id
-            client.inst.apply()
-
-            const eventCall = ig.game.events.callEvent(event, runType, onStart, onEnd, input, callEntity, data)
-
-            instanceinator.instances[prevId].apply()
-
-            return eventCall
+            return runTask(client.inst, () =>
+                ig.game.events.callEvent(event, runType, onStart, onEnd, input, callEntity, data)
+            )
         },
     })
 })

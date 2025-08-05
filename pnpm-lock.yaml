@@ -28,7 +28,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-determine/tar.gz/92b61b5f9fae15dc2df1753cde7b4b611f415094
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/26bf645121de4a21afb5857f86ee8559e51a01a6
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/50b55c9e4522f86f2b49c7af4dd46802e97353e7
       ccmoddb:
         specifier: github:CCDirectLink/CCModDB
         version: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1
@@ -405,8 +405,8 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-determine/tar.gz/92b61b5f9fae15dc2df1753cde7b4b611f415094}
     version: 0.0.1
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/26bf645121de4a21afb5857f86ee8559e51a01a6:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/26bf645121de4a21afb5857f86ee8559e51a01a6}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/50b55c9e4522f86f2b49c7af4dd46802e97353e7:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/50b55c9e4522f86f2b49c7af4dd46802e97353e7}
     version: 0.0.1
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
@@ -1245,7 +1245,7 @@ snapshots:
 
   cc-determine@https://codeload.github.com/krypciak/cc-determine/tar.gz/92b61b5f9fae15dc2df1753cde7b4b611f415094: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/26bf645121de4a21afb5857f86ee8559e51a01a6: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/50b55c9e4522f86f2b49c7af4dd46802e97353e7: {}
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
     dependencies:

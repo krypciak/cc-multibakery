@@ -1,3 +1,4 @@
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { OnLinkChange } from '../server/ccmap/ccmap'
@@ -70,12 +71,9 @@ prestart(() => {
             map.onLinkChange.erase(this)
         },
         onClientLink(client) {
-            const prevId = instanceinator.id
-            client.inst.apply()
-
-            this.createStatusGui()
-
-            instanceinator.instances[prevId].apply()
+            runTask(client.inst, () => {
+                this.createStatusGui()
+            })
         },
         onClientDestroy(client) {
             const id = client.inst.id

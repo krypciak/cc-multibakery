@@ -8,6 +8,7 @@ import { assert } from '../misc/assert'
 import { showServerErrorPopup } from '../misc/error-popup'
 
 import './event/event'
+import { wrap } from 'cc-instanceinator/src/inst-util'
 
 export interface ServerSettings {
     globalTps: number
@@ -95,36 +96,38 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         ig.game.update()
 
-        for (const name in this.maps) {
-            const map = this.maps[name]
-            if (this.applyUpdateable(map)) map.update()
-            if (!multi.server) return
-        }
-        for (const clientId in this.clients) {
-            const client = this.clients[clientId]
-            if (this.applyUpdateable(client)) client.update()
-            if (!multi.server) return
-        }
-
-        this.serverInst.apply()
+        wrap(() => {
+            for (const name in this.maps) {
+                const map = this.maps[name]
+                if (this.applyUpdateable(map)) map.update()
+                if (!multi.server) return
+            }
+            for (const clientId in this.clients) {
+                const client = this.clients[clientId]
+                if (this.applyUpdateable(client)) client.update()
+                if (!multi.server) return
+            }
+        })
+        assert(instanceinator.id == multi.server.serverInst.id)
         determine.apply(this.serverDeterminism)
     }
 
     deferredUpdate() {
         ig.game.deferredUpdate()
 
-        for (const name in this.maps) {
-            const map = this.maps[name]
-            if (this.applyUpdateable(map)) map.deferredUpdate()
-            if (!multi.server) return
-        }
-        for (const clientId in this.clients) {
-            const client = this.clients[clientId]
-            if (this.applyUpdateable(client)) client.deferredUpdate()
-            if (!multi.server) return
-        }
-
-        this.serverInst.apply()
+        wrap(() => {
+            for (const name in this.maps) {
+                const map = this.maps[name]
+                if (this.applyUpdateable(map)) map.deferredUpdate()
+                if (!multi.server) return
+            }
+            for (const clientId in this.clients) {
+                const client = this.clients[clientId]
+                if (this.applyUpdateable(client)) client.deferredUpdate()
+                if (!multi.server) return
+            }
+        })
+        assert(instanceinator.id == multi.server.serverInst.id)
         determine.apply(this.serverDeterminism)
         ig.input.clearPressed()
     }

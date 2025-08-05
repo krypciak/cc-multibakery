@@ -1,3 +1,4 @@
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
 import { assert } from '../../misc/assert'
 import { entityNetidStatic } from '../../misc/entity-netid'
@@ -68,7 +69,7 @@ export async function createPhysicsServerFromCurrentState() {
     applyStateUpdatePacket(origMapState, 0, true)
     server.serverInst.apply()
 
-    client.inst.ig.game.scheduledTasks.push(() => {
+    scheduleTask(client.inst, () => {
         sc.model.enterPause()
         ig.multibakeryManageServerPopup = undefined
         openManagerServerPopup(true)

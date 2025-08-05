@@ -1,3 +1,4 @@
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Client } from '../../client/client'
 import { assert } from '../../misc/assert'
 import { NetConnection } from '../../net/connection'
@@ -47,13 +48,7 @@ function send() {
 }
 
 function getMapUpdatePacket(map: CCMap, shoudSendFullState: boolean): StateUpdatePacket {
-    const prevId = instanceinator.id
-    map.inst.apply()
-
-    const packet = getStateUpdatePacket(shoudSendFullState)
-
-    instanceinator.instances[prevId].apply()
-    return packet
+    return runTask(map.inst, () => getStateUpdatePacket(shoudSendFullState))
 }
 
 export interface PhysicsServerUpdatePacket {

@@ -9,7 +9,7 @@ import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import * as inputBackup from '../../dummy/dummy-input'
 import { Client } from '../../client/client'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { scheduleTask, runTasks, runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace ig {
@@ -138,13 +138,9 @@ export class CCMap implements GameLoopUpdateable {
         }
 
         assert(instanceinator.id == multi.server.serverInst.id)
-        this.inst.apply()
-        determine.apply(this.determinism)
-
-        e.kill()
-
-        multi.server.serverInst.apply()
-        determine.apply(multi.server.serverDeterminism)
+        runTask(this.inst, () => {
+            e.kill()
+        })
     }
 
     private getAllInstances(includeMapInst?: boolean) {
@@ -154,16 +150,7 @@ export class CCMap implements GameLoopUpdateable {
     }
 
     forEachPlayerInst<T>(func: () => T, includeMapInst?: boolean): T[] {
-        const prevId = instanceinator.id
-
-        const arr = this.getAllInstances(includeMapInst).map(inst => {
-            inst.apply()
-            return func()
-        })
-
-        instanceinator.instances[prevId].apply()
-
-        return arr
+        return runTasks(this.getAllInstances(includeMapInst), func)
     }
 
     destroy() {

@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { addCombatantParty } from '../misc/combatant-party-api'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTasks, scheduleTask } from 'cc-instanceinator/src/inst-util'
 
 import './gui'
 import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
@@ -120,15 +120,16 @@ prestart(() => {
             }
         },
         removeHpBars() {
-            const prevId = instanceinator.id
-            for (const [id, hpBars] of Object.entriesT(this.hpBars)) {
-                instanceinator.instances[id].apply()
-                for (let i = hpBars.length - 1; i >= 0; i--) {
-                    const bar = hpBars[i]
-                    bar.remove()
+            runTasks(
+                Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
+                () => {
+                    const hpBars = this.hpBars[instanceinator.id]
+                    for (let i = hpBars.length - 1; i >= 0; i--) {
+                        const bar = hpBars[i]
+                        bar.remove()
+                    }
                 }
-            }
-            instanceinator.instances[prevId].apply()
+            )
             this.hpBars = {}
         },
         onClientLink() {},
