@@ -1,13 +1,13 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { OnLinkChange } from '../server/ccmap/ccmap'
-import { waitForScheduledTask } from '../server/server'
 
 declare global {
     namespace ig.ENTITY {
-        interface Combatant {
+        interface Combatant extends OnLinkChange {
             statusGuis: Record<string, ig.GUI.StatusBar>
-            onPlayerEnterLeave?: OnLinkChange
+
+            createStatusGui(this: this): void
         }
     }
 }
@@ -25,32 +25,12 @@ prestart(() => {
             const map = ig.ccmap
             assert(map)
 
-            const createGui = () => {
-                const gui = new ig.GUI.StatusBar(this)
-                ig.gui.addGuiElement(gui)
-                this.statusGuis[instanceinator.id] = gui
-            }
-
             this.statusGuis = {}
-            map.forEachPlayerInst(() => createGui())
+            map.forEachPlayerInst(() => this.createStatusGui())
             this.statusGuis[instanceinator.id] = this.statusGui
 
             const self = this
-            this.onPlayerEnterLeave = {
-                onLink(client) {
-                    const prevId = instanceinator.id
-                    client.inst.apply()
-
-                    createGui()
-
-                    instanceinator.instances[prevId].apply()
-                },
-                onDestroy(client) {
-                    const id = client.inst.id
-                    delete self.statusGuis[id]
-                },
-            }
-            map.onLinkChange.push(this.onPlayerEnterLeave)
+            map.onLinkChange.push(this)
 
             this.statusGui = new Proxy(this.statusGui, {
                 get(target, p, _receiver) {
@@ -76,13 +56,30 @@ prestart(() => {
                 },
             })
         },
+        createStatusGui() {
+            const gui = new ig.GUI.StatusBar(this)
+            ig.gui.addGuiElement(gui)
+            this.statusGuis[instanceinator.id] = gui
+        },
         hide() {
             this.parent()
-            if (!multi.server || !this.onPlayerEnterLeave) return
+            if (!multi.server) return
 
             const map = ig.ccmap
             assert(map)
-            map.onLinkChange.erase(this.onPlayerEnterLeave)
+            map.onLinkChange.erase(this)
+        },
+        onClientLink(client) {
+            const prevId = instanceinator.id
+            client.inst.apply()
+
+            this.createStatusGui()
+
+            instanceinator.instances[prevId].apply()
+        },
+        onClientDestroy(client) {
+            const id = client.inst.id
+            delete this.statusGuis[id]
         },
     })
 })

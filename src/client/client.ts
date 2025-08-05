@@ -144,7 +144,7 @@ export class Client {
         const map = this.player.getMap()
         await this.linkMapToInstance(map)
 
-        for (const obj of map.onLinkChange) obj.onLink(this)
+        for (const obj of map.onLinkChange) obj.onClientLink(this)
     }
 
     private async linkMapToInstance(map: CCMap) {
@@ -229,7 +229,7 @@ export class Client {
             this.inst.ig.gamepad.destroy()
         }
         this.player.destroy()
-        for (const obj of this.player.getMap().onLinkChange) obj.onDestroy(this)
+        for (const obj of this.player.getMap().onLinkChange) obj.onClientDestroy(this)
 
         multi.server.serverInst.apply()
         determine.apply(multi.server.serverDeterminism)

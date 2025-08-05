@@ -109,7 +109,7 @@ prestart(() => {
 
             assert(target instanceof dummy.DummyPlayer)
 
-            const type: 'PVP' = 'PVP'
+            const type = 'PVP'
             if (this.subHpType == type) return
 
             if (this.subHpHandler) {

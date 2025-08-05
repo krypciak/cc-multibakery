@@ -1,10 +1,10 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { CCMap } from './ccmap'
+import { CCMap, OnLinkChange } from './ccmap'
 import { waitForScheduledTask } from '../server'
 import { ServerPlayer } from '../server-player'
 
-export class CCMapDisplay {
+export class CCMapDisplay implements OnLinkChange {
     camera!: ig.Camera.TargetHandle
     cameraTarget!: ig.Camera.TargetHandle.Target
     currentPlayerI: number = 0
@@ -70,7 +70,7 @@ export class CCMapDisplay {
         await this.setEntityCameraHandle(player.dummy)
     }
 
-    onLink() {
+    onClientLink() {
         if (!multi.server.settings.displayMaps) return
 
         if (this.map.players.length == 1) {
@@ -78,7 +78,7 @@ export class CCMapDisplay {
         }
     }
 
-    onDestroy() {}
+    onClientDestroy() {}
 }
 
 // camera movement and player follow switching

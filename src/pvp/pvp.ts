@@ -5,7 +5,7 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import { waitForScheduledTask } from '../server/server'
 
 import './gui'
-import { CCMap } from '../server/ccmap/ccmap'
+import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
 
 export interface PvpTeam {
     name: string
@@ -15,7 +15,7 @@ export interface PvpTeam {
 
 declare global {
     namespace sc {
-        interface PvpModel {
+        interface PvpModel extends OnLinkChange {
             multiplayerPvp?: boolean
             teams: PvpTeam[]
             roundGuis: Record<number, sc.PvpRoundGui>
@@ -31,6 +31,8 @@ declare global {
             eraseHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
             rearrangeHpBars(this: this): void
             removeHpBars(this: this): void
+            removeLink(this: this): void
+            getPlayerTeam(this: this, player: dummy.DummyPlayer): PvpTeam | undefined
         }
     }
 }
@@ -53,7 +55,7 @@ prestart(() => {
             this.multiplayerPvp = true
             this.teams = teams
             this.roundGuis = {}
-            this.hpBars = []
+            this.hpBars = {}
 
             this.state = 1
             this.round = 0
@@ -73,6 +75,8 @@ prestart(() => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
                 sc.model.setCombatMode(true, true)
             }, true)
+
+            this.map.onLinkChange.push(this)
         },
         removeRoundGuis() {
             this.map.forEachPlayerInst(() => {
@@ -127,6 +131,34 @@ prestart(() => {
             instanceinator.instances[prevId].apply()
             this.hpBars = {}
         },
+        onClientLink() {},
+        onClientDestroy(client) {
+            const player = client.player.dummy
+            const team = this.getPlayerTeam(player)
+            if (!team) return
+
+            team.players.erase(player)
+            if (team.players.length == 0) this.teams.erase(team)
+
+            delete this.hpBars[client.inst.id]
+            for (const key in this.hpBars) {
+                this.hpBars[key] = this.hpBars[key].filter(bar => bar.target != (player as any))
+            }
+            this.rearrangeHpBars()
+
+            const onlyTeamAlive = this.getOnlyTeamAlive()
+            if (onlyTeamAlive) {
+                if (this.teams.length == 1) {
+                    this.points[onlyTeamAlive.party] = this.winPoints
+                }
+                this.onPostKO(onlyTeamAlive.party)
+            }
+        },
+        getPlayerTeam(player) {
+            for (const team of this.teams) {
+                if (team.players.includes(player)) return team
+            }
+        },
 
         start(winPoints, enemies) {
             this.points = {}
@@ -156,9 +188,7 @@ prestart(() => {
             if (!this.isActive() || !(combatant instanceof dummy.DummyPlayer)) return false
 
             const onlyTeamAlive = this.getOnlyTeamAlive()
-            if (onlyTeamAlive) {
-                return this.showKO(onlyTeamAlive.party)
-            }
+            if (onlyTeamAlive) return this.showKO(onlyTeamAlive.party)
         },
         showKO(party) {
             if (!this.multiplayerPvp) return this.parent(party)
@@ -256,6 +286,7 @@ export async function stagePvp() {
     const teamConfigs: { name: string; count: number }[] = [
         { name: '1', count: 1 },
         { name: '2', count: 1 },
+        { name: '3', count: 1 },
     ]
     const winningPoints = 2
 

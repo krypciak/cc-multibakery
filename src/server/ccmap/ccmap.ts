@@ -16,9 +16,9 @@ declare global {
     }
 }
 
-export type OnLinkChange = {
-    onLink: (client: Client) => void
-    onDestroy: (client: Client) => void
+export interface OnLinkChange {
+    onClientLink(this: this, client: Client): void
+    onClientDestroy(this: this, client: Client): void
 }
 
 export class CCMap implements GameLoopUpdateable {
