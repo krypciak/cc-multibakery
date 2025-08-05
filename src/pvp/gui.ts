@@ -55,8 +55,11 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
     function drawTeamPoints(this: sc.CombatUpperHud.CONTENT_GUI.PVP, team: PvpTeam, left: boolean) {
         if (sc.pvp.winPoints != 1) {
             x += 4
+            if (left) x += (sc.pvp.winPoints - 2) * 5
             this._renderPoints(renderer, x, left ? -1 : 1, sc.pvp.winPoints, sc.pvp.points[team.party]!, 0)
-            x += sc.pvp.winPoints * 5
+
+            if (left) x += 5
+            else x += sc.pvp.winPoints * 5
         }
     }
 

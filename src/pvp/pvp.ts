@@ -231,8 +231,6 @@ export async function stagePvp() {
     const teamConfigs: { name: string; count: number }[] = [
         { name: '1', count: 1 },
         { name: '2', count: 1 },
-        { name: '3', count: 1 },
-        { name: '4', count: 1 },
     ]
     const winningPoints = 2
 
