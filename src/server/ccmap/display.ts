@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { CCMap, OnLinkChange } from './ccmap'
-import { waitForScheduledTask } from '../server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { ServerPlayer } from '../server-player'
 
 export class CCMapDisplay implements OnLinkChange {
@@ -43,7 +43,7 @@ export class CCMapDisplay implements OnLinkChange {
     async setPosCameraHandle(pos: Vec2) {
         if (!multi.server.settings.displayMaps) return
 
-        await waitForScheduledTask(this.map.inst, () => {
+        await scheduleTask(this.map.inst, () => {
             const prev = this.camera
             this.cameraTarget = new ig.Camera.PosTarget(pos)
             this.camera = new ig.Camera.TargetHandle(this.cameraTarget, 0, 0)
@@ -57,7 +57,7 @@ export class CCMapDisplay implements OnLinkChange {
     }
 
     private async setEntityCameraHandle(e: ig.Entity) {
-        await waitForScheduledTask(this.map.inst, () => {
+        await scheduleTask(this.map.inst, () => {
             const prev = this.camera
             this.cameraTarget = new ig.Camera.EntityTarget(e)
             this.camera = new ig.Camera.TargetHandle(this.cameraTarget, 0, 0)

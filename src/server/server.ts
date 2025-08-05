@@ -220,15 +220,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 }
 
-export function waitForScheduledTask(inst: InstanceinatorInstance, task: () => Promise<void> | void) {
-    return new Promise<void>(resolve => {
-        inst.ig.game.scheduledTasks.push(async () => {
-            await task()
-            resolve()
-        })
-    })
-}
-
 export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: ClientJoinAckData) {
     if (resp.status == 'ok') return
     let msg!: string

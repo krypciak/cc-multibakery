@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
-import { waitForScheduledTask } from './server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics/physics-server'
 import { teleportPlayerToProperMarker } from './ccmap/teleport-fix'
@@ -71,11 +71,11 @@ export class ServerPlayer {
             map = this.getMap()
         }
         await map.readyPromise
-        await waitForScheduledTask(map.inst, async () => {
+        await scheduleTask(map.inst, async () => {
             await this.createPlayer()
         })
         await map.enter(this)
-        await waitForScheduledTask(map.inst, () => {
+        await scheduleTask(map.inst, () => {
             this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
 
             teleportPlayerToProperMarker(this.dummy, marker, undefined, true)

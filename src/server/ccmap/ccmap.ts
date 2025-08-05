@@ -1,5 +1,5 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { GameLoopUpdateable, waitForScheduledTask } from '../server'
+import { GameLoopUpdateable } from '../server'
 import { assert } from '../../misc/assert'
 import { ServerPlayer } from '../server-player'
 import { CCMapDisplay } from './display'
@@ -9,6 +9,7 @@ import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import * as inputBackup from '../../dummy/dummy-input'
 import { Client } from '../../client/client'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace ig {
@@ -63,9 +64,9 @@ export class CCMap implements GameLoopUpdateable {
         const levelData = await levelDataPromise
         this.rawLevelData = levelData
 
-        await waitForScheduledTask(this.inst, async () => {
+        await scheduleTask(this.inst, async () => {
             await setDataFromLevelData.call(ig.game, this.name, levelData)
-            await waitForScheduledTask(this.inst, () => {
+            await scheduleTask(this.inst, () => {
                 sc.model.enterNewGame()
                 sc.model.enterGame()
 

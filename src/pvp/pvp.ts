@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { addCombatantParty } from '../misc/combatant-party-api'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { waitForScheduledTask } from '../server/server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 
 import './gui'
 import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
@@ -312,7 +312,7 @@ export async function stagePvp() {
 
     const map = masterPlayer.getMap()
 
-    await waitForScheduledTask(map.inst, () => {
+    await scheduleTask(map.inst, () => {
         sc.pvp.startMultiplayerPvp(winningPoints, teams)
         sc.pvp.startNextRound(true)
 

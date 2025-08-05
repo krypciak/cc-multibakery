@@ -3,8 +3,9 @@ import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../plugin'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'
-import { ClientJoinData, showTryNetJoinResponseDialog, waitForScheduledTask } from '../../server/server'
+import { ClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 
 interface ServerImageConfig {
     pathOrData: string | HTMLImageElement
@@ -144,7 +145,7 @@ prestart(() => {
         async updateIcon() {
             const id = instanceinator.id
             const config = await this.getIconConfig()
-            await waitForScheduledTask(instanceinator.instances[id], () => {
+            await scheduleTask(instanceinator.instances[id], () => {
                 this.setIcon(config)
             })
         },

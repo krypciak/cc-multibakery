@@ -1,6 +1,6 @@
 import { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
-import { ClientJoinAckData, ClientJoinData, Server, ServerSettings, waitForScheduledTask } from '../server'
+import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import { NetServerInfoPhysics } from '../../client/menu/server-info'
@@ -8,10 +8,11 @@ import { PhysicsHttpServer } from '../../net/web-server'
 import { Client } from '../../client/client'
 import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
-
-import './physics-server-sender'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../../options'
 import { stagePvp } from '../../pvp/pvp'
+
+import './physics-server-sender'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -152,7 +153,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 continue
             }
             if (client.inst.ig.inPauseScreen) {
-                waitForScheduledTask(client.inst, () => sc.model.enterRunning())
+                scheduleTask(client.inst, () => sc.model.enterRunning())
             }
 
             if (packet.input) {

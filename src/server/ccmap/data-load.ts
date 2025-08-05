@@ -1,4 +1,4 @@
-import { waitForScheduledTask } from '../server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../plugin'
 
 type Layer = keyof typeof ig.MAP
@@ -74,7 +74,7 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
 
     const loader = new (this.mapLoader || ig.Loader)()
     loader.onEnd = function (this: ig.Loader) {
-        waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+        scheduleTask(instanceinator.instances[this._instanceId], () => {
             /* this.finalize() */
             this.prevResourcesCnt = ig.resources.length
             ig.resources.length = 0
@@ -127,7 +127,7 @@ prestart(() => {
             }
             if (success) this.loaded = true
             else this.failed = true
-            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+            scheduleTask(instanceinator.instances[this._instanceId], () => {
                 this.loadingFinished(success)
             })
         },

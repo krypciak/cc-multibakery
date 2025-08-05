@@ -1,6 +1,6 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
-import { waitForScheduledTask } from '../server/server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Client } from './client'
 import { prestart } from '../plugin'
 
@@ -81,7 +81,7 @@ prestart(() => {
             this.parent(entry)
 
             for (const client of getClients()) {
-                waitForScheduledTask(client.inst, () => {
+                scheduleTask(client.inst, () => {
                     const newEntry = cloneMapInteractEntry(entry)
                     if (newEntry) sc.mapInteract.addEntry(newEntry)
                 })
@@ -93,7 +93,7 @@ prestart(() => {
 
             for (const client of getClients()) {
                 assert(ig.ccmap)
-                waitForScheduledTask(client.inst, () => {
+                scheduleTask(client.inst, () => {
                     const clientEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
                     assert(clientEntry)
                     sc.mapInteract.removeEntry(clientEntry)
@@ -125,14 +125,14 @@ prestart(() => {
         onEventStart() {
             if (this._instanceId == instanceinator.id) return this.parent()
 
-            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+            scheduleTask(instanceinator.instances[this._instanceId], () => {
                 this.onEventEnd()
             })
         },
         onEventEnd() {
             if (this._instanceId == instanceinator.id) return this.parent()
 
-            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+            scheduleTask(instanceinator.instances[this._instanceId], () => {
                 this.onEventEnd()
             })
         },
@@ -145,7 +145,7 @@ prestart(() => {
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {
                 if (this.textGui.textBlock.isFinished()) {
-                    waitForScheduledTask(map.inst, () => {
+                    scheduleTask(map.inst, () => {
                         this.xenoDialog._showNextMessage()
                     })
                 } else {
@@ -158,7 +158,7 @@ prestart(() => {
     ig.ENTITY.NPC.inject({
         updateNpcState(...args) {
             if (instanceinator.id == this._instanceId) return this.parent(...args)
-            waitForScheduledTask(instanceinator.instances[this._instanceId], () => {
+            scheduleTask(instanceinator.instances[this._instanceId], () => {
                 this.updateNpcState(...args)
             })
         },

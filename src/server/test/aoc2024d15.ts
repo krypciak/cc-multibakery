@@ -1,7 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
-import { waitForScheduledTask } from '../server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../physics/physics-server'
 import { InputData } from '../../dummy/dummy-input-puppet'
 
@@ -208,7 +208,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
 
     async function waitFrames(count: number) {
         for (let frame = 0; frame < count; frame++) {
-            await waitForScheduledTask(inst, () => {})
+            await scheduleTask(inst, () => {})
         }
     }
     const emptyInput: InputData = {
@@ -234,7 +234,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
 
     let collided: string = 'none'
     for (let frame = 0; collided == 'none' && frame < 10; frame++) {
-        await waitForScheduledTask(inst, () => {
+        await scheduleTask(inst, () => {
             if (e.coll._collData.collided) {
                 const entities = ig.game.getEntitiesInCircle(
                     {
@@ -260,7 +260,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         const holdTime = 20
         const pushTime = 23
         for (let frame = 0; frame < pushTime + holdTime; frame++) {
-            await waitForScheduledTask(inst, () => {
+            await scheduleTask(inst, () => {
                 if (frame == 0) {
                     inp.presses!['aim'] = true
                 } else {
@@ -317,7 +317,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             const p = ccmap.players[0].dummy
             const client = p.getClient()
 
-            // waitForScheduledTask(ccmap.inst, () => {
+            // scheduleTask(ccmap.inst, () => {
             //     const path = `/home/krypek/Temp/frames/${frame.toString().padStart(5, '0')}.png`
             //     const data = ig.system.canvas.toDataURL().split(',')[1]
             //     require('fs').promises.writeFile(path, Buffer.from(data, 'base64'))
@@ -333,7 +333,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                     this.moveI++
                 } while (this.moveI < moves.length && moves[this.moveI].trim().length == 0)
                 if (this.moveI == moves.length) {
-                    waitForScheduledTask(ccmap.inst, () => {
+                    scheduleTask(ccmap.inst, () => {
                         const boxes = ig.game
                             .getEntitiesByType(ig.ENTITY.AocBox)
                             .filter(box => !box.linked || box.motherLinked)

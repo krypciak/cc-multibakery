@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { waitForScheduledTask } from '../server'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 
 export function teleportPlayerToProperMarker(
     player: ig.ENTITY.Player | undefined,
@@ -76,7 +76,7 @@ prestart(() => {
 
             const destMapName = this.map.replace(/\./g, '/')
 
-            waitForScheduledTask(multi.server.serverInst, async () => {
+            scheduleTask(multi.server.serverInst, async () => {
                 await client.teleport(destMapName, this.marker)
             })
         },
