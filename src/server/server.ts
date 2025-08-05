@@ -1,4 +1,3 @@
-import { DeterMineInstance } from 'cc-determine/src/instance'
 import { copyTickInfo, startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
@@ -35,7 +34,6 @@ export type ClientJoinAckData = {
 
 export interface GameLoopUpdateable {
     inst: InstanceinatorInstance
-    determinism: DeterMineInstance
 
     update(): void
     deferredUpdate(): void
@@ -51,7 +49,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     baseInst!: InstanceinatorInstance
     serverInst!: InstanceinatorInstance
-    serverDeterminism!: DeterMineInstance
 
     clients: Record<string, Client> = {}
     masterUsername?: string
@@ -69,10 +66,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.serverInst.apply()
         this.safeguardServerInstance()
 
-        this.serverDeterminism = new determine.Instance('welcome to hell')
-        determine.append(this.serverDeterminism)
-        determine.apply(this.serverDeterminism)
-
         removeAddon(this.serverInst.ig.gamepad, this.serverInst.ig.game)
         this.serverInst.ig.gamepad = new multi.class.SingleGamepadManager()
 
@@ -86,7 +79,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         copyTickInfo(this.serverInst, obj.inst)
         obj.inst.apply()
-        determine.apply(obj.determinism)
 
         return true
     }
@@ -109,7 +101,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
             }
         })
         assert(instanceinator.id == multi.server.serverInst.id)
-        determine.apply(this.serverDeterminism)
     }
 
     deferredUpdate() {
@@ -128,7 +119,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
             }
         })
         assert(instanceinator.id == multi.server.serverInst.id)
-        determine.apply(this.serverDeterminism)
         ig.input.clearPressed()
     }
 
@@ -211,11 +201,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         for (const map of Object.values(this.maps)) {
             map.destroy()
         }
-        determine.apply(determine.instances[0])
         this.baseInst.apply()
 
         instanceinator.delete(this.serverInst)
-        determine.delete(this.serverDeterminism)
 
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId

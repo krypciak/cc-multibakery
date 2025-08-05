@@ -1,5 +1,4 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { ServerPlayer } from '../server/server-player'
 import { assert } from '../misc/assert'
 import { CCMap } from '../server/ccmap/ccmap'
@@ -43,7 +42,6 @@ export type ClientSettings = {
 export class Client {
     player!: ServerPlayer
     inst!: InstanceinatorInstance
-    determinism!: DeterMineInstance /* determinism is only used for visuals */
 
     private destroyed: boolean = false
 
@@ -65,9 +63,6 @@ export class Client {
                 inst.ig.client = this
             }
         )
-
-        this.determinism = new determine.Instance('welcome to hell')
-        determine.append(this.determinism)
 
         const inputManager = this.initInputManager()
         this.player = new ServerPlayer(this.settings.username, inputManager, multi.server instanceof RemoteServer)
@@ -232,10 +227,7 @@ export class Client {
         for (const obj of this.player.getMap().onLinkChange) obj.onClientDestroy(this)
 
         multi.server.serverInst.apply()
-        determine.apply(multi.server.serverDeterminism)
-
         instanceinator.delete(this.inst)
-        determine.delete(this.determinism)
     }
 }
 

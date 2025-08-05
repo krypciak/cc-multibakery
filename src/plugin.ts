@@ -1,6 +1,6 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import ccmod from '../ccmod.json'
-import { Mod1 } from 'cc-determine/src/types'
+import { Mod1 } from 'cc-instanceinator/src/types'
 import { PhysicsServer } from './server/physics/physics-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import './multiplayer'

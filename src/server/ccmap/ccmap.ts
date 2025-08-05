@@ -4,7 +4,6 @@ import { assert } from '../../misc/assert'
 import { ServerPlayer } from '../server-player'
 import { CCMapDisplay } from './display'
 import { setDataFromLevelData } from './data-load'
-import type { DeterMineInstance } from 'cc-determine/src/instance'
 import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import * as inputBackup from '../../dummy/dummy-input'
@@ -28,7 +27,6 @@ export class CCMap implements GameLoopUpdateable {
     players: ServerPlayer[] = []
 
     inst!: InstanceinatorInstance
-    determinism!: DeterMineInstance
     display!: CCMapDisplay
 
     ready: boolean = false
@@ -51,14 +49,12 @@ export class CCMap implements GameLoopUpdateable {
 
     async load() {
         this.display = new CCMapDisplay(this)
-        this.determinism = new determine.Instance('welcome to hell', false, true)
 
         const displayMaps = multi.server.settings.displayMaps
 
         const levelDataPromise = this.readLevelData()
         this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
         this.inst.ig.ccmap = this
-        determine.append(this.determinism)
         forceConditionalLightOnInst(this.inst.id)
 
         const levelData = await levelDataPromise
@@ -162,7 +158,6 @@ export class CCMap implements GameLoopUpdateable {
             multi.server.serverInst.apply()
             instanceinator.delete(this.inst)
         }
-        if (this.determinism) determine.delete(this.determinism)
     }
 }
 

@@ -1,4 +1,3 @@
-import type {} from 'cc-determine/src/plugin'
 import type {} from 'cc-instanceinator/src/plugin'
 import type {} from 'crossnode/crossnode'
 import type {} from 'ccmodmanager/types/plugin'
