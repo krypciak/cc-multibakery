@@ -109,16 +109,21 @@ prestart(() => {
             this.rearrangeHpBars()
         },
         rearrangeHpBars() {
-            for (let hpBars of Object.values(this.hpBars)) {
-                hpBars = hpBars.sort((a, b) => a.order - b.order)
-                let y = 5
-                for (let i = 0; i < hpBars.length; i++) {
-                    const bar = hpBars[i]
-                    if (bar.target.isDefeated()) continue
-                    bar.setPos(bar.hook.pos.x, y)
-                    y += 15
+            runTasks(
+                Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
+                () => {
+                    const hpBars = this.hpBars[instanceinator.id]
+                    hpBars.sort((a, b) => a.order - b.order)
+                    let y = 5
+
+                    for (let i = 0; i < hpBars.length; i++) {
+                        const bar = hpBars[i]
+                        if (bar.target.isDefeated()) continue
+                        bar.setPos(bar.hook.pos.x, y)
+                        y += 15
+                    }
                 }
-            }
+            )
         },
         removeHpBars() {
             runTasks(
@@ -220,6 +225,8 @@ prestart(() => {
             }
             this.state = this.isOver() ? 5 : 4
             ig.game.varsChangedDeferred()
+
+            this.rearrangeHpBars()
         },
         startNextRound(autoContinue) {
             if (!this.multiplayerPvp) return this.parent(autoContinue)
@@ -294,7 +301,7 @@ export async function stagePvp() {
         { name: '4', count: 1 },
         { name: '5', count: 1 },
     ]
-    const winningPoints = 2
+    const winningPoints = 5
 
     const teams: PvpTeam[] = await Promise.all(
         teamConfigs.map(async ({ name, count }, _teamI) => {

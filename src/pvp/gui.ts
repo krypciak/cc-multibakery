@@ -166,5 +166,11 @@ prestart(() => {
             })
             renderer.addText(text, 40, 0)
         },
+        _isHpBarVisible() {
+            if (!sc.pvp.multiplayerPvp) return this.parent()
+
+            if (this.target.isDefeated()) return false
+            return this.parent()
+        },
     })
 })
