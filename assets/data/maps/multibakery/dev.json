@@ -1,5 +1,5 @@
 {
-    "name": "crossedeyes/test",
+    "name": "multibakery/dev",
     "levels": [{ "height": -112 }, { "height": -16 }, { "height": 0 }, { "height": 16 }, { "height": 32 }],
     "mapWidth": 100,
     "mapHeight": 80,
@@ -24,9 +24,9 @@
         { "type": "OneTimeSwitch", "x": 200, "y": 206, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 26, "name": "ots1", "switchType": "default", "variable": "tmp.ots1", "addValue": "" } },
         { "type": "MultiHitSwitch", "x": 231, "y": 207, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 27, "name": "mhs1", "switchType": "default", "variable": "tmp.mhs1" } },
         { "type": "BounceSwitch", "x": 96, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 28, "group": "a", "name": "bs2" } },
-        { "type": "Door", "x": 1074, "y": 712, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 29, "name": "door1", "doorType": "DEFAULT", "dir": "NORTH", "map": "crossedeyes/test", "marker": "door1", "transitionType": "REGULAR" } },
-        { "type": "TeleportField", "x": 1193, "y": 711, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 30, "name": "tpf1", "dir": "NORTH", "map": "crossedeyes/test", "teleportLabel": { "en_US": "CrossedEyes Test Map", "de_DE": "", "ja_JP": "", "ko_KR": "", "zh_CN": "", "zh_TW": "" }, "marker": "tpf1", "longTelCond": false } },
-        { "type": "TeleportGround", "x": 1314, "y": 715, "level": 2, "settings": { "size": { "x": 32, "y": 16 }, "mapId": 31, "zHeight": 32, "dir": "SOUTH", "map": "crossedeyes/test", "name": "tpg1", "marker": "tpg1" } },
+        { "type": "Door", "x": 1074, "y": 712, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 29, "name": "door1", "doorType": "DEFAULT", "dir": "NORTH", "map": "multibakery/dev", "marker": "door1", "transitionType": "REGULAR" } },
+        { "type": "TeleportField", "x": 1193, "y": 711, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 30, "name": "tpf1", "dir": "NORTH", "map": "multibakery/dev", "teleportLabel": { "en_US": "Test Map", "de_DE": "", "ja_JP": "", "ko_KR": "", "zh_CN": "", "zh_TW": "" }, "marker": "tpf1", "longTelCond": false } },
+        { "type": "TeleportGround", "x": 1314, "y": 715, "level": 2, "settings": { "size": { "x": 32, "y": 16 }, "mapId": 31, "zHeight": 32, "dir": "SOUTH", "map": "multibakery/dev", "name": "tpg1", "marker": "tpg1" } },
         { "type": "WallHorizontal", "x": 269, "y": 208, "level": 2, "settings": { "size": { "x": 32, "y": 8 }, "mapId": 32, "leftEnd": "STOP", "rightEnd": "STOP", "collType": "BLOCK", "wallZHeight": 32, "condition": "!tmp.s1" } },
         { "type": "WallHorizontal", "x": 314, "y": 208, "level": 2, "settings": { "size": { "x": 32, "y": 8 }, "mapId": 34, "leftEnd": "STOP", "rightEnd": "STOP", "collType": "NPBLOCK", "wallZHeight": 32, "condition": "!tmp.s1" } },
         { "type": "EventTrigger", "x": 375, "y": 138, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 38, "event": [{ "entity": { "player": true }, "action": [{ "type": "REDUCE_HP", "basedOn": "MAX_HP", "factor": 1 }], "type": "DO_ACTION" }], "eventType": "INTERRUPTABLE", "startCondition": "tmp.die", "triggerType": "ALWAYS", "name": "dieEvent", "loadCondition": true, "endCondition": "false" } },
@@ -42,8 +42,8 @@
                 "elevatorType": "cargoShip",
                 "condition": null,
                 "destinations": [
-                    { "label": { "de_DE": "", "en_US": "CrossedEyes test map", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "zMoveOffset": -48, "teleportMarker": "elevator1", "teleportMap": "crossedeyes/test", "activeCondition": "true" },
-                    { "label": { "de_DE": "", "en_US": "Door", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "zMoveOffset": -48, "teleportMarker": "door1", "teleportMap": "crossedeyes/test", "activeCondition": "null" }
+                    { "label": { "de_DE": "", "en_US": "Test map", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "zMoveOffset": -48, "teleportMarker": "elevator1", "teleportMap": "multibakery/dev", "activeCondition": "true" },
+                    { "label": { "de_DE": "", "en_US": "Door", "langUid": 0, "fr_FR": "", "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" }, "zMoveOffset": -48, "teleportMarker": "door1", "teleportMap": "multibakery/dev", "activeCondition": "null" }
                 ],
                 "blockEventCondition": "map.destroyBoxes",
                 "marker": "",
