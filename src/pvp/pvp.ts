@@ -278,14 +278,15 @@ prestart(() => {
         },
         onReset() {
             this.parent()
-
-            this.map.forEachPlayerInst(() => {
-                sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
-            })
+            if (!multi.server) return
 
             this.multiplayerPvp = false
             this.teams = []
             this.map = undefined as any
+
+            this.map.forEachPlayerInst(() => {
+                sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
+            })
             this.removeHpBars()
             this.removeRoundGuis()
         },

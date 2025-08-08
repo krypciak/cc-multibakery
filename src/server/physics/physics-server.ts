@@ -93,9 +93,9 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         if (window.crossnode && !window.crossnode.tests) startRepl()
 
-        if (!window.crossnode?.options.test) {
-            stagePvp()
-        }
+        // if (!window.crossnode?.options.test) {
+        //     stagePvp()
+        // }
     }
 
     async tryJoinClient(
