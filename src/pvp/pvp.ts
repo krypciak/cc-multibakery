@@ -88,7 +88,6 @@ prestart(() => {
         getOnlyTeamAlive() {
             const teamsAlive = this.teams.map(team => team.players.some(player => !player.isDefeated()))
             const aliveTeamCount = teamsAlive.reduce((acc, v) => acc + Number(v), 0)
-            assert(aliveTeamCount > 0)
 
             if (aliveTeamCount == 1) {
                 const winningTeam: PvpTeam = this.teams[teamsAlive.findIndex(alive => alive)]
@@ -112,10 +111,12 @@ prestart(() => {
         rearrangeHpBars() {
             for (let hpBars of Object.values(this.hpBars)) {
                 hpBars = hpBars.sort((a, b) => a.order - b.order)
+                let y = 5
                 for (let i = 0; i < hpBars.length; i++) {
                     const bar = hpBars[i]
-                    const y = i * 15 + 5
+                    if (bar.target.isDefeated()) continue
                     bar.setPos(bar.hook.pos.x, y)
+                    y += 15
                 }
             }
         },
@@ -187,6 +188,8 @@ prestart(() => {
             if (!this.multiplayerPvp) return this.parent(combatant)
 
             if (!this.isActive() || !(combatant instanceof dummy.DummyPlayer)) return false
+
+            this.rearrangeHpBars()
 
             const onlyTeamAlive = this.getOnlyTeamAlive()
             if (onlyTeamAlive) return this.showKO(onlyTeamAlive.party)
@@ -288,17 +291,20 @@ export async function stagePvp() {
         { name: '1', count: 1 },
         { name: '2', count: 1 },
         { name: '3', count: 1 },
+        { name: '4', count: 1 },
+        { name: '5', count: 1 },
     ]
     const winningPoints = 2
 
     const teams: PvpTeam[] = await Promise.all(
-        teamConfigs.map(async ({ name, count }) => {
+        teamConfigs.map(async ({ name, count }, _teamI) => {
             const players = await Promise.all(
                 new Array(count).fill(null).map(async (_, i) => {
                     const client = await multi.server.createAndJoinClient({
                         username: `${name}_${i}`,
                         inputType: 'clone',
                         remote: false,
+                        noShowInstance: !(_teamI == 0 && i == 0),
                     })
                     assert(client.player.dummy)
                     return client.player.dummy
