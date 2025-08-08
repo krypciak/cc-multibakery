@@ -7,6 +7,7 @@ import {
 } from '../../../server/physics/create-from-current-state'
 import { PhysicsServer } from '../../../server/physics/physics-server'
 import { ClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
+import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
 
 export function openManagerServerPopup(immediately?: boolean) {
     ig.multibakeryManageServerPopup ??= new multi.class.ManageServerPopup()
@@ -126,7 +127,7 @@ prestart(() => {
                             name: 'Ok',
                             async onPress() {
                                 dialog.closeMenu()
-                                const username = dialog.inputWrapper.inputField.getValueAsString()
+                                const username = dialog.getText()
 
                                 const joinData: ClientJoinData = {
                                     username,
@@ -150,7 +151,18 @@ prestart(() => {
                         const inputButton = new InputButton(ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE)
                         inputButton.pushConfig(buttons)
 
-                        const dialog = new multi.class.InputFieldDialog(200, 'Enter username', buttons)
+                        let dialog: multi.class.InputFieldDialog
+                        dialog = new multi.class.InputFieldDialog(
+                            200,
+                            'Enter username',
+                            generateRandomUsername(),
+                            buttons,
+                            text => {
+                                const isValid = isUsernameValid(text)
+                                dialog?.userButtons![0].setActive(isValid)
+                                return isValid
+                            }
+                        )
                         inputButton.setDialog(dialog)
                         dialog.openMenu()
                     },
@@ -195,32 +207,46 @@ declare global {
     namespace multi.class {
         interface InputFieldDialog extends modmanager.gui.MultiPageButtonBoxGui {
             inputWrapper: modmanager.gui.InputFieldWrapper
+
+            getText(this: this): string
         }
         interface InputFieldDialogConstructor extends ImpactClass<InputFieldDialog> {
-            new (width: number, title: string, buttons: MultiPageButtonGuiButtons): InputFieldDialog
+            new (
+                width: number,
+                title: string,
+                initialValue: string,
+                buttons: MultiPageButtonGuiButtons,
+                isValid?: InputFieldIsValidFunc,
+                setValueFunc?: (text: string) => void
+            ): InputFieldDialog
         }
         var InputFieldDialog: InputFieldDialogConstructor
     }
 }
 prestart(() => {
     multi.class.InputFieldDialog = modmanager.gui.MultiPageButtonBoxGui.extend({
-        init(width, title, buttons) {
+        init(width, title, initialValue, buttons, isValid, setValueFunc = () => {}) {
             this.parent(width, 70, buttons)
 
             this.setContent(title, [{ content: [''] }])
-            this.inputWrapper = new modmanager.gui.InputFieldWrapper(
-                generateRandomUsername(),
-                () => {},
-                width,
-                isUsernameValid
-            )
+            this.inputWrapper = new modmanager.gui.InputFieldWrapper(initialValue, setValueFunc, width, isValid)
             this.scrollContainer.scrollPane.removeChildGui(this.scrollContainer.scrollPane.scrollbarV!)
+
+            this.hook.pauseGui = true
+            this.hook.temporary = true
+            this.hook.zIndex = 9999999
         },
         openMenu() {
             this.parent()
             this.scrollContainer.setElement(this.inputWrapper)
             this.userButtonGroup!.addFocusGui(this.inputWrapper.inputField, 999, 999)
             this.scrollContainer.setPos(this.scrollContainer.hook.pos.x, this.scrollContainer.hook.pos.y + 1)
+        },
+        closeMenu() {
+            this.parent()
+        },
+        getText() {
+            return this.inputWrapper.inputField.getValueAsString()
         },
     })
 })

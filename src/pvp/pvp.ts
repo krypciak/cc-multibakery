@@ -3,9 +3,10 @@ import { addCombatantParty } from '../misc/combatant-party-api'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { runTasks, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
 
 import './gui'
-import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
+import './steps'
 
 export interface PvpTeam {
     name: string
@@ -22,8 +23,9 @@ declare global {
             map: CCMap
             hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
 
-            createPvpTeam(this: this, name: string, players: dummy.DummyPlayer[]): PvpTeam
-            startMultiplayerPvp(this: this, winPoints: number, teams: PvpTeam[]): void
+            clearPvpTeams(this: this): void
+            addPvpTeam(this: this, name: string, players: dummy.DummyPlayer[]): void
+            startMultiplayerPvp(this: this, winPoints: number): void
             removeRoundGuis(this: this): void
             getOnlyTeamAlive(this: this): PvpTeam | undefined
             getAllPlayers(this: this): dummy.DummyPlayer[]
@@ -39,21 +41,28 @@ declare global {
 
 prestart(() => {
     sc.PvpModel.inject({
-        createPvpTeam(name, players) {
-            const party = addCombatantParty(`pvpTeam_${name}`)
+        clearPvpTeams() {
+            assert(multi.server)
+            this.teams = []
+        },
+        addPvpTeam(name, players) {
+            assert(multi.server)
 
-            return {
+            const party = addCombatantParty(`pvpTeam_${name}`)
+            const team: PvpTeam = {
                 name,
                 party,
                 players,
             }
+
+            assert(this.teams)
+            this.teams.push(team)
         },
-        startMultiplayerPvp(winPoints, teams) {
-            assert(teams.length > 1)
+        startMultiplayerPvp(winPoints) {
+            assert(this.teams.length > 1)
             assert(multi.server)
 
             this.multiplayerPvp = true
-            this.teams = teams
             this.roundGuis = {}
             this.hpBars = {}
 
@@ -63,7 +72,7 @@ prestart(() => {
             this.points[sc.COMBATANT_PARTY.PLAYER] = 0
             this.points[sc.COMBATANT_PARTY.ENEMY] = 0
 
-            for (const team of teams) {
+            for (const team of this.teams) {
                 this.points[team.party] = 0
             }
 
@@ -302,61 +311,39 @@ export async function stagePvp() {
         { name: '4', count: 1 },
         { name: '5', count: 1 },
     ]
-    const winningPoints = 5
+    const winningPoints = 1
+    let masterPlayer!: dummy.DummyPlayer
 
-    const teams: PvpTeam[] = await Promise.all(
+    const teams = await Promise.all(
         teamConfigs.map(async ({ name, count }, _teamI) => {
             const players = await Promise.all(
                 new Array(count).fill(null).map(async (_, i) => {
+                    const isMaster = _teamI == 0 && i == 0
                     const client = await multi.server.createAndJoinClient({
                         username: `${name}_${i}`,
                         inputType: 'clone',
                         remote: false,
-                        noShowInstance: !(_teamI == 0 && i == 0),
+                        noShowInstance: !isMaster,
                     })
+                    if (isMaster) masterPlayer = client.player.dummy
+
                     assert(client.player.dummy)
                     return client.player.dummy
                 })
             )
-            return sc.pvp.createPvpTeam(name, players)
+            return { name, players }
         })
     )
 
-    const masterPlayer = teams[0].players[0]
     multi.server.masterUsername = masterPlayer.data.username
 
     const map = masterPlayer.getMap()
 
     await scheduleTask(map.inst, () => {
-        sc.pvp.startMultiplayerPvp(winningPoints, teams)
-        sc.pvp.startNextRound(true)
-
-        ig.game.spawnEntity(ig.ENTITY.EventTrigger, 0, 0, 0, {
-            startCondition: 'pvp.brake',
-            triggerType: 'ALWAYS',
-            name: 'pvpBrake',
-            eventType: 'PARALLEL',
-            endCondition: 'false',
-            event: [
-                //
-                { type: 'WAIT', ignoreSlowDown: false, time: 1 },
-                { type: 'PREPARE_PVP_ROUND', autoContinue: false },
-                { type: 'WAIT', ignoreSlowDown: false, time: 1 },
-                { type: 'START_PVP_ROUND' },
-            ],
-        })
-
-        ig.game.spawnEntity(ig.ENTITY.EventTrigger, 0, 0, 0, {
-            startCondition: 'pvp.finished',
-            triggerType: 'ALWAYS',
-            name: 'pvpEnd',
-            eventType: 'PARALLEL',
-            endCondition: 'false',
-            event: [
-                //
-                { type: 'WAIT', ignoreSlowDown: false, time: 0.5 },
-                { type: 'STOP_PVP_BATTLE' },
-            ],
-        })
+        sc.pvp.clearPvpTeams()
+        for (const { name, players } of teams) {
+            sc.pvp.addPvpTeam(name, players)
+        }
+        sc.pvp.startMultiplayerPvp(winningPoints)
     })
 }
