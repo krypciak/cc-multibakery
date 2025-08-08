@@ -36,45 +36,6 @@ prestart(() => {
 
 declare global {
     namespace ig.EVENT_STEP {
-        namespace ADD_MULTIPLAYER_PVP_TEAM {
-            interface Settings {
-                name: ig.Event.StringExpression
-                players: ig.Event.GetEntity[]
-            }
-        }
-        interface ADD_MULTIPLAYER_PVP_TEAM extends ig.EventStepBase {
-            name: ig.Event.StringExpression
-            players: ig.Event.GetEntity[]
-        }
-        interface ADD_MULTIPLAYER_PVP_TEAM_CONSTRUCTOR extends ImpactClass<ADD_MULTIPLAYER_PVP_TEAM> {
-            new (settings: ig.EVENT_STEP.ADD_MULTIPLAYER_PVP_TEAM.Settings): ADD_MULTIPLAYER_PVP_TEAM
-        }
-        var ADD_MULTIPLAYER_PVP_TEAM: ADD_MULTIPLAYER_PVP_TEAM_CONSTRUCTOR
-    }
-}
-
-prestart(() => {
-    ig.EVENT_STEP.ADD_MULTIPLAYER_PVP_TEAM = ig.EventStepBase.extend({
-        init(settings) {
-            this.name = settings.name
-            this.players = settings.players
-        },
-        start(_data, eventCall) {
-            assert(multi.server)
-
-            const name = ig.Event.getExpressionValue(this.name)
-            const players = this.players.map(player => {
-                const entity = ig.Event.getEntity(player, eventCall)
-                assert(entity instanceof dummy.DummyPlayer)
-                return entity
-            })
-            sc.pvp.addPvpTeam(name, players)
-        },
-    })
-})
-
-declare global {
-    namespace ig.EVENT_STEP {
         namespace CLEAR_MULTIPLAYER_PVP_TEAMS {
             interface Settings {}
         }
@@ -92,6 +53,77 @@ prestart(() => {
             assert(multi.server)
 
             sc.pvp.clearPvpTeams()
+        },
+    })
+})
+
+declare global {
+    namespace ig.EVENT_STEP {
+        namespace CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS {
+            interface Settings {
+                selectionPrefix: string
+            }
+        }
+        interface CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS extends ig.EventStepBase {
+            selectionPrefix: string
+        }
+        interface CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS_CONSTRUCTOR
+            extends ImpactClass<CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS> {
+            new (
+                settings: ig.EVENT_STEP.CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS.Settings
+            ): CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS
+        }
+        var CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS: CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS = ig.EventStepBase.extend({
+        init(settings) {
+            this.selectionPrefix = settings.selectionPrefix
+            assert(this.selectionPrefix)
+        },
+        start(_data, eventCall) {
+            assert(multi.server)
+            assert(eventCall)
+
+            eventCall.runForSelection(this.selectionPrefix, true, name => {
+                const entities = eventCall.getSelectedEntities(name)
+                const players = entities.filter(entity => entity instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]
+                if (players.length == 0) return
+                sc.pvp.addPvpTeam(name, players)
+            })
+        },
+    })
+})
+
+declare global {
+    namespace ig.EVENT_STEP {
+        namespace CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS {
+            interface Settings {}
+        }
+        interface CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS extends ig.EventStepBase {}
+        interface CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS_CONSTRUCTOR
+            extends ImpactClass<CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS> {
+            new (
+                settings: ig.EVENT_STEP.CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS.Settings
+            ): CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS
+        }
+        var CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS: CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS = ig.EventStepBase.extend({
+        start(_data, eventCall) {
+            assert(multi.server)
+            assert(eventCall)
+
+            for (const team of sc.pvp.teams) {
+                const selectionName = team.name
+
+                eventCall.selectEntities(team.players, selectionName)
+            }
         },
     })
 })

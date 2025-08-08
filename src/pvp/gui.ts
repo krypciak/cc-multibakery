@@ -80,7 +80,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
 
     clazz.inject({
         updateDrawables(renderer1) {
-            if (!sc.pvp.multiplayerPvp) return this.parent(renderer)
+            if (!sc.pvp.multiplayerPvp) return this.parent(renderer1)
 
             x = 0
             renderer = renderer1

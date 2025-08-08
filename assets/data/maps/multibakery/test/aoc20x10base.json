@@ -4,7 +4,16 @@
     "mapWidth": 34,
     "mapHeight": 25,
     "masterLevel": 0,
-    "attributes": { "bgm": "puzzle", "map-sounds": "", "mapStyle": "rhombus-puzzle", "weather": "RHOMBUS_DUNGEON", "area": "rhombus-dng", "saveMode": "ENABLED", "cameraInBounds": false, "npcRunners": "" },
+    "attributes": {
+        "bgm": "puzzle",
+        "map-sounds": "",
+        "mapStyle": "rhombus-puzzle",
+        "weather": "RHOMBUS_DUNGEON",
+        "area": "rhombus-dng",
+        "saveMode": "ENABLED",
+        "cameraInBounds": false,
+        "npcRunners": ""
+    },
     "screen": { "x": 0, "y": 0 },
     "entities": [],
     "layer": [

@@ -13,7 +13,7 @@ import './misc/disable-fkeys'
 import './client/menu/server-list-menu'
 import './client/menu/pause/pause-screen'
 import './pvp/pvp'
-import './misc/input-field-dialog-step'
+import './misc/steps/all'
 
 declare global {
     namespace multi {

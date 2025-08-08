@@ -2,6 +2,8 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 
+export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
+
 export function teleportPlayerToProperMarker(
     player: ig.ENTITY.Player | undefined,
     inputMarker: Nullable<string> | undefined,
@@ -12,8 +14,6 @@ export function teleportPlayerToProperMarker(
     if (!player) return marker
 
     if (!tpPos || tpPos.marker) {
-        type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(player: ig.ENTITY.Player): void }
-
         const markerLikes: MarkerLike[] = ig.game.shownEntities.filter(
             e => e && 'applyMarkerPosition' in e
         ) as MarkerLike[]

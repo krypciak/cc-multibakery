@@ -35,6 +35,7 @@ declare global {
             removeHpBars(this: this): void
             removeLink(this: this): void
             getPlayerTeam(this: this, player: dummy.DummyPlayer): PvpTeam | undefined
+            resetMultiState(this: this): void
         }
     }
 }
@@ -47,6 +48,7 @@ prestart(() => {
         },
         addPvpTeam(name, players) {
             assert(multi.server)
+            assert(players.length > 0)
 
             const party = addCombatantParty(`pvpTeam_${name}`)
             const team: PvpTeam = {
@@ -114,7 +116,7 @@ prestart(() => {
             this.rearrangeHpBars()
         },
         eraseHpBar(bar) {
-            this.hpBars[instanceinator.id].erase(bar)
+            this.hpBars[instanceinator.id]?.erase(bar)
             this.rearrangeHpBars()
         },
         rearrangeHpBars() {
@@ -174,6 +176,15 @@ prestart(() => {
             for (const team of this.teams) {
                 if (team.players.includes(player)) return team
             }
+        },
+        resetMultiState() {
+            this.removeHpBars()
+            this.removeRoundGuis()
+
+            this.multiplayerPvp = false
+            this.teams = []
+            this.points = {}
+            this.map = undefined as any
         },
 
         start(winPoints, enemies) {
@@ -264,6 +275,21 @@ prestart(() => {
             ig.game.varsChangedDeferred()
             this.releaseBlocking()
         },
+        // onVarAccess different team points??
+        onVarAccess(path, keys) {
+            if (keys[0] == 'pvp') {
+                if (keys[1] == 'teamCount') return this.teams.length
+            }
+            return this.parent(path, keys)
+        },
+        onPostUpdate() {
+            if (!this.multiplayerPvp) return this.parent()
+
+            if (this.state == 3) {
+                const onlyTeamAlive = this.getOnlyTeamAlive()
+                if (onlyTeamAlive) this.onPostKO(onlyTeamAlive.party)
+            }
+        },
         stop() {
             if (!this.multiplayerPvp) return this.parent()
 
@@ -274,30 +300,17 @@ prestart(() => {
                 sc.model.setCombatMode(false, true)
             }, true)
 
-            this.removeHpBars()
-        },
-        // onVarAccess different team points??
-        onPostUpdate() {
-            if (!this.multiplayerPvp) return this.parent()
-
-            if (this.state == 3) {
-                const onlyTeamAlive = this.getOnlyTeamAlive()
-                if (onlyTeamAlive) this.onPostKO(onlyTeamAlive.party)
-            }
+            this.resetMultiState()
         },
         onReset() {
             this.parent()
             if (!multi.server) return
 
-            this.multiplayerPvp = false
-            this.teams = []
-            this.map = undefined as any
-
             this.map.forEachPlayerInst(() => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
             })
-            this.removeHpBars()
-            this.removeRoundGuis()
+
+            this.resetMultiState()
         },
     })
 })
