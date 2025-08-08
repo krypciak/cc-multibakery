@@ -36,7 +36,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
         const text = new ig.TextBlock(sc.fontsystem.smallFont, team.name, {
             maxWidth: undefined,
         })
-        renderer.addDraw().setText(text, x, 0)
+        renderer.addText(text, x, 0)
         x += text.size.x
     }
 
@@ -157,6 +157,14 @@ prestart(() => {
             this.parent(immediately)
             if (!multi.server) return
             sc.pvp.eraseHpBar(this)
+        },
+        updateDrawables(renderer) {
+            this.parent(renderer)
+            if (!(this.target instanceof dummy.DummyPlayer)) return
+            const text = new ig.TextBlock(sc.fontsystem.tinyFont, `\\c[2]${this.target.data.username}\\c[0]`, {
+                maxWidth: undefined,
+            })
+            renderer.addText(text, 40, 0)
         },
     })
 })
