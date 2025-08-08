@@ -22,6 +22,8 @@ export function unsetNextTriggeredBy() {
 prestart(() => {
     ig.EventManager.inject({
         callEvent(event, runType, onStart, onEnd, input, callEntity, data) {
+            if (!multi.server) return this.parent(event, runType, onStart, onEnd, input, callEntity, data)
+
             const player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
             if (!player) return this.parent(event, runType, onStart, onEnd, input, callEntity, data)
 
