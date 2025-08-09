@@ -69,12 +69,9 @@ function registerOpts() {
             },
             headers: {
                 account: {
-                    info: {
-                        type: 'INFO',
-                        name: 'Username',
-                    },
                     clientLogin: {
                         type: 'INPUT_FIELD',
+                        name: 'Username',
                         init: defaultClientUsername,
                         changeEvent() {
                             if (Opts.clientLogin == defaultClientUsername) {
@@ -101,13 +98,9 @@ function registerOpts() {
                         changeEvent() {},
                         updateMenuOnChange: true,
                     },
-                    serverHttpPortInfo: {
-                        type: 'INFO',
-                        name: 'Server port (1025 - 65535)',
-                        hidden: (): boolean => !Opts.serverEnableNet,
-                    },
                     serverHttpPort: {
                         type: 'INPUT_FIELD',
+                        name: 'Server port (1025 - 65535)',
                         init: `${DEFAULT_HTTP_PORT}`,
                         description: 'Server port (1025 - 65535)',
                         isValid(text) {
@@ -119,24 +112,16 @@ function registerOpts() {
                         },
                         hidden: (): boolean => !Opts.serverEnableNet,
                     },
-                    serverTitleInfo: {
-                        type: 'INFO',
-                        name: 'Server title',
-                        hidden: (): boolean => !Opts.serverEnableNet,
-                    },
                     serverTitle: {
                         type: 'INPUT_FIELD',
+                        name: 'Server title',
                         init: `my server`,
                         description: 'Server title',
                         hidden: (): boolean => !Opts.serverEnableNet,
                     },
-                    serverDescriptionInfo: {
-                        type: 'INFO',
-                        name: 'Server description',
-                        hidden: (): boolean => !Opts.serverEnableNet,
-                    },
                     serverDescription: {
                         type: 'INPUT_FIELD',
+                        name: 'Server description',
                         init: `hello!`,
                         description: 'Server description',
                         hidden: (): boolean => !Opts.serverEnableNet,
