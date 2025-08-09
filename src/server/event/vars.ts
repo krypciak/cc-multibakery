@@ -10,7 +10,7 @@ declare global {
     }
 }
 
-function vatsNextSetByInject(
+function varsNextSetByInject(
     this: ig.Vars & { parent(path: string, value: unknown): void },
     path: string,
     value: unknown
@@ -28,8 +28,8 @@ prestart(() => {
             this.parent(mapName)
             this.varsSetBy = {}
         },
-        set: vatsNextSetByInject,
-        add: vatsNextSetByInject,
+        set: varsNextSetByInject,
+        add: varsNextSetByInject,
     })
 })
 
