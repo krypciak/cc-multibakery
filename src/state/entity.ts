@@ -21,6 +21,7 @@ import './ig_ENTITY_Enemy'
 import './ig_ENTITY_CombatantMarble'
 import './sc_ItemDropEntity'
 import './ig_ENTITY_Chest'
+import './ig_ENTITY_FloorSwitch'
 
 import './entity-hit-effect'
 

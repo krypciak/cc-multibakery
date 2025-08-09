@@ -95,7 +95,7 @@ prestart(() => {
             },
         })
     }
-    if (PHYSICS) {
+    if (PHYSICSNET) {
         ig.ENTITY.Ball.inject({
             setBallInfo(ballInfo, setFactors) {
                 if (!(multi.server instanceof RemoteServer)) this.parent(ballInfo, setFactors)

@@ -58,7 +58,7 @@ prestart(() => {
         },
     })
 
-    if (!PHYSICS || !PHYSICSNET) return
+    if (!PHYSICSNET) return
 
     sc.Combat.inject({
         showHitEffect(entity, hitPos, hitDegree, hitElement, shielded, critical, ignoreSounds, spriteFilter) {

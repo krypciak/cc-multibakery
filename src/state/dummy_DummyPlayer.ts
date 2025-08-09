@@ -152,7 +152,7 @@ prestart(() => {
             },
         })
     }
-    if (PHYSICS) {
+    if (PHYSICSNET) {
         sc.Combat.inject({
             showCharge(target, chargeLevelEffectName, element) {
                 if (!(multi.server instanceof PhysicsServer)) return this.parent(target, chargeLevelEffectName, element)
