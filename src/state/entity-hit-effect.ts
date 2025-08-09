@@ -58,11 +58,11 @@ prestart(() => {
         },
     })
 
-    if (!PHYSICS) return
+    if (!PHYSICS || !PHYSICSNET) return
 
     sc.Combat.inject({
         showHitEffect(entity, hitPos, hitDegree, hitElement, shielded, critical, ignoreSounds, spriteFilter) {
-            if (!(multi.server instanceof PhysicsServer))
+            if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer)
                 return this.parent(
                     entity,
                     hitPos,
