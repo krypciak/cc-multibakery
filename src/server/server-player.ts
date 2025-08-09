@@ -87,8 +87,10 @@ export class ServerPlayer {
         this.mapInteract?.onPreUpdate()
     }
 
-    getClient(): Client {
-        return this.dummy.getClient()
+    getClient(noAssert: true): Client | undefined
+    getClient(noAssert?: false): Client
+    getClient(noAssert?: any): Client | undefined {
+        return this.dummy.getClient(noAssert)
     }
 
     getMap(): CCMap {

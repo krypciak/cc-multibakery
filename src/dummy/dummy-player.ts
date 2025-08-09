@@ -32,7 +32,8 @@ declare global {
             itemConsumer: dummy.ItemConsumption
 
             getHeadIdx(this: this): number
-            getClient(this: this): Client
+            getClient(this: this, noAssert: true): Client | undefined
+            getClient(this: this, noAssert?: false): Client
             getMap(this: this): CCMap
         }
         interface DummyPlayerConstructor extends ImpactClass<DummyPlayer> {
@@ -71,9 +72,9 @@ prestart(() => {
             const playerName = this.model.config.name
             return sc.party.models[playerName].getHeadIdx()
         },
-        getClient() {
+        getClient(noAssert) {
             const client = multi.server.clients[this.data.username]
-            assert(client)
+            if (!noAssert) assert(client)
             return client
         },
         getMap() {

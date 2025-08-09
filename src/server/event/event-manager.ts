@@ -21,18 +21,17 @@ export function unsetNextTriggeredBy() {
 
 prestart(() => {
     ig.EventManager.inject({
-        callEvent(event, runType, onStart, onEnd, input, callEntity, data) {
-            if (!multi.server) return this.parent(event, runType, onStart, onEnd, input, callEntity, data)
+        callEvent(...args) {
+            if (!multi.server) return this.parent(...args)
 
             const player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
-            if (!player) return this.parent(event, runType, onStart, onEnd, input, callEntity, data)
+            if (!player) return this.parent(...args)
 
             assert(player instanceof dummy.DummyPlayer)
-            const client = player.getClient()
+            const client = player.getClient(true)
+            if (!client) return this.parent(...args)
 
-            return runTask(client.inst, () =>
-                ig.game.events.callEvent(event, runType, onStart, onEnd, input, callEntity, data)
-            )
+            return runTask(client.inst, () => ig.game.events.callEvent(...args))
         },
     })
 })

@@ -628,7 +628,6 @@
                 "endCondition": "false"
             }
         },
-        { "type": "Switch", "x": 857, "y": 1005, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 133, "name": "s_reloadmap", "variable": "tmp.reloadmap" } },
         { "type": "Switch", "x": 936, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 134, "name": "s_startMultiPvp", "variable": "tmp.startPvp" } },
         { "type": "Marker", "x": 896, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 135, "name": "pvp", "dir": "NORTH", "spawnCondition": "true" } },
         { "type": "Marker", "x": 1056, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 136, "name": "to_pvp_0", "dir": "NORTH", "spawnCondition": "true" } },

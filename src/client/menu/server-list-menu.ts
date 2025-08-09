@@ -115,6 +115,7 @@ prestart(() => {
         name: menuId,
     }
 }, 10)
+
 poststart(() => {
     if (!REMOTE) return
     ig.lang.labels.sc.gui.menu['menu-titles'][menuId] = 'Server list'
