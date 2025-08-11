@@ -1,5 +1,4 @@
 import { prestart } from '../plugin'
-import { RemoteServer } from '../server/remote/remote-server'
 import * as inputBackup from '../dummy/dummy-input'
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
@@ -77,20 +76,6 @@ prestart(() => {
     ig.ENTITY.Crosshair.forceRemotePhysics = true
     ig.ENTITY.CrosshairDot.forceRemotePhysics = true
 
-    if (REMOTE) {
-        ig.ENTITY.Crosshair.inject({
-            deferredUpdate() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
-
-                const backup = this.controller.updatePos
-                this.controller.updatePos = () => {}
-
-                this.parent()
-
-                this.controller.updatePos = backup
-            },
-        })
-    }
     if (PHYSICS) {
         ig.ENTITY.Crosshair.inject({
             setThrown() {
