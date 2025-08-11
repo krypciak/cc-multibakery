@@ -8,6 +8,12 @@ import './options'
 import './misc/modify-prototypes'
 import './tests'
 
+let postloadFunctions: [() => void | Promise<void>, number][]
+export function postload(func: () => void | Promise<void>, priority: number = 100) {
+    postloadFunctions ??= []
+    postloadFunctions.push([func, priority])
+}
+
 let prestartFunctions: [() => void | Promise<void>, number][]
 export function prestart(func: () => void | Promise<void>, priority: number = 100) {
     prestartFunctions ??= []
@@ -35,6 +41,10 @@ export default class Multibakery implements PluginClass {
 
     async prestart() {
         await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
+    }
+
+    async postload() {
+        await Promise.all((postloadFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
     }
 
     async poststart() {
