@@ -92,7 +92,7 @@
             }
         },
         { "type": "FloorSwitch", "x": 368, "y": 200, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 39, "name": "fs1", "switchType": "WHILE_ON_TOP", "variable": "tmp.die" } },
-        { "type": "Marker", "x": 944, "y": 464, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 40, "name": "entrance", "dir": "NORTH", "spawnCondition": "true" } },
+        { "type": "Marker", "x": 944, "y": 464, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 40, "name": "entrance", "dir": "NORTH" } },
         {
             "type": "Elevator",
             "x": 1261,
@@ -629,11 +629,11 @@
             }
         },
         { "type": "Switch", "x": 936, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 134, "name": "s_startMultiPvp", "variable": "tmp.startPvp" } },
-        { "type": "Marker", "x": 896, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 135, "name": "pvp", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 1056, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 136, "name": "to_pvp_0", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 1208, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 137, "name": "to_pvp_1", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 1056, "y": 1144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 138, "name": "to_pvp_2", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 1208, "y": 1144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 139, "name": "to_pvp_3", "dir": "NORTH", "spawnCondition": "true" } },
+        { "type": "Marker", "x": 896, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 135, "name": "pvp", "dir": "NORTH" } },
+        { "type": "Marker", "x": 1056, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 136, "name": "to_pvp_0", "dir": "NORTH" } },
+        { "type": "Marker", "x": 1208, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 137, "name": "to_pvp_1", "dir": "NORTH" } },
+        { "type": "Marker", "x": 1056, "y": 1144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 138, "name": "to_pvp_2", "dir": "NORTH" } },
+        { "type": "Marker", "x": 1208, "y": 1144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 139, "name": "to_pvp_3", "dir": "NORTH" } },
         {
             "type": "HiddenBlock",
             "x": 880,
@@ -662,10 +662,10 @@
             "level": 2,
             "settings": { "size": { "x": 48, "y": 48 }, "mapId": 143, "shape": "RECTANGLE", "heightShape": "NONE", "terrain": "", "collType": "NONE", "name": "pvp_team_select_2", "zHeight": 16 }
         },
-        { "type": "Marker", "x": 896, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 144, "name": "from_pvp_0", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 976, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 145, "name": "from_pvp_1", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 976, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 146, "name": "from_pvp_3", "dir": "NORTH", "spawnCondition": "true" } },
-        { "type": "Marker", "x": 896, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 147, "name": "from_pvp_2", "dir": "NORTH", "spawnCondition": "true" } },
+        { "type": "Marker", "x": 896, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 144, "name": "from_pvp_0", "dir": "NORTH" } },
+        { "type": "Marker", "x": 976, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 145, "name": "from_pvp_1", "dir": "NORTH" } },
+        { "type": "Marker", "x": 976, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 146, "name": "from_pvp_3", "dir": "NORTH" } },
+        { "type": "Marker", "x": 896, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 147, "name": "from_pvp_2", "dir": "NORTH" } },
         { "type": "Destructible", "x": 510, "y": 476, "level": 2, "settings": { "name": "", "desType": "boxMedium", "enemyInfo": null, "spawnCondition": null, "mapId": 89 } },
         { "type": "Destructible", "x": 507, "y": 517, "level": 2, "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 } },
         { "type": "Destructible", "x": 510, "y": 441, "level": 2, "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 } },
@@ -962,7 +962,7 @@
             "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage" } }
         },
         { "type": "Switch", "x": 744, "y": 200, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 150, "variable": "tmp.sideMsg0", "name": "switchSideCond0" } },
-        { "type": "Marker", "x": 352, "y": 256, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 151, "name": "puzzle", "dir": "NORTH", "spawnCondition": "true" } }
+        { "type": "Marker", "x": 352, "y": 256, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 151, "name": "puzzle", "dir": "NORTH" } }
     ],
     "layer": [
         {

@@ -104,7 +104,7 @@ prestart(() => {
             }
         },
     })
-    if (PHYSICS) {
+    if (PHYSICSNET) {
         sc.CombatProxyEntity.inject({
             destroy(type) {
                 if (multi.server instanceof PhysicsServer && !this.destroyType) {
@@ -145,12 +145,14 @@ declare global {
 }
 prestart(() => {
     sc.PROXY_TYPE.GENERIC.inject({
-        spawn(x, y, z, entity, dir, noAddStats) {
-            const proxy = this.parent(x, y, z, entity, dir, noAddStats)
-            proxy.proxyType = this.proxyType!
-            if (!proxy.proxyType) {
-                console.warn('sc.PROXY_TYPE.GENERIC#proxyType is undefined!')
-                debugger
+        spawn(...args) {
+            const proxy = this.parent(...args)
+            if (multi.server) {
+                proxy.proxyType = this.proxyType!
+                if (!proxy.proxyType) {
+                    console.warn('sc.PROXY_TYPE.GENERIC#proxyType is undefined!')
+                    debugger
+                }
             }
             return proxy
         },

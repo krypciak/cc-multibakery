@@ -33,12 +33,12 @@ prestart(() => {
         },
     })
 
-    if (!PHYSICS) return
+    if (!PHYSICSNET) return
 
     ig.Entity.inject({
         kill(levelChange) {
             this.parent(levelChange)
-            if (!this.netid || !(multi.server instanceof PhysicsServer)) return
+            if (!this.netid || !(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
             if (entityIgnoreDeath.has(getEntityTypeId(this.netid))) return
 
             ig.entityDeaths ??= []

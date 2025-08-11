@@ -1,4 +1,5 @@
 import { assert } from '../../misc/assert'
+import { addVarModifyListener } from '../../misc/var-set-event'
 import { prestart } from '../../plugin'
 
 declare global {
@@ -10,29 +11,23 @@ declare global {
     }
 }
 
-function varsNextSetByInject(
-    this: ig.Vars & { parent(path: string, value: unknown): void },
-    path: string,
-    value: unknown
-): void {
-    this.parent(path, value)
-    if (this.nextSetBy) {
-        this.varsSetBy[path] = this.nextSetBy
-        this.nextSetBy = undefined
-    }
-}
-
 prestart(() => {
     ig.Vars.inject({
-        onLevelChange(mapName) {
-            this.parent(mapName)
+        init() {
+            this.parent()
             this.varsSetBy = {}
         },
-        set: varsNextSetByInject,
-        add: varsNextSetByInject,
     })
 })
 
+addVarModifyListener(path => {
+    if (ig.vars.nextSetBy) {
+        ig.vars.varsSetBy[path] = ig.vars.nextSetBy
+        ig.vars.nextSetBy = undefined
+    }
+    const varInst = instanceinator.instances[ig.vars._instanceId]
+    if (varInst) varInst.ig.game._deferredVarChanged = ig.game._deferredVarChanged
+})
 export function setNextSetBy(entity: ig.Entity) {
     assert(!ig.vars.nextSetBy)
     assert(entity)

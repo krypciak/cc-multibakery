@@ -48,10 +48,12 @@ prestart(() => {
     sc.BallInfo.inject({
         spawn(x, y, z, entity, dir) {
             const ball = this.parent(x, y, z, entity, dir)
-            ball.proxyType = this.proxyType!
-            if (!ball.proxyType) {
-                console.warn('sc.BallInfo#proxyType is undefined!')
-                debugger
+            if (multi.server) {
+                ball.proxyType = this.proxyType!
+                if (!ball.proxyType) {
+                    console.warn('sc.BallInfo#proxyType is undefined!')
+                    debugger
+                }
             }
             return ball
         },

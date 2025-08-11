@@ -3,6 +3,7 @@ declare global {
 }
 
 import './entity'
+import './vars'
 
 declare global {
     namespace ig {

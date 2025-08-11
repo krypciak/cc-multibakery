@@ -241,7 +241,7 @@ prestart(() => {
         },
     })
 
-    if (!PHYSICS) return
+    if (!PHYSICSNET) return
     ig.ENTITY.Effect.inject({
         stop() {
             this.parent()
@@ -275,7 +275,7 @@ export function isParticleClass(clazz: ig.EntityConstructor): boolean {
 }
 
 prestart(() => {
-    if (!PHYSICS) return
+    if (!PHYSICSNET) return
 
     ig.EFFECT_ENTRY.COPY_SPRITE.inject({
         start(entity) {
