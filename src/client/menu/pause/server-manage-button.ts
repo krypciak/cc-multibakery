@@ -6,7 +6,7 @@ import {
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
 import { PhysicsServer } from '../../../server/physics/physics-server'
-import { ClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
+import { createClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
 
 export function openManagerServerPopup(immediately?: boolean) {
@@ -129,10 +129,10 @@ prestart(() => {
                                 dialog.closeMenu()
                                 const username = dialog.getText()
 
-                                const joinData: ClientJoinData = {
+                                const joinData = createClientJoinData({
                                     username,
                                     initialInputType: inputButton.inputType,
-                                }
+                                })
                                 const igBackup = ig
                                 const { ackData } = await multi.server.tryJoinClient(joinData, false)
                                 igBackup.game.scheduledTasks.push(() => {

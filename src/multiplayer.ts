@@ -1,6 +1,7 @@
 import { Server } from './server/server'
 import { assert } from './misc/assert'
-import { prestart } from './plugin'
+import { poststart, prestart } from './plugin'
+import { getStepCount } from './misc/steps/step-id'
 
 // import './misc/skip-title-screen'
 import './misc/entity-netid'
@@ -18,6 +19,8 @@ import './misc/steps/all'
 declare global {
     namespace multi {
         var server: Server
+        var stepCount: number
+
         function setServer(server: Server): void
         function destroy(): void
         function destroyAndStartLoop(): void
@@ -34,6 +37,7 @@ function initMultiplayer() {
         server: undefined as any,
         destroyOnNext: false,
         class: {} as any,
+        stepCount: 0,
         setServer(server: Server) {
             assert(!this.server)
             this.server = server
@@ -52,3 +56,6 @@ function initMultiplayer() {
 prestart(() => {
     global.multi = window.multi = initMultiplayer()
 }, 0)
+poststart(() => {
+    multi.stepCount = getStepCount()
+})

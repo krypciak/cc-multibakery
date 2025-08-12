@@ -103,6 +103,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
         const username = joinData.username
 
+        if (joinData.stepCount != multi.stepCount)
+            return { ackData: { status: joinData.stepCount > multi.stepCount ? 'step_count_high' : 'step_count_low' } }
         if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
         if (this.clients[username]) return { ackData: { status: 'username_taken' } }
 

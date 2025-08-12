@@ -3,7 +3,7 @@ import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../plugin'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'
-import { ClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
+import { createClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
 import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 
@@ -227,7 +227,10 @@ prestart(() => {
                 return sc.Dialogs.showErrorDialog('Unable to reach the server.')
             }
             const username = Opts.clientLogin
-            const joinData: ClientJoinData = { username, initialInputType: ig.input.currentDevice }
+            const joinData = createClientJoinData({
+                username,
+                initialInputType: ig.input.currentDevice,
+            })
             const resp = await tryJoinRemote(this.serverInfo, joinData)
             showTryNetJoinResponseDialog(joinData, resp)
         },

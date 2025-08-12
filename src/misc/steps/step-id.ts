@@ -80,3 +80,7 @@ function injectSteps() {
         return constructStepsRecursive(steps, stepNamespace, labeledSteps, [])!
     }
 }
+
+export function getStepCount(): number {
+    return Object.keys(ig.EVENT_STEP).length + Object.keys(ig.ACTION_STEP).length
+}
