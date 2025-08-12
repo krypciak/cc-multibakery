@@ -8,6 +8,7 @@ export function addVarModifyListener(func: VarModifyEventListener): void {
 }
 
 function inject(this: ig.Vars & { parent(path: string, value: unknown): void }, path: string, value: unknown): void {
+    if (!path) return this.parent(path, value)
     const oldValue = this.get(path)
     this.parent(path, value)
     if (oldValue !== value) {
