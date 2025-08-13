@@ -32,10 +32,14 @@ declare global {
             pushHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
             eraseHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
             rearrangeHpBars(this: this): void
-            removeHpBars(this: this): void
             removeLink(this: this): void
             getPlayerTeam(this: this, player: dummy.DummyPlayer): PvpTeam | undefined
             resetMultiState(this: this): void
+        }
+    }
+    namespace dummy {
+        interface DummyPlayer {
+            oldParty?: number
         }
     }
 }
@@ -76,6 +80,11 @@ prestart(() => {
 
             for (const team of this.teams) {
                 this.points[team.party] = 0
+
+                for (const player of team.players) {
+                    player.oldParty = player.party
+                    player.party = team.party
+                }
             }
 
             this.enemies = []
@@ -136,19 +145,6 @@ prestart(() => {
                 }
             )
         },
-        removeHpBars() {
-            runTasks(
-                Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
-                () => {
-                    const hpBars = this.hpBars[instanceinator.id]
-                    for (let i = hpBars.length - 1; i >= 0; i--) {
-                        const bar = hpBars[i]
-                        bar.remove()
-                    }
-                }
-            )
-            this.hpBars = {}
-        },
         onClientLink() {},
         onClientDestroy(client) {
             const player = client.player.dummy
@@ -178,7 +174,25 @@ prestart(() => {
             }
         },
         resetMultiState() {
-            this.removeHpBars()
+            for (const team of this.teams) {
+                for (const player of team.players) {
+                    assert(player.oldParty !== undefined)
+                    player.party = player.oldParty
+                }
+            }
+
+            runTasks(
+                Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
+                () => {
+                    const hpBars = this.hpBars[instanceinator.id]
+                    for (let i = hpBars.length - 1; i >= 0; i--) {
+                        const bar = hpBars[i]
+                        bar.remove()
+                    }
+                }
+            )
+            this.hpBars = {}
+
             this.removeRoundGuis()
 
             this.multiplayerPvp = false
@@ -318,11 +332,8 @@ prestart(() => {
 export async function stagePvp() {
     assert(multi.server instanceof PhysicsServer)
     const teamConfigs: { name: string; count: number }[] = [
-        { name: '1', count: 1 },
-        { name: '2', count: 1 },
-        { name: '3', count: 1 },
-        { name: '4', count: 1 },
-        { name: '5', count: 1 },
+        { name: '1', count: 2 },
+        { name: '2', count: 2 },
     ]
     const winningPoints = 1
     let masterPlayer!: dummy.DummyPlayer
