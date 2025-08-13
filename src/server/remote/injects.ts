@@ -7,7 +7,6 @@ prestart(() => {
 
     ig.EventManager.inject({
         update() {
-            // TODO: TEMP fix
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             this.clear()
         },

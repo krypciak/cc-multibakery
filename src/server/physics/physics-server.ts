@@ -54,11 +54,11 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 remote: false,
             })
             this.masterUsername = `lea_${1}`
-            await this.createAndJoinClient({
-                username: `lea_${2}`,
-                inputType: 'clone',
-                remote: false,
-            })
+            // await this.createAndJoinClient({
+            //     username: `lea_${2}`,
+            //     inputType: 'clone',
+            //     remote: false,
+            // })
             // await this.createAndJoinClient({
             //     username: `lea_${3}`,
             //     inputType: 'clone',
