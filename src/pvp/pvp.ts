@@ -27,6 +27,7 @@ declare global {
             addPvpTeam(this: this, name: string, players: dummy.DummyPlayer[]): void
             startMultiplayerPvp(this: this, winPoints: number): void
             removeRoundGuis(this: this): void
+            getPlayerInstanceRelation(this: this, player: dummy.DummyPlayer): 'same' | 'ally' | 'enemy'
             getOnlyTeamAlive(this: this): PvpTeam | undefined
             getAllPlayers(this: this): dummy.DummyPlayer[]
             pushHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
@@ -115,6 +116,15 @@ prestart(() => {
 
                 return winningTeam
             }
+        },
+        getPlayerInstanceRelation(player) {
+            const instancePlayer = ig.game.playerEntity
+            if (!ig.game.playerEntity) return 'enemy'
+
+            assert(instancePlayer instanceof dummy.DummyPlayer)
+            if (ig.game.playerEntity == player) return 'same'
+
+            return instancePlayer.party == player.party ? 'ally' : 'enemy'
         },
         getAllPlayers() {
             return this.teams.flatMap(team => team.players)
@@ -347,7 +357,7 @@ export async function stagePvp() {
                         username: `${name}_${i}`,
                         inputType: 'clone',
                         remote: false,
-                        noShowInstance: !isMaster,
+                        // noShowInstance: !isMaster,
                     })
                     if (isMaster) masterPlayer = client.player.dummy
 

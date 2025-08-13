@@ -147,11 +147,18 @@ declare global {
 
 prestart(() => {
     sc.SUB_HP_EDITOR.PVP.inject({
-        init(enemy) {
-            this.parent(enemy)
+        init(player) {
+            this.parent(player)
             if (!multi.server) return
+            assert(player instanceof dummy.DummyPlayer)
 
             sc.pvp.pushHpBar(this)
+
+            const playerInstanceRelation = sc.pvp.getPlayerInstanceRelation(player)
+            if (playerInstanceRelation == 'same' || playerInstanceRelation == 'ally') {
+                this.lowerColor = '#7aff7a'
+                this.upperColor = '#12d711'
+            }
         },
         remove(immediately) {
             this.parent(immediately)
