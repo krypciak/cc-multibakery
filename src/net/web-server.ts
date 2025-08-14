@@ -39,8 +39,7 @@ export class PhysicsHttpServer {
 
         let ccbundlerHandleFunction: HandleFunction | undefined
         if (ccbundler) {
-            const ccbundlerHttpModule =
-                PHYSICS && PHYSICSNET && (await import('cc-bundler/src/http-server/http-module'))
+            const ccbundlerHttpModule = PHYSICSNET && (await import('cc-bundler/src/http-server/http-module'))
 
             ccbundlerHttpModule.setAllowedDbs([
                 'https://raw.githubusercontent.com/CCDirectLink/CCModDB/stable',
@@ -51,7 +50,7 @@ export class PhysicsHttpServer {
             ccbundlerHandleFunction = ccbundlerHttpModule.handleFunction
         }
 
-        const { createServer } = PHYSICS && PHYSICSNET && (await import('http-server'))
+        const { createServer } = PHYSICSNET && (await import('http-server'))
         const httpServer = createServer({
             root: httpRoot,
             cache: 60 * 60 * 24,

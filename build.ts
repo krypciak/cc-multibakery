@@ -31,6 +31,8 @@ async function run(
         dropAssert = false,
     }: Options
 ) {
+    if (!physics) physicsnet = false
+
     const outputFile = 'plugin.js'
 
     const commonOptions = {

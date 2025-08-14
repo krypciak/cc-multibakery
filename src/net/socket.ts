@@ -53,11 +53,11 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     async start() {
         assert(PHYSICS)
         assert(PHYSICSNET)
-        if (!PHYSICS || !PHYSICSNET) return
+        if (!PHYSICSNET) return
         process.on('exit', () => this.stop())
         window.addEventListener('beforeunload', () => this.stop())
 
-        const { Server } = PHYSICS && PHYSICSNET && (await import('socket.io'))
+        const { Server } = PHYSICSNET && (await import('socket.io'))
         this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
             cors: {
