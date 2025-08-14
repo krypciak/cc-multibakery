@@ -156,8 +156,8 @@ prestart(() => {
                 this.setAlign(ig.GUI_ALIGN.X_LEFT, ig.GUI_ALIGN.Y_BOTTOM)
                 this.setPos(17, this.hook.pos.y)
 
-                this.lowerColor = '#7aff7a'
-                this.upperColor = '#12d711'
+                this.lowerColor = '#12d711'
+                this.upperColor = '#7aff7a'
             }
 
             this.usernameText = new ig.TextBlock(sc.fontsystem.tinyFont, `\\c[3]${player.data.username}\\c[0]`, {
@@ -179,7 +179,6 @@ prestart(() => {
                 renderer.addColor('#000000', x - 3, y, 2, 2)
                 renderer.addGfx(this.spBGPatch.gfx, x + w, y, 20, 128, 10, 7)
                 renderer.addText(this.usernameText, x, y)
-
             }
         },
         _isHpBarVisible() {
