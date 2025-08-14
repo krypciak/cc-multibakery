@@ -60,6 +60,14 @@ function registerOpts() {
                         },
                     },
                 },
+                combat: {
+                    hideClientPvpHpBar: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Hide your pvp hp bar',
+                        description: 'Hide your own pvp hp bar',
+                    },
+                },
             },
         },
         account: {

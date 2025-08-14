@@ -1,6 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { PvpTeam } from './pvp'
+import { Opts } from '../options'
 
 import './combatant-gui-fix'
 
@@ -17,12 +18,6 @@ prestart(() => {
         },
     })
 })
-
-declare global {
-    namespace sc.CombatUpperHud.CONTENT_GUI {
-        interface PVP {}
-    }
-}
 
 let injectedIntoPvpUpperGui = false
 function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUCTOR) {
@@ -138,6 +133,7 @@ declare global {
     namespace sc.SUB_HP_EDITOR {
         interface PVP {
             order: number
+            relation: ReturnType<sc.PvpModel['getPlayerInstanceRelation']>
         }
     }
     namespace ig {
@@ -154,8 +150,11 @@ prestart(() => {
 
             sc.pvp.pushHpBar(this)
 
-            const playerInstanceRelation = sc.pvp.getPlayerInstanceRelation(player)
-            if (playerInstanceRelation == 'same' || playerInstanceRelation == 'ally') {
+            this.relation = sc.pvp.getPlayerInstanceRelation(player)
+            if (this.relation == 'same' || this.relation == 'ally') {
+                this.setAlign(ig.GUI_ALIGN.X_LEFT, ig.GUI_ALIGN.Y_BOTTOM)
+                this.setPos(17, this.hook.pos.y)
+
                 this.lowerColor = '#7aff7a'
                 this.upperColor = '#12d711'
             }
@@ -176,7 +175,7 @@ prestart(() => {
         _isHpBarVisible() {
             if (!sc.pvp.multiplayerPvp) return this.parent()
 
-            if (this.target.isDefeated()) return false
+            if (this.target.isDefeated() || (this.relation == 'same' && Opts.hideClientPvpHpBar)) return false
             return this.parent()
         },
     })

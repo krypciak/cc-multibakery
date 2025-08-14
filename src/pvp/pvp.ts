@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { addCombatantParty } from '../misc/combatant-party-api'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { runTasks, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTasks, scheduleTask, wait } from 'cc-instanceinator/src/inst-util'
 import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
 
 import './gui'
@@ -144,13 +144,20 @@ prestart(() => {
                 () => {
                     const hpBars = this.hpBars[instanceinator.id]
                     hpBars.sort((a, b) => a.order - b.order)
-                    let y = 5
+                    let enemyY = 5
+                    let allyY = 5
 
                     for (let i = 0; i < hpBars.length; i++) {
                         const bar = hpBars[i]
-                        if (bar.target.isDefeated()) continue
-                        bar.setPos(bar.hook.pos.x, y)
-                        y += 15
+                        if (!bar._isHpBarVisible()) continue
+
+                        if (bar.relation == 'enemy') {
+                            bar.setPos(bar.hook.pos.x, enemyY)
+                            enemyY += 15
+                        } else {
+                            bar.setPos(bar.hook.pos.x, allyY)
+                            allyY += 15
+                        }
                     }
                 }
             )
@@ -319,12 +326,15 @@ prestart(() => {
 
             this.state = 0
 
+            /* wait for sc.CombatUpperHud.CONTENT_GUI.PVP to hide */
+            wait(this.map.inst, 1).then(() => {
+                this.resetMultiState()
+            })
+
             this.map.forEachPlayerInst(() => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
                 sc.model.setCombatMode(false, true)
             }, true)
-
-            this.resetMultiState()
         },
         onReset() {
             this.parent()

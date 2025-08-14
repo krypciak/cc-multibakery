@@ -6,7 +6,7 @@ import { prestart } from '../plugin'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import {
     createClientConnectionInfoLabel,
     createClientNetworkPacketTrafficLabel,
@@ -308,7 +308,7 @@ prestart(() => {
                 // console.log('passing ', findClassName(model), msg, data)
                 const inst = instanceinator.instances[o._instanceId]
                 if (inst) {
-                    scheduleTask(inst, () => {
+                    runTask(inst, () => {
                         o.modelChanged(model, message, data)
                     })
                 } else model.observers.erase(o)
