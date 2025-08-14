@@ -36,6 +36,7 @@ declare global {
             removeLink(this: this): void
             getPlayerTeam(this: this, player: dummy.DummyPlayer): PvpTeam | undefined
             resetMultiState(this: this): void
+            removePvpGuis(this: this): void
         }
     }
     namespace dummy {
@@ -198,6 +199,12 @@ prestart(() => {
                 }
             }
 
+            this.multiplayerPvp = false
+            this.teams = []
+            this.points = {}
+            this.map = undefined as any
+        },
+        removePvpGuis() {
             runTasks(
                 Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
                 () => {
@@ -211,11 +218,6 @@ prestart(() => {
             this.hpBars = {}
 
             this.removeRoundGuis()
-
-            this.multiplayerPvp = false
-            this.teams = []
-            this.points = {}
-            this.map = undefined as any
         },
 
         start(winPoints, enemies) {
@@ -326,6 +328,7 @@ prestart(() => {
 
             this.state = 0
 
+            this.removePvpGuis()
             /* wait for sc.CombatUpperHud.CONTENT_GUI.PVP to hide */
             wait(this.map.inst, 1).then(() => {
                 this.resetMultiState()
@@ -344,6 +347,7 @@ prestart(() => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
             })
 
+            this.removePvpGuis()
             this.resetMultiState()
         },
     })
