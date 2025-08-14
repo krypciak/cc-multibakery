@@ -140,5 +140,5 @@ const obj = Object.fromEntries(
 if (process.argv[2] == 'build') {
     await run('build', obj)
 } else if (process.argv[2] == 'watch') {
-    await run('watch', {})
+    await run('watch', obj)
 }
