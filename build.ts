@@ -1,7 +1,6 @@
 import * as esbuild from 'esbuild'
 import * as fs from 'fs'
 
-
 interface Options {
     sourcemap?: boolean
     physics?: boolean
@@ -19,28 +18,23 @@ interface Options {
 async function run(
     type: 'build' | 'watch',
     {
-        sourcemap,
-        physics,
-        physicsnet,
-        remote,
-        browser,
-        minifySyntax,
-        minifyWhitespace,
-        minifyIdentifiers,
-        extraTreeShaking,
-        target,
-        dropAssert,
+        sourcemap = true,
+        physics = true,
+        physicsnet = true,
+        remote = true,
+        browser = false,
+        minifySyntax = false,
+        minifyWhitespace = false,
+        minifyIdentifiers = false,
+        extraTreeShaking = false,
+        target = 'es2018',
+        dropAssert = false,
     }: Options
 ) {
     const outputFile = 'plugin.js'
-    remote ??= true
-    physics ??= true
-    physicsnet ??= true
-    browser ??= false
-    sourcemap ??= true
 
     const commonOptions = {
-        target: target ?? 'es2018',
+        target,
         platform: 'node',
         format: 'esm',
         logOverride: { bigint: 'silent' },
