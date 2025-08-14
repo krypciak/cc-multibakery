@@ -134,6 +134,7 @@ declare global {
         interface PVP {
             order: number
             relation: ReturnType<sc.PvpModel['getPlayerInstanceRelation']>
+            usernameText: ig.TextBlock
         }
     }
     namespace ig {
@@ -158,6 +159,10 @@ prestart(() => {
                 this.lowerColor = '#7aff7a'
                 this.upperColor = '#12d711'
             }
+
+            this.usernameText = new ig.TextBlock(sc.fontsystem.tinyFont, `\\c[3]${player.data.username}\\c[0]`, {
+                maxWidth: undefined,
+            })
         },
         remove(immediately) {
             this.parent(immediately)
@@ -166,11 +171,16 @@ prestart(() => {
         },
         updateDrawables(renderer) {
             this.parent(renderer)
-            if (!(this.target instanceof dummy.DummyPlayer)) return
-            const text = new ig.TextBlock(sc.fontsystem.tinyFont, `\\c[2]${this.target.data.username}\\c[0]`, {
-                maxWidth: undefined,
-            })
-            renderer.addText(text, 40, 0)
+            if (this.usernameText) {
+                const x = 37
+                const y = -8
+                const { x: w, y: h } = this.usernameText.size
+                renderer.addColor('#000000', x - 1, y, w + 1, h - 1)
+                renderer.addColor('#000000', x - 3, y, 2, 2)
+                renderer.addGfx(this.spBGPatch.gfx, x + w, y, 20, 128, 10, 7)
+                renderer.addText(this.usernameText, x, y)
+
+            }
         },
         _isHpBarVisible() {
             if (!sc.pvp.multiplayerPvp) return this.parent()
