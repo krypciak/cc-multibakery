@@ -83,6 +83,13 @@ poststart(() => {
                         iconPath: './assets/mods/cc-multibakery/icon/icon.png',
                     },
                 },
+                defalutMap: {
+                    // map: 'multibakery/dev',
+                    map: 'rhombus-dng/room-1',
+                    marker: 'entrance',
+                    // marker: 'puzzle',
+                    // marker: 'pvp',
+                },
             })
         )
         multi.server.start()

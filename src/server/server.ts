@@ -16,6 +16,10 @@ export interface ServerSettings {
     disableMapDisplayCameraMovement?: boolean
     displayClientInstances?: boolean
     displayRemoteClientInstances?: boolean
+    defalutMap?: {
+        map: string
+        marker?: string
+    }
 
     // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
@@ -27,7 +31,7 @@ export interface ClientJoinData {
 }
 export function createClientJoinData(options: Omit<ClientJoinData, 'stepCount'>): ClientJoinData {
     return Object.assign(options, {
-        stepCount: multi.stepCount
+        stepCount: multi.stepCount,
     })
 }
 export function isClientJoinData(data: unknown): data is ClientJoinData {
@@ -157,8 +161,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         await client.init()
         await this.joinClient(client)
-        const mapName = settings.mapName ?? 'multibakery/dev' // 'rhombus-dng/room-1'
-        const marker = 'pvp' // 'puzzle' //'entrance'
+        const mapName = settings.mapName ?? this.settings.defalutMap?.map ?? 'multibakery/dev'
+        const marker = this.settings.defalutMap?.marker ?? 'entrance'
         await client.teleport(mapName, marker)
 
         return client
