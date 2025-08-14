@@ -8,11 +8,11 @@ import { PhysicsHttpServer } from '../../net/web-server'
 import { Client } from '../../client/client'
 import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../../options'
+import { stagePvp } from '../../pvp/pvp'
 
 import './physics-server-sender'
-import { stagePvp } from '../../pvp/pvp'
 
 export type PhysicsServerConnectionSettings = {
     httpPort: number
@@ -155,7 +155,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 continue
             }
             if (client.inst.ig.inPauseScreen) {
-                scheduleTask(client.inst, () => sc.model.enterRunning())
+                runTask(client.inst, () => sc.model.enterRunning())
             }
 
             if (packet.input) {

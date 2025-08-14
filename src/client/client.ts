@@ -6,7 +6,7 @@ import { prestart } from '../plugin'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
-import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import {
     createClientConnectionInfoLabel,
     createClientNetworkPacketTrafficLabel,
@@ -187,7 +187,7 @@ export class Client {
         csc.model.player = this.player.dummy.model
         csc.pvp = msc.pvp
 
-        await scheduleTask(this.inst, () => {
+        runTask(this.inst, () => {
             sc.model.enterNewGame()
             sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
@@ -206,7 +206,7 @@ export class Client {
 
             sc.model.enterGame()
         })
-        await scheduleTask(map.inst, () => {
+        runTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
                 if (client instanceof Client) {
                     client.player.dummy.model.updateStats()

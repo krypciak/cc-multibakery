@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { addCombatantParty } from '../misc/combatant-party-api'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { runTasks, scheduleTask, wait } from 'cc-instanceinator/src/inst-util'
+import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
 import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
 
 import './gui'
@@ -93,18 +93,18 @@ prestart(() => {
 
             this.map = this.teams[0].players[0].getMap()
 
-            this.map.forEachPlayerInst(() => {
+            runTasks(this.map.getAllInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
                 sc.model.setCombatMode(true, true)
-            }, true)
+            })
 
             this.map.onLinkChange.push(this)
         },
         removeRoundGuis() {
-            this.map.forEachPlayerInst(() => {
+            runTasks(this.map.getAllInstances(true), () => {
                 const id = instanceinator.id
                 this.roundGuis[id]?.remove()
-            }, true)
+            })
             this.roundGuis = {}
         },
         getOnlyTeamAlive() {
@@ -263,10 +263,10 @@ prestart(() => {
             this.state = 3
             ig.game.varsChangedDeferred()
 
-            this.map.forEachPlayerInst(() => {
+            runTasks(this.map.getAllInstances(true), () => {
                 const koGui = new sc.PvpKoGui()
                 ig.gui.addGuiElement(koGui)
-            }, true)
+            })
 
             return sc.DRAMATIC_EFFECT[points == this.winPoints ? 'PVP_FINAL_KO' : 'PVP_KO']
         },
@@ -287,11 +287,11 @@ prestart(() => {
             this.round += 1
 
             this.roundGuis = Object.fromEntries(
-                this.map.forEachPlayerInst(() => {
+                runTasks(this.map.getAllInstances(true), () => {
                     const roundGui = new sc.PvpRoundGui(this.round, autoContinue)
                     ig.gui.addGuiElement(roundGui)
                     return [instanceinator.id, roundGui]
-                }, true)
+                })
             )
 
             this.blocking = true
@@ -334,16 +334,16 @@ prestart(() => {
                 this.resetMultiState()
             })
 
-            this.map.forEachPlayerInst(() => {
+            runTasks(this.map.getAllInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
                 sc.model.setCombatMode(false, true)
-            }, true)
+            })
         },
         onReset() {
             this.parent()
             if (!multi.server) return
 
-            this.map.forEachPlayerInst(() => {
+            runTasks(this.map.getAllInstances(), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
             })
 
@@ -387,7 +387,7 @@ export async function stagePvp() {
 
     const map = masterPlayer.getMap()
 
-    await scheduleTask(map.inst, () => {
+    runTask(map.inst, () => {
         sc.pvp.clearPvpTeams()
         for (const { name, players } of teams) {
             sc.pvp.addPvpTeam(name, players)

@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, } from 'cc-instanceinator/src/inst-util'
 import { Client } from './client'
 
 function getGamepadManager(client: Client) {
@@ -19,7 +19,7 @@ function clearGamepad(client: Client, startWait: boolean) {
 }
 
 function waitForGamepad(client: Client) {
-    scheduleTask(client.inst, () => {
+    runTask(client.inst, () => {
         sc.inputForcer.setEntry('WAIT_FOR_GAMEPAD', 'Waiting for gamepad', ' ', ' ')
     })
     multi.class.gamepadAssigner
@@ -36,7 +36,7 @@ export function forceGamepad(client: Client) {
 }
 
 export function clearForceGamepad(client: Client) {
-    scheduleTask(client.inst, () => {
+    runTask(client.inst, () => {
         ig.gamepad.activeGamepads[0]?.destroy?.()
         sc.inputForcer.clearEntry()
         clearGamepad(client, false)

@@ -1,4 +1,4 @@
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { OnLinkChange } from '../server/ccmap/ccmap'
@@ -27,7 +27,7 @@ prestart(() => {
             assert(map)
 
             this.statusGuis = {}
-            map.forEachPlayerInst(() => this.createStatusGui())
+            runTasks(map.getAllInstances(), () => this.createStatusGui())
             this.statusGuis[instanceinator.id] = this.statusGui
 
             const self = this

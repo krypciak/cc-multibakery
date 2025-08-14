@@ -1,7 +1,6 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
-import { Client } from './client'
+import { runTask, runTasks, scheduleTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../plugin'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
 
@@ -71,33 +70,28 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
 }
 
 prestart(() => {
-    function getClients(): Client[] {
-        if (!ig.ccmap) return []
-        return ig.ccmap.players.map(player => player.getClient())
-    }
     sc.MapInteract.inject({
         addEntry(entry) {
             this.parent(entry)
 
-            for (const client of getClients()) {
-                scheduleTask(client.inst, () => {
-                    const newEntry = cloneMapInteractEntry(entry)
-                    if (newEntry) sc.mapInteract.addEntry(newEntry)
-                })
-            }
+            if (!ig.ccmap) return
+
+            scheduleTasks(ig.ccmap.getAllInstances(), () => {
+                const newEntry = cloneMapInteractEntry(entry)
+                if (newEntry) sc.mapInteract.addEntry(newEntry)
+            })
         },
         removeEntry(entry) {
             if (this.entries.indexOf(entry) == -1) return
             this.parent(entry)
 
-            for (const client of getClients()) {
-                assert(ig.ccmap)
-                scheduleTask(client.inst, () => {
-                    const clientEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
-                    assert(clientEntry)
-                    sc.mapInteract.removeEntry(clientEntry)
-                })
-            }
+            if (!ig.ccmap) return
+
+            runTasks(ig.ccmap.getAllInstances(), () => {
+                const clientEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
+                assert(clientEntry)
+                sc.mapInteract.removeEntry(clientEntry)
+            })
         },
         onPreUpdate() {
             if (!multi.server || ig.ccmap || !ig.client || !ig.client.player.dummy) return this.parent()
@@ -120,17 +114,13 @@ prestart(() => {
             })
         },
         onEventStart() {
-            if (this._instanceId == instanceinator.id) return this.parent()
-
-            scheduleTask(instanceinator.instances[this._instanceId], () => {
-                this.onEventStart()
+            runTask(instanceinator.instances[this._instanceId], () => {
+                this.parent()
             })
         },
         onEventEnd() {
-            if (this._instanceId == instanceinator.id) return this.parent()
-
-            scheduleTask(instanceinator.instances[this._instanceId], () => {
-                this.onEventEnd()
+            runTask(instanceinator.instances[this._instanceId], () => {
+                this.parent()
             })
         },
     })
@@ -142,7 +132,7 @@ prestart(() => {
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {
                 if (this.textGui.textBlock.isFinished()) {
-                    scheduleTask(map.inst, () => {
+                    runTask(map.inst, () => {
                         this.xenoDialog._showNextMessage()
                     })
                 } else {
@@ -154,9 +144,8 @@ prestart(() => {
     })
     ig.ENTITY.NPC.inject({
         updateNpcState(...args) {
-            if (instanceinator.id == this._instanceId) return this.parent(...args)
-            scheduleTask(instanceinator.instances[this._instanceId], () => {
-                this.updateNpcState(...args)
+            runTask(instanceinator.instances[this._instanceId], () => {
+                this.parent(...args)
             })
         },
     })

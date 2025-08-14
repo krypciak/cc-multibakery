@@ -7,7 +7,7 @@ import { setDataFromLevelData } from './data-load'
 import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import { Client } from '../../client/client'
-import { scheduleTask, runTasks, runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
 
 declare global {
@@ -60,9 +60,9 @@ export class CCMap implements GameLoopUpdateable {
         const levelData = await levelDataPromise
         this.rawLevelData = levelData
 
-        await scheduleTask(this.inst, async () => {
+        await runTask(this.inst, async () => {
             await setDataFromLevelData.call(ig.game, this.name, levelData)
-            await scheduleTask(this.inst, () => {
+            runTask(this.inst, () => {
                 sc.model.enterNewGame()
                 sc.model.enterGame()
 
@@ -139,14 +139,10 @@ export class CCMap implements GameLoopUpdateable {
         })
     }
 
-    private getAllInstances(includeMapInst?: boolean) {
+    getAllInstances(includeMapInst?: boolean) {
         const insts = this.players.map(player => player.getClient().inst)
         if (includeMapInst) insts.push(this.inst)
         return insts
-    }
-
-    forEachPlayerInst<T>(func: () => T, includeMapInst?: boolean): T[] {
-        return runTasks(this.getAllInstances(includeMapInst), func)
     }
 
     destroy() {

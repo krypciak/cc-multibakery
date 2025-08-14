@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
 
@@ -76,7 +76,7 @@ prestart(() => {
 
             const destMapName = this.map.replace(/\./g, '/')
 
-            scheduleTask(multi.server.serverInst, async () => {
+            runTask(multi.server.serverInst, async () => {
                 await client.teleport(destMapName, this.marker)
             })
         },

@@ -1,4 +1,4 @@
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../plugin'
 
 type Layer = keyof typeof ig.MAP
@@ -126,7 +126,7 @@ prestart(() => {
             }
             if (success) this.loaded = true
             else this.failed = true
-            scheduleTask(instanceinator.instances[this._instanceId], () => {
+            runTask(instanceinator.instances[this._instanceId], () => {
                 this.loadingFinished(success)
             })
         },

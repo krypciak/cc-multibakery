@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
 import { CCMap, OnLinkChange } from './ccmap'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { ServerPlayer } from '../server-player'
 
 export class CCMapDisplay implements OnLinkChange {
@@ -40,10 +40,10 @@ export class CCMapDisplay implements OnLinkChange {
         }
     }
 
-    async setPosCameraHandle(pos: Vec2) {
+    setPosCameraHandle(pos: Vec2) {
         if (!multi.server.settings.displayMaps) return
 
-        await scheduleTask(this.map.inst, () => {
+        runTask(this.map.inst, () => {
             const prev = this.camera
             this.cameraTarget = new ig.Camera.PosTarget(pos)
             this.camera = new ig.Camera.TargetHandle(this.cameraTarget, 0, 0)
@@ -56,8 +56,8 @@ export class CCMapDisplay implements OnLinkChange {
         new dummy.BoxGuiAddon.Menu(ig.game)
     }
 
-    private async setEntityCameraHandle(e: ig.Entity) {
-        await scheduleTask(this.map.inst, () => {
+    private setEntityCameraHandle(e: ig.Entity) {
+        runTask(this.map.inst, () => {
             const prev = this.camera
             this.cameraTarget = new ig.Camera.EntityTarget(e)
             this.camera = new ig.Camera.TargetHandle(this.cameraTarget, 0, 0)
@@ -65,9 +65,9 @@ export class CCMapDisplay implements OnLinkChange {
         })
     }
 
-    async setPlayerCameraHandle(player: ServerPlayer) {
+    setPlayerCameraHandle(player: ServerPlayer) {
         assert(player)
-        await this.setEntityCameraHandle(player.dummy)
+        this.setEntityCameraHandle(player.dummy)
     }
 
     onClientLink() {

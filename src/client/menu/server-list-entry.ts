@@ -5,7 +5,7 @@ import { prestart } from '../../plugin'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'
 import { createClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 interface ServerImageConfig {
     pathOrData: string | HTMLImageElement
@@ -145,7 +145,7 @@ prestart(() => {
         async updateIcon() {
             const id = instanceinator.id
             const config = await this.getIconConfig()
-            await scheduleTask(instanceinator.instances[id], () => {
+            runTask(instanceinator.instances[id], () => {
                 this.setIcon(config)
             })
         },

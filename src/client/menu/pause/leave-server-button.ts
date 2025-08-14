@@ -2,7 +2,7 @@ import { prestart } from '../../../plugin'
 import { assert } from '../../../misc/assert'
 import { PhysicsServer } from '../../../server/physics/physics-server'
 import { closePhysicsServerAndSaveState } from '../../../server/physics/create-from-current-state'
-import { scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace sc {
@@ -51,7 +51,7 @@ prestart(() => {
                                 closePhysicsServerAndSaveState()
                             } else {
                                 const client = ig.client
-                                scheduleTask(multi.server.serverInst, () => {
+                                runTask(multi.server.serverInst, () => {
                                     multi.server.leaveClient(client)
                                 })
                             }
