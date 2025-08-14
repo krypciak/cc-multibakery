@@ -1,8 +1,8 @@
 import { prestart } from '../plugin'
-import * as inputBackup from '../dummy/dummy-input'
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { isSameAsLast } from './state-util'
+import { inputBackup } from '../dummy/dummy-input'
 
 declare global {
     namespace ig.ENTITY {
@@ -26,9 +26,9 @@ function getState(this: ig.ENTITY.Crosshair, full: boolean) {
     let isAiming = false
     if (this.thrower instanceof dummy.DummyPlayer) {
         assert(this.thrower instanceof dummy.DummyPlayer)
-        inputBackup.apply(this.thrower.inputManager)
-        isAiming = this.controller.isAiming()
-        inputBackup.restore()
+        inputBackup(this.thrower.inputManager, () => {
+            isAiming = this.controller.isAiming()
+        })
     }
     const justThrown = this.justThrown
     this.justThrown = false

@@ -6,9 +6,9 @@ import { CCMapDisplay } from './display'
 import { setDataFromLevelData } from './data-load'
 import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
-import * as inputBackup from '../../dummy/dummy-input'
 import { Client } from '../../client/client'
 import { scheduleTask, runTasks, runTask } from 'cc-instanceinator/src/inst-util'
+import { inputBackup } from '../../dummy/dummy-input'
 
 declare global {
     namespace ig {
@@ -255,9 +255,7 @@ prestart(() => {
             if (!ig.ccmap) return this.parent()
             assert(!ig.game.playerEntity)
             assert(this.target instanceof dummy.DummyPlayer)
-            inputBackup.apply(this.target.inputManager)
-            this.parent()
-            inputBackup.restore()
+            inputBackup(this.target.inputManager, () => this.parent())
         },
     })
 })

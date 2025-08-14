@@ -1,11 +1,11 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 
-import * as inputBackup from './dummy-input'
 import './dummy-box-impl'
 import { RemoteServer } from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import { CCMap } from '../server/ccmap/ccmap'
+import { inputBackup } from './dummy-input'
 
 declare global {
     namespace NodeJS {
@@ -82,9 +82,7 @@ prestart(() => {
         },
 
         update() {
-            inputBackup.apply(this.inputManager)
-            this.parent()
-            inputBackup.restore()
+            inputBackup(this.inputManager, () => this.parent())
         },
         updateAnimSheet(updateFx) {
             /* disable skins for dummy players */
@@ -131,10 +129,7 @@ prestart(() => {
                 const clientInp = multi.server.clients[this.thrower.data.username]?.player?.inputManager
                 if (clientInp?.player) inp = clientInp
             }
-            inputBackup.apply(inp)
-
-            this.parent()
-            inputBackup.restore()
+            inputBackup(inp, () => this.parent())
         },
     })
 })
@@ -186,11 +181,10 @@ declare global {
 }
 prestart(() => {
     function replace(this: dummy.ItemConsumption, ...args: unknown[]) {
-        inputBackup.apply(this.player.inputManager)
-        // @ts-expect-error
-        const ret = this.parent(...args)
-        inputBackup.restore()
-        return ret
+        return inputBackup(this.player.inputManager, () => {
+            // @ts-expect-error
+            return this.parent(...args)
+        })
     }
     dummy.ItemConsumption = sc.ItemConsumption.extend({
         init(player) {

@@ -1,11 +1,11 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../plugin'
 import { scheduleTask } from 'cc-instanceinator/src/inst-util'
-import * as inputBackup from '../dummy/dummy-input'
 import { PhysicsServer } from './physics/physics-server'
 import { teleportPlayerToProperMarker } from './ccmap/teleport-fix'
 import { Client } from '../client/client'
 import { CCMap } from './ccmap/ccmap'
+import { inputBackup } from '../dummy/dummy-input'
 
 export class ServerPlayer {
     private destroyed: boolean = false
@@ -133,9 +133,7 @@ prestart(() => {
         onPreUpdate() {
             assert(!ig.game.playerEntity)
 
-            inputBackup.apply(this.player.inputManager)
-            this.parent()
-            inputBackup.restore()
+            inputBackup(this.player.inputManager, () => this.parent())
         },
     })
 })

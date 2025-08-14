@@ -3,8 +3,7 @@ import { assert } from '../misc/assert'
 import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Client } from './client'
 import { prestart } from '../plugin'
-
-import * as inputBackup from '../dummy/dummy-input'
+import { inputBackup as wrapInput } from '../dummy/dummy-input'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -102,9 +101,7 @@ prestart(() => {
         },
         onPreUpdate() {
             if (!multi.server || ig.ccmap || !ig.client || !ig.client.player.dummy) return this.parent()
-            inputBackup.apply(ig.client.player.dummy.inputManager)
-            this.parent()
-            inputBackup.restore()
+            wrapInput(ig.client.player.dummy.inputManager, () => this.parent())
         },
     })
 })
@@ -188,9 +185,9 @@ prestart(() => {
             assert(!ig.game.playerEntity)
             if (this.gripDir) assert(this.player)
             const apply = !!this.player
-            if (apply) inputBackup.apply(this.player!.inputManager)
-            this.parent()
-            if (apply) inputBackup.restore()
+            if (!apply) return this.parent()
+
+            wrapInput(this.player!.inputManager, () => this.parent())
         },
         onDeferredUpdate() {
             if (!multi.server) return this.parent()
