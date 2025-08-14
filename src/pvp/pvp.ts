@@ -357,7 +357,7 @@ export async function stagePvp() {
     assert(multi.server instanceof PhysicsServer)
     const teamConfigs: { name: string; count: number }[] = [
         { name: '1', count: 2 },
-        { name: '2', count: 2 },
+        { name: '2', count: 1 },
     ]
     const winningPoints = 1
     let masterPlayer!: dummy.DummyPlayer
@@ -371,7 +371,7 @@ export async function stagePvp() {
                         username: `${name}_${i}`,
                         inputType: 'clone',
                         remote: false,
-                        // noShowInstance: !isMaster,
+                        noShowInstance: !isMaster,
                     })
                     if (isMaster) masterPlayer = client.player.dummy
 
