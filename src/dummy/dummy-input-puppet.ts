@@ -5,12 +5,7 @@ import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fi
 
 export type InputData = ReturnType<typeof getInput>
 
-export interface GamepadManagerData {
-    buttonStates?: ig.Gamepad['buttonStates']
-    axesStates?: ig.Gamepad['axesStates']
-    pressedStates?: ig.Gamepad['pressedStates']
-    releasedStates?: ig.Gamepad['releasedStates']
-}
+export type GamepadManagerData = ReturnType<typeof getGamepadInput>
 
 declare global {
     namespace dummy {
@@ -176,28 +171,28 @@ prestart(() => {
 declare global {
     namespace ig {
         interface GamepadManager {
+            memory?: StateMemory
+
             getInput(this: this): GamepadManagerData | undefined
         }
     }
 }
+function getGamepadInput(this: ig.GamepadManager) {
+    const gp = this.activeGamepads[0]
+    if (!gp) return
+
+    const memory = (this.memory = StateMemory.get(this.memory))
+
+    return cleanRecord({
+        axesStates: memory.diffArray(gp.axesStates),
+        buttonStates: memory.diffArray(gp.buttonStates),
+        pressedStates: memory.diffArray(gp.pressedStates),
+        releasedStates: memory.diffArray(gp.releasedStates),
+    })
+}
 prestart(() => {
     ig.GamepadManager.inject({
-        getInput() {
-            const gp = this.activeGamepads[0]
-            if (!gp) return
-
-            function cleanArray<T>(arr: T[]): T[] | undefined {
-                for (const v of arr) if (v) return arr
-                return undefined
-            }
-
-            return {
-                axesStates: cleanArray(gp.axesStates),
-                buttonStates: cleanArray(gp.buttonStates),
-                pressedStates: cleanArray(gp.pressedStates),
-                releasedStates: cleanArray(gp.releasedStates),
-            }
-        },
+        getInput: getGamepadInput,
     })
 })
 
@@ -244,11 +239,12 @@ prestart(() => {
             this.inputQueue = []
         },
         setInput(input) {
+            if (!input) return
             const gp = this.activeGamepads[0]
-            gp.buttonStates = input.buttonStates ?? []
-            gp.axesStates = input.axesStates ?? []
-            gp.pressedStates = input.pressedStates ?? []
-            gp.releasedStates = input.releasedStates ?? []
+            if (input.buttonStates !== undefined) gp.buttonStates = input.buttonStates
+            if (input.axesStates !== undefined) gp.axesStates = input.axesStates
+            if (input.pressedStates !== undefined) gp.pressedStates = input.pressedStates
+            if (input.releasedStates !== undefined) gp.releasedStates = input.releasedStates
         },
         pushInput(input) {
             this.inputQueue.push(input)

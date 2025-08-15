@@ -140,7 +140,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 }
             }
         }
-        console.log(JSON.stringify(data.input))
         for (const username in data.input) {
             const client = multi.server.clients[username]
             if (!client) continue
