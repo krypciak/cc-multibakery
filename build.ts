@@ -61,6 +61,10 @@ async function run(
 
                 await fs.promises.writeFile(outputFile, output)
 
+                if (res.metafile) {
+                    await fs.promises.writeFile('metafile.json', JSON.stringify(res.metafile))
+                }
+
                 const bytes = output.length
                 const kb = bytes / 1024
                 console.log(outputFile, kb.toFixed(1) + 'kb')
@@ -117,6 +121,7 @@ async function run(
             BROWSER: String(browser),
         },
         plugins: [plugin],
+        // metafile: true,
     })
 
     if (type == 'build') {
