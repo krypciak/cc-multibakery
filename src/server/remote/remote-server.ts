@@ -66,6 +66,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 username: joinData.username,
                 inputType: 'clone',
                 remote,
+                initialInputType: joinData.initialInputType,
             })
             assert(this.netManager.conn)
             this.netManager.conn.join(client)
