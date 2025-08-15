@@ -65,7 +65,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     measureTraffic: boolean = false
     attemptCrashRecovery: boolean = false
     destroyed: boolean = false // or destroying
-    destroyNextFrame: boolean = false
+    postUpdateCallback?: () => void
 
     async start() {
         instanceinator.displayId = false
@@ -124,7 +124,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.serverInst.apply()
         ig.input.clearPressed()
 
-        if (this.destroyNextFrame) multi.destroyAndStartLoop()
+        this.postUpdateCallback?.()
     }
 
     onInstanceUpdateError(error: unknown): never {
@@ -194,7 +194,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     destroy() {
         if (this.destroyed) return
         this.destroyed = true
-        this.destroyNextFrame = false
+        this.postUpdateCallback = undefined
 
         this.serverInst.apply()
 

@@ -74,10 +74,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         return { client, ackData }
     }
 
-    onNetDisconnect() {
+    async onNetDisconnect() {
         if (this.destroyed) return
         console.log('server disconnected')
-        multi.destroyAndStartLoop()
+        await multi.destroyNextFrameAndStartLoop()
         sc.Dialogs.showErrorDialog('Disconnected')
     }
 
@@ -121,7 +121,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async leaveClient(client: Client) {
         super.leaveClient(client)
         if (!this.destroyed && Object.keys(this.clients).length == 0) {
-            this.destroyNextFrame = true
+            multi.destroyNextFrameAndStartLoop()
         }
     }
 

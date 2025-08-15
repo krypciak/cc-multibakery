@@ -1,4 +1,4 @@
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, wrap } from 'cc-instanceinator/src/inst-util'
 import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
 import { assert } from '../../misc/assert'
 import { entityNetidStatic } from '../../misc/entity-netid'
@@ -76,22 +76,25 @@ export async function createPhysicsServerFromCurrentState() {
     })
 }
 
-export function closePhysicsServerAndSaveState() {
-    assert(multi.server instanceof PhysicsServer)
-    assert(multi.server.masterUsername)
-    const client = multi.server.clients[multi.server.masterUsername]
-    assert(client)
+export async function closePhysicsServerAndSaveState() {
+    const { playerPos, playerFace, origMapState } = wrap(() => {
+        assert(multi.server instanceof PhysicsServer)
+        assert(multi.server.masterUsername)
+        const client = multi.server.clients[multi.server.masterUsername]
+        assert(client)
 
-    const playerPos = Vec3.create(client.player.dummy.coll.pos)
-    const playerFace = Vec2.create(client.player.dummy.face)
+        const playerPos = Vec3.create(client.player.dummy.coll.pos)
+        const playerFace = Vec2.create(client.player.dummy.face)
 
-    const map = client.player.getMap()
-    map.inst.apply()
-    const origMapState = getStateUpdatePacket()
-    filterOutProblematicEntityStates(origMapState)
-    multi.server.serverInst.apply()
+        const map = client.player.getMap()
+        map.inst.apply()
+        const origMapState = getStateUpdatePacket()
+        filterOutProblematicEntityStates(origMapState)
 
-    multi.destroyAndStartLoop()
+        return { playerPos, playerFace, origMapState }
+    })
+
+    await multi.destroyNextFrameAndStartLoop()
 
     if (!ig.game.playerEntity) return
 
