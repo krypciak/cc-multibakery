@@ -2,18 +2,18 @@ import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { createNetidStatic } from './entity'
 import { StateMemory } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
         interface OLPlatform {
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.OLPlatform, player: ServerPlayer) {
+function getState(this: ig.ENTITY.OLPlatform, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
 
     return {

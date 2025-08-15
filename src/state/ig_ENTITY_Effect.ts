@@ -5,13 +5,13 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { addStateHandler } from './states'
 import { StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 import { TemporarySet } from '../misc/temporary-set'
 
 declare global {
     namespace ig.ENTITY {
         interface Effect {
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
     namespace ig {
@@ -20,7 +20,7 @@ declare global {
 }
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
-function getState(this: ig.ENTITY.Effect, player: ServerPlayer) {
+function getState(this: ig.ENTITY.Effect, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
 
     return {

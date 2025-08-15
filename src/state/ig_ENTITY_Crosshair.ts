@@ -2,7 +2,7 @@ import { prestart } from '../plugin'
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { StateMemory } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 import { inputBackup } from '../dummy/dummy-input'
 
 declare global {
@@ -16,14 +16,14 @@ declare global {
                 settings: ig.ENTITY.Crosshair.Settings
             ): string | undefined
 
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
             justThrown?: boolean
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Crosshair, player: ServerPlayer) {
+function getState(this: ig.ENTITY.Crosshair, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
 
     let isAiming = false

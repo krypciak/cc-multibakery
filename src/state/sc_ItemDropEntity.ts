@@ -4,18 +4,18 @@ import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { createFakeEffectSheet } from './entity'
 import { StateMemory } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 
 declare global {
     namespace sc {
         interface ItemDropEntity {
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: sc.ItemDropEntity, player: ServerPlayer) {
+function getState(this: sc.ItemDropEntity, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
 
     return {

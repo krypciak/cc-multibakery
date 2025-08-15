@@ -21,7 +21,7 @@ export async function createPhysicsServerFromCurrentState() {
     const playerPos = Vec3.create(ig.game.playerEntity.coll.pos)
     const playerFace = Vec2.create(ig.game.playerEntity.face)
 
-    const origMapState = getStateUpdatePacket(true)
+    const origMapState = getStateUpdatePacket()
     filterOutProblematicEntityStates(origMapState)
     const origInputType = ig.input.currentDevice
 
@@ -87,7 +87,7 @@ export function closePhysicsServerAndSaveState() {
 
     const map = client.player.getMap()
     map.inst.apply()
-    const origMapState = getStateUpdatePacket(true)
+    const origMapState = getStateUpdatePacket()
     filterOutProblematicEntityStates(origMapState)
     multi.server.serverInst.apply()
 

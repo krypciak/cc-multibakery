@@ -3,7 +3,7 @@ import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 import { StateMemory } from './state-util'
 
 declare global {
@@ -11,13 +11,13 @@ declare global {
         interface DummyPlayer {
             createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
 
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: dummy.DummyPlayer, player: ServerPlayer) {
+function getState(this: dummy.DummyPlayer, player: StateKey) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
     const memory = StateMemory.getStateMemory(this, player)

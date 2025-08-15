@@ -1,9 +1,8 @@
 import { prestart } from '../plugin'
-import { addStateHandler } from './states'
+import { addStateHandler, StateKey } from './states'
 import { assert } from '../misc/assert'
 import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../misc/entity-netid'
 import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
-import { ServerPlayer } from '../server/server-player'
 
 import './entity-death'
 
@@ -33,7 +32,7 @@ declare global {
 }
 
 interface StateEntityBase {
-    getState(player: ServerPlayer): object | undefined
+    getState(player?: StateKey): object | undefined
     setState(value: object): void
 }
 

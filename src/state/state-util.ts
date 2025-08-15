@@ -36,7 +36,7 @@ export class StateMemory {
             return entry
         }
         const memory = new StateMemory()
-        obj.lastSent.set(key, memory)
+        if (key) obj.lastSent.set(key, memory)
         return memory
     }
 

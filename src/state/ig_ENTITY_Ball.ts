@@ -4,18 +4,18 @@ import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { resolveProxyFromType } from './proxy-util'
 import { StateMemory } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
         interface Ball {
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Ball, player: ServerPlayer) {
+function getState(this: ig.ENTITY.Ball, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
     const combatant = this.getCombatantRoot()
     assert(combatant)

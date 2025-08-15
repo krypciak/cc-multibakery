@@ -3,18 +3,18 @@ import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { createNetidStatic } from './entity'
 import { StateMemory } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
         interface WallBase {
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.WallBase, player: ServerPlayer) {
+function getState(this: ig.ENTITY.WallBase, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
 
     const timer = this.wallBlockers[0]?.timer

@@ -5,19 +5,19 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { addStateHandler } from './states'
 import { StateMemory } from './state-util'
-import { ServerPlayer } from '../server/server-player'
+import { StateKey } from './states'
 import { resolveProxyFromType } from './proxy-util'
 
 declare global {
     namespace sc {
         interface CombatProxyEntity {
-            lastSent?: WeakMap<ServerPlayer, StateMemory>
+            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: sc.CombatProxyEntity, player: ServerPlayer) {
+function getState(this: sc.CombatProxyEntity, player: StateKey) {
     const memory = StateMemory.getStateMemory(this, player)
 
     /* TODO: uhhhhhhh pos is probably set in update call */

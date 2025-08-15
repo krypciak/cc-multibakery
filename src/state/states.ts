@@ -1,8 +1,11 @@
+import { ServerPlayer } from '../server/server-player'
+
 declare global {
     interface StateUpdatePacket {}
 }
 
-import { ServerPlayer } from '../server/server-player'
+export type StateKey = ServerPlayer
+
 import './entity'
 import './vars'
 
@@ -14,7 +17,7 @@ declare global {
     }
 }
 
-export function getStateUpdatePacket(player: ServerPlayer) {
+export function getStateUpdatePacket(player?: StateKey) {
     const packet: StateUpdatePacket = {}
 
     for (const { get } of handlers) get(packet, player)
@@ -23,7 +26,7 @@ export function getStateUpdatePacket(player: ServerPlayer) {
 }
 
 type Handler = {
-    get: (packet: StateUpdatePacket, player: ServerPlayer) => void
+    get: (packet: StateUpdatePacket, player?: StateKey) => void
     set: (packet: StateUpdatePacket) => void
 }
 const handlers: Handler[] = []
