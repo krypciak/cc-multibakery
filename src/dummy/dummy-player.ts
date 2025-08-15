@@ -196,12 +196,3 @@ prestart(() => {
         runStatChange: replace,
     })
 }, 2)
-
-prestart(() => {
-    ig.ENTITY.TouchTrigger.inject({
-        update() {
-            this.parent()
-            /* todo make dummies trigger this */
-        },
-    })
-}, 2)
