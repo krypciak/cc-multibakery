@@ -14,10 +14,10 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.OLPlatform, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     return {
-        currentState: memory.isSameAsLast(this.states.indexOf(this.currentState)),
+        currentState: memory.diff(this.states.indexOf(this.currentState)),
     }
 }
 function setState(this: ig.ENTITY.OLPlatform, state: Return) {

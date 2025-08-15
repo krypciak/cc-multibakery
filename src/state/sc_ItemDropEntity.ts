@@ -16,10 +16,10 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: sc.ItemDropEntity, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     return {
-        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+        pos: memory.diffVec3(this.coll.pos),
 
         dropType: memory.onlyOnce(Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0]),
         item: memory.onlyOnce(this.item),

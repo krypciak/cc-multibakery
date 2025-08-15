@@ -15,15 +15,15 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Enemy, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     return {
-        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
-        currentAnim: memory.isSameAsLast(this.currentAnim),
+        pos: memory.diffVec3(this.coll.pos),
+        currentAnim: memory.diff(this.currentAnim),
         currentAnimTimer: this.animState.timer,
-        face: memory.isSameAsLast(this.face, Vec2.equal, Vec2.create),
-        accelDir: memory.isSameAsLast(this.coll.accelDir, Vec2.equal, Vec2.create),
-        animAlpha: memory.isSameAsLast(this.animState.alpha),
+        face: memory.diffVec2(this.face),
+        accelDir: memory.diffVec2(this.coll.accelDir),
+        animAlpha: memory.diff(this.animState.alpha),
     }
 }
 

@@ -18,14 +18,14 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: sc.CombatProxyEntity, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     /* TODO: uhhhhhhh pos is probably set in update call */
     return {
         proxyType: memory.onlyOnce(this.proxyType),
         combatant: memory.onlyOnce(this.combatant.netid),
-        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
-        dir: memory.isSameAsLast(this.face, Vec2.equal, Vec2.create),
+        pos: memory.diffVec3(this.coll.pos),
+        dir: memory.diffVec2(this.face),
     }
 }
 function setState(this: sc.CombatProxyEntity, state: Return) {

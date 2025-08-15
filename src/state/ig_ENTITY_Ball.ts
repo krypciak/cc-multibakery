@@ -16,14 +16,14 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Ball, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
     const combatant = this.getCombatantRoot()
     assert(combatant)
     return {
         combatant: memory.onlyOnce(combatant.netid),
         proxyType: memory.onlyOnce(this.proxyType),
         dir: memory.onlyOnce(this.coll.vel),
-        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+        pos: memory.diffVec3(this.coll.pos),
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {

@@ -14,9 +14,9 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Chest, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
     return {
-        isOpen: memory.isSameAsLast(this.isOpen),
+        isOpen: memory.diff(this.isOpen),
     }
 }
 

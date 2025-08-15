@@ -20,30 +20,30 @@ type Return = ReturnType<typeof getState>
 function getState(this: dummy.DummyPlayer, player: StateKey) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
     return {
-        isControlBlocked: memory.isSameAsLast(this.data.isControlBlocked),
-        inCutscene: memory.isSameAsLast(this.data.inCutscene),
-        currentMenu: memory.isSameAsLast(this.data.currentMenu),
-        currentSubState: memory.isSameAsLast(this.data.currentSubState),
+        isControlBlocked: memory.diff(this.data.isControlBlocked),
+        inCutscene: memory.diff(this.data.inCutscene),
+        currentMenu: memory.diff(this.data.currentMenu),
+        currentSubState: memory.diff(this.data.currentSubState),
 
-        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
-        currentAnim: memory.isSameAsLast(this.currentAnim),
+        pos: memory.diffVec3(this.coll.pos),
+        currentAnim: memory.diff(this.currentAnim),
         currentAnimTimer: this.animState.timer,
-        face: memory.isSameAsLast(this.face, Vec2.equal, Vec2.create),
-        accelDir: memory.isSameAsLast(this.coll.accelDir, Vec2.equal, Vec2.create),
-        animAlpha: memory.isSameAsLast(this.animState.alpha),
+        face: memory.diffVec2(this.face),
+        accelDir: memory.diffVec2(this.coll.accelDir),
+        animAlpha: memory.diff(this.animState.alpha),
 
-        interactObject: memory.isSameAsLast(this.interactObject?.entity?.netid),
+        interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        head: memory.isSameAsLast(this.model.equip.head),
-        leftArm: memory.isSameAsLast(this.model.equip.leftArm),
-        rightArm: memory.isSameAsLast(this.model.equip.rightArm),
-        torso: memory.isSameAsLast(this.model.equip.torso),
-        feet: memory.isSameAsLast(this.model.equip.feet),
-        items: this == player.dummy ? memory.diffArray(this.model.items) : undefined,
+        head: memory.diff(this.model.equip.head),
+        leftArm: memory.diff(this.model.equip.leftArm),
+        rightArm: memory.diff(this.model.equip.rightArm),
+        torso: memory.diff(this.model.equip.torso),
+        feet: memory.diff(this.model.equip.feet),
+        items: this == player.dummy ? memory.diffStaticArray(this.model.items) : undefined,
 
-        charge: memory.isSameAsLast(chargeLevel),
+        charge: memory.diff(chargeLevel),
     }
 }
 
@@ -114,7 +114,7 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.torso) this.model.equip.torso = state.torso
     if (state.feet) this.model.equip.feet = state.feet
 
-    if (state.items) StateMemory.applyDiffArray(this.model, 'items', state.items)
+    if (state.items) StateMemory.applyDiffStaticArray(this.model, 'items', state.items)
 
     if (state.charge !== undefined) {
         if (state.charge == 0) {

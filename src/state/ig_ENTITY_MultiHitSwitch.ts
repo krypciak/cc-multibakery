@@ -15,10 +15,10 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.MultiHitSwitch, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     return {
-        currentHits: memory.isSameAsLast(this.currentHits),
+        currentHits: memory.diff(this.currentHits),
     }
 }
 function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {

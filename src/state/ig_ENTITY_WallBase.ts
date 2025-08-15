@@ -15,12 +15,12 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.WallBase, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     const timer = this.wallBlockers[0]?.timer
     return {
-        active: memory.isSameAsLast(this.active),
-        timer: memory.isSameAsLast(timer),
+        active: memory.diff(this.active),
+        timer: memory.diff(timer),
     }
 }
 function setState(this: ig.ENTITY.WallBase, state: Return) {

@@ -24,7 +24,7 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.Crosshair, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     let isAiming = false
     if (this.thrower instanceof dummy.DummyPlayer) {
@@ -37,12 +37,12 @@ function getState(this: ig.ENTITY.Crosshair, player: StateKey) {
     this.justThrown = false
 
     return {
-        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
-        active: memory.isSameAsLast(this.active),
-        special: memory.isSameAsLast(this.special),
-        isAiming: memory.isSameAsLast(isAiming),
-        currentCharge: memory.isSameAsLast(this.currentCharge),
-        justThrown: memory.isSameAsLast(justThrown),
+        pos: memory.diffVec3(this.coll.pos),
+        active: memory.diff(this.active),
+        special: memory.diff(this.special),
+        isAiming: memory.diff(isAiming),
+        currentCharge: memory.diff(this.currentCharge),
+        justThrown: memory.diff(justThrown),
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {

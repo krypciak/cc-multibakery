@@ -16,10 +16,10 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.FloorSwitch, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     return {
-        isOn: memory.isSameAsLast(this.isOn),
+        isOn: memory.diff(this.isOn),
     }
 }
 function setState(this: ig.ENTITY.FloorSwitch, state: Return) {

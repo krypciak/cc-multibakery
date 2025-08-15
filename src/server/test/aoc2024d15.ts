@@ -211,11 +211,24 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             await scheduleTask(inst, () => {})
         }
     }
-    const emptyInput: InputData = {
+    const emptyInput = {
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
-        presses: {},
-        actions: {},
-    } satisfies InputData
+        presses: {
+            aim: false,
+            left: false,
+            up: false,
+            right: false,
+            down: false,
+        },
+        actions: {
+            aim: false,
+            left: false,
+            up: false,
+            right: false,
+            down: false,
+        },
+    } satisfies Partial<InputData> as NonNullable<InputData>
+
     const inp: InputData = ig.copy(emptyInput)
 
     const moveInp = ig.copy(emptyInput)

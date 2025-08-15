@@ -7,6 +7,7 @@ import {
 } from '../../dummy/dummy-input-puppet'
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
+import { cleanRecord } from '../../state/state-util'
 import { RemoteServer } from './remote-server'
 
 prestart(() => {
@@ -32,17 +33,16 @@ function send() {
         const inst = client.inst
         assert(inst)
 
-        let packet: ClientInputPacket
+        const inPauseScreen = inst.ig.inPauseScreen
+        let packet: ClientInputPacket | undefined
 
-        if (inst.ig.inPauseScreen) {
-            packet = {
-                inPauseScreen: true,
-            }
-        } else {
+        if (!inPauseScreen) {
             const input = inst.ig.input.getInput(client.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD)
-            for (const action of disallowedInputActions) {
-                delete input.presses?.[action]
-                delete input.actions?.[action]
+            if (input) {
+                for (const action of disallowedInputActions) {
+                    delete input.presses?.[action]
+                    delete input.actions?.[action]
+                }
             }
 
             const gamepad = inst.ig.gamepad.getInput()
@@ -53,23 +53,29 @@ function send() {
             }
         }
 
-        inputPackets[username] = packet
+        if (packet) {
+            inputPackets[username] = cleanRecord(packet)
+        }
     }
 
     const packet: RemoteServerUpdatePacket = {
-        input: inputPackets,
+        input: cleanRecord(inputPackets),
         readyMaps: multi.server.notifyReadyMaps,
     }
     multi.server.notifyReadyMaps = undefined
 
-    conn.send('update', packet)
+    const cleanPacket = cleanRecord(packet)
+    if (cleanPacket) {
+        conn.send('update', packet)
+    }
 }
 
 export interface RemoteServerUpdatePacket {
-    input: RemoteServerInputPacket
+    input?: RemoteServerInputPacket
     readyMaps?: string[]
 }
-type RemoteServerInputPacket = Record</* username */ string, ClientInputPacket>
+type RemoteServerInputPacket = PartialRecord</* username */ string, ClientInputPacket>
+
 export interface ClientInputPacket {
     input?: InputData
     gamepad?: GamepadManagerData
@@ -79,6 +85,7 @@ export function isRemoteServerUpdatePacket(data: any): data is RemoteServerUpdat
     if (typeof data != 'object' || !data) return false
 
     const input = data.input
+    if (!input) return true
     if (typeof input !== 'object' || !input) return false
     if (!isRemoteServerInputPacket(input)) return false
 
@@ -91,6 +98,8 @@ function isRemoteServerInputPacket(data: any): data is RemoteServerInputPacket {
         if (!client) continue
 
         const packet: any = data[username]
+        if (!packet) return true
+
         if (typeof packet != 'object' || !packet) return false
 
         if (packet.input && !isInputData(packet.input)) return false

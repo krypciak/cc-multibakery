@@ -21,11 +21,11 @@ declare global {
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
 function getState(this: ig.ENTITY.Effect, player: StateKey) {
-    const memory = StateMemory.getStateMemory(this, player)
+    const memory = StateMemory.getBy(this, player)
 
     return {
         // pos: memory.onlyOnce(this.coll.pos),
-        pos: memory.isSameAsLast(!this.target ? this.coll.pos : undefined),
+        pos: memory.diff(!this.target ? this.coll.pos : undefined),
 
         effectName: memory.onlyOnce(this.effect!.effectName),
         sheetPath: memory.onlyOnce(this.effect!.sheet.path),

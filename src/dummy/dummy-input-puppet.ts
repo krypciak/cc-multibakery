@@ -1,21 +1,9 @@
 import { prestart } from '../plugin'
+import { cleanRecord, StateMemory } from '../state/state-util'
 import { InputManagerBlock } from './dummy-input-clone'
 import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'
 
-export interface InputData {
-    currentDevice: ig.Input['currentDevice']
-    isUsingMouse?: boolean
-    isUsingKeyboard?: boolean
-    ignoreKeyboard?: boolean
-    mouseGuiActive?: boolean
-    mouse?: Vec2
-    accel?: Vec3
-    presses?: ig.Input['presses']
-    keyups?: ig.Input['keyups']
-    locks?: ig.Input['locks']
-    delayedKeyup?: ig.Input['delayedKeyup']
-    actions?: ig.Input['actions']
-}
+export type InputData = ReturnType<typeof getInput>
 
 export interface GamepadManagerData {
     buttonStates?: ig.Gamepad['buttonStates']
@@ -92,52 +80,45 @@ export function isInputData(data: any): data is InputData {
 declare global {
     namespace ig {
         interface Input {
+            memory?: StateMemory
+
             getInput(this: this, isUsingGamepad: boolean): InputData
         }
     }
 }
+
+function getInputActual(this: ig.Input, isUsingGamepad: boolean) {
+    const memory = (this.memory = StateMemory.get(this.memory))
+
+    if (isUsingGamepad) {
+        return {
+            currentDevice: memory.diff(ig.INPUT_DEVICES.GAMEPAD),
+            presses: memory.diff(this.presses['pause'] ? ({ pause: true } as ig.Input['presses']) : undefined),
+        }
+    }
+
+    return {
+        currentDevice: memory.diff(this.currentDevice),
+        presses: memory.diffRecord(this.presses),
+
+        isUsingMouse: memory.diff(this.isUsingMouse),
+        isUsingKeyboard: memory.diff(this.isUsingKeyboard),
+        ignoreKeyboard: memory.diff(this.ignoreKeyboard),
+        mouseGuiActive: memory.diff(this.mouseGuiActive),
+        mouse: memory.diffVec2(this.mouse),
+        accel: memory.diffVec3(this.accel),
+        keyups: memory.diffRecord(this.keyups),
+        locks: memory.diffRecord(this.locks),
+        delayedKeyup: memory.diffArray(this.delayedKeyup),
+        actions: memory.diffRecord(this.actions),
+    }
+}
+
+function getInput(this: ig.Input, isUsingGamepad: boolean) {
+    return cleanRecord(getInputActual.call(this, isUsingGamepad))
+}
 prestart(() => {
-    ig.Input.inject({
-        getInput(isUsingGamepad) {
-            if (isUsingGamepad) {
-                return {
-                    currentDevice: ig.INPUT_DEVICES.GAMEPAD,
-                    presses: this.presses['pause'] ? { pause: true } : undefined,
-                }
-            }
-
-            function cleanRecord<T extends Record<string, boolean>>(rec: T): T | undefined {
-                if (Object.keys(rec).length == 0) return undefined
-
-                const newRecord: Record<string, boolean> = {}
-                let atLeastOneKey = false
-                for (const key in rec) {
-                    if (rec[key]) {
-                        newRecord[key] = true
-                        atLeastOneKey = true
-                    }
-                }
-                if (!atLeastOneKey) return undefined
-
-                return newRecord as T
-            }
-
-            return {
-                currentDevice: this.currentDevice ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE,
-                isUsingMouse: this.isUsingMouse ? true : undefined,
-                isUsingKeyboard: this.isUsingKeyboard ? true : undefined,
-                ignoreKeyboard: this.ignoreKeyboard ? true : undefined,
-                mouseGuiActive: this.mouseGuiActive ? true : undefined,
-                mouse: Vec2.isZero(this.mouse) ? undefined : this.mouse,
-                accel: Vec3.isZero(this.accel) ? undefined : this.accel,
-                presses: cleanRecord(this.presses),
-                keyups: cleanRecord(this.keyups),
-                locks: cleanRecord(this.locks),
-                delayedKeyup: this.delayedKeyup.length == 0 ? undefined : this.delayedKeyup,
-                actions: cleanRecord(this.actions),
-            }
-        },
-    })
+    ig.Input.inject({ getInput })
 })
 
 declare global {
@@ -162,18 +143,21 @@ prestart(() => {
             this.inputQueue = []
         },
         setInput(input) {
-            this.isUsingMouse = input.isUsingMouse ?? false
-            this.isUsingKeyboard = input.isUsingKeyboard ?? false
-            this.ignoreKeyboard = input.ignoreKeyboard ?? false
-            this.mouseGuiActive = input.mouseGuiActive ?? false
-            Vec2.assign(this.mouse, input.mouse ?? Vec2.create())
-            Vec3.assign(this.accel, input.accel ?? Vec3.create())
-            this.presses = input.presses ?? {}
-            this.keyups = input.keyups ?? {}
-            this.locks = input.locks ?? {}
-            this.delayedKeyup = input.delayedKeyup ?? []
-            this.currentDevice = input.currentDevice
-            this.actions = input.actions ?? {}
+            if (!input) return
+
+            if (input.currentDevice !== undefined) this.currentDevice = input.currentDevice
+            if (input.isUsingMouse !== undefined) this.isUsingMouse = input.isUsingMouse
+            if (input.isUsingKeyboard !== undefined) this.isUsingKeyboard = input.isUsingKeyboard
+            if (input.ignoreKeyboard !== undefined) this.ignoreKeyboard = input.ignoreKeyboard
+            if (input.mouseGuiActive !== undefined) this.mouseGuiActive = input.mouseGuiActive
+            if (input.mouse !== undefined) Vec2.assign(this.mouse, input.mouse)
+            if (input.accel !== undefined) Vec3.assign(this.accel, input.accel)
+
+            StateMemory.applyChangeRecord(this.presses, input.presses)
+            StateMemory.applyChangeRecord(this.keyups, input.keyups)
+            StateMemory.applyChangeRecord(this.locks, input.locks)
+            StateMemory.applyChangeRecord(this.actions, input.actions)
+            if (input.delayedKeyup !== undefined) this.delayedKeyup = input.delayedKeyup
         },
         pushInput(input) {
             this.inputQueue.push(input)

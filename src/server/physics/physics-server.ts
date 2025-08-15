@@ -141,6 +141,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 }
             }
         }
+        console.log(JSON.stringify(data.input))
         for (const username in data.input) {
             const client = multi.server.clients[username]
             if (!client) continue
@@ -148,10 +149,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
             const packet = data.input[username]
+            if (!packet) continue
 
-            if (packet.inPauseScreen) {
-                continue
-            }
             if (client.inst.ig.inPauseScreen) {
                 runTask(client.inst, () => sc.model.enterRunning())
             }
