@@ -41,7 +41,7 @@ function getState(this: dummy.DummyPlayer, player: StateKey) {
         rightArm: memory.isSameAsLast(this.model.equip.rightArm),
         torso: memory.isSameAsLast(this.model.equip.torso),
         feet: memory.isSameAsLast(this.model.equip.feet),
-        items: memory.diffArray(this.model.items),
+        items: this == player.dummy ? memory.diffArray(this.model.items) : undefined,
 
         charge: memory.isSameAsLast(chargeLevel),
     }
