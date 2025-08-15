@@ -2,25 +2,28 @@ import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { createNetidStatic } from './entity'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 
 declare global {
     namespace ig.ENTITY {
         interface Enemy {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Enemy, full: boolean) {
+function getState(this: ig.ENTITY.Enemy, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
+
     return {
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
-        currentAnim: isSameAsLast(this, full, this.currentAnim, 'currentAnim'),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+        currentAnim: memory.isSameAsLast(this.currentAnim),
         currentAnimTimer: this.animState.timer,
-        face: isSameAsLast(this, full, this.face, 'face', Vec2.equal, Vec2.create),
-        accelDir: isSameAsLast(this, full, this.coll.accelDir, 'accelDir', Vec2.equal, Vec2.create),
-        animAlpha: isSameAsLast(this, full, this.animState.alpha, 'animAlpha'),
+        face: memory.isSameAsLast(this.face, Vec2.equal, Vec2.create),
+        accelDir: memory.isSameAsLast(this.coll.accelDir, Vec2.equal, Vec2.create),
+        animAlpha: memory.isSameAsLast(this.animState.alpha),
     }
 }
 

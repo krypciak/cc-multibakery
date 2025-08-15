@@ -1,21 +1,23 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
+import { ServerPlayer } from '../server/server-player'
 import { createFakeEffectSheet } from './entity'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
 
 declare global {
     namespace ig.ENTITY {
         interface CombatantMarble {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.CombatantMarble, full: boolean) {
+function getState(this: ig.ENTITY.CombatantMarble, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
     return {
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
     }
 }
 

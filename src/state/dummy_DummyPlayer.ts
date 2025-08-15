@@ -3,45 +3,47 @@ import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
-import { applyDiffArray, diffArray, isSameAsLast } from './state-util'
+import { ServerPlayer } from '../server/server-player'
+import { StateMemory } from './state-util'
 
 declare global {
     namespace dummy {
         interface DummyPlayer {
             createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
 
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: dummy.DummyPlayer, full: boolean) {
+function getState(this: dummy.DummyPlayer, player: ServerPlayer) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
+    const memory = StateMemory.getStateMemory(this, player)
     return {
-        isControlBlocked: isSameAsLast(this, full, this.data.isControlBlocked, 'isControlBlocked'),
-        inCutscene: isSameAsLast(this, full, this.data.inCutscene, 'inCutscene'),
-        currentMenu: isSameAsLast(this, full, this.data.currentMenu, 'currentMenu'),
-        currentSubState: isSameAsLast(this, full, this.data.currentSubState, 'currentSubState'),
+        isControlBlocked: memory.isSameAsLast(this.data.isControlBlocked),
+        inCutscene: memory.isSameAsLast(this.data.inCutscene),
+        currentMenu: memory.isSameAsLast(this.data.currentMenu),
+        currentSubState: memory.isSameAsLast(this.data.currentSubState),
 
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
-        currentAnim: isSameAsLast(this, full, this.currentAnim, 'currentAnim'),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+        currentAnim: memory.isSameAsLast(this.currentAnim),
         currentAnimTimer: this.animState.timer,
-        face: isSameAsLast(this, full, this.face, 'face', Vec2.equal, Vec2.create),
-        accelDir: isSameAsLast(this, full, this.coll.accelDir, 'accelDir', Vec2.equal, Vec2.create),
-        animAlpha: isSameAsLast(this, full, this.animState.alpha, 'animAlpha'),
+        face: memory.isSameAsLast(this.face, Vec2.equal, Vec2.create),
+        accelDir: memory.isSameAsLast(this.coll.accelDir, Vec2.equal, Vec2.create),
+        animAlpha: memory.isSameAsLast(this.animState.alpha),
 
-        interactObject: isSameAsLast(this, full, this.interactObject?.entity?.netid, 'interactObject'),
+        interactObject: memory.isSameAsLast(this.interactObject?.entity?.netid),
 
-        head: isSameAsLast(this, full, this.model.equip.head, 'head'),
-        leftArm: isSameAsLast(this, full, this.model.equip.leftArm, 'leftArm'),
-        rightArm: isSameAsLast(this, full, this.model.equip.rightArm, 'rightArm'),
-        torso: isSameAsLast(this, full, this.model.equip.torso, 'torso'),
-        feet: isSameAsLast(this, full, this.model.equip.feet, 'feet'),
-        items: diffArray(this, full, this.model.items, 'items'),
+        head: memory.isSameAsLast(this.model.equip.head),
+        leftArm: memory.isSameAsLast(this.model.equip.leftArm),
+        rightArm: memory.isSameAsLast(this.model.equip.rightArm),
+        torso: memory.isSameAsLast(this.model.equip.torso),
+        feet: memory.isSameAsLast(this.model.equip.feet),
+        items: memory.diffArray(this.model.items),
 
-        charge: isSameAsLast(this, full, chargeLevel, 'charge'),
+        charge: memory.isSameAsLast(chargeLevel),
     }
 }
 
@@ -112,7 +114,7 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.torso) this.model.equip.torso = state.torso
     if (state.feet) this.model.equip.feet = state.feet
 
-    if (state.items) applyDiffArray(this.model, 'items', state.items)
+    if (state.items) StateMemory.applyDiffArray(this.model, 'items', state.items)
 
     if (state.charge !== undefined) {
         if (state.charge == 0) {

@@ -4,29 +4,28 @@ import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { addStateHandler } from './states'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 import { resolveProxyFromType } from './proxy-util'
 
 declare global {
     namespace sc {
         interface CombatProxyEntity {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: sc.CombatProxyEntity, full: boolean) {
+function getState(this: sc.CombatProxyEntity, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
+
     /* TODO: uhhhhhhh pos is probably set in update call */
     return {
-        ...(!(this as any).lastSent || full
-            ? {
-                  proxyType: this.proxyType,
-                  combatant: this.combatant.netid,
-              }
-            : {}),
-        pos: isSameAsLast(this, true, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
-        dir: isSameAsLast(this, true, this.face, 'dir', Vec2.equal, Vec2.create),
+        proxyType: memory.onlyOnce(this.proxyType),
+        combatant: memory.onlyOnce(this.combatant.netid),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+        dir: memory.isSameAsLast(this.face, Vec2.equal, Vec2.create),
     }
 }
 function setState(this: sc.CombatProxyEntity, state: Return) {

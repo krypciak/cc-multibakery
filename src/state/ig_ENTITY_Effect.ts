@@ -4,13 +4,14 @@ import { prestart } from '../plugin'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { addStateHandler } from './states'
-import { undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
+import { StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 import { TemporarySet } from '../misc/temporary-set'
 
 declare global {
     namespace ig.ENTITY {
         interface Effect {
-            sentEver?: boolean
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
     namespace ig {
@@ -19,38 +20,32 @@ declare global {
 }
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
-function getState(this: ig.ENTITY.Effect, full: boolean) {
-    let data
-    if (!this.sentEver || full) {
-        data = {
-            pos: this.coll.pos,
-            effectName: this.effect!.effectName,
-            sheetPath: this.effect!.sheet.path,
-            target: undefinedIfFalsy(this.target?.netid),
-            target2: undefinedIfFalsy(this.target2.entity?.netid),
-            target2Point: undefinedIfFalsy(this.target2.point),
-            target2Align: undefinedIfFalsy(this.target2.align),
-            target2Offset: undefinedIfVec3Zero(this.target2.offset),
-            noMultiGroup: undefinedIfFalsy(this.noMultiGroup),
-            spriteFilter: undefinedIfFalsy(this.spriteFilter),
-            offset: undefinedIfVec3Zero(this.offset),
-            rotOffset: undefinedIfFalsy(this.rotOffset),
-            align: undefinedIfFalsy(this.align),
-            angle: undefinedIfFalsy(this.angle),
-            flipX: undefinedIfFalsy(this.flipX),
-            rotateFace: undefinedIfFalsy(this.rotateFace),
-            flipLeftFace: undefinedIfFalsy(this.flipLeftFace),
-            duration: this.duration == this.effect?.loopEndTime ? undefined : this.duration,
-            group: undefinedIfFalsy(this.attachGroup),
-        }
-    } else {
-        data = {
-            pos: !this.target ? this.coll.pos : undefined,
-        }
-    }
-    this.sentEver = true
+function getState(this: ig.ENTITY.Effect, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
 
-    return data
+    return {
+        // pos: memory.onlyOnce(this.coll.pos),
+        pos: memory.isSameAsLast(!this.target ? this.coll.pos : undefined),
+
+        effectName: memory.onlyOnce(this.effect!.effectName),
+        sheetPath: memory.onlyOnce(this.effect!.sheet.path),
+        target: memory.onlyOnce(undefinedIfFalsy(this.target?.netid)),
+        target2: memory.onlyOnce(undefinedIfFalsy(this.target2.entity?.netid)),
+        target2Point: memory.onlyOnce(undefinedIfFalsy(this.target2.point)),
+        target2Align: memory.onlyOnce(undefinedIfFalsy(this.target2.align)),
+        target2Offset: memory.onlyOnce(undefinedIfVec3Zero(this.target2.offset)),
+        noMultiGroup: memory.onlyOnce(undefinedIfFalsy(this.noMultiGroup)),
+        spriteFilter: memory.onlyOnce(undefinedIfFalsy(this.spriteFilter)),
+        offset: memory.onlyOnce(undefinedIfVec3Zero(this.offset)),
+        rotOffset: memory.onlyOnce(undefinedIfFalsy(this.rotOffset)),
+        align: memory.onlyOnce(undefinedIfFalsy(this.align)),
+        angle: memory.onlyOnce(undefinedIfFalsy(this.angle)),
+        flipX: memory.onlyOnce(undefinedIfFalsy(this.flipX)),
+        rotateFace: memory.onlyOnce(undefinedIfFalsy(this.rotateFace)),
+        flipLeftFace: memory.onlyOnce(undefinedIfFalsy(this.flipLeftFace)),
+        duration: memory.onlyOnce(this.duration == this.effect?.loopEndTime ? undefined : this.duration),
+        group: memory.onlyOnce(undefinedIfFalsy(this.attachGroup)),
+    }
 }
 function setState(this: ig.ENTITY.Effect, state: Return) {
     if (!this.target && state.pos) Vec3.assign(this.coll.pos, state.pos)
@@ -73,7 +68,7 @@ function resolveObjects(state: Return) {
     assert(state.sheetPath)
     const sheet = new ig.EffectSheet(state.sheetPath)
     assert(sheet.effects)
-    const effect = sheet.effects[state.effectName]
+    const effect = sheet.effects[state.effectName!]
 
     return { target, target2, effect }
 }
@@ -100,7 +95,7 @@ prestart(() => {
             this.effect = undefined
             this.parent(x, y, z, settings)
             this.setNetid(x, y, z, settings)
-            this.sentEver = false
+            this.lastSent = new WeakMap()
         },
     })
 
@@ -110,7 +105,7 @@ prestart(() => {
         effectsSpawnedBefore.push(netid)
 
         const { target, target2, effect } = resolveObjects(state)
-        const { x, y, z } = state.pos!
+        const { x, y, z } = state.pos ?? { x: 0, y: 0, z: 0 }
         const settings: ig.ENTITY.Effect.Settings = Object.assign({}, state, {
             effect,
             target,

@@ -2,30 +2,28 @@ import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
-import { isSameAsLast } from './state-util'
 import { resolveProxyFromType } from './proxy-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 
 declare global {
     namespace ig.ENTITY {
         interface Ball {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Ball, full: boolean) {
+function getState(this: ig.ENTITY.Ball, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
     const combatant = this.getCombatantRoot()
     assert(combatant)
     return {
-        ...(!(this as any).lastSent || full
-            ? {
-                  combatant: combatant.netid,
-                  proxyType: this.proxyType,
-                  dir: this.coll.vel,
-              }
-            : {}),
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
+        combatant: memory.onlyOnce(combatant.netid),
+        proxyType: memory.onlyOnce(this.proxyType),
+        dir: memory.onlyOnce(this.coll.vel),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {

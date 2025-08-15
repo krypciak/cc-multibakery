@@ -2,20 +2,23 @@ import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { createNetidStatic } from './entity'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 
 declare global {
     namespace ig.ENTITY {
         interface PushPullBlock {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.PushPullBlock, full: boolean) {
+function getState(this: ig.ENTITY.PushPullBlock, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
+
     return {
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
     }
 }
 function setState(this: ig.ENTITY.PushPullBlock, state: Return) {

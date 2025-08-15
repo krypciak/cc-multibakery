@@ -1,7 +1,8 @@
 import { prestart } from '../plugin'
 import { assert } from '../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 import { inputBackup } from '../dummy/dummy-input'
 
 declare global {
@@ -15,14 +16,16 @@ declare global {
                 settings: ig.ENTITY.Crosshair.Settings
             ): string | undefined
 
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
             justThrown?: boolean
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Crosshair, full: boolean) {
+function getState(this: ig.ENTITY.Crosshair, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
+
     let isAiming = false
     if (this.thrower instanceof dummy.DummyPlayer) {
         assert(this.thrower instanceof dummy.DummyPlayer)
@@ -34,12 +37,12 @@ function getState(this: ig.ENTITY.Crosshair, full: boolean) {
     this.justThrown = false
 
     return {
-        pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
-        active: isSameAsLast(this, full, this.active, 'active'),
-        special: isSameAsLast(this, full, this.special, 'special'),
-        isAiming: isSameAsLast(this, full, isAiming, 'isAiming'),
-        currentCharge: isSameAsLast(this, full, this.currentCharge, 'currentCharge'),
-        justThrown: isSameAsLast(this, full, justThrown, 'thrown'),
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+        active: memory.isSameAsLast(this.active),
+        special: memory.isSameAsLast(this.special),
+        isAiming: memory.isSameAsLast(isAiming),
+        currentCharge: memory.isSameAsLast(this.currentCharge),
+        justThrown: memory.isSameAsLast(justThrown),
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {

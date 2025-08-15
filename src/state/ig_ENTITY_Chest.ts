@@ -1,20 +1,22 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { createNetidStatic } from './entity'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 
 declare global {
     namespace ig.ENTITY {
         interface Chest {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Chest, full: boolean) {
+function getState(this: ig.ENTITY.Chest, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
     return {
-        isOpen: isSameAsLast(this, full, this.isOpen, 'isOpen'),
+        isOpen: memory.isSameAsLast(this.isOpen),
     }
 }
 

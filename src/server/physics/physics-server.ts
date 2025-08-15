@@ -35,7 +35,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     httpServer?: PhysicsHttpServer
 
     connectionReadyMaps: WeakMap<NetConnection, Set<string>> = new WeakMap()
-    sendMapFullState: Set<string> = new Set()
 
     constructor(public settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
@@ -139,7 +138,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             for (const map of data.readyMaps) {
                 if (!entry.has(map)) {
                     entry.add(map)
-                    this.sendMapFullState.add(map)
                 }
             }
         }

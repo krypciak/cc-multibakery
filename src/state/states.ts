@@ -2,6 +2,7 @@ declare global {
     interface StateUpdatePacket {}
 }
 
+import { ServerPlayer } from '../server/server-player'
 import './entity'
 import './vars'
 
@@ -13,16 +14,16 @@ declare global {
     }
 }
 
-export function getStateUpdatePacket(full: boolean) {
+export function getStateUpdatePacket(player: ServerPlayer) {
     const packet: StateUpdatePacket = {}
 
-    for (const { get } of handlers) get(packet, full)
+    for (const { get } of handlers) get(packet, player)
 
     return packet
 }
 
 type Handler = {
-    get: (packet: StateUpdatePacket, full: boolean) => void
+    get: (packet: StateUpdatePacket, player: ServerPlayer) => void
     set: (packet: StateUpdatePacket) => void
 }
 const handlers: Handler[] = []

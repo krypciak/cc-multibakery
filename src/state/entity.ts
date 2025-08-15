@@ -3,6 +3,7 @@ import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../misc/entity-netid'
 import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
+import { ServerPlayer } from '../server/server-player'
 
 import './entity-death'
 
@@ -32,7 +33,7 @@ declare global {
 }
 
 interface StateEntityBase {
-    getState(full: boolean): object | undefined
+    getState(player: ServerPlayer): object | undefined
     setState(value: object): void
 }
 
@@ -55,12 +56,12 @@ export function getEntityTypeId(netid: string): EntityTypeId {
 
 prestart(() => {
     addStateHandler({
-        get(packet, full) {
+        get(packet, player) {
             packet.states = {}
             for (const entity of ig.game.entities) {
                 if (isStateEntity(entity)) {
                     const typeId = getEntityTypeId(entity.netid)
-                    const state = entity.getState(full)
+                    const state = entity.getState(player)
                     if (
                         !state ||
                         (!entitySendEmpty.has(typeId) && Object.values(state).filter(a => a !== undefined).length == 0)

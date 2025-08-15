@@ -3,30 +3,28 @@ import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { RemoteServer } from '../server/remote/remote-server'
 import { createFakeEffectSheet } from './entity'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 
 declare global {
     namespace sc {
         interface ItemDropEntity {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: sc.ItemDropEntity, full: boolean) {
-    if (!this.lastSent || full) {
-        return {
-            pos: this.coll.pos,
-            dropType: Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0],
-            item: this.item,
-            target: this.target.netid,
-            amount: this.amount,
-        }
-    } else {
-        return {
-            pos: isSameAsLast(this, full, this.coll.pos, 'pos', Vec3.equal, Vec3.create),
-        }
+function getState(this: sc.ItemDropEntity, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
+
+    return {
+        pos: memory.isSameAsLast(this.coll.pos, Vec3.equal, Vec3.create),
+
+        dropType: memory.onlyOnce(Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0]),
+        item: memory.onlyOnce(this.item),
+        target: memory.onlyOnce(this.target.netid),
+        amount: memory.onlyOnce(this.amount),
     }
 }
 

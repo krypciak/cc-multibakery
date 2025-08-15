@@ -3,6 +3,7 @@ import { addStateHandler } from './states'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
+import { ServerPlayer } from '../server/server-player'
 
 type VarObj = [string, ig.VarValue]
 
@@ -13,14 +14,18 @@ declare global {
     namespace ig {
         interface Vars {
             varsChanged?: VarObj[]
+            everSent?: WeakSet<ServerPlayer>
         }
     }
 }
 
 prestart(() => {
     addStateHandler({
-        get(packet, full) {
-            if (full) {
+        get(packet, player) {
+            ig.vars.everSent ??= new WeakSet()
+            if (!ig.vars.everSent.has(player)) {
+                ig.vars.everSent.add(player)
+
                 ig.vars.varsChanged = []
                 for (const key in ig.vars.storage.map)
                     ig.vars.varsChanged.push([`map.${key}`, ig.vars.storage.map[key]])

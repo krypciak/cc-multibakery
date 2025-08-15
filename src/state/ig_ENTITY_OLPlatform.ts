@@ -1,20 +1,23 @@
 import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
 import { prestart } from '../plugin'
 import { createNetidStatic } from './entity'
-import { isSameAsLast } from './state-util'
+import { StateMemory } from './state-util'
+import { ServerPlayer } from '../server/server-player'
 
 declare global {
     namespace ig.ENTITY {
         interface OLPlatform {
-            lastSent?: Return
+            lastSent?: WeakMap<ServerPlayer, StateMemory>
         }
     }
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.OLPlatform, full: boolean) {
+function getState(this: ig.ENTITY.OLPlatform, player: ServerPlayer) {
+    const memory = StateMemory.getStateMemory(this, player)
+
     return {
-        currentState: isSameAsLast(this, full, this.states.indexOf(this.currentState), 'currentState'),
+        currentState: memory.isSameAsLast(this.states.indexOf(this.currentState)),
     }
 }
 function setState(this: ig.ENTITY.OLPlatform, state: Return) {

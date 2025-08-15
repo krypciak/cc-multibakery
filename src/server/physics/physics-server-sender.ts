@@ -1,11 +1,10 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { Client } from '../../client/client'
 import { assert } from '../../misc/assert'
-import { NetConnection } from '../../net/connection'
 import { prestart } from '../../plugin'
 import { getStateUpdatePacket } from '../../state/states'
 import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
+import { ServerPlayer } from '../server-player'
 
 prestart(() => {
     if (!PHYSICS) return
@@ -22,33 +21,28 @@ prestart(() => {
 function send() {
     assert(multi.server instanceof PhysicsServer)
     if (!multi.server.netManager) return
-    const mapsToSend: Record<string, Client[]> = {}
 
     const connections = multi.server.netManager.connections
+
     for (const conn of connections) {
+        const readyMaps = multi.server.connectionReadyMaps.get(conn)
+
+        const mapPackets: Record<string, StateUpdatePacket> = {}
         for (const client of conn.clients) {
-            ;(mapsToSend[client.player.mapName] ??= []).push(client)
+            const mapName = client.player.mapName
+            const map = multi.server.maps[mapName]
+            if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
+
+            const packet = getMapUpdatePacket(map, client.player)
+            mapPackets[mapName] ??= packet
         }
-    }
-
-    const mapPackets: Record<string, StateUpdatePacket> = {}
-
-    for (const mapName in mapsToSend) {
-        const map = multi.server.maps[mapName]
-        if (!map?.inst) continue
-
-        mapPackets[mapName] = getMapUpdatePacket(map, multi.server.sendMapFullState.has(mapName))
-    }
-    multi.server.sendMapFullState.clear()
-
-    for (const conn of connections) {
-        const data = getRemoteServerUpdatePacket(conn, mapPackets)
+        const data = getRemoteServerUpdatePacket(mapPackets)
         conn.send('update', data)
     }
 }
 
-function getMapUpdatePacket(map: CCMap, shoudSendFullState: boolean): StateUpdatePacket {
-    return runTask(map.inst, () => getStateUpdatePacket(shoudSendFullState))
+function getMapUpdatePacket(map: CCMap, player: ServerPlayer): StateUpdatePacket {
+    return runTask(map.inst, () => getStateUpdatePacket(player))
 }
 
 export interface PhysicsServerUpdatePacket {
@@ -56,22 +50,9 @@ export interface PhysicsServerUpdatePacket {
     tick: number
     sendAt: number
 }
-function getRemoteServerUpdatePacket(
-    conn: NetConnection,
-    mapPackets: Record<string, StateUpdatePacket>
-): PhysicsServerUpdatePacket {
-    assert(multi.server instanceof PhysicsServer)
-
-    const readyMaps = multi.server.connectionReadyMaps.get(conn)
-    const sendMapPackets: PhysicsServerUpdatePacket['mapPackets'] = {}
-    for (const client of conn.clients) {
-        const mapName = client.player.mapName
-        if (sendMapPackets[mapName] || !readyMaps || !readyMaps.has(mapName)) continue
-        sendMapPackets[mapName] = mapPackets[mapName]
-    }
-
+function getRemoteServerUpdatePacket(mapPackets: Record<string, StateUpdatePacket>): PhysicsServerUpdatePacket {
     const data: PhysicsServerUpdatePacket = {
-        mapPackets: sendMapPackets,
+        mapPackets,
         tick: ig.system.tick,
         sendAt: Date.now(),
     }
