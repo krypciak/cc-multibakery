@@ -119,7 +119,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
-        // console.log(`received packet from`, conn.clients, `:`, data)
         if (!isRemoteServerUpdatePacket(data)) {
             console.warn('invalid update packet received from', conn.clients, ', contents: ', data, ', closing')
             conn.close()

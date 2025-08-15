@@ -59,7 +59,7 @@ prestart(() => {
         teleport(mapName, marker, hint, clearCache, reloadCache) {
             if (!multi.server) return this.parent(mapName, marker, hint, clearCache, reloadCache)
 
-            console.log('teleport', mapName, marker, hint, clearCache, reloadCache)
+            assert(false)
         },
     })
 

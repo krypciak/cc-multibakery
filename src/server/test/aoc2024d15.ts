@@ -99,7 +99,6 @@ function recursiveMoveCheck(
     const retList: sc.AocPushPullable[] = [this]
 
     if (depth > 100) throw new Error('oopsie daisy depth')
-    //console.log('rec depth:', depth, ', netid:', this.entity.netid, 'isPushingBlocked:', isPushingBlocked)
     collList = collList.filter(coll => coll.entity.netid != this.entity.netid)
     if (collList.some(coll => !(coll.entity instanceof ig.ENTITY.AocBox))) return []
     if (collList.length == 0 && isPushingBlocked) return []
@@ -109,10 +108,8 @@ function recursiveMoveCheck(
     previous.add(this.entity.netid)
     if (checkLinked && this.entity.linked && !previous.has(this.entity.linked.netid)) {
         if (!isPulling || vx == 0) {
-            //console.log('adding linked coll')
             collList.push(this.entity.linked.coll)
         }
-        //console.log('adding linked: ', this.entity.linked.netid, 'isPulling:', isPulling, 'vx:', vx, 'vy:', vy)
         previous.add(this.entity.linked.netid)
         retList.push(this.entity.linked.pushPullable)
     }
@@ -169,11 +166,9 @@ sc.AocPushPullable = sc.PushPullable.extend({
             ? (this.gripDir == 'EAST' && vx < 0) || (this.gripDir == 'WEST' && vx > 0)
             : !!vy && ((this.gripDir == 'NORTH' && vy > 0) || (this.gripDir == 'SOUTH' && vy < 0))
 
-        //console.log('\n')
         const checkLinked = !!this.entity.linked && (this.gripDir == 'NORTH' || this.gripDir == 'SOUTH' || isPulling)
         const list = recursiveMoveCheck.call(this, vx, vy, isPulling, new Set(), 0, checkLinked)
         list.reverse()
-        //console.log('\n')
 
         for (const box of list) moveBox.call(box, vx, vy, isPulling)
     },
