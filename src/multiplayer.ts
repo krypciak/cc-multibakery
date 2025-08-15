@@ -34,10 +34,11 @@ declare global {
 
 function initMultiplayer() {
     return {
-        server: undefined as any,
-        destroyOnNext: false,
         class: {} as any,
+
+        server: undefined as any,
         stepCount: 0,
+
         setServer(server: Server) {
             assert(!this.server)
             this.server = server

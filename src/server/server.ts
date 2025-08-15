@@ -65,6 +65,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     measureTraffic: boolean = false
     attemptCrashRecovery: boolean = false
     destroyed: boolean = false // or destroying
+    destroyNextFrame: boolean = false
 
     async start() {
         instanceinator.displayId = false
@@ -100,12 +101,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         for (const name in this.maps) {
             const map = this.maps[name]
             if (this.applyUpdateable(map)) map.update()
-            if (!multi.server) return
         }
         for (const clientId in this.clients) {
             const client = this.clients[clientId]
             if (this.applyUpdateable(client)) client.update()
-            if (!multi.server) return
         }
         this.serverInst.apply()
     }
@@ -116,16 +115,16 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         for (const name in this.maps) {
             const map = this.maps[name]
             if (this.applyUpdateable(map)) map.deferredUpdate()
-            if (!multi.server) return
         }
         for (const clientId in this.clients) {
             const client = this.clients[clientId]
             if (this.applyUpdateable(client)) client.deferredUpdate()
-            if (!multi.server) return
         }
 
         this.serverInst.apply()
         ig.input.clearPressed()
+
+        if (this.destroyNextFrame) multi.destroyAndStartLoop()
     }
 
     onInstanceUpdateError(error: unknown): never {
@@ -195,6 +194,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     destroy() {
         if (this.destroyed) return
         this.destroyed = true
+        this.destroyNextFrame = false
 
         this.serverInst.apply()
 

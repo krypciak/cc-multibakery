@@ -41,7 +41,9 @@ export class ServerPlayer {
                         assert(entity instanceof dummy.DummyPlayer)
                         resolve(entity)
                     } else {
-                        ig.game.nextScheduledTasks.push(func)
+                        ig.game.postScheduledTasks.push(() => {
+                            ig.game.scheduledTasks.push(func)
+                        })
                     }
                 }
                 func()
