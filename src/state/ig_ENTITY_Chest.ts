@@ -13,7 +13,7 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Chest, player: StateKey) {
+function getState(this: ig.ENTITY.Chest, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         isOpen: memory.diff(this.isOpen),

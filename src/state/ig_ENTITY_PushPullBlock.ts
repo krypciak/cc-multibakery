@@ -14,7 +14,7 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.PushPullBlock, player: StateKey) {
+function getState(this: ig.ENTITY.PushPullBlock, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {

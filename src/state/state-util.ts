@@ -43,12 +43,14 @@ export class StateMemory {
         this.data = []
     }
 
-    static getBy<K extends object>(obj: { lastSent?: WeakMap<K, StateMemory> }, key: K): StateMemory {
+    static getBy<K extends object>(obj: { lastSent?: WeakMap<K, StateMemory> }, key: K | undefined): StateMemory {
         obj.lastSent ??= new WeakMap()
-        const entry = obj.lastSent.get(key)
-        if (entry) {
-            entry.i = 0
-            return entry
+        if (key) {
+            const entry = obj.lastSent.get(key)
+            if (entry) {
+                entry.i = 0
+                return entry
+            }
         }
         const memory = new StateMemory()
         if (key) obj.lastSent.set(key, memory)

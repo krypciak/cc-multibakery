@@ -14,7 +14,7 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.CombatantMarble, player: StateKey) {
+function getState(this: ig.ENTITY.CombatantMarble, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         pos: memory.diffVec3(this.coll.pos),

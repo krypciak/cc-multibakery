@@ -17,7 +17,7 @@ declare global {
 }
 
 type Return = ReturnType<typeof getState>
-function getState(this: dummy.DummyPlayer, player: StateKey) {
+function getState(this: dummy.DummyPlayer, player?: StateKey) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
     const memory = StateMemory.getBy(this, player)
@@ -41,7 +41,7 @@ function getState(this: dummy.DummyPlayer, player: StateKey) {
         rightArm: memory.diff(this.model.equip.rightArm),
         torso: memory.diff(this.model.equip.torso),
         feet: memory.diff(this.model.equip.feet),
-        items: this == player.dummy ? memory.diffStaticArray(this.model.items) : undefined,
+        items: this == player?.dummy ? memory.diffStaticArray(this.model.items) : undefined,
 
         charge: memory.diff(chargeLevel),
     }

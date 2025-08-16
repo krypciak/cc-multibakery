@@ -20,7 +20,7 @@ declare global {
 }
 
 type Return = Exclude<ReturnType<typeof getState>, undefined>
-function getState(this: ig.ENTITY.Effect, player: StateKey) {
+function getState(this: ig.ENTITY.Effect, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
