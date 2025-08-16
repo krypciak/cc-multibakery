@@ -5,7 +5,6 @@ prestart(() => {
         init(...args) {
             this.parent(...args)
             this.introGui.timeLine = [{ time: 0, end: true }]
-            // @ts-expect-error
             this.bgGui.parallax.addLoadListener({
                 onLoadableComplete: () => {
                     let { timeLine } = this.bgGui

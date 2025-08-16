@@ -1,7 +1,7 @@
 import { Server } from './server/server'
 import { assert } from './misc/assert'
 import { poststart, prestart } from './plugin'
-import { getStepCount } from './misc/steps/step-id'
+import { getStepCount } from './steps/step-id'
 
 // import './misc/skip-title-screen'
 import './misc/entity-netid'
@@ -14,7 +14,7 @@ import './misc/disable-fkeys'
 import './client/menu/server-list-menu'
 import './client/menu/pause/pause-screen'
 import './pvp/pvp'
-import './misc/steps/all'
+import './steps/all'
 
 declare global {
     namespace multi {

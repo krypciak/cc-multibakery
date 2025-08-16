@@ -66,23 +66,23 @@ poststart(() => {
                 displayRemoteClientInstances: true,
                 forceConsistentTickTimes: false,
                 attemptCrashRecovery: false,
-                // netInfo: {
-                //     connection: {
-                //         httpPort: DEFAULT_HTTP_PORT,
-                //         httpRoot: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/dist',
-                //         https: {
-                //             cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2.pem',
-                //             key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2-key.pem',
-                //         },
-                //         ccbundler: true,
-                //         type: 'socket',
-                //     },
-                //     details: {
-                //         title: 'dev',
-                //         description: 'dev server',
-                //         iconPath: './assets/mods/cc-multibakery/icon/icon.png',
-                //     },
-                // },
+                netInfo: {
+                    connection: {
+                        httpPort: DEFAULT_HTTP_PORT,
+                        httpRoot: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/dist',
+                        https: {
+                            cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2.pem',
+                            key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2-key.pem',
+                        },
+                        ccbundler: true,
+                        type: 'socket',
+                    },
+                    details: {
+                        title: 'dev',
+                        description: 'dev server',
+                        iconPath: './assets/mods/cc-multibakery/icon/icon.png',
+                    },
+                },
                 defalutMap: {
                     map: 'multibakery/dev',
                     // map: 'rhombus-dng/room-1',

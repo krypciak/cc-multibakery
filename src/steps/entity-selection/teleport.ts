@@ -1,7 +1,7 @@
-import { prestart } from '../../../plugin'
+import { prestart } from '../../plugin'
 import { defaultSelectionName } from './entity-selection'
-import { MarkerLike } from '../../../server/ccmap/teleport-fix'
-import { assert } from '../../assert'
+import { MarkerLike } from '../../server/ccmap/teleport-fix'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace ig.EVENT_STEP {

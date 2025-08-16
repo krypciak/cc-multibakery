@@ -1,5 +1,5 @@
-import { postload } from '../../plugin'
-import { assert } from '../assert'
+import { postload } from '../plugin'
+import { assert } from '../misc/assert'
 
 postload(() => {
     ig.module('multibakery.step.id')

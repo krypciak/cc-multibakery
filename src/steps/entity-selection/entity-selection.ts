@@ -1,5 +1,5 @@
-import { prestart } from '../../../plugin'
-import { assert } from '../../assert'
+import { prestart } from '../../plugin'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace ig {

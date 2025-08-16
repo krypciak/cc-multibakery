@@ -30,4 +30,5 @@ declare global {
     }
 
     function findClassName(id: any): string
+    function fcn(id: any): string
 }
