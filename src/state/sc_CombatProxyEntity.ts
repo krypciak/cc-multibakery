@@ -10,9 +10,7 @@ import { resolveProxyFromType } from './proxy-util'
 
 declare global {
     namespace sc {
-        interface CombatProxyEntity {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface CombatProxyEntity extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

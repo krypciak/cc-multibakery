@@ -25,15 +25,20 @@ export function cleanRecord<T extends object>(rec: T): T | undefined {
     return newRecord as T
 }
 
-type ArrayDiffEntry<V> = [number, V]
-type ArrayDiff<V> =
-    | {
-          diff: ArrayDiffEntry<V>[]
-      }
-    | {
-          full: V[]
-      }
+export namespace StateMemory {
+    export type ArrayDiffEntry<V> = [number, V]
+    export type ArrayDiff<V> =
+        | {
+              diff: ArrayDiffEntry<V>[]
+          }
+        | {
+              full: V[]
+          }
 
+    export interface MapHolder<K extends object> {
+        lastSent?: WeakMap<K, StateMemory>
+    }
+}
 export class StateMemory {
     private i: number
     private data: unknown[]
@@ -43,7 +48,7 @@ export class StateMemory {
         this.data = []
     }
 
-    static getBy<K extends object>(obj: { lastSent?: WeakMap<K, StateMemory> }, key: K | undefined): StateMemory {
+    static getBy<K extends object>(obj: StateMemory.MapHolder<K>, key: K | undefined): StateMemory {
         obj.lastSent ??= new WeakMap()
         if (key) {
             const entry = obj.lastSent.get(key)
@@ -121,7 +126,9 @@ export class StateMemory {
         Object.assign(into, change)
     }
 
-    diffStaticArray<V extends number | string | null | undefined>(currValue: V[]): ArrayDiff<V> | undefined {
+    diffStaticArray<V extends number | string | null | undefined>(
+        currValue: V[]
+    ): StateMemory.ArrayDiff<V> | undefined {
         const i = this.i++
         if (this.data.length <= i) {
             this.data.push([...currValue])
@@ -131,7 +138,7 @@ export class StateMemory {
 
             assert(lastArr.length == currValue.length)
 
-            const diff: ArrayDiffEntry<V>[] = []
+            const diff: StateMemory.ArrayDiffEntry<V>[] = []
             for (let i = 0; i < currValue.length; i++) {
                 if (currValue[i] != lastArr[i]) {
                     diff.push([i, currValue[i]])
@@ -143,7 +150,7 @@ export class StateMemory {
         }
     }
 
-    static applyDiffStaticArray<E, K extends keyof E, V>(obj: E, key: K, diff: ArrayDiff<V> | undefined) {
+    static applyDiffStaticArray<E, K extends keyof E, V>(obj: E, key: K, diff: StateMemory.ArrayDiff<V> | undefined) {
         if (!diff) return
 
         if ('full' in diff) {

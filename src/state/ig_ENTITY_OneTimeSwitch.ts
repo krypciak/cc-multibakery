@@ -7,9 +7,7 @@ import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
-        interface OneTimeSwitch {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface OneTimeSwitch extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

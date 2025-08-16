@@ -7,9 +7,7 @@ import { StateMemory } from './state-util'
 
 declare global {
     namespace ig.ENTITY {
-        interface CombatantMarble {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface CombatantMarble extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

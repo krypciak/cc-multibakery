@@ -7,9 +7,7 @@ import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
-        interface MultiHitSwitch {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface MultiHitSwitch extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

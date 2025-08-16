@@ -10,9 +10,7 @@ import { TemporarySet } from '../misc/temporary-set'
 
 declare global {
     namespace ig.ENTITY {
-        interface Effect {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface Effect extends StateMemory.MapHolder<StateKey> {}
     }
     namespace ig {
         var ignoreEffectNetid: boolean | undefined

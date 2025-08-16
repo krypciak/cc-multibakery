@@ -6,9 +6,7 @@ import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
-        interface OLPlatform {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface OLPlatform extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

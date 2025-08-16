@@ -7,7 +7,7 @@ import { inputBackup } from '../dummy/dummy-input'
 
 declare global {
     namespace ig.ENTITY {
-        interface Crosshair {
+        interface Crosshair extends StateMemory.MapHolder<StateKey> {
             createNetid(
                 this: this,
                 x: number,
@@ -16,7 +16,6 @@ declare global {
                 settings: ig.ENTITY.Crosshair.Settings
             ): string | undefined
 
-            lastSent?: WeakMap<StateKey, StateMemory>
             justThrown?: boolean
         }
     }

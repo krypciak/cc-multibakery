@@ -8,9 +8,7 @@ import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
-        interface Ball {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface Ball extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

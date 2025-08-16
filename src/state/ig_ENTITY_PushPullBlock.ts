@@ -7,9 +7,7 @@ import { StateKey } from './states'
 
 declare global {
     namespace ig.ENTITY {
-        interface PushPullBlock {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface PushPullBlock extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

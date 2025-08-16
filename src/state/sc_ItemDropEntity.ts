@@ -8,9 +8,7 @@ import { StateKey } from './states'
 
 declare global {
     namespace sc {
-        interface ItemDropEntity {
-            lastSent?: WeakMap<StateKey, StateMemory>
-        }
+        interface ItemDropEntity extends StateMemory.MapHolder<StateKey> {}
     }
 }
 

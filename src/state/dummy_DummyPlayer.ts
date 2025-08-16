@@ -8,10 +8,8 @@ import { StateMemory } from './state-util'
 
 declare global {
     namespace dummy {
-        interface DummyPlayer {
+        interface DummyPlayer extends StateMemory.MapHolder<StateKey> {
             createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
-
-            lastSent?: WeakMap<StateKey, StateMemory>
         }
     }
 }
