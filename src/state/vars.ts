@@ -4,15 +4,15 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 
-type VarObj = [string, ig.VarValue]
+type VarObj = Record<string, ig.VarValue>
 
 declare global {
     interface StateUpdatePacket {
-        vars?: VarObj[]
+        vars?: VarObj
     }
     namespace ig {
         interface Vars {
-            varsChanged?: VarObj[]
+            varsChanged?: VarObj
             everSent?: WeakSet<StateKey>
         }
     }
@@ -20,24 +20,26 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
+        get(packet, player, cache) {
             ig.vars.everSent ??= new WeakSet()
+
+            packet.vars ??= cache?.vars ?? ig.vars.varsChanged
+            ig.vars.varsChanged = undefined
+
             if (!player || !ig.vars.everSent.has(player)) {
                 if (player) ig.vars.everSent.add(player)
 
-                ig.vars.varsChanged = []
-                for (const key in ig.vars.storage.map)
-                    ig.vars.varsChanged.push([`map.${key}`, ig.vars.storage.map[key]])
-                for (const key in ig.vars.storage.tmp)
-                    ig.vars.varsChanged.push([`tmp.${key}`, ig.vars.storage.tmp[key]])
+                packet.vars ??= {}
+                for (const key in ig.vars.storage.map) packet.vars[`map.${key}`] = ig.vars.storage.map[key]
+                for (const key in ig.vars.storage.tmp) packet.vars[`tmp.${key}`] = ig.vars.storage.tmp[key]
             }
-            packet.vars = ig.vars.varsChanged
-            ig.vars.varsChanged = undefined
         },
         set(packet) {
             if (!packet.vars) return
 
-            for (const [path, value] of packet.vars) {
+            for (const path in packet.vars) {
+                const value = packet.vars[path]
+
                 const obj = ig.vars._getAccessObject(path)
                 assert(obj)
                 obj.obj[obj.key] = value
@@ -51,7 +53,7 @@ prestart(() => {
     addVarModifyListener((path, _oldPath, newValue) => {
         if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
         if (!path.startsWith('map') && !path.startsWith('tmp')) return
-        ig.vars.varsChanged ??= []
-        ig.vars.varsChanged.push([path, newValue])
+        ig.vars.varsChanged ??= {}
+        ig.vars.varsChanged[path] = newValue
     })
 })

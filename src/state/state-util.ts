@@ -15,7 +15,7 @@ export function cleanRecord<T extends object>(rec: T): T | undefined {
     let atLeastOneKey = false
     for (const key in rec) {
         const value = rec[key]
-        if (value || value === false) {
+        if (value !== undefined && value !== null) {
             newRecord[key] = value
             atLeastOneKey = true
         }

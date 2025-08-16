@@ -24,6 +24,7 @@ import './ig_ENTITY_Chest'
 import './ig_ENTITY_FloorSwitch'
 
 import './entity-hit-effect'
+import { cleanRecord } from './state-util'
 
 declare global {
     interface StateUpdatePacket {
@@ -32,7 +33,7 @@ declare global {
 }
 
 interface StateEntityBase {
-    getState(player?: StateKey): object | undefined
+    getState(player?: StateKey, cache?: object): object | undefined
     setState(value: object): void
 }
 
@@ -55,18 +56,26 @@ export function getEntityTypeId(netid: string): EntityTypeId {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
-            packet.states = {}
+        get(packet, player, cache) {
+            packet.states ??= {}
+
             for (const entity of ig.game.entities) {
                 if (isStateEntity(entity)) {
                     const typeId = getEntityTypeId(entity.netid)
-                    const state = entity.getState(player)
-                    if (
-                        !state ||
-                        (!entitySendEmpty.has(typeId) && Object.values(state).filter(a => a !== undefined).length == 0)
-                    )
-                        continue
-                    packet.states[entity.netid] = state
+
+                    let state = entity.getState(player, cache?.states?.[entity.netid])
+                    if (!state) continue
+                    state = cleanRecord(state)
+                    if (!state) {
+                        if (entitySendEmpty.has(typeId)) {
+                            state = {}
+                        } else {
+                            continue
+                        }
+                    }
+
+                    packet.states[entity.netid] ??= {}
+                    Object.assign(packet.states[entity.netid], state)
                 }
             }
         },

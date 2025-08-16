@@ -215,9 +215,8 @@ declare global {
 }
 prestart(() => {
     addStateHandler({
-        get(packet) {
-            packet.clearEffects
-            packet.stopEffects = ig.stopEffects
+        get(packet, _player, cache) {
+            packet.stopEffects ??= cache?.stopEffects ?? ig.stopEffects
             ig.stopEffects = undefined
         },
         set(packet) {

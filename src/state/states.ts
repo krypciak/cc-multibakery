@@ -17,16 +17,14 @@ declare global {
     }
 }
 
-export function getStateUpdatePacket(player?: StateKey) {
-    const packet: StateUpdatePacket = {}
+export function getStateUpdatePacket(dest: StateUpdatePacket = {}, player?: StateKey, cache?: StateUpdatePacket) {
+    for (const { get } of handlers) get(dest, player, cache)
 
-    for (const { get } of handlers) get(packet, player)
-
-    return packet
+    return dest
 }
 
-type Handler = {
-    get: (packet: StateUpdatePacket, player?: StateKey) => void
+interface Handler {
+    get: (packet: StateUpdatePacket, player?: StateKey, cache?: StateUpdatePacket) => void
     set: (packet: StateUpdatePacket) => void
 }
 const handlers: Handler[] = []

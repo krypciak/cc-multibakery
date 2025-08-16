@@ -5,6 +5,7 @@ import { getStateUpdatePacket } from '../../state/states'
 import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
 import { ServerPlayer } from '../server-player'
+import { NetConnection } from '../../net/connection'
 
 prestart(() => {
     if (!PHYSICS) return
@@ -24,25 +25,42 @@ function send() {
 
     const connections = multi.server.netManager.connections
 
+    const packets: Record</* mapName */ string, Map<NetConnection, StateUpdatePacket>> = {}
     for (const conn of connections) {
         const readyMaps = multi.server.connectionReadyMaps.get(conn)
 
-        const mapPackets: Record<string, StateUpdatePacket> = {}
         for (const client of conn.clients) {
             const mapName = client.player.mapName
             const map = multi.server.maps[mapName]
             if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
 
-            const packet = getMapUpdatePacket(map, client.player)
-            mapPackets[mapName] ??= packet
+            packets[mapName] ??= new Map()
+            const cachePacket = packets[mapName].values().next()?.value
+            let dest = packets[mapName].get(conn)
+            if (!dest) {
+                dest = {}
+                packets[mapName].set(conn, dest)
+            }
+
+            getMapUpdatePacket(map, dest, client.player, cachePacket)
         }
-        const data = getRemoteServerUpdatePacket(mapPackets)
+
+        const connPackets: Record</* mapName */ string, StateUpdatePacket> = {}
+        for (const mapName in packets) {
+            const map = packets[mapName]
+            const packet = map.get(conn)
+            if (packet) {
+                connPackets[mapName] = packet
+            }
+        }
+
+        const data = getRemoteServerUpdatePacket(connPackets)
         conn.send('update', data)
     }
 }
 
-function getMapUpdatePacket(map: CCMap, player: ServerPlayer): StateUpdatePacket {
-    return runTask(map.inst, () => getStateUpdatePacket(player))
+function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, player?: ServerPlayer, cache?: StateUpdatePacket) {
+    runTask(map.inst, () => getStateUpdatePacket(dest, player, cache))
 }
 
 export interface PhysicsServerUpdatePacket {
