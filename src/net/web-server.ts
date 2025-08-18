@@ -138,7 +138,7 @@ async function fetchUrlWithPing(url: string): Promise<{
     ping: number
     res: Response
 } | void> {
-    const started = Date.now()
+    const started = performance.now()
     try {
         const timeout = 3000
         const res = await Promise.race([
@@ -147,7 +147,7 @@ async function fetchUrlWithPing(url: string): Promise<{
             new Promise<{ status: 408 }>(resolve => setTimeout(() => resolve({ status: 408 }), timeout + 100)),
         ])
         if (res.status == 200) {
-            const ping = Date.now() - started
+            const ping = Math.round(performance.now() - started)
             return { ping, res }
         }
     } catch (e) {}
