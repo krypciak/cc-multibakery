@@ -8,6 +8,8 @@ export type StateKey = ServerPlayer
 
 import './entity'
 import './vars'
+import './steps'
+import './game-model-state'
 
 declare global {
     namespace ig {

@@ -294,7 +294,6 @@ prestart(() => {
     ig.ENTITY.NPC.inject({
         onInteraction() {
             if (!ig.ccmap) return this.parent()
-            return
         },
     })
 

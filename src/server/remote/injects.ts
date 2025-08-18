@@ -5,13 +5,6 @@ import { RemoteServer } from './remote-server'
 prestart(() => {
     if (!REMOTE) return
 
-    ig.EventManager.inject({
-        update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            this.clear()
-        },
-    })
-
     dummy.DummyPlayer.inject({
         setAction(action, keepState, noStateReset) {
             if (!(multi.server instanceof RemoteServer)) return this.parent(action, keepState, noStateReset)
@@ -36,6 +29,18 @@ prestart(() => {
             //     console.groupEnd()
             // }
             return this.parent(entity, x, y, z, settings, showAppearEffects)
+        },
+    })
+
+    ig.ENTITY.EventTrigger.inject({
+        update() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+        },
+    })
+
+    ig.ENTITY.NPC.inject({
+        onInteraction() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
         },
     })
 }, 3)

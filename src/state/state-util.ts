@@ -164,10 +164,10 @@ export class StateMemory {
         }
     }
 
-    diffArray<V>(arr: V[]) {
+    diffArray<V>(arr: V[], eq: (a: V, b: V) => boolean = (a, b) => a == b) {
         return this.diff(
             arr,
-            (a, b) => a.length == b.length && a.every((v, i) => v == b[i]),
+            (a, b) => a.length == b.length && a.every((v, i) => eq(v, b[i])),
             arr => [...arr]
         )
     }
