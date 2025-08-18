@@ -80,7 +80,9 @@ export class ServerPlayer {
         runTask(map.inst, () => {
             this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
 
-            teleportPlayerToProperMarker(this.dummy, marker, undefined, true)
+            if (multi.server instanceof PhysicsServer) {
+                teleportPlayerToProperMarker(this.dummy, marker, undefined, true)
+            }
             this.ready = true
         })
     }
