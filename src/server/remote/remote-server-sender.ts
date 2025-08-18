@@ -58,16 +58,13 @@ function send() {
         }
     }
 
-    const packet: RemoteServerUpdatePacket = {
+    const packet: RemoteServerUpdatePacket | undefined = cleanRecord({
         input: cleanRecord(inputPackets),
         readyMaps: multi.server.notifyReadyMaps,
-    }
+    })
     multi.server.notifyReadyMaps = undefined
 
-    const cleanPacket = cleanRecord(packet)
-    if (cleanPacket) {
-        conn.send('update', packet)
-    }
+    if (packet) conn.send('update', packet)
 }
 
 export interface RemoteServerUpdatePacket {

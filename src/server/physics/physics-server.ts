@@ -135,9 +135,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 this.connectionReadyMaps.set(conn, entry)
             }
             for (const map of data.readyMaps) {
-                if (!entry.has(map)) {
-                    entry.add(map)
-                }
+                entry.add(map)
             }
         }
         for (const username in data.input) {

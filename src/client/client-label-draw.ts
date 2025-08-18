@@ -76,7 +76,9 @@ export function createClientNetworkPacketTrafficLabel(client: Client) {
             const kbSent = (bytesSentAvg * tps * 8) / 1024
             const kbReceived = (bytesReceivedAvg * tps * 8) / 1024
 
-            return `\\i[keyCode-${ig.KEY.D}] ${kbReceived.floor()} kbps  \\i[keyCode-${ig.KEY.U}] ${kbSent.floor()} kbps`
+            const downloadStr = `\\i[keyCode-${ig.KEY.D}] ${kbReceived.floor()} kbps`
+            const uploadStr = `\\i[keyCode-${ig.KEY.U}] ${kbSent.floor()} kbps`
+            return `${downloadStr}  ${uploadStr}`
         }
     }
     client.inst.labelDrawClasses.push(new NetworkPacketTrafficLabelDrawClass())
@@ -100,7 +102,9 @@ export function createClientNetworkPacketTrafficLabel(client: Client) {
             const bSent = bytesSentDiff
             const bReceived = bytesReceivedDiff
 
-            return `\\i[keyCode-${ig.KEY.D}] ${bReceived.floor()} B  \\i[keyCode-${ig.KEY.U}] ${bSent.floor()} B`
+            const downloadStr = `\\i[keyCode-${ig.KEY.D}] ${bReceived.floor()} B`
+            const uploadStr = `\\i[keyCode-${ig.KEY.U}] ${bSent.floor()} B`
+            return `${downloadStr}  ${uploadStr}`
         }
     }
     client.inst.labelDrawClasses.push(new NetworkPacketSizeLabelDrawClass())
