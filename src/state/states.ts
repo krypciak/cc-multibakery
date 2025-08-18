@@ -10,6 +10,7 @@ import './entity'
 import './vars'
 import './steps'
 import './game-model-state'
+import './pvp'
 
 declare global {
     namespace ig {

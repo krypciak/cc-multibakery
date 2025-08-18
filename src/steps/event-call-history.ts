@@ -38,6 +38,8 @@ prestart(() => {
             ig.EVENT_STEP.SHOW_SIDE_MSG,
 
             ig.EVENT_STEP.START_NPC_TRADE_MENU,
+
+            ig.EVENT_STEP.SHOW_INPUT_DIALOG,
         ].map(clazz => clazz.classId)
     )
 })
@@ -58,7 +60,18 @@ declare global {
 
 function onEventStart(this: ig.EventCall, step: ig.EventStepBase, data: Record<string, unknown>) {
     // if (fcn(step) != 'ig.EVENT_STEP.CHANGE_VAR_BOOL') {
-    //     console.log('event on', instanceinator.id, 'stepId:', step.stepId, 'type:', fcn(step))
+    //     console.log(
+    //         'event on',
+    //         instanceinator.id,
+    //         'stepId:',
+    //         step.stepId,
+    //         'type:',
+    //         fcn(step),
+    //         'data:',
+    //         data,
+    //         'stepSettings:',
+    //         stepList[step.stepId].settings
+    //     )
     // }
 
     if (!stepWhitelist.has(step.classId)) return

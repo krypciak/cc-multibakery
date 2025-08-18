@@ -37,6 +37,7 @@ declare global {
             getPlayerTeam(this: this, player: dummy.DummyPlayer): PvpTeam | undefined
             resetMultiState(this: this): void
             removePvpGuis(this: this): void
+            showKOGuis(this: this): void
         }
     }
     namespace dummy {
@@ -67,7 +68,7 @@ prestart(() => {
             this.teams.push(team)
         },
         startMultiplayerPvp(winPoints) {
-            assert(this.teams.length > 1)
+            assert(this.teams?.length > 1)
             assert(multi.server)
 
             this.multiplayerPvp = true
@@ -91,7 +92,7 @@ prestart(() => {
 
             this.enemies = []
 
-            this.map = this.teams[0].players[0].getMap()
+            this.map = ig.ccmap ?? this.teams[0].players[0].getMap()
 
             runTasks(this.map.getAllInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
@@ -147,6 +148,7 @@ prestart(() => {
                     hpBars.sort((a, b) => a.order - b.order)
                     let enemyY = 5
                     let allyY = 5
+                    const height = 20
 
                     for (let i = 0; i < hpBars.length; i++) {
                         const bar = hpBars[i]
@@ -154,10 +156,10 @@ prestart(() => {
 
                         if (bar.relation == 'enemy') {
                             bar.setPos(bar.hook.pos.x, enemyY)
-                            enemyY += 15
+                            enemyY += height
                         } else {
                             bar.setPos(bar.hook.pos.x, allyY)
-                            allyY += 15
+                            allyY += height
                         }
                     }
                 }
@@ -219,6 +221,12 @@ prestart(() => {
 
             this.removeRoundGuis()
         },
+        showKOGuis() {
+            runTasks(this.map.getAllInstances(true), () => {
+                const koGui = new sc.PvpKoGui()
+                ig.gui.addGuiElement(koGui)
+            })
+        },
 
         start(winPoints, enemies) {
             this.points = {}
@@ -263,10 +271,7 @@ prestart(() => {
             this.state = 3
             ig.game.varsChangedDeferred()
 
-            runTasks(this.map.getAllInstances(true), () => {
-                const koGui = new sc.PvpKoGui()
-                ig.gui.addGuiElement(koGui)
-            })
+            this.showKOGuis()
 
             return sc.DRAMATIC_EFFECT[points == this.winPoints ? 'PVP_FINAL_KO' : 'PVP_KO']
         },

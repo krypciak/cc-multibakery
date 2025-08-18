@@ -1,0 +1,111 @@
+import { prestart } from '../plugin'
+import { addStateHandler } from './states'
+import { cleanRecord, StateMemory, undefinedIfFalsy } from './state-util'
+import { PvpTeam } from '../pvp/pvp'
+import { assert } from '../misc/assert'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
+
+export interface PvpTeamSerialized {
+    name: string
+    party: sc.COMBATANT_PARTY
+    players: string[]
+}
+
+interface PvpObj {
+    winPoints?: number
+    teams?: PvpTeamSerialized[]
+    round?: number
+    state?: number
+    points?: PartialRecord<sc.COMBATANT_PARTY, number>
+}
+
+declare global {
+    interface StateUpdatePacket {
+        pvp?: PvpObj
+    }
+    namespace ig {
+        var pvpStateMemory: StateMemory | undefined
+    }
+}
+
+function serializeTeam(team: PvpTeam): PvpTeamSerialized {
+    return {
+        ...team,
+        players: team.players.map(player => player.netid),
+    }
+}
+
+function deserializeTeam(team: PvpTeamSerialized): PvpTeam {
+    return {
+        ...team,
+        players: team.players.map(netid => {
+            const player = ig.game.entitiesByNetid[netid]
+            assert(player)
+            assert(player instanceof dummy.DummyPlayer)
+            return player
+        }),
+    }
+}
+
+prestart(() => {
+    addStateHandler({
+        get(packet) {
+            if (packet.pvp) return
+
+            const memory = StateMemory.get(ig.pvpStateMemory)
+            ig.pvpStateMemory ??= memory
+
+            const serializedTeams = sc.pvp.teams?.map(serializeTeam)
+
+            packet.pvp = cleanRecord({
+                teams:
+                    sc.pvp.teams &&
+                    (sc.pvp.teams.length > 0 ? true : undefined) &&
+                    memory.diffArray(
+                        serializedTeams,
+                        (a, b) => a.name == b.name && a.party == b.party && a.players.length == b.players.length
+                    ),
+                winPoints: memory.diff(sc.pvp.winPoints),
+                state: memory.diff(sc.pvp.state),
+                points: memory.diffRecord(sc.pvp.points),
+                round: memory.diff(sc.pvp.round),
+            })
+        },
+        set(packet) {
+            if (!packet.pvp) return
+
+            if (packet.pvp.winPoints !== undefined) {
+                sc.pvp.winPoints = packet.pvp.winPoints
+            }
+
+            if (packet.pvp.teams) {
+                sc.pvp.teams = packet.pvp.teams.map(deserializeTeam)
+            }
+
+            if (packet.pvp.state !== undefined) {
+                const state = packet.pvp.state
+                sc.pvp.state = state
+
+                if (sc.pvp.hpBars) sc.pvp.rearrangeHpBars()
+                if (state == 0) {
+                    if (sc.pvp.multiplayerPvp) sc.pvp.stop()
+                } else if (state == 1) {
+                    assert(!sc.pvp.multiplayerPvp)
+                    sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
+                } else if (state == 2) {
+                    sc.pvp.finalizeRoundStart()
+                } else if (state == 3) {
+                    sc.pvp.showKOGuis()
+                }
+            }
+
+            if (packet.pvp.round !== undefined && sc.pvp.state != 0) {
+                sc.pvp.startNextRound()
+            }
+
+            if (packet.pvp.points) {
+                StateMemory.applyChangeRecord(sc.pvp.points, packet.pvp.points)
+            }
+        },
+    })
+})

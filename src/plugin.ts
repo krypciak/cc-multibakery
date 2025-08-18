@@ -86,9 +86,9 @@ poststart(() => {
                 defalutMap: {
                     map: 'multibakery/dev',
                     // map: 'rhombus-dng/room-1',
-                    marker: 'entrance',
+                    // marker: 'entrance',
                     // marker: 'puzzle',
-                    // marker: 'pvp',
+                    marker: 'pvp',
                 },
             })
         )

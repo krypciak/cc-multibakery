@@ -38,7 +38,8 @@ function serializeStepGroup(group: StepGroup): StepGroup {
         group.callEntity = group.callEntity.netid as any
     }
 
-    for (const { data } of group.steps) {
+    for (const step of group.steps) {
+        let data = (step.data = { ...step.data })
         if (data && typeof data == 'object') {
             for (const key in data) {
                 const value = data[key]
@@ -46,6 +47,10 @@ function serializeStepGroup(group: StepGroup): StepGroup {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
+                    } else if (value instanceof multi.class.InputFieldDialog) {
+                        data[key] = undefined
+                    } else {
+                        assert(false)
                     }
                 }
             }
