@@ -4,7 +4,7 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
-import { StateMemory } from '../state-util'
+import { StateMemory, undefinedIfFalsy } from '../state-util'
 
 declare global {
     namespace dummy {
@@ -27,7 +27,9 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
 
         pos: memory.diffVec3(this.coll.pos),
         currentAnim: memory.diff(this.currentAnim),
-        currentAnimTimer: this.animState.timer,
+        currentAnimTimer: memory.onlyOnce(this.animState.timer),
+        resetAnimTimer: undefinedIfFalsy(this.animState.timer - ig.system.tick == 0),
+
         face: memory.diffVec2(this.face),
         accelDir: memory.diffVec2(this.coll.accelDir),
         animAlpha: memory.diff(this.animState.alpha),
@@ -67,13 +69,14 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             this.gui.crosshair.setCircleGlow()
         }
     }
-    this.animState.timer = state.currentAnimTimer
 
     if (state.face) this.face = state.face
     if (state.accelDir) this.coll.accelDir = state.accelDir
     if (state.animAlpha !== undefined) this.animState.alpha = state.animAlpha
 
+    if (state.resetAnimTimer) this.animState.timer = 0
     this.updateAnim()
+    if (state.currentAnimTimer !== undefined) this.animState.timer = state.currentAnimTimer
 
     /* footstep sounds */
     function getSoundFromColl(coll: ig.CollEntry, type: keyof typeof sc.ACTOR_SOUND): sc.ACTOR_SOUND_BASE {
