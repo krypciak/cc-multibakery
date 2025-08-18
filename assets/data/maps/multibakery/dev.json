@@ -573,6 +573,7 @@
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpArena", "value": false },
                     { "type": "CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS" },
                     { "type": "STOP_PVP_BATTLE" },
+                    { "type": "WAIT", "time": 1 },
                     { "type": "TELEPORT_SELECTED_ENTITIES", "marker": "from_pvp_", "selectionName": "team_", "bulk": true }
                 ],
                 "name": "pvpEnd",

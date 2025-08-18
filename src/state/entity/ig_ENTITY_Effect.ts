@@ -22,7 +22,6 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        // pos: memory.onlyOnce(this.coll.pos),
         pos: memory.diff(!this.target ? this.coll.pos : undefined),
 
         effectName: memory.onlyOnce(this.effect!.effectName),

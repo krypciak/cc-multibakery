@@ -48,12 +48,23 @@ prestart(() => {
         },
     })
 
-    if (!PHYSICSNET) return
+    if (PHYSICSNET) {
+        addVarModifyListener((path, _oldPath, newValue) => {
+            if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
+            if (!path.startsWith('map') && !path.startsWith('tmp')) return
+            ig.vars.varsChanged ??= {}
+            ig.vars.varsChanged[path] = newValue
+        })
+    }
 
-    addVarModifyListener((path, _oldPath, newValue) => {
-        if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
-        if (!path.startsWith('map') && !path.startsWith('tmp')) return
-        ig.vars.varsChanged ??= {}
-        ig.vars.varsChanged[path] = newValue
-    })
+    if (REMOTE) {
+        ig.Game.inject({
+            varsChanged() {
+                assert(!ig.ignoreEffectNetid)
+                ig.ignoreEffectNetid = true
+                this.parent()
+                ig.ignoreEffectNetid = false
+            },
+        })
+    }
 })

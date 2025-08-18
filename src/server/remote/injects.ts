@@ -14,7 +14,7 @@ prestart(() => {
     ig.Game.inject({
         spawnEntity(entity, x, y, z, settings, showAppearEffects) {
             if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
-                const isOk = typeof entity === 'function' ? isParticleClass(entity) : false
+                const isOk = ig.ignoreEffectNetid || (typeof entity === 'function' ? isParticleClass(entity) : false)
                 if (!isOk) {
                     console.groupCollapsed('local entity spawn!', findClassName(entity))
                     console.warn(settings)

@@ -180,6 +180,8 @@ prestart(() => {
             }
             this.rearrangeHpBars()
 
+            if (!this.multiplayerPvp) return
+
             const onlyTeamAlive = this.getOnlyTeamAlive()
             if (onlyTeamAlive) {
                 if (this.teams.length == 1) {
@@ -315,6 +317,7 @@ prestart(() => {
         },
         // onVarAccess different team points??
         onVarAccess(path, keys) {
+            if (!multi.server) return this.parent(path, keys)
             if (keys[0] == 'pvp') {
                 if (keys[1] == 'teamCount') return this.teams.length
             }

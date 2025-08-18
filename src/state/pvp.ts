@@ -1,9 +1,8 @@
 import { prestart } from '../plugin'
 import { addStateHandler } from './states'
-import { cleanRecord, StateMemory, undefinedIfFalsy } from './state-util'
+import { cleanRecord, StateMemory } from './state-util'
 import { PvpTeam } from '../pvp/pvp'
 import { assert } from '../misc/assert'
-import { runTasks } from 'cc-instanceinator/src/inst-util'
 
 export interface PvpTeamSerialized {
     name: string
@@ -100,6 +99,7 @@ prestart(() => {
             }
 
             if (packet.pvp.round !== undefined && sc.pvp.state != 0) {
+                sc.pvp.round = packet.pvp.round - 1
                 sc.pvp.startNextRound()
             }
 
