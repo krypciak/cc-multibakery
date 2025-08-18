@@ -1,7 +1,7 @@
-import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
-import { PhysicsServer } from '../server/physics/physics-server'
-import { addStateHandler } from './states'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../plugin'
+import { PhysicsServer } from '../../server/physics/physics-server'
+import { addStateHandler } from '../states'
 
 interface HitConfig {
     entity: string

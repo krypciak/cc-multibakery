@@ -1,9 +1,9 @@
-import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { prestart } from '../plugin'
-import { RemoteServer } from '../server/remote/remote-server'
-import { StateKey } from './states'
-import { createFakeEffectSheet } from './entity'
-import { StateMemory } from './state-util'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { prestart } from '../../plugin'
+import { RemoteServer } from '../../server/remote/remote-server'
+import { StateKey } from '../states'
+import { createFakeEffectSheet } from '../entity'
+import { StateMemory } from '../state-util'
 
 declare global {
     namespace ig.ENTITY {

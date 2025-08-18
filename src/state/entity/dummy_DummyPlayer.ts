@@ -1,10 +1,10 @@
-import { assert } from '../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { prestart } from '../plugin'
-import { PhysicsServer } from '../server/physics/physics-server'
-import { RemoteServer } from '../server/remote/remote-server'
-import { StateKey } from './states'
-import { StateMemory } from './state-util'
+import { assert } from '../../misc/assert'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { prestart } from '../../plugin'
+import { PhysicsServer } from '../../server/physics/physics-server'
+import { RemoteServer } from '../../server/remote/remote-server'
+import { StateKey } from '../states'
+import { StateMemory } from '../state-util'
 
 declare global {
     namespace dummy {

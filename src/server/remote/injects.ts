@@ -1,5 +1,5 @@
 import { prestart } from '../../plugin'
-import { isParticleClass } from '../../state/ig_ENTITY_Effect'
+import { isParticleClass } from '../../state/entity/ig_ENTITY_Effect'
 import { RemoteServer } from './remote-server'
 
 prestart(() => {

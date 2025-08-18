@@ -1,5 +1,5 @@
-import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../plugin'
 
 declare global {
     namespace sc {

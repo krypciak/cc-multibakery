@@ -1,8 +1,8 @@
-import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { prestart } from '../plugin'
-import { createNetidStatic } from './entity'
-import { StateMemory } from './state-util'
-import { StateKey } from './states'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { prestart } from '../../plugin'
+import { createNetidStatic } from '../entity'
+import { StateMemory } from '../state-util'
+import { StateKey } from '../states'
 
 declare global {
     namespace ig.ENTITY {

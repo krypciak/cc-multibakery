@@ -1,12 +1,12 @@
-import { assert } from '../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../misc/entity-netid'
-import { prestart } from '../plugin'
-import { PhysicsServer } from '../server/physics/physics-server'
-import { RemoteServer } from '../server/remote/remote-server'
-import { addStateHandler } from './states'
-import { StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from './state-util'
-import { StateKey } from './states'
-import { TemporarySet } from '../misc/temporary-set'
+import { assert } from '../../misc/assert'
+import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { prestart } from '../../plugin'
+import { PhysicsServer } from '../../server/physics/physics-server'
+import { RemoteServer } from '../../server/remote/remote-server'
+import { addStateHandler } from '../states'
+import { StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
+import { StateKey } from '../states'
+import { TemporarySet } from '../../misc/temporary-set'
 
 declare global {
     namespace ig.ENTITY {

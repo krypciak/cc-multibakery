@@ -1,8 +1,8 @@
-import { entityIgnoreDeath } from '../misc/entity-netid'
-import { prestart } from '../plugin'
-import { PhysicsServer } from '../server/physics/physics-server'
-import { getEntityTypeId } from './entity'
-import { addStateHandler } from './states'
+import { entityIgnoreDeath } from '../../misc/entity-netid'
+import { prestart } from '../../plugin'
+import { PhysicsServer } from '../../server/physics/physics-server'
+import { getEntityTypeId } from '../entity'
+import { addStateHandler } from '../states'
 
 declare global {
     interface StateUpdatePacket {
