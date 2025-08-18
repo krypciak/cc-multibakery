@@ -4,7 +4,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
 import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
-import { showServerErrorPopup } from '../misc/error-popup'
+import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 
 import './event/event'
 
@@ -68,8 +68,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     postUpdateCallback?: () => void
 
     async start() {
-        instanceinator.displayId = false
-        instanceinator.displayFps = false
+        assert(!isErrorPopupShown())
+
+        instanceinator.displayId = true
+        instanceinator.displayFps = true
 
         this.baseInst = instanceinator.instances[0]
         this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)

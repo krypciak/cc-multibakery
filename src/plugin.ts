@@ -61,7 +61,7 @@ poststart(() => {
                 globalTps: 60,
                 godmode: true,
                 displayServerInstance: false,
-                displayMaps: false,
+                displayMaps: true,
                 displayClientInstances: true,
                 displayRemoteClientInstances: true,
                 forceConsistentTickTimes: false,

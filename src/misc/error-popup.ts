@@ -21,7 +21,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const browserVersion = ig.browserVersion
     const stackTrace =
         err instanceof Error
-            ? err.stack ?? 'empty stack??'
+            ? (err.stack ?? 'empty stack??')
             : typeof err == 'object' && err && 'message' in err
               ? err.message
               : 'not an error??'
@@ -52,7 +52,10 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     return { infoText, modsText }
 }
 
-let shown: boolean
+let shown: boolean = false
+export function isErrorPopupShown(): boolean {
+    return shown
+}
 export function showServerErrorPopup(inst: InstanceinatorInstance, err: unknown) {
     if (shown) return
     shown = true

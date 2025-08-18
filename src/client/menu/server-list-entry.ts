@@ -1,4 +1,5 @@
 import { assert } from '../../misc/assert'
+import { isErrorPopupShown } from '../../misc/error-popup'
 import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../plugin'
@@ -222,6 +223,8 @@ prestart(() => {
             this.connectionText.setPos(this.nameText.hook.pos.x + this.nameText.hook.size.x + 8, 4)
         },
         async onButtonPress() {
+            if (isErrorPopupShown()) return
+
             await this.updateConnectionStatus()
             if (!this.canJoin) {
                 return sc.Dialogs.showErrorDialog('Unable to reach the server.')
