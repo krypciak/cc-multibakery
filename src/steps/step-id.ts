@@ -17,7 +17,6 @@ declare global {
         }
     }
 }
-let stepId = 0
 
 function injectSteps() {
     function constructStepsRecursive(
@@ -38,8 +37,7 @@ function injectSteps() {
 
             /* custom stuff start */
             const step: ig.StepBase = new stepClass(stepSettings)
-            step.stepId = ++stepId
-            stepList.push({ step, settings: stepSettings })
+            step.stepId = stepList.push({ step, settings: stepSettings }) - 1
             /* custom stuff end */
 
             if (stepType == 'LABEL') {
