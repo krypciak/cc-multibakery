@@ -22,6 +22,7 @@ import './ig_ENTITY_CombatantMarble'
 import './sc_ItemDropEntity'
 import './ig_ENTITY_Chest'
 import './ig_ENTITY_FloorSwitch'
+import './ig_ENTITY_NPC'
 
 import './entity-hit-effect'
 import { cleanRecord } from './state-util'
