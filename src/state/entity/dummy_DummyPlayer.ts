@@ -70,6 +70,10 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
 
+    if (state.spLevel !== undefined) {
+        this.model.spLevel = state.spLevel
+    }
+
     /* footstep sounds */
     function getSoundFromColl(coll: ig.CollEntry, type: keyof typeof sc.ACTOR_SOUND): sc.ACTOR_SOUND_BASE {
         var c = ig.terrain.getTerrain(coll, true, true),

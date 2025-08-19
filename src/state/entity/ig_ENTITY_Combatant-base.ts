@@ -11,6 +11,8 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
 
         hp: memory.diff(this.params?.currentHp),
         baseParams: memory.diffRecord(this.params?.baseParams ?? {}),
+        spLevel: memory.diff(this.params?.maxSp),
+        sp: memory.diff(this.params?.currentSp),
     }
 }
 
@@ -26,6 +28,15 @@ export function setState(this: ig.ENTITY.Combatant, state: Return) {
         if (state.baseParams !== undefined) {
             StateMemory.applyChangeRecord(this.params.baseParams, state.baseParams)
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED, ig.settingStateImmediately)
+        }
+
+        if (state.spLevel !== undefined) {
+            this.params.maxSp = state.spLevel
+            notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.MAX_SP_CHANGED)
+        }
+        if (state.sp !== undefined) {
+            this.params.currentSp = state.sp
+            notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.SP_CHANGED)
         }
     }
 }
