@@ -4,7 +4,9 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
-import { StateMemory, undefinedIfFalsy } from '../state-util'
+import { StateMemory } from '../state-util'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
+import * as scActorEntity from './sc_ActorEntity-base'
 
 declare global {
     namespace dummy {
@@ -25,14 +27,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         currentMenu: memory.diff(this.data.currentMenu),
         currentSubState: memory.diff(this.data.currentSubState),
 
-        pos: memory.diffVec3(this.coll.pos),
-        currentAnim: memory.diff(this.currentAnim),
-        currentAnimTimer: memory.onlyOnce(this.animState.timer),
-        resetAnimTimer: undefinedIfFalsy(this.animState.timer - ig.system.tick == 0),
-
-        face: memory.diffVec2(this.face),
-        accelDir: memory.diffVec2(this.coll.accelDir),
-        animAlpha: memory.diff(this.animState.alpha),
+        ...scActorEntity.getState.call(this, memory),
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
@@ -44,6 +39,9 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         items: this == player?.dummy ? memory.diffStaticArray(this.model.items) : undefined,
 
         charge: memory.diff(chargeLevel),
+
+        hp: memory.diff(this.model.params.currentHp),
+        baseParams: memory.diffRecord(this.model.params.baseParams),
     }
 }
 
@@ -53,15 +51,11 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
     if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
 
-    if (state.pos) {
-        Vec3.assign(this.coll.pos, state.pos)
-    }
-
     if (state.currentAnim !== undefined && this.currentAnim != state.currentAnim) {
-        this.currentAnim = state.currentAnim
+        const anim = state.currentAnim
 
         if (
-            (this.currentAnim == 'attack' || this.currentAnim == 'attackRev' || this.currentAnim == 'attackFinisher') &&
+            (anim == 'attack' || anim == 'attackRev' || anim == 'attackFinisher') &&
             this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE &&
             this.model.getCore(sc.PLAYER_CORE.THROWING) &&
             sc.options.get('close-circle')
@@ -70,13 +64,7 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         }
     }
 
-    if (state.face) this.face = state.face
-    if (state.accelDir) this.coll.accelDir = state.accelDir
-    if (state.animAlpha !== undefined) this.animState.alpha = state.animAlpha
-
-    if (state.resetAnimTimer) this.animState.timer = 0
-    this.updateAnim()
-    if (state.currentAnimTimer !== undefined) this.animState.timer = state.currentAnimTimer
+    scActorEntity.setState.call(this, state)
 
     /* footstep sounds */
     function getSoundFromColl(coll: ig.CollEntry, type: keyof typeof sc.ACTOR_SOUND): sc.ACTOR_SOUND_BASE {
@@ -124,6 +112,26 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         } else {
             this.showChargeEffect(state.charge)
         }
+    }
+
+    function notify(model: sc.Model, msg: number, data?: unknown) {
+        sc.Model.notifyObserver(model, msg)
+        if (ig.ccmap) {
+            runTasks(ig.ccmap.getAllInstances(), () => {
+                sc.Model.notifyObserver(model, sc.COMBAT_PARAM_MSG.HP_CHANGED, data)
+            })
+        }
+    }
+
+    if (state.hp !== undefined) {
+        this.model.params.currentHp = state.hp
+        notify(this.params, sc.COMBAT_PARAM_MSG.HP_CHANGED)
+        console.log(state.hp)
+    }
+
+    if (state.baseParams !== undefined) {
+        StateMemory.applyChangeRecord(this.model.baseParams, state.baseParams)
+        notify(this.model.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
     }
 }
 
