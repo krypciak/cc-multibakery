@@ -4,7 +4,7 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
-import * as scActorEntity from './sc_ActorEntity-base'
+import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 
 declare global {
     namespace ig.ENTITY {
@@ -17,14 +17,14 @@ function getState(this: ig.ENTITY.Enemy, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        ...scActorEntity.getState.call(this, memory),
+        ...igEntityCombatant.getState.call(this, memory),
     }
 }
 
 function setState(this: ig.ENTITY.Enemy, state: Return) {
     if (this.enemyType && !this.enemyTypeInitialized) this.enemyType.initEntity(this)
 
-    scActorEntity.setState.call(this, state)
+    igEntityCombatant.setState.call(this, state)
 }
 
 prestart(() => {

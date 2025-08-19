@@ -6,7 +6,7 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
 import { StateMemory } from '../state-util'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
-import * as scActorEntity from './sc_ActorEntity-base'
+import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 
 declare global {
     namespace dummy {
@@ -27,7 +27,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         currentMenu: memory.diff(this.data.currentMenu),
         currentSubState: memory.diff(this.data.currentSubState),
 
-        ...scActorEntity.getState.call(this, memory),
+        ...igEntityCombatant.getState.call(this, memory),
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
@@ -64,7 +64,7 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         }
     }
 
-    scActorEntity.setState.call(this, state)
+    igEntityCombatant.setState.call(this, state)
 
     /* footstep sounds */
     function getSoundFromColl(coll: ig.CollEntry, type: keyof typeof sc.ACTOR_SOUND): sc.ACTOR_SOUND_BASE {
