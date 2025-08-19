@@ -7,7 +7,7 @@ import { setDataFromLevelData } from './data-load'
 import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import { Client } from '../../client/client'
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleNextTask, scheduleTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
 
 declare global {
@@ -112,7 +112,7 @@ export class CCMap implements GameLoopUpdateable {
         })
     }
 
-    async enter(player: ServerPlayer) {
+    enter(player: ServerPlayer) {
         player.mapName = this.name
         this.players.push(player)
     }
@@ -303,3 +303,15 @@ prestart(() => {
         },
     })
 })
+
+export function notifyMapAndPlayerInsts(model: sc.Model, msg: number, data?: unknown) {
+    sc.Model.notifyObserver(model, msg, data)
+    if (ig.ccmap) {
+        const map = ig.ccmap
+        scheduleNextTask(map.inst, () => {
+            scheduleTasks(map.getAllInstances(), () => {
+                sc.Model.notifyObserver(model, msg, data)
+            })
+        })
+    }
+}

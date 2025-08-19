@@ -61,6 +61,7 @@ prestart(() => {
         const combatant = ig.game.entitiesByNetid[state.combatant]
         assert(combatant)
         assert(combatant instanceof ig.ENTITY.Combatant)
+        assert(combatant.params)
 
         assert(state.dir)
 

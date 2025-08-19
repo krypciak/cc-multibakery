@@ -5,8 +5,8 @@ import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
 import { StateMemory } from '../state-util'
-import { runTasks } from 'cc-instanceinator/src/inst-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
+import { notifyMapAndPlayerInsts } from '../../server/ccmap/ccmap'
 
 declare global {
     namespace dummy {
@@ -31,6 +31,8 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
+        level: memory.diff(this.model.level),
+
         head: memory.diff(this.model.equip.head),
         leftArm: memory.diff(this.model.equip.leftArm),
         rightArm: memory.diff(this.model.equip.rightArm),
@@ -39,9 +41,6 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         items: this == player?.dummy ? memory.diffStaticArray(this.model.items) : undefined,
 
         charge: memory.diff(chargeLevel),
-
-        hp: memory.diff(this.model.params.currentHp),
-        baseParams: memory.diffRecord(this.model.params.baseParams),
     }
 }
 
@@ -65,6 +64,11 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     }
 
     igEntityCombatant.setState.call(this, state)
+
+    if (state.level !== undefined) {
+        this.model.level = state.level
+        notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
+    }
 
     /* footstep sounds */
     function getSoundFromColl(coll: ig.CollEntry, type: keyof typeof sc.ACTOR_SOUND): sc.ACTOR_SOUND_BASE {
@@ -112,26 +116,6 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         } else {
             this.showChargeEffect(state.charge)
         }
-    }
-
-    function notify(model: sc.Model, msg: number, data?: unknown) {
-        sc.Model.notifyObserver(model, msg)
-        if (ig.ccmap) {
-            runTasks(ig.ccmap.getAllInstances(), () => {
-                sc.Model.notifyObserver(model, sc.COMBAT_PARAM_MSG.HP_CHANGED, data)
-            })
-        }
-    }
-
-    if (state.hp !== undefined) {
-        this.model.params.currentHp = state.hp
-        notify(this.params, sc.COMBAT_PARAM_MSG.HP_CHANGED)
-        console.log(state.hp)
-    }
-
-    if (state.baseParams !== undefined) {
-        StateMemory.applyChangeRecord(this.model.baseParams, state.baseParams)
-        notify(this.model.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
     }
 }
 

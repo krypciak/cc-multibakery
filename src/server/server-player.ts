@@ -76,7 +76,7 @@ export class ServerPlayer {
         await runTask(map.inst, async () => {
             await this.createPlayer()
         })
-        await map.enter(this)
+        map.enter(this)
         runTask(map.inst, () => {
             this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
 
