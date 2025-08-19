@@ -10,7 +10,6 @@ import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../../options'
-import { stagePvp } from '../../pvp/pvp'
 
 import './physics-server-sender'
 
@@ -138,13 +137,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 entry.add(map)
             }
         }
-        for (const username in data.input) {
+        for (const username in data.clients) {
             const client = multi.server.clients[username]
             if (!client) continue
             const inp = client.player.inputManager
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
-            const packet = data.input[username]
+            const packet = data.clients[username]
             if (!packet) continue
 
             if (client.inst.ig.inPauseScreen) {
@@ -156,6 +155,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             }
             if (packet.gamepad) {
                 inp.mainGamepadManagerData.pushInput(packet.gamepad)
+            }
+
+            if (packet.inputFieldText !== undefined) {
+                const text = packet.inputFieldText
+                runTask(client.inst, () => {
+                    ig.shownInputDialog?.setText(text)
+                })
             }
         }
     }

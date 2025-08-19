@@ -9,20 +9,17 @@ import { PhysicsServer } from '../../../server/physics/physics-server'
 import { createClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
 
+declare global {
+    namespace ig {
+        var multibakeryManageServerPopup: multi.class.ManageServerPopup | undefined
+    }
+}
 export function openManagerServerPopup(immediately?: boolean) {
     ig.multibakeryManageServerPopup ??= new multi.class.ManageServerPopup()
     ig.multibakeryManageServerPopup.openMenu()
     if (immediately) {
         ig.multibakeryManageServerPopup.doStateTransition('DEFAULT', true)
         ig.multibakeryManageServerPopup.msgBox.doStateTransition('DEFAULT', true)
-    }
-}
-
-declare global {
-    namespace sc {
-        interface PauseScreenGui {
-            multibakeryManageServerPopup: multi.class.ManageServerPopup
-        }
     }
 }
 
@@ -41,9 +38,6 @@ declare global {
             new (): ManageServerPopup
         }
         var ManageServerPopup: ManageServerPopupConstructor
-    }
-    namespace ig {
-        var multibakeryManageServerPopup: multi.class.ManageServerPopup | undefined
     }
 }
 
@@ -209,6 +203,7 @@ declare global {
             inputWrapper: modmanager.gui.InputFieldWrapper
 
             getText(this: this): string
+            setText(this: this, text: string): void
         }
         interface InputFieldDialogConstructor extends ImpactClass<InputFieldDialog> {
             new (
@@ -221,6 +216,9 @@ declare global {
             ): InputFieldDialog
         }
         var InputFieldDialog: InputFieldDialogConstructor
+    }
+    namespace ig {
+        var shownInputDialog: multi.class.InputFieldDialog | undefined
     }
 }
 prestart(() => {
@@ -241,12 +239,21 @@ prestart(() => {
             this.scrollContainer.setElement(this.inputWrapper)
             this.userButtonGroup!.addFocusGui(this.inputWrapper.inputField, 999, 999)
             this.scrollContainer.setPos(this.scrollContainer.hook.pos.x, this.scrollContainer.hook.pos.y + 1)
+
+            assert(!ig.shownInputDialog, 'openMenu() called, but ig.shownInputDialog is was already defined!')
+            ig.shownInputDialog = this
         },
         closeMenu() {
             this.parent()
+            assert(ig.shownInputDialog, 'closeMenu() called, but ig.shownInputDialog is undefined!')
+            ig.shownInputDialog = undefined
         },
         getText() {
             return this.inputWrapper.inputField.getValueAsString()
+        },
+        setText(text) {
+            this.inputWrapper.inputField.setText(text)
+            this.inputWrapper.inputField.onCharacterInput(text, '')
         },
     })
 })
