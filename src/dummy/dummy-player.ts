@@ -125,11 +125,19 @@ prestart(() => {
             if (!(this.thrower instanceof dummy.DummyPlayer)) return this.parent()
 
             let inp = this.thrower.inputManager
+            let backup: sc.PlayerCrossHairController['updatePos'] | undefined
             if (multi.server instanceof RemoteServer) {
                 const clientInp = multi.server.clients[this.thrower.data.username]?.player?.inputManager
-                if (clientInp?.player) inp = clientInp
+                if (clientInp?.player) {
+                    inp = clientInp
+                } else {
+                    backup = this.controller.updatePos
+                    this.controller.updatePos = () => {}
+                }
             }
             inputBackup(inp, () => this.parent())
+
+            if (backup) this.controller.updatePos = backup
         },
     })
 })
