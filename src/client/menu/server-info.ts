@@ -39,8 +39,8 @@ export function getServerListInfo(): NetServerInfoRemote[] {
         {
             connection: {
                 type: 'socket',
-                host: 's.ogur.pl',
-                port: DEFAULT_HTTP_PORT,
+                host: 'crosscode.krypek.cc',
+                port: 443,
             },
         },
     ]
