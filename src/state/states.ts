@@ -11,6 +11,7 @@ import './vars'
 import './steps'
 import './game-model-state'
 import './pvp'
+import './hit-number'
 
 declare global {
     namespace ig {
