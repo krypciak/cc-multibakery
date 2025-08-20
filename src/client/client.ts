@@ -186,6 +186,7 @@ export class Client {
         rehookObservers(csc.model.player, this.player.dummy.model)
         csc.model.player = this.player.dummy.model
         csc.pvp = msc.pvp
+        csc.options = msc.options
 
         runTask(this.inst, () => {
             sc.model.enterNewGame()
