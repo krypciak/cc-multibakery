@@ -22,7 +22,7 @@ importers:
         version: 1.2.20
       cc-bundler:
         specifier: github:krypciak/cc-bundler
-        version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/e61a95355b64baf6baeb83fef9da13b44fb72ced
+        version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/7ac47d4a2ec8f1a5b859104ff8f9bde4150d93be
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c3cdc2f8a0c932d81af3ac0b5f77ae6ad146d0af
@@ -400,8 +400,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/e61a95355b64baf6baeb83fef9da13b44fb72ced:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/e61a95355b64baf6baeb83fef9da13b44fb72ced}
+  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/7ac47d4a2ec8f1a5b859104ff8f9bde4150d93be:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/7ac47d4a2ec8f1a5b859104ff8f9bde4150d93be}
     version: 1.0.0
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c3cdc2f8a0c932d81af3ac0b5f77ae6ad146d0af:
@@ -1243,7 +1243,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/e61a95355b64baf6baeb83fef9da13b44fb72ced: {}
+  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/7ac47d4a2ec8f1a5b859104ff8f9bde4150d93be: {}
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c3cdc2f8a0c932d81af3ac0b5f77ae6ad146d0af: {}
 

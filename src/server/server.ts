@@ -216,6 +216,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId
         instanceinator.displayFps = modmanager.options['cc-instanceinator'].displayFps
+
+        instanceinator.retile()
     }
 }
 
