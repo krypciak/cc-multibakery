@@ -34,6 +34,9 @@ prestart(() => {
         },
         set(packet) {
             if (!packet.hitNumber) return
+            if (!sc.options.get('damage-numbers') || sc.combat.hideDamageNumbers) return
+
+            const onlyShowCrit = sc.options.get('damage-numbers-crit')
 
             for (const {
                 isHealing,
@@ -53,7 +56,9 @@ prestart(() => {
                 if (isHealing) {
                     spawnHealingNumber(pos, combatant, damage)
                 } else {
-                    spawnHitNumber(pos, combatant, damage, size!, strength!, shieldResult, isCrit, appenix)
+                    if (!onlyShowCrit || isCrit) {
+                        spawnHitNumber(pos, combatant, damage, size!, strength!, shieldResult, isCrit, appenix)
+                    }
                 }
             }
         },
