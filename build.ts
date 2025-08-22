@@ -13,6 +13,7 @@ interface Options {
     extraTreeShaking?: boolean
     target?: string
     dropAssert?: boolean
+    noWrite?: boolean
 }
 
 async function run(
@@ -29,6 +30,7 @@ async function run(
         extraTreeShaking = false,
         target = 'es2018',
         dropAssert = false,
+        noWrite = false,
     }: Options
 ) {
     if (!physics) physicsnet = false
@@ -59,15 +61,21 @@ async function run(
                     output = result.code as string
                 }
 
-                await fs.promises.writeFile(outputFile, output)
+                if (noWrite) {
+                    console.log(output)
+                } else {
+                    await fs.promises.writeFile(outputFile, output)
+                }
 
                 if (res.metafile) {
                     await fs.promises.writeFile('metafile.json', JSON.stringify(res.metafile))
                 }
 
-                const bytes = output.length
-                const kb = bytes / 1024
-                console.log(outputFile, kb.toFixed(1) + 'kb')
+                if (!noWrite) {
+                    const bytes = output.length
+                    const kb = bytes / 1024
+                    console.log(outputFile, kb.toFixed(1) + 'kb')
+                }
             })
 
             if (dropAssert || !remote || !physics) {

@@ -13,7 +13,7 @@
         "crosscode": ">=1.4.0",
         "cc-instanceinator": ">=0.0.1",
         "nax-ccuilib": ">=1.5.0",
-        "ccmodmanager": ">=1.0.4"
+        "ccmodmanager": ">=1.1.0"
     },
     "plugin": "plugin.js"
 }
