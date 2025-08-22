@@ -10,15 +10,16 @@ import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../../options'
+import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
 
 import './physics-server-sender'
 
-export type PhysicsServerConnectionSettings = {
+export interface PhysicsServerConnectionSettings {
     httpPort: number
     httpRoot?: string
-    ccbundler?: boolean
+    ccbundler?: CCBundlerModuleOptions
     https?: import('https').ServerOptions
-} & {
+
     type: 'socket'
 }
 

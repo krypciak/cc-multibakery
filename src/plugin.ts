@@ -77,7 +77,10 @@ poststart(() => {
                             cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2.pem',
                             key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2-key.pem',
                         },
-                        ccbundler: true,
+                        ccbundler: {
+                            modProxy: true,
+                            liveModUpdates: true
+                        },
                         type: 'socket',
                     },
                     details: {

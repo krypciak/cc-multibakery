@@ -60,6 +60,8 @@ async function run(
                     const result = await esbuild.transform(output, commonOptions)
                     output = result.code as string
                 }
+                /* fflate fix */
+                output = output.replace(/import \{ createRequire \} from "module";/, 'const { createRequire } = require("module")')
 
                 if (noWrite) {
                     console.log(output)

@@ -3,7 +3,7 @@ import { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server
 import Multibakery from '../plugin'
 import { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
-import { HandleFunction } from 'cc-bundler/src/http-server/http-module'
+import { getCCBundlerHttpModules } from './cc-bundler-http-modules'
 
 export const DEFAULT_HTTP_PORT = 33405
 
@@ -37,55 +37,45 @@ export class PhysicsHttpServer {
         const httpRoot = this.netInfo.connection.httpRoot
         const ccbundler = this.netInfo.connection.ccbundler
 
-        let ccbundlerHandleFunction: HandleFunction | undefined
-        if (ccbundler) {
-            const ccbundlerHttpModule = PHYSICSNET && (await import('cc-bundler/src/http-server/http-module'))
+        const { createServer } = PHYSICSNET && (await import('http-server'))
 
-            ccbundlerHttpModule.setAllowedDbs([
-                'https://raw.githubusercontent.com/CCDirectLink/CCModDB/stable',
-                'https://raw.githubusercontent.com/CCDirectLink/CCModDB/testing',
-            ])
-            await ccbundlerHttpModule.updateValidUrlSet()
-
-            ccbundlerHandleFunction = ccbundlerHttpModule.handleFunction
+        const serverHandleFunction = (req: IncomingMessage, res: ServerResponse) => {
+            if (req.url == '/details') {
+                res.writeHead(200, {
+                    'Content-Type': 'application/json',
+                })
+                res.write(serverDetailsString)
+                res.end()
+            } else if (req.url == '/icon' && icon) {
+                res.writeHead(200, {
+                    'Content-Type': 'image/png',
+                })
+                res.write(icon)
+                res.end()
+            } else {
+                if (httpRoot) res.emit('next')
+                else if (req.url == '/') {
+                    res.writeHead(200)
+                    res.write('crosscode server')
+                    res.end()
+                } else {
+                    res.writeHead(404)
+                    res.end()
+                }
+            }
         }
 
-        const { createServer } = PHYSICSNET && (await import('http-server'))
         const httpServer = createServer({
             root: httpRoot,
-            cache: 60 * 60 * 24,
+            cache: -1,
             cors: true,
             showDotfiles: false,
             showDir: 'false',
-            gzip: true,
             https: this.netInfo.connection.https,
             before: [
-                ...(ccbundler ? [ccbundlerHandleFunction!] : []),
-                (req: IncomingMessage, res: ServerResponse) => {
-                    if (req.url == '/details') {
-                        res.writeHead(200, {
-                            'Content-Type': 'application/json',
-                        })
-                        res.write(serverDetailsString)
-                        res.end()
-                    } else if (req.url == '/icon' && icon) {
-                        res.writeHead(200, {
-                            'Content-Type': 'image/png',
-                        })
-                        res.write(icon)
-                        res.end()
-                    } else {
-                        if (httpRoot) res.emit('next')
-                        else if (req.url == '/') {
-                            res.writeHead(200)
-                            res.write('crosscode server')
-                            res.end()
-                        } else {
-                            res.writeHead(404)
-                            res.end()
-                        }
-                    }
-                },
+                //
+                ...await getCCBundlerHttpModules(this.netInfo.connection.ccbundler),
+                serverHandleFunction,
             ],
         })
         // @ts-expect-error for some reason http-server typedefs are wrong
