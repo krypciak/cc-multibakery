@@ -91,7 +91,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
-        const msPing = Date.now() - data.sendAt
+        const msPing = this.netManager.calculatePing(data.sendAt)
         for (const username in this.clients) {
             const client = this.clients[username]
             client.lastPingMs = msPing

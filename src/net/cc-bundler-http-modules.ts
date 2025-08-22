@@ -1,4 +1,4 @@
-import { HandleFunction } from 'cc-bundler/src/http-server/http-module-mod-proxy'
+import type { HandleFunction } from 'cc-bundler/src/http-server/http-module-mod-proxy'
 import { assert } from '../misc/assert'
 
 export interface CCBundlerModuleOptions {

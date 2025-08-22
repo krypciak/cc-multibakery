@@ -13,6 +13,7 @@ type SocketData = never
 type ClientToServerEvents = {
     update(data: unknown): void
     join(data: ClientJoinData, callback: (data: ClientJoinAckData) => void): void
+    ping1(callback: (date: number) => void): void
 }
 type ServerToClientEvents = {
     update(data: unknown): void
@@ -83,6 +84,10 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
                 if (ackData.status == 'ok') connection.join(client!)
                 callback(ackData)
             })
+
+            socket.on('ping1', callback => {
+                callback(Date.now())
+            })
         })
     }
 
@@ -101,6 +106,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
 export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
+    timeOffset?: number
 
     private joinActCallbacks: Record<string, (data: ClientJoinAckData) => void> = {}
 
@@ -132,6 +138,7 @@ export class SocketNetManagerRemoteServer {
             secure: true,
             rejectUnauthorized: false,
         }) as ClientSocket
+
         socket.on('update', data => server.onNetReceive(this.conn!, data))
         socket.on('disconnect', () => {
             this.stop()
@@ -144,9 +151,46 @@ export class SocketNetManagerRemoteServer {
                 const conn = new SocketNetConnection(socket)
                 this.conn = conn
 
+                this.measureClockOffset()
+
                 resolve()
             })
         })
+    }
+
+    private async probeTimeOffset(): Promise<{ timeTook: number; timeDiff: number }> {
+        assert(this.conn)
+        const clientDate = Date.now()
+        const clientTimeStart = performance.now()
+        const serverDate: number = await this.conn.socket.emitWithAck('ping1')
+        const clientTimeEnd = performance.now()
+
+        const timeTook = clientTimeEnd - clientTimeStart
+
+        return { timeTook, timeDiff: serverDate - clientDate }
+    }
+
+    private async measureClockOffset() {
+        const probeFor = 1e3
+        const start = performance.now()
+
+        let minTimeTook = 100000
+        let minRawDiff = 100000
+
+        while (true) {
+            if (!this.conn || this.conn.closed) return
+
+            const { timeTook, timeDiff: rawDiff } = await this.probeTimeOffset()
+            minTimeTook = Math.min(minTimeTook, timeTook)
+            minRawDiff = Math.min(minRawDiff, rawDiff)
+            this.timeOffset = minRawDiff - minTimeTook / 2
+
+            if (performance.now() - start >= probeFor) break
+        }
+    }
+
+    calculatePing(serverTime: number): number {
+        return Date.now() - serverTime + (this.timeOffset ?? 0)
     }
 
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
