@@ -25,16 +25,15 @@ type ClientSocket = ioclient.Socket //<ServerToClientEvents, ClientToServerEvent
 
 function setIntervalWorkaround() {
     const origSetInterval = window.setInterval
-    // @ts-expect-error
-    window.setInterval = (...args) => {
+    window.setInterval = function (...args: Parameters<typeof origSetInterval>) {
         const id = origSetInterval(...args)
         return { unref: () => {}, ref: () => {}, id }
-    }
+    } as typeof window.setInterval
 
     const origClearInterval = window.clearInterval
     window.clearInterval = id => {
         if (id === undefined || id === null) return
-        if (typeof id === 'number') {
+        if (typeof id === 'number' || typeof id === 'string') {
             origClearInterval(id)
         } else {
             origClearInterval(id.id)
@@ -192,7 +191,9 @@ export class SocketNetConnection implements NetConnection {
             return 0n
         }
 
-        const engine = 'conn' in socket ? socket.conn : socket.io.engine
+        // @ts-expect-error
+        const engine: Socket = 'conn' in socket ? socket.conn : socket.io.engine
+
         engine.on('packetCreate', packet => {
             this.bytesSent += bytesFromData(packet.data)
         })
