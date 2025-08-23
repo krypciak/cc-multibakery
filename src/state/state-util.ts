@@ -1,5 +1,3 @@
-import { assert } from '../misc/assert'
-
 export function undefinedIfFalsy<T>(obj: T): T | undefined {
     return obj ? obj : undefined
 }
@@ -95,17 +93,21 @@ export class StateMemory {
         }
     }
 
-    diffRecord<K extends string, V>(currRecord: PartialRecord<K, V>): PartialRecord<K, V> | undefined {
+    diffRecord<T extends object>(currRecord: T): T | undefined {
         const i = this.i++
         if (this.data.length <= i) {
             this.data.push(currRecord)
             return currRecord
         } else {
-            const lastRecord = this.data[i] as Record<K, V>
-            const changed: PartialRecord<K, V> = {}
+            const lastRecord = this.data[i] as T
+            const changed = {} as T
             let atLeastOne = false
 
-            for (const key in currRecord) {
+            const keys = (
+                Array.isArray(currRecord) ? currRecord.keys() : Object.keys(currRecord).values()
+            ) as ArrayIterator<keyof T>
+
+            for (const key of keys) {
                 const currValue = currRecord[key]
                 const lastValue = lastRecord[key]
 
@@ -120,48 +122,10 @@ export class StateMemory {
         }
     }
 
-    static applyChangeRecord<K extends string, V>(into: PartialRecord<K, V>, change: PartialRecord<K, V> | undefined) {
+    static applyChangeRecord<T extends object>(into: T, change: T | undefined) {
         if (!change) return
 
         Object.assign(into, change)
-    }
-
-    diffStaticArray<V extends number | string | null | undefined>(
-        currValue: V[]
-    ): StateMemory.ArrayDiff<V> | undefined {
-        const i = this.i++
-        if (this.data.length <= i) {
-            this.data.push([...currValue])
-            return { full: currValue }
-        } else {
-            const lastArr = this.data[i] as V[]
-
-            assert(lastArr.length == currValue.length)
-
-            const diff: StateMemory.ArrayDiffEntry<V>[] = []
-            for (let i = 0; i < currValue.length; i++) {
-                if (currValue[i] != lastArr[i]) {
-                    diff.push([i, currValue[i]])
-                }
-            }
-            if (diff.length == 0) return undefined
-            this.data[i] = [...currValue]
-            return { diff }
-        }
-    }
-
-    static applyDiffStaticArray<E, K extends keyof E, V>(obj: E, key: K, diff: StateMemory.ArrayDiff<V> | undefined) {
-        if (!diff) return
-
-        if ('full' in diff) {
-            // @ts-expect-error
-            obj[key] = diff.full
-        } else {
-            for (const [i, v] of diff.diff) {
-                // @ts-expect-error
-                obj[key][i] = v
-            }
-        }
     }
 
     diffArray<V>(arr: V[], eq: (a: V, b: V) => boolean = (a, b) => a == b) {

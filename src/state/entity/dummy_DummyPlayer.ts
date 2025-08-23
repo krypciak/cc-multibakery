@@ -38,7 +38,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         rightArm: memory.diff(this.model.equip.rightArm),
         torso: memory.diff(this.model.equip.torso),
         feet: memory.diff(this.model.equip.feet),
-        items: this == player?.dummy ? memory.diffStaticArray(this.model.items) : undefined,
+        items: this == player?.dummy ? memory.diffRecord(this.model.items) : undefined,
 
         charge: memory.diff(chargeLevel),
     }
@@ -111,7 +111,7 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.torso) this.model.equip.torso = state.torso
     if (state.feet) this.model.equip.feet = state.feet
 
-    if (state.items) StateMemory.applyDiffStaticArray(this.model, 'items', state.items)
+    if (state.items) StateMemory.applyChangeRecord(this.model.items, state.items)
 
     if (state.charge !== undefined) {
         if (state.charge == 0) {

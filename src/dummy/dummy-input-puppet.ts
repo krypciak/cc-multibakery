@@ -159,11 +159,7 @@ prestart(() => {
             this.popInput()
         },
         popInput() {
-            if (this.inputQueue.length > 0) {
-                const ele = this.inputQueue[0]
-                this.inputQueue.splice(0, 1)
-                this.setInput(ele)
-            }
+            this.setInput(this.inputQueue.shift())
         },
     })
 }, 5)
@@ -183,12 +179,13 @@ function getGamepadInput(this: ig.GamepadManager) {
 
     const memory = (this.memory = StateMemory.get(this.memory))
 
-    return cleanRecord({
-        axesStates: memory.diffArray(gp.axesStates),
-        buttonStates: memory.diffArray(gp.buttonStates),
-        pressedStates: memory.diffArray(gp.pressedStates),
-        releasedStates: memory.diffArray(gp.releasedStates),
+    const packet = cleanRecord({
+        axesStates: memory.diffRecord(gp.axesStates),
+        buttonStates: memory.diffRecord(gp.buttonStates),
+        pressedStates: memory.diffRecord(gp.pressedStates),
+        releasedStates: memory.diffRecord(gp.releasedStates),
     })
+    return packet
 }
 prestart(() => {
     ig.GamepadManager.inject({
@@ -196,13 +193,14 @@ prestart(() => {
     })
 })
 
-export function isGamepadManagerData(data: any): data is GamepadManagerData {
+export function isGamepadManagerData(_data: unknown): _data is GamepadManagerData {
+    const data = _data as GamepadManagerData
     if (typeof data != 'object') return false
 
-    if (data.buttonStates && (!Array.isArray(data.buttonStates) || data.buttonStates.length > 16)) return false
-    if (data.axesStates && (!Array.isArray(data.axesStates) || data.axesStates.length > 4)) return false
-    if (data.pressedStates && (!Array.isArray(data.pressedStates) || data.pressedStates.length > 16)) return false
-    if (data.releasedStates && (!Array.isArray(data.releasedStates) || data.releasedStates.length > 16)) return false
+    if (data.buttonStates && typeof data.buttonStates != 'object') return false
+    if (data.axesStates && typeof data.axesStates != 'object') return false
+    if (data.pressedStates && typeof data.pressedStates != 'object') return false
+    if (data.releasedStates && typeof data.releasedStates != 'object') return false
 
     return true
 }
@@ -241,21 +239,18 @@ prestart(() => {
         setInput(input) {
             if (!input) return
             const gp = this.activeGamepads[0]
-            if (input.buttonStates !== undefined) gp.buttonStates = input.buttonStates
-            if (input.axesStates !== undefined) gp.axesStates = input.axesStates
-            if (input.pressedStates !== undefined) gp.pressedStates = input.pressedStates
-            if (input.releasedStates !== undefined) gp.releasedStates = input.releasedStates
+            StateMemory.applyChangeRecord(gp.buttonStates, input.buttonStates)
+            StateMemory.applyChangeRecord(gp.buttonStates, input.buttonStates)
+            StateMemory.applyChangeRecord(gp.axesStates, input.axesStates)
+            StateMemory.applyChangeRecord(gp.pressedStates, input.pressedStates)
+            StateMemory.applyChangeRecord(gp.releasedStates, input.releasedStates)
         },
         pushInput(input) {
             this.inputQueue.push(input)
             this.popInput()
         },
         popInput() {
-            if (this.inputQueue.length > 0) {
-                const ele = this.inputQueue[0]
-                this.inputQueue.splice(0, 1)
-                this.setInput(ele)
-            }
+            this.setInput(this.inputQueue.shift())
         },
         isSupported() {
             return true
