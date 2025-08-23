@@ -2,7 +2,6 @@ import { Server } from './server/server'
 import { assert } from './misc/assert'
 import { prestart } from './plugin'
 
-// import './misc/skip-title-screen'
 import './misc/entity-netid'
 import './game-loop'
 import './misc/godmode'
