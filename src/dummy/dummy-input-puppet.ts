@@ -57,6 +57,18 @@ prestart(() => {
     initInputManager()
 }, 4)
 
+prestart(() => {
+    dummy.DummyPlayer.inject({
+        update() {
+            if (this.inputManager instanceof dummy.input.Puppet.InputManager) {
+                this.inputManager.mainInputData.popInput()
+                this.inputManager.mainGamepadManagerData.popInput()
+            }
+            this.parent()
+        },
+    })
+})
+
 export const disallowedInputActions = ['snapshot', 'savedialog', 'langedit', 'fullscreen'] as const
 
 export function isInputData(data: any): data is InputData {
@@ -156,7 +168,6 @@ prestart(() => {
         },
         pushInput(input) {
             this.inputQueue.push(input)
-            this.popInput()
         },
         popInput() {
             this.setInput(this.inputQueue.shift())
@@ -179,11 +190,15 @@ function getGamepadInput(this: ig.GamepadManager) {
 
     const memory = (this.memory = StateMemory.get(this.memory))
 
+    function filterRecord<T extends object>(record: T): T {
+        return Object.fromEntries(Object.entries(record).filter(([_, v]) => v)) as T
+    }
+
     const packet = cleanRecord({
         axesStates: memory.diffRecord(gp.axesStates),
         buttonStates: memory.diffRecord(gp.buttonStates),
-        pressedStates: memory.diffRecord(gp.pressedStates),
-        releasedStates: memory.diffRecord(gp.releasedStates),
+        pressedStates: memory.diffRecord(filterRecord(gp.pressedStates)),
+        releasedStates: memory.diffRecord(filterRecord(gp.releasedStates)),
     })
     return packet
 }
@@ -205,6 +220,18 @@ export function isGamepadManagerData(_data: unknown): _data is GamepadManagerDat
     return true
 }
 
+function getEmptyGamepad(): ig.Gamepad {
+    // prettier-ignore
+    return {
+        buttonDeadzones: defaultGamepadButtonDeadzones(),
+        axesDeadzones: defaultGamepadAxesDeadzones(),
+        buttonStates: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        axesStates: [0, 0, 0, 0],
+        pressedStates: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        releasedStates: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+    } satisfies Partial<ig.Gamepad> as ig.Gamepad
+}
+
 declare global {
     namespace dummy.input.Puppet {
         interface GamepadManager extends ig.GamepadManager {
@@ -223,23 +250,17 @@ declare global {
 prestart(() => {
     dummy.input.Puppet.GamepadManager = ig.GamepadManager.extend({
         init() {
-            this.activeGamepads = [
-                // @ts-expect-error
-                {
-                    buttonDeadzones: defaultGamepadButtonDeadzones(),
-                    axesDeadzones: defaultGamepadAxesDeadzones(),
-                    buttonStates: [],
-                    axesStates: [],
-                    pressedStates: [],
-                    releasedStates: [],
-                },
-            ]
+            this.activeGamepads = [getEmptyGamepad()]
             this.inputQueue = []
         },
         setInput(input) {
-            if (!input) return
             const gp = this.activeGamepads[0]
-            StateMemory.applyChangeRecord(gp.buttonStates, input.buttonStates)
+            for (let i = 0; i < 16; i++) {
+                gp.pressedStates[i] = false
+                gp.releasedStates[i] = false
+            }
+
+            if (!input) return
             StateMemory.applyChangeRecord(gp.buttonStates, input.buttonStates)
             StateMemory.applyChangeRecord(gp.axesStates, input.axesStates)
             StateMemory.applyChangeRecord(gp.pressedStates, input.pressedStates)
@@ -247,10 +268,10 @@ prestart(() => {
         },
         pushInput(input) {
             this.inputQueue.push(input)
-            this.popInput()
         },
         popInput() {
-            this.setInput(this.inputQueue.shift())
+            const input = this.inputQueue.shift()
+            this.setInput(input)
         },
         isSupported() {
             return true

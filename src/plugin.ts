@@ -55,8 +55,6 @@ export default class Multibakery implements PluginClass {
 poststart(() => {
     if (window.crossnode?.options.test) return
 
-    // TODO: fix duplicate inputs on high latency devices
-
     if (PHYSICS && process.execPath.includes('server')) {
         multi.setServer(
             new PhysicsServer({
