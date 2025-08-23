@@ -6,13 +6,14 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/ccmap'
 
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
+    const sp = this.params?.currentSp
     return {
         ...scActorEntity.getState.call(this, memory),
 
         hp: memory.diff(this.params?.currentHp),
         baseParams: memory.diffRecord(this.params?.baseParams ?? {}),
         spLevel: memory.diff(this.params?.maxSp),
-        sp: memory.diff(this.params?.currentSp),
+        sp: memory.diff(sp === undefined ? undefined : +sp.toFixed(1)),
     }
 }
 
