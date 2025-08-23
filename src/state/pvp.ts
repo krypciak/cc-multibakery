@@ -1,5 +1,5 @@
 import { prestart } from '../plugin'
-import { addStateHandler } from './states'
+import { addStateHandler, StateKey } from './states'
 import { cleanRecord, StateMemory } from './state-util'
 import { PvpTeam } from '../pvp/pvp'
 import { assert } from '../misc/assert'
@@ -11,6 +11,7 @@ export interface PvpTeamSerialized {
 }
 
 interface PvpObj {
+    on?: boolean
     winPoints?: number
     teams?: PvpTeamSerialized[]
     round?: number
@@ -23,7 +24,7 @@ declare global {
         pvp?: PvpObj
     }
     namespace ig {
-        var pvpStateMemory: StateMemory | undefined
+        var pvpStatePlayerMemory: StateMemory.MapHolder<StateKey> | undefined
     }
 }
 
@@ -48,15 +49,16 @@ function deserializeTeam(team: PvpTeamSerialized): PvpTeam {
 
 prestart(() => {
     addStateHandler({
-        get(packet) {
+        get(packet, player) {
             if (packet.pvp) return
 
-            const memory = StateMemory.get(ig.pvpStateMemory)
-            ig.pvpStateMemory ??= memory
+            ig.pvpStatePlayerMemory ??= {}
+            const memory = StateMemory.getBy(ig.pvpStatePlayerMemory, player)
 
             const serializedTeams = sc.pvp.teams?.map(serializeTeam)
 
             packet.pvp = cleanRecord({
+                on: memory.diff(sc.pvp.multiplayerPvp),
                 teams:
                     sc.pvp.teams &&
                     (sc.pvp.teams.length > 0 ? true : undefined) &&
@@ -81,17 +83,21 @@ prestart(() => {
                 sc.pvp.teams = packet.pvp.teams.map(deserializeTeam)
             }
 
+            if (packet.pvp.on !== undefined) {
+                if (packet.pvp.on) {
+                    assert(!sc.pvp.multiplayerPvp)
+                    sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
+                } else {
+                    if (sc.pvp.multiplayerPvp) sc.pvp.stop()
+                }
+            }
+
             if (packet.pvp.state !== undefined) {
                 const state = packet.pvp.state
                 sc.pvp.state = state
 
                 if (sc.pvp.hpBars) sc.pvp.rearrangeHpBars()
-                if (state == 0) {
-                    if (sc.pvp.multiplayerPvp) sc.pvp.stop()
-                } else if (state == 1) {
-                    assert(!sc.pvp.multiplayerPvp)
-                    sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
-                } else if (state == 2) {
+                if (state == 2) {
                     sc.pvp.finalizeRoundStart()
                 } else if (state == 3) {
                     sc.pvp.showKOGuis()

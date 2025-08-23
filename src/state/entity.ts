@@ -100,7 +100,7 @@ prestart(() => {
             }
         },
     })
-}, 1001)
+}, 5)
 
 export function createNetidStatic(
     typeId: string,

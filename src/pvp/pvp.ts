@@ -168,17 +168,18 @@ prestart(() => {
         onClientLink() {},
         onClientDestroy(client) {
             const player = client.player.dummy
-            const team = this.getPlayerTeam(player)
-            if (!team) return
-
-            team.players.erase(player)
-            if (team.players.length == 0) this.teams.erase(team)
 
             delete this.hpBars[client.inst.id]
             for (const key in this.hpBars) {
                 this.hpBars[key] = this.hpBars[key].filter(bar => bar.target != (player as any))
             }
             this.rearrangeHpBars()
+
+            const team = this.getPlayerTeam(player)
+            if (team) {
+                team.players.erase(player)
+                if (team.players.length == 0) this.teams.erase(team)
+            }
 
             if (!this.multiplayerPvp) return
 

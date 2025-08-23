@@ -45,4 +45,4 @@ prestart(() => {
             ig.entityDeaths.push(this.netid)
         },
     })
-})
+}, 3)

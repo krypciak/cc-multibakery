@@ -28,8 +28,8 @@ prestart(() => {
     const { spawnHitNumber, spawnHealingNumber } = ig.ENTITY.HitNumber
 
     addStateHandler({
-        get(packet) {
-            packet.hitNumber ??= ig.hitNumberSpawned
+        get(packet, _player, cache) {
+            packet.hitNumber ??= ig.hitNumberSpawned ?? cache?.hitNumber
             ig.hitNumberSpawned = undefined
         },
         set(packet) {
@@ -126,8 +126,8 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet) {
-            packet.hitNumberClear ??= ig.hitNumberClear
+        get(packet, _player, cache) {
+            packet.hitNumberClear ??= ig.hitNumberClear ?? cache?.hitNumberClear
             ig.hitNumberClear = undefined
         },
         set(packet) {
