@@ -1,13 +1,12 @@
 import { prestart } from '../plugin'
 import { addStateHandler } from './states'
 import { StepHistoryEntry } from '../steps/event-call-history'
-import { cleanRecord } from './state-util'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { stepList } from '../steps/step-id'
 import { assert } from '../misc/assert'
+import { getStepSettings } from '../steps/step-id'
 
 interface StepObj {
-    stepId: number
+    settings: ig.EventStepBase.Settings
     data?: Record<string, unknown>
 }
 
@@ -108,9 +107,6 @@ prestart(() => {
         set(packet) {
             if (!packet.steps) return
 
-            if (!cleanRecord(packet.steps)) return
-
-            // console.log(JSON.stringify(packet.steps, null, 4))
             if (packet.steps.clients) {
                 for (const username in packet.steps.clients) {
                     const client = multi.server.clients[username]
@@ -123,12 +119,9 @@ prestart(() => {
                     runTask(client.inst, () => {
                         for (const { steps, type, callEntity } of stepGroups) {
                             const allData = {}
-                            const stepsSettings = steps.map(({ stepId, data }) => {
-                                Object.assign(allData, data)
-                                const stepEntry = stepList[stepId]
-                                assert(stepEntry)
-                                return stepEntry.settings
-                            }) as ig.EventStepBase.Settings[]
+                            const stepsSettings = steps.map(({ settings }) => settings)
+
+                            for (const { data } of steps) Object.assign(allData, data)
 
                             const event = new ig.Event({ steps: stepsSettings })
 
@@ -158,7 +151,7 @@ export function onStepHistoryAdd({ step, data, call }: StepHistoryEntry) {
         ig.stepsFired.set(call, group)
     }
     group.steps.push({
-        stepId: step.stepId,
+        settings: getStepSettings(step) as ig.EventStepBase.Settings,
         data,
     })
 }

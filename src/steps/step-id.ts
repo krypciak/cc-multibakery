@@ -8,7 +8,7 @@ postload(() => {
 })
 
 type Entry = { step: ig.StepBase; settings: ig.ActionStepBase.Settings | ig.EventStepBase.Settings }
-export const stepList: Entry[] = []
+const stepList: Entry[] = []
 
 declare global {
     namespace ig {
@@ -79,6 +79,6 @@ function injectSteps() {
     }
 }
 
-export function getStepCount(): number {
-    return Object.keys(ig.EVENT_STEP).length + Object.keys(ig.ACTION_STEP).length
+export function getStepSettings(step: ig.StepBase) {
+    return stepList[step.stepId].settings
 }

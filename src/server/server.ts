@@ -27,18 +27,15 @@ export interface ServerSettings {
 export interface ClientJoinData {
     username: string
     initialInputType: ig.INPUT_DEVICES
-    stepCount: number
 }
-export function createClientJoinData(options: Omit<ClientJoinData, 'stepCount'>): ClientJoinData {
-    return Object.assign(options, {
-        stepCount: multi.stepCount,
-    })
+export function createClientJoinData(options: ClientJoinData): ClientJoinData {
+    return options
 }
 export function isClientJoinData(data: unknown): data is ClientJoinData {
     return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
 }
 export type ClientJoinAckData = {
-    status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username' | 'step_count_low' | 'step_count_high'
+    status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
 }
 
 export interface GameLoopUpdateable {
@@ -226,8 +223,6 @@ export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: Cli
     let msg!: string
     assert(resp.status != 'invalid_join_data', 'invalid_join_data??')
     if (resp.status == 'username_taken') msg = `Error: username "${joinData.username}" is taken.`
-    if (resp.status == 'step_count_low') msg = `Error: Step count too low! Are you missing any mods?`
-    if (resp.status == 'step_count_high') msg = `Error: Step count too high! Do you have incompatible mods installed?`
     assert(msg)
     sc.Dialogs.showErrorDialog(msg)
 }

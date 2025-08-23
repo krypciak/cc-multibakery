@@ -27,7 +27,7 @@ prestart(() => {
     })
 })
 
-let stepWhitelist: Set<number>
+export let stepWhitelist: Set<number>
 prestart(() => {
     stepWhitelist = new Set(
         [
@@ -42,7 +42,7 @@ prestart(() => {
             ig.EVENT_STEP.SHOW_INPUT_DIALOG,
         ].map(clazz => clazz.classId)
     )
-})
+}, 2000)
 
 export interface StepHistoryEntry {
     step: ig.EventStepBase

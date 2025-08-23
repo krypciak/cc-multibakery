@@ -97,6 +97,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             client.lastPingMs = msPing
         }
 
+        // console.log(JSON.stringify(data, null, 4))
+
         for (const mapName in data.mapPackets) {
             const stateUpdatePacket = data.mapPackets[mapName]
 
