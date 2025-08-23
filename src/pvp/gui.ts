@@ -97,7 +97,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
 prestart(() => {
     ig.GUI.StatusBar.inject({
         updateSubHpHandler() {
-            if (!sc.pvp.multiplayerPvp) return this.parent()
+            if (!sc.pvp.multiplayerPvp || sc.pvp.state == 0) return this.parent()
 
             const target = this.target
             if (!sc.pvp.isCombatantInPvP(target)) return
