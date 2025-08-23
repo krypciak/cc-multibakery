@@ -85,8 +85,8 @@ declare global {
 }
 prestart(() => {
     addStateHandler({
-        get(packet) {
-            packet.destroyCombatProxies = ig.destroyCombatProxies
+        get(packet, _player, cache) {
+            packet.destroyCombatProxies = cache?.destroyCombatProxies ?? ig.destroyCombatProxies
             ig.destroyCombatProxies = undefined
         },
         set(packet) {
@@ -104,7 +104,7 @@ prestart(() => {
     if (PHYSICSNET) {
         sc.CombatProxyEntity.inject({
             destroy(type) {
-                if (multi.server instanceof PhysicsServer && !this.destroyType) {
+                if (multi.server instanceof PhysicsServer && multi.server.httpServer && !this.destroyType) {
                     ig.destroyCombatProxies ??= []
                     ig.destroyCombatProxies.push(this.netid)
                 }

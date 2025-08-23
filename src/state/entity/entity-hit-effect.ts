@@ -25,8 +25,8 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet) {
-            packet.entityHitPackets ??= packet.entityHitPackets ?? ig.entityHitPackets
+        get(packet, _player, cache) {
+            packet.entityHitPackets ??= cache?.entityHitPackets ?? ig.entityHitPackets
             ig.entityHitPackets = undefined
         },
         set(packet) {

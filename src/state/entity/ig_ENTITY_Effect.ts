@@ -170,8 +170,8 @@ declare global {
 }
 prestart(() => {
     addStateHandler({
-        get(packet) {
-            packet.clearEffects = ig.clearEffects
+        get(packet, _player, cache) {
+            packet.clearEffects = cache?.clearEffects ?? ig.clearEffects
             ig.clearEffects = undefined
         },
         set(packet) {
@@ -193,16 +193,16 @@ prestart(() => {
         },
     })
 
-    if (!PHYSICS) return
+    if (!PHYSICSNET) return
     const orig = ig.EffectTools.clearEffects
     ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
         orig(entity, withTheSameGroup)
-        if (!entity.netid || !(multi.server instanceof PhysicsServer)) return
+        if (!entity.netid || !(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
         if (withTheSameGroup == 'modeAura') return
         ig.clearEffects ??= []
         ig.clearEffects.push([entity.netid, withTheSameGroup])
     }
-})
+}, 0)
 
 declare global {
     interface StateUpdatePacket {
@@ -236,12 +236,12 @@ prestart(() => {
     ig.ENTITY.Effect.inject({
         stop() {
             this.parent()
-            if (!(multi.server instanceof PhysicsServer)) return
+            if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
             ig.stopEffects ??= []
             ig.stopEffects.push(this.netid)
         },
     })
-})
+}, 0)
 
 declare global {
     namespace ig {
