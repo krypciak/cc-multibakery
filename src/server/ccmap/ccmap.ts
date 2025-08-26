@@ -7,7 +7,7 @@ import { setDataFromLevelData } from './data-load'
 import { prestart } from '../../plugin'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import { Client } from '../../client/client'
-import { runTask, scheduleNextTask, scheduleTasks } from 'cc-instanceinator/src/inst-util'
+import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
 
 declare global {
@@ -305,13 +305,13 @@ prestart(() => {
 })
 
 export function notifyMapAndPlayerInsts(model: sc.Model, msg: number, data?: unknown) {
-    sc.Model.notifyObserver(model, msg, data)
+    function notify() {
+        sc.Model.notifyObserver(model, msg, data)
+    }
+    notify()
+
     if (ig.ccmap) {
         const map = ig.ccmap
-        scheduleNextTask(map.inst, () => {
-            scheduleTasks(map.getAllInstances(), () => {
-                sc.Model.notifyObserver(model, msg, data)
-            })
-        })
+        runTasks(map.getAllInstances(), notify)
     }
 }

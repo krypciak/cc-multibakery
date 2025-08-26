@@ -41,10 +41,10 @@ prestart(() => {
                     if (typeof obj == 'function') {
                         return function (...args: unknown[]) {
                             let ret: unknown
-                            for (const gui of Object.values(self.statusGuis)) {
+                            for (const [id, gui] of Object.entries(self.statusGuis)) {
                                 const func = gui[key] as Function
                                 assert(typeof func === 'function' && func)
-                                ret = func.call(gui, ...args)
+                                ret = runTask(instanceinator.instances[parseInt(id)], () => func.call(gui, ...args))
                             }
                             if (key == 'remove') {
                                 self.statusGuis = {}

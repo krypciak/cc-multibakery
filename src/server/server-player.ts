@@ -19,11 +19,10 @@ export class ServerPlayer {
 
     constructor(
         public username: string,
-        public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager(),
-        private attachDummy: boolean = false
+        public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager()
     ) {}
 
-    private async createPlayer() {
+    private createPlayer() {
         if (this.dummy) assert(this.dummy._killed)
 
         const dummySettings: dummy.DummyPlayer.Settings = {
@@ -31,28 +30,7 @@ export class ServerPlayer {
             data: { username: this.username },
         }
 
-        if (this.attachDummy) {
-            const netid = dummy.DummyPlayer.prototype.createNetid.call({} as any, 0, 0, 0, dummySettings)
-
-            this.dummy = await new Promise<dummy.DummyPlayer>(resolve => {
-                const func = () => {
-                    const entity = ig.game.entitiesByNetid[netid]
-                    if (entity) {
-                        assert(entity instanceof dummy.DummyPlayer)
-                        resolve(entity)
-                    } else {
-                        ig.game.nextScheduledTasks.push(() => {
-                            ig.game.scheduledTasks.push(func)
-                        })
-                    }
-                }
-                func()
-            })
-            this.inputManager.player = this.dummy
-            this.dummy.inputManager = this.inputManager
-        } else {
-            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
-        }
+        this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
         // if (username.includes('luke')) {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
         // }
@@ -73,8 +51,8 @@ export class ServerPlayer {
             map = this.getMap()
         }
         await map.readyPromise
-        await runTask(map.inst, async () => {
-            await this.createPlayer()
+        runTask(map.inst, () => {
+            this.createPlayer()
         })
         map.enter(this)
         runTask(map.inst, () => {

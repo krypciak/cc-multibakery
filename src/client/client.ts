@@ -65,7 +65,7 @@ export class Client {
         )
 
         const inputManager = this.initInputManager()
-        this.player = new ServerPlayer(this.settings.username, inputManager, multi.server instanceof RemoteServer)
+        this.player = new ServerPlayer(this.settings.username, inputManager)
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
@@ -206,6 +206,7 @@ export class Client {
             this.updateGamepadForcer()
 
             sc.model.enterGame()
+            ig.game.playerEntity.onPlayerPlaced()
         })
         runTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
@@ -327,6 +328,13 @@ prestart(() => {
                 debugger
             }
             this.parent(hook)
+        },
+        doStateTransition(...args) {
+            if (this._instanceId != instanceinator.id) {
+                console.warn('a sin has been commited', this._instanceId, this!._instanceId)
+                debugger
+            }
+            this.parent(...args)
         },
     })
 
