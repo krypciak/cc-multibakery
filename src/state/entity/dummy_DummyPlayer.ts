@@ -37,6 +37,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         rightArm: memory.diff(this.model.equip.rightArm),
         torso: memory.diff(this.model.equip.torso),
         feet: memory.diff(this.model.equip.feet),
+
         items: this == player?.dummy ? memory.diffRecord(this.model.items) : undefined,
 
         charge: memory.diff(chargeLevel),
@@ -66,6 +67,8 @@ function setState(this: dummy.DummyPlayer, state: Return) {
 
     if (state.level !== undefined) {
         this.model.level = state.level
+        /* I don't want to even start thinking about making this unique for every player */
+        sc.inventory.updateScaledEquipment(state.level)
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
 
@@ -104,11 +107,18 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         this.interactObject = entity.pushPullable
     } else this.interactObject = null
 
-    if (state.head) this.model.equip.head = state.head
-    if (state.leftArm) this.model.equip.leftArm = state.leftArm
-    if (state.rightArm) this.model.equip.rightArm = state.rightArm
-    if (state.torso) this.model.equip.torso = state.torso
-    if (state.feet) this.model.equip.feet = state.feet
+    let armorChanged = false
+    // prettier-ignore
+    {
+        if (state.head !== undefined) { armorChanged = true; this.model.equip.head = state.head }
+        if (state.leftArm !== undefined) { armorChanged = true; this.model.equip.leftArm = state.leftArm }
+        if (state.rightArm !== undefined) { armorChanged = true; this.model.equip.rightArm = state.rightArm }
+        if (state.torso !== undefined) { armorChanged = true; this.model.equip.torso = state.torso }
+        if (state.feet !== undefined) { armorChanged = true; this.model.equip.feet = state.feet }
+    }
+    if (armorChanged) {
+        this.model.updateStats()
+    }
 
     if (state.items) StateMemory.applyChangeRecord(this.model.items, state.items)
 
