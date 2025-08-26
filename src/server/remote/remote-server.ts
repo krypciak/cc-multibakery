@@ -133,8 +133,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         this.netManager.sendLeave({ username: client.player.username })
 
-        if (!this.destroyed && Object.keys(this.clients).length == 0) {
-            multi.destroyNextFrameAndStartLoop()
+        if (Object.keys(this.clients).length == 0) {
+            if (!this.destroyed) {
+                multi.destroyNextFrameAndStartLoop()
+            }
+        } else {
+            this.masterUsername = Object.values(this.clients)[0].player.username
         }
     }
 
