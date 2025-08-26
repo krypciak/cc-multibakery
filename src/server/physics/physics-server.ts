@@ -13,6 +13,7 @@ import { Opts } from '../../options'
 import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
 
 import './physics-server-sender'
+import { ClientLeaveData } from '../remote/remote-server'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -116,16 +117,16 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         return { client, ackData: { status: 'ok' } }
     }
 
-    onNetReceive(conn: NetConnection, data: unknown) {
+    onNetReceiveUpdate(conn: NetConnection, data: unknown) {
         if (!isRemoteServerUpdatePacket(data)) {
             console.warn('invalid update packet received from', conn.clients, ', contents: ', data, ', closing')
             conn.close()
             return
         }
-        this.processPacket(conn, data)
+        this.processUpdatePacket(conn, data)
     }
 
-    private processPacket(conn: NetConnection, data: RemoteServerUpdatePacket) {
+    private processUpdatePacket(conn: NetConnection, data: RemoteServerUpdatePacket) {
         if (data.readyMaps) {
             let entry = this.connectionReadyMaps.get(conn)
             if (!entry) {
@@ -165,8 +166,21 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    onNetDisconnect(conn: NetConnection) {
-        for (const client of conn.clients) {
+    onNetClientLeave(conn: NetConnection, data?: ClientLeaveData) {
+        let clients: Client[]
+        if (data) {
+            const client = conn.clients.find(client => client.player.username == data.username)
+            if (client) {
+                clients = [client]
+            } else {
+                clients = []
+            }
+        } else {
+            clients = conn.clients
+        }
+
+        for (const client of clients) {
+            conn.leave(client)
             this.leaveClient(client)
         }
     }

@@ -25,6 +25,13 @@ export interface RemoteServerSettings extends ServerSettings {
     connection: RemoteServerConnectionSettings
 }
 
+export interface ClientLeaveData {
+    username: string
+}
+export function isClientLeaveData(data: unknown): data is ClientLeaveData {
+    return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
+}
+
 export class RemoteServer extends Server<RemoteServerSettings> {
     remote = true
     netManager!: SocketNetManagerRemoteServer
@@ -123,6 +130,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     async leaveClient(client: Client) {
         super.leaveClient(client)
+
+        this.netManager.sendLeave({ username: client.player.username })
+
         if (!this.destroyed && Object.keys(this.clients).length == 0) {
             multi.destroyNextFrameAndStartLoop()
         }

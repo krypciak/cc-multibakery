@@ -3,19 +3,20 @@ import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerPhysicsServer } from './connection'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { RemoteServer } from '../server/remote/remote-server'
+import { ClientLeaveData, isClientLeaveData, RemoteServer } from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
 import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
 
 type SocketData = never
 
-type ClientToServerEvents = {
+interface ClientToServerEvents {
     update(data: unknown): void
     join(data: ClientJoinData, callback: (data: ClientJoinAckData) => void): void
     ping1(callback: (date: number) => void): void
+    leave(data: ClientLeaveData): void
 }
-type ServerToClientEvents = {
+interface ServerToClientEvents {
     update(data: unknown): void
     error(msg: string): void
 }
@@ -73,18 +74,21 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
                 if (!multi.server || multi.server != server || server.destroyed) return
 
-                server.onNetDisconnect(connection)
+                server.onNetClientLeave(connection)
             })
             this.connections.push(connection)
 
-            socket.on('update', data => server.onNetReceive(connection, data))
+            socket.on('update', data => server.onNetReceiveUpdate(connection, data))
             socket.on('join', async (data, callback) => {
                 if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
                 const { client, ackData } = await server.tryJoinClient(data, true)
                 if (ackData.status == 'ok') connection.join(client!)
                 callback(ackData)
             })
-
+            socket.on('leave', data => {
+                if (!isClientLeaveData(data)) return
+                server.onNetClientLeave(connection, data)
+            })
             socket.on('ping1', callback => {
                 callback(Date.now())
             })
@@ -201,6 +205,12 @@ export class SocketNetManagerRemoteServer {
             this.conn.socket.emit('join', data, resolve)
         })
         return ack
+    }
+
+    async sendLeave(data: ClientLeaveData): Promise<void> {
+        assert(this.conn)
+        assert(multi.server instanceof RemoteServer)
+        this.conn.socket.emit('leave', data)
     }
 
     stop() {

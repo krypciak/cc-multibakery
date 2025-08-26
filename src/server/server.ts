@@ -20,8 +20,6 @@ export interface ServerSettings {
         map: string
         marker?: string
     }
-
-    // unloadInactiveMapsMs?: number /* set to -1 to disable unloading inactive maps */
 }
 
 export interface ClientJoinData {
@@ -31,10 +29,18 @@ export interface ClientJoinData {
 export function createClientJoinData(options: ClientJoinData): ClientJoinData {
     return options
 }
-export function isClientJoinData(data: unknown): data is ClientJoinData {
-    return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
+export function isClientJoinData(_data: unknown): _data is ClientJoinData {
+    const data = _data as ClientJoinData
+    return (
+        !!data &&
+        typeof data == 'object' &&
+        !!data.username &&
+        typeof data.username == 'string' &&
+        typeof data.initialInputType == 'number' &&
+        Object.values(ig.INPUT_DEVICES).includes(data.initialInputType)
+    )
 }
-export type ClientJoinAckData = {
+export interface ClientJoinAckData {
     status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
 }
 
