@@ -61,7 +61,10 @@ async function run(
                     output = result.code as string
                 }
                 /* fflate fix */
-                output = output.replace(/import \{ createRequire \} from "module";/, 'const { createRequire } = require("module")')
+                output = output.replace(
+                    /import\s*\{\s*createRequire\s*\}\s*from\s*"module";/,
+                    'const { createRequire } = require("module")'
+                )
 
                 if (noWrite) {
                     console.log(output)
@@ -129,6 +132,7 @@ async function run(
             PHYSICSNET: String(physicsnet),
             REMOTE: String(remote),
             BROWSER: String(browser),
+            ASSERT: String(!dropAssert),
         },
         plugins: [plugin],
         // metafile: true,
