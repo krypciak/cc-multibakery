@@ -13,21 +13,30 @@ prestart(() => {
 
     ig.Game.inject({
         spawnEntity(entity, x, y, z, settings, showAppearEffects) {
-            if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
-                const isOk = ig.ignoreEffectNetid || (typeof entity === 'function' ? isParticleClass(entity) : false)
-                if (!isOk) {
-                    console.groupCollapsed('local entity spawn!', findClassName(entity))
-                    console.warn(settings)
-                    console.trace()
-                    console.groupEnd()
+            if (ASSERT) {
+                if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
+                    const isOk =
+                        ig.ignoreEffectNetid ||
+                        (typeof entity === 'function'
+                            ? isParticleClass(entity) ||
+                              entity == dummy.DummyPlayer ||
+                              entity == ig.ENTITY.Crosshair ||
+                              entity == ig.ENTITY.CrosshairDot
+                            : false)
+                    if (!isOk) {
+                        console.groupCollapsed('local entity spawn!', findClassName(entity))
+                        console.warn(settings)
+                        console.trace()
+                        console.groupEnd()
+                    }
                 }
+                // if (entity == ig.ENTITY.Effect || entity == 'Effect') {
+                //     const set = settings as ig.ENTITY.Effect.Settings
+                //     console.groupCollapsed(set.effect?.effectName, set.netid)
+                //     console.trace()
+                //     console.groupEnd()
+                // }
             }
-            // if (entity == ig.ENTITY.Effect || entity == 'Effect') {
-            //     const set = settings as ig.ENTITY.Effect.Settings
-            //     console.groupCollapsed(set.effect?.effectName, set.netid)
-            //     console.trace()
-            //     console.groupEnd()
-            // }
             return this.parent(entity, x, y, z, settings, showAppearEffects)
         },
     })

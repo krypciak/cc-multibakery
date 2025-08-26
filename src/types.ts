@@ -10,6 +10,7 @@ declare global {
     const PHYSICSNET: boolean
     const REMOTE: boolean
     const BROWSER: boolean
+    const ASSERT: boolean
 
     namespace NodeJS {
         interface Timeout {

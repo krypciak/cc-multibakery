@@ -321,22 +321,24 @@ prestart(() => {
         }
     }
 
-    ig.GuiHook.inject({
-        onAttach(hook) {
-            if (this._instanceId != hook!._instanceId) {
-                console.warn('a sin has been commited', this._instanceId, hook!._instanceId)
-                debugger
-            }
-            this.parent(hook)
-        },
-        doStateTransition(...args) {
-            if (this._instanceId != instanceinator.id) {
-                console.warn('a sin has been commited', this._instanceId, this!._instanceId)
-                debugger
-            }
-            this.parent(...args)
-        },
-    })
+    if (ASSERT) {
+        ig.GuiHook.inject({
+            onAttach(hook) {
+                if (this._instanceId != hook!._instanceId) {
+                    console.warn('a sin has been commited', this._instanceId, hook!._instanceId)
+                    debugger
+                }
+                this.parent(hook)
+            },
+            doStateTransition(...args) {
+                if (this._instanceId != instanceinator.id) {
+                    console.warn('a sin has been commited', this._instanceId, this!._instanceId)
+                    debugger
+                }
+                this.parent(...args)
+            },
+        })
+    }
 
     ig.EVENT_STEP.SHOW_TUTORIAL_START.inject({
         start(data, eventCall) {
