@@ -1,10 +1,9 @@
 import { assert } from '../../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
-import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
-import { StateMemory } from '../state-util'
+import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/ccmap'
 
@@ -154,7 +153,7 @@ prestart(() => {
     if (PHYSICSNET) {
         sc.Combat.inject({
             showCharge(target, chargeLevelEffectName, element) {
-                if (!(multi.server instanceof PhysicsServer)) return this.parent(target, chargeLevelEffectName, element)
+                if (!shouldCollectStateData()) return this.parent(target, chargeLevelEffectName, element)
 
                 assert(!ig.ignoreEffectNetid)
                 ig.ignoreEffectNetid = true

@@ -1,7 +1,7 @@
 import { prestart } from '../plugin'
 import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
-import { PhysicsServer } from '../server/physics/physics-server'
+import { shouldCollectStateData } from './state-util'
 
 interface HitNumberConfig {
     isHealing?: boolean
@@ -28,8 +28,10 @@ prestart(() => {
     const { spawnHitNumber, spawnHealingNumber } = ig.ENTITY.HitNumber
 
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.hitNumber ??= ig.hitNumberSpawned ?? cache?.hitNumber
+        get(packet) {
+            packet.hitNumber = ig.hitNumberSpawned
+        },
+        clear() {
             ig.hitNumberSpawned = undefined
         },
         set(packet) {
@@ -78,7 +80,7 @@ prestart(() => {
             isCrit,
             appenix
         ) {
-            if (multi.server instanceof PhysicsServer && multi.server.httpServer) {
+            if (shouldCollectStateData()) {
                 ig.hitNumberSpawned ??= []
                 const netid = combatant.netid
                 assert(netid)
@@ -98,7 +100,7 @@ prestart(() => {
         }
 
         ig.ENTITY.HitNumber.spawnHealingNumber = function (pos, combatant, healAmount) {
-            if (multi.server instanceof PhysicsServer && multi.server.httpServer) {
+            if (shouldCollectStateData()) {
                 ig.hitNumberSpawned ??= []
                 const netid = combatant.netid
                 assert(netid)
@@ -126,8 +128,10 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.hitNumberClear ??= ig.hitNumberClear ?? cache?.hitNumberClear
+        get(packet) {
+            packet.hitNumberClear = ig.hitNumberClear
+        },
+        clear() {
             ig.hitNumberClear = undefined
         },
         set(packet) {
@@ -147,7 +151,7 @@ prestart(() => {
         ig.ENTITY.Combatant.inject({
             clearDamageSum() {
                 this.parent()
-                if (multi.server instanceof PhysicsServer && multi.server.httpServer) {
+                if (shouldCollectStateData()) {
                     ig.hitNumberClear ??= []
                     assert(this.netid)
                     ig.hitNumberClear.push(this.netid)

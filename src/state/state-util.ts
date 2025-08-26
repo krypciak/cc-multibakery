@@ -1,3 +1,9 @@
+import { PhysicsServer } from '../server/physics/physics-server'
+
+export function shouldCollectStateData(): boolean {
+    return !!(multi.server instanceof PhysicsServer && multi.server.netManager?.connections.length)
+}
+
 export function undefinedIfFalsy<T>(obj: T): T | undefined {
     return obj ? obj : undefined
 }

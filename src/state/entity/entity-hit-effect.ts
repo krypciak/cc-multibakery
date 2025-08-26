@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { PhysicsServer } from '../../server/physics/physics-server'
+import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
 
 interface HitConfig {
@@ -25,8 +25,10 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.entityHitPackets ??= cache?.entityHitPackets ?? ig.entityHitPackets
+        get(packet) {
+            packet.entityHitPackets = ig.entityHitPackets
+        },
+        clear() {
             ig.entityHitPackets = undefined
         },
         set(packet) {
@@ -62,7 +64,7 @@ prestart(() => {
 
     sc.Combat.inject({
         showHitEffect(entity, hitPos, hitDegree, hitElement, shielded, critical, ignoreSounds, spriteFilter) {
-            if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer)
+            if (!shouldCollectStateData())
                 return this.parent(
                     entity,
                     hitPos,

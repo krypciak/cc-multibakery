@@ -4,7 +4,7 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
-import { StateMemory } from '../state-util'
+import { shouldCollectStateData, StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { resolveProxyFromType } from './proxy-util'
 
@@ -85,8 +85,10 @@ declare global {
 }
 prestart(() => {
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.destroyCombatProxies = cache?.destroyCombatProxies ?? ig.destroyCombatProxies
+        get(packet) {
+            packet.destroyCombatProxies = ig.destroyCombatProxies
+        },
+        clear() {
             ig.destroyCombatProxies = undefined
         },
         set(packet) {
@@ -104,7 +106,7 @@ prestart(() => {
     if (PHYSICSNET) {
         sc.CombatProxyEntity.inject({
             destroy(type) {
-                if (multi.server instanceof PhysicsServer && multi.server.httpServer && !this.destroyType) {
+                if (shouldCollectStateData() && !this.destroyType) {
                     ig.destroyCombatProxies ??= []
                     ig.destroyCombatProxies.push(this.netid)
                 }

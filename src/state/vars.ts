@@ -1,8 +1,8 @@
 import { prestart } from '../plugin'
 import { addStateHandler, StateKey } from './states'
-import { PhysicsServer } from '../server/physics/physics-server'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
+import { shouldCollectStateData } from './state-util'
 
 type VarObj = Record<string, ig.VarValue>
 
@@ -20,11 +20,10 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player, cache) {
+        get(packet, player) {
             ig.vars.everSent ??= new WeakSet()
 
-            packet.vars ??= cache?.vars ?? ig.vars.varsChanged
-            ig.vars.varsChanged = undefined
+            packet.vars = ig.vars.varsChanged
 
             if (!player || !ig.vars.everSent.has(player)) {
                 if (player) ig.vars.everSent.add(player)
@@ -33,6 +32,9 @@ prestart(() => {
                 for (const key in ig.vars.storage.map) packet.vars[`map.${key}`] = ig.vars.storage.map[key]
                 for (const key in ig.vars.storage.tmp) packet.vars[`tmp.${key}`] = ig.vars.storage.tmp[key]
             }
+        },
+        clear() {
+            ig.vars.varsChanged = undefined
         },
         set(packet) {
             if (!packet.vars) return
@@ -50,7 +52,7 @@ prestart(() => {
 
     if (PHYSICSNET) {
         addVarModifyListener((path, _oldPath, newValue) => {
-            if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
+            if (!shouldCollectStateData()) return
             if (!path.startsWith('map') && !path.startsWith('tmp')) return
             ig.vars.varsChanged ??= {}
             ig.vars.varsChanged[path] = newValue

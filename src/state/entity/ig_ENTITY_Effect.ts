@@ -4,7 +4,7 @@ import { prestart } from '../../plugin'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
-import { StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
+import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
 import { TemporarySet } from '../../misc/temporary-set'
 
@@ -170,8 +170,10 @@ declare global {
 }
 prestart(() => {
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.clearEffects = cache?.clearEffects ?? ig.clearEffects
+        get(packet) {
+            packet.clearEffects = ig.clearEffects
+        },
+        clear() {
             ig.clearEffects = undefined
         },
         set(packet) {
@@ -197,7 +199,7 @@ prestart(() => {
     const orig = ig.EffectTools.clearEffects
     ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
         orig(entity, withTheSameGroup)
-        if (!entity.netid || !(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
+        if (!entity.netid || !shouldCollectStateData()) return
         if (withTheSameGroup == 'modeAura') return
         ig.clearEffects ??= []
         ig.clearEffects.push([entity.netid, withTheSameGroup])
@@ -214,12 +216,15 @@ declare global {
 }
 prestart(() => {
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.stopEffects ??= cache?.stopEffects ?? ig.stopEffects
+        get(packet) {
+            packet.stopEffects = ig.stopEffects
+        },
+        clear() {
             ig.stopEffects = undefined
         },
         set(packet) {
             if (!packet.stopEffects) return
+
             for (const netid of packet.stopEffects) {
                 const entity = ig.game.entitiesByNetid[netid]
                 if (!entity) {
@@ -236,7 +241,7 @@ prestart(() => {
     ig.ENTITY.Effect.inject({
         stop() {
             this.parent()
-            if (!(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
+            if (!shouldCollectStateData()) return
             ig.stopEffects ??= []
             ig.stopEffects.push(this.netid)
         },

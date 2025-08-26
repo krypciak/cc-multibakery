@@ -27,8 +27,13 @@ export function getStateUpdatePacket(dest: StateUpdatePacket = {}, player?: Stat
     return dest
 }
 
+export function clearCollectedState() {
+    for (const { clear } of handlers) clear?.()
+}
+
 interface Handler {
     get: (packet: StateUpdatePacket, player?: StateKey, cache?: StateUpdatePacket) => void
+    clear?: () => void
     set: (packet: StateUpdatePacket) => void
 }
 const handlers: Handler[] = []

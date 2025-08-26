@@ -1,7 +1,7 @@
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import { prestart } from '../../plugin'
-import { getStateUpdatePacket } from '../../state/states'
+import { clearCollectedState, getStateUpdatePacket } from '../../state/states'
 import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
 import { ServerPlayer } from '../server-player'
@@ -57,6 +57,13 @@ function send() {
         const data = getRemoteServerUpdatePacket(connPackets)
         conn.send('update', data)
     }
+
+    runTasks(
+        Object.values(multi.server.maps).map(map => map.inst),
+        () => {
+            clearCollectedState()
+        }
+    )
 }
 
 function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, player?: ServerPlayer, cache?: StateUpdatePacket) {

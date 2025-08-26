@@ -85,8 +85,7 @@ prestart(() => {
 
             if (packet.pvp.on !== undefined) {
                 if (packet.pvp.on) {
-                    assert(!sc.pvp.multiplayerPvp)
-                    sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
+                    if (!sc.pvp.multiplayerPvp) sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
                 } else {
                     if (sc.pvp.multiplayerPvp) sc.pvp.stop()
                 }

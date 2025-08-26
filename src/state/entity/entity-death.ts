@@ -1,7 +1,7 @@
 import { entityIgnoreDeath } from '../../misc/entity-netid'
 import { prestart } from '../../plugin'
-import { PhysicsServer } from '../../server/physics/physics-server'
 import { getEntityTypeId } from '../entity'
+import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
 
 declare global {
@@ -15,8 +15,10 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, _player, cache) {
-            packet.entityDeaths ??= cache?.entityDeaths ?? ig.entityDeaths
+        get(packet) {
+            packet.entityDeaths = ig.entityDeaths
+        },
+        clear() {
             ig.entityDeaths = undefined
         },
         set(packet) {
@@ -38,7 +40,7 @@ prestart(() => {
     ig.Entity.inject({
         kill(levelChange) {
             this.parent(levelChange)
-            if (!this.netid || !(multi.server instanceof PhysicsServer) || !multi.server.httpServer) return
+            if (!this.netid || !shouldCollectStateData()) return
             if (entityIgnoreDeath.has(getEntityTypeId(this.netid))) return
 
             ig.entityDeaths ??= []
