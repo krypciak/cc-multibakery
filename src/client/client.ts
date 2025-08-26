@@ -207,6 +207,9 @@ export class Client {
 
             sc.model.enterGame()
             ig.game.playerEntity.onPlayerPlaced()
+
+            /* fix crash when opening encyclopedia */
+            sc.menu.newUnlocks[sc.MENU_SUBMENU.LORE] = []
         })
         runTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
