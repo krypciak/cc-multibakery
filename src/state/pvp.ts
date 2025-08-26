@@ -97,15 +97,15 @@ prestart(() => {
 
                 if (sc.pvp.hpBars) sc.pvp.rearrangeHpBars()
                 if (state == 2) {
-                    sc.pvp.finalizeRoundStart()
+                    if (sc.pvp.state != 2) sc.pvp.finalizeRoundStart()
                 } else if (state == 3) {
                     sc.pvp.showKOGuis()
                 }
             }
 
-            if (packet.pvp.round !== undefined && sc.pvp.state != 0) {
+            if (packet.pvp.round !== undefined && sc.pvp.round != packet.pvp.round && sc.pvp.state != 0) {
                 sc.pvp.round = packet.pvp.round - 1
-                sc.pvp.startNextRound()
+                sc.pvp.startNextRound(true)
             }
 
             if (packet.pvp.points) {

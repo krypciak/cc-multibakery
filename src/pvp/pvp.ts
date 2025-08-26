@@ -168,7 +168,6 @@ prestart(() => {
         onClientLink(client) {
             if (this.multiplayerPvp) {
                 runTask(client.inst, () => {
-                    sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
                     sc.model.setCombatMode(true, true)
                 })
             }
