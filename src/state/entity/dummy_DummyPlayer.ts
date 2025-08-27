@@ -30,15 +30,15 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        level: memory.diff(this.model.level),
-
         head: memory.diff(this.model.equip.head),
         leftArm: memory.diff(this.model.equip.leftArm),
         rightArm: memory.diff(this.model.equip.rightArm),
         torso: memory.diff(this.model.equip.torso),
         feet: memory.diff(this.model.equip.feet),
 
+        level: memory.diff(this.model.level),
         items: this == player?.dummy ? memory.diffRecord(this.model.items) : undefined,
+        skillPoints: memory.diffRecord(this.model.skillPoints),
 
         charge: memory.diff(chargeLevel),
     }
@@ -64,13 +64,6 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     }
 
     igEntityCombatant.setState.call(this, state)
-
-    if (state.level !== undefined) {
-        this.model.level = state.level
-        /* I don't want to even start thinking about making this unique for every player */
-        sc.inventory.updateScaledEquipment(state.level)
-        notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
-    }
 
     if (state.spLevel !== undefined) {
         this.model.spLevel = state.spLevel
@@ -120,7 +113,16 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         this.model.updateStats()
     }
 
+    if (state.level !== undefined) {
+        this.model.level = state.level
+        /* I don't want to even start thinking about making this unique for every player */
+        sc.inventory.updateScaledEquipment(state.level)
+        notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
+    }
+
     if (state.items) StateMemory.applyChangeRecord(this.model.items, state.items)
+
+    if (state.skillPoints) StateMemory.applyChangeRecord(this.model.skillPoints, state.skillPoints)
 
     if (state.charge !== undefined) {
         if (state.charge == 0) {
