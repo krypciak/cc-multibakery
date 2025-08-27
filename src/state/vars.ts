@@ -18,6 +18,18 @@ declare global {
     }
 }
 
+function flattenRecursive(obj: Record<string, unknown>, path: string, into: Record<string, unknown>): void {
+    for (const key in obj) {
+        const value = obj[key]
+        const newPath = path + '.' + key
+        if (typeof value == 'object' && value) {
+            flattenRecursive(value as any, newPath, into)
+        } else {
+            into[newPath] = value
+        }
+    }
+}
+
 prestart(() => {
     addStateHandler({
         get(packet, player) {
@@ -29,8 +41,9 @@ prestart(() => {
                 if (player) ig.vars.everSent.add(player)
 
                 packet.vars ??= {}
-                for (const key in ig.vars.storage.map) packet.vars[`map.${key}`] = ig.vars.storage.map[key]
-                for (const key in ig.vars.storage.tmp) packet.vars[`tmp.${key}`] = ig.vars.storage.tmp[key]
+                flattenRecursive(ig.vars.storage.map, 'map', packet.vars)
+                flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
+                flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
             }
         },
         clear() {
@@ -53,7 +66,7 @@ prestart(() => {
     if (PHYSICSNET) {
         addVarModifyListener((path, _oldPath, newValue) => {
             if (!shouldCollectStateData()) return
-            if (!path.startsWith('map') && !path.startsWith('tmp')) return
+            if (!path.startsWith('map') && !path.startsWith('tmp') && !path.startsWith('menu')) return
             ig.vars.varsChanged ??= {}
             ig.vars.varsChanged[path] = newValue
         })
