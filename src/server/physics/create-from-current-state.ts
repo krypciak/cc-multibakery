@@ -33,6 +33,7 @@ export async function createPhysicsServerFromCurrentState() {
         displayClientInstances: Opts.serverDisplayClientInstances,
         displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
         forceConsistentTickTimes: Opts.serverForceConsistentTickTimes,
+        attemptCrashRecovery: Opts.serverAttemptCrashRecovery,
         netInfo: Opts.serverEnableNet
             ? {
                   connection: {
@@ -46,6 +47,7 @@ export async function createPhysicsServerFromCurrentState() {
               }
             : undefined,
     })
+    server.destroyOnLastClientLeave = true
     multi.setServer(server)
 
     await server.start()

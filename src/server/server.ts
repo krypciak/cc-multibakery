@@ -20,6 +20,7 @@ export interface ServerSettings {
         map: string
         marker?: string
     }
+    attemptCrashRecovery?: boolean
 }
 
 export interface ClientJoinData {
@@ -66,8 +67,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     masterUsername?: string
 
     measureTraffic: boolean = false
-    attemptCrashRecovery: boolean = false
     destroyed: boolean = false // or destroying
+    destroyOnLastClientLeave: boolean = false
     postUpdateCallback?: () => void
 
     async start() {
@@ -184,6 +185,16 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         delete this.clientsById[id]
         delete this.clients[client.player.username]
         client.destroy()
+
+        if (this.destroyOnLastClientLeave) {
+            if (Object.keys(this.clients).length == 0) {
+                if (!this.destroyed) {
+                    multi.destroyNextFrameAndStartLoop()
+                }
+            } else {
+                this.masterUsername = Object.values(this.clients)[0].player.username
+            }
+        }
     }
 
     private safeguardServerInstance() {

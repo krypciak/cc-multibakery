@@ -40,6 +40,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     constructor(public settings: RemoteServerSettings) {
         console.info('ROLE: RemoteServer')
         super()
+        this.destroyOnLastClientLeave = true
     }
 
     async start() {
@@ -132,14 +133,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         super.leaveClient(client)
 
         this.netManager.sendLeave({ username: client.player.username })
-
-        if (Object.keys(this.clients).length == 0) {
-            if (!this.destroyed) {
-                multi.destroyNextFrameAndStartLoop()
-            }
-        } else {
-            this.masterUsername = Object.values(this.clients)[0].player.username
-        }
     }
 
     destroy() {

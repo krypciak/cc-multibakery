@@ -178,11 +178,11 @@ function registerOpts() {
                             return index + 60
                         },
                     },
-                    physicsAttemptCrashRecovery: {
+                    serverAttemptCrashRecovery: {
                         type: 'CHECKBOX',
-                        init: true,
+                        init: false,
                         name: 'Attempt crash recovery',
-                        description: '',
+                        description: 'Attempt crash recovery on server crash',
                     },
                 },
             },

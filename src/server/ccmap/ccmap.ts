@@ -75,7 +75,7 @@ export class CCMap implements GameLoopUpdateable {
     }
 
     attemptRecovery(e: unknown) {
-        if (!multi.server.attemptCrashRecovery) throw e
+        if (!multi.server.settings.attemptCrashRecovery) throw e
 
         console.error(`ccmap crashed, inst: ${instanceinator.id}`, e)
         multi.server.unloadMap(this)

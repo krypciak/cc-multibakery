@@ -75,9 +75,11 @@ export class ServerPlayer {
         return this.dummy.getClient(noAssert)
     }
 
-    getMap(): CCMap {
+    getMap(noAssert: true): CCMap | undefined
+    getMap(noAssert?: false): CCMap
+    getMap(noAssert?: any): CCMap | undefined {
         const map = multi.server.maps[this.mapName]
-        assert(map)
+        if (!noAssert) assert(map)
         return map
     }
 

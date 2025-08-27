@@ -99,7 +99,7 @@ export class Client {
     }
 
     private attemptRecovery(e: unknown) {
-        if (!multi.server.attemptCrashRecovery) throw e
+        if (!multi.server.settings.attemptCrashRecovery) throw e
 
         assert(this.player)
         const map = this.player.getMap()
@@ -230,7 +230,7 @@ export class Client {
             this.inst.ig.gamepad.destroy()
         }
         this.player.destroy()
-        for (const obj of this.player.getMap().onLinkChange) obj.onClientDestroy(this)
+        for (const obj of this.player.getMap(true)?.onLinkChange ?? []) obj.onClientDestroy(this)
 
         multi.server.serverInst.apply()
         instanceinator.delete(this.inst)

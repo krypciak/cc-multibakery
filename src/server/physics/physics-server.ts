@@ -9,7 +9,6 @@ import { Client } from '../../client/client'
 import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { Opts } from '../../options'
 import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
 
 import './physics-server-sender'
@@ -26,7 +25,6 @@ export interface PhysicsServerConnectionSettings {
 
 export interface PhysicsServerSettings extends ServerSettings {
     godmode?: boolean
-    attemptCrashRecovery?: boolean
     netInfo?: NetServerInfoPhysics
 }
 
@@ -46,7 +44,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.start()
 
         this.baseInst.display = false
-        this.attemptCrashRecovery = this.settings.attemptCrashRecovery ?? Opts.physicsAttemptCrashRecovery
 
         if (!window.crossnode?.options.test) {
             await this.createAndJoinClient({
