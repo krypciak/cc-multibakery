@@ -14,6 +14,20 @@ declare global {
         }
     }
 }
+function getSkills(this: dummy.DummyPlayer): number[] {
+    const skillCount = this.model.skills.length
+    const skills = new Array(skillCount)
+    for (let i = 0; i < skillCount; i++) {
+        skills[i] = this.model.skills[i] ? 1 : 0
+    }
+    return skills
+}
+function setSkills(this: dummy.DummyPlayer, skills: Record<number, number>) {
+    for (const idStr in skills) {
+        const id = parseInt(idStr)
+        this.model.skills[id] = skills[id] ? sc.skilltree.skills[id] : null
+    }
+}
 
 type Return = ReturnType<typeof getState>
 function getState(this: dummy.DummyPlayer, player?: StateKey) {
@@ -38,7 +52,8 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
 
         level: memory.diff(this.model.level),
         items: this == player?.dummy ? memory.diffRecord(this.model.items) : undefined,
-        skillPoints: memory.diffRecord(this.model.skillPoints),
+        skillPoints: this == player?.dummy ? memory.diffRecord(this.model.skillPoints) : undefined,
+        skills: this == player?.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
 
         charge: memory.diff(chargeLevel),
     }
@@ -100,17 +115,14 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         this.interactObject = entity.pushPullable
     } else this.interactObject = null
 
-    let armorChanged = false
+    let updateStats = false
     // prettier-ignore
     {
-        if (state.head !== undefined) { armorChanged = true; this.model.equip.head = state.head }
-        if (state.leftArm !== undefined) { armorChanged = true; this.model.equip.leftArm = state.leftArm }
-        if (state.rightArm !== undefined) { armorChanged = true; this.model.equip.rightArm = state.rightArm }
-        if (state.torso !== undefined) { armorChanged = true; this.model.equip.torso = state.torso }
-        if (state.feet !== undefined) { armorChanged = true; this.model.equip.feet = state.feet }
-    }
-    if (armorChanged) {
-        this.model.updateStats()
+        if (state.head !== undefined) { updateStats = true; this.model.equip.head = state.head }
+        if (state.leftArm !== undefined) { updateStats = true; this.model.equip.leftArm = state.leftArm }
+        if (state.rightArm !== undefined) { updateStats = true; this.model.equip.rightArm = state.rightArm }
+        if (state.torso !== undefined) { updateStats = true; this.model.equip.torso = state.torso }
+        if (state.feet !== undefined) { updateStats = true; this.model.equip.feet = state.feet }
     }
 
     if (state.level !== undefined) {
@@ -119,10 +131,16 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         sc.inventory.updateScaledEquipment(state.level)
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
-
     if (state.items) StateMemory.applyChangeRecord(this.model.items, state.items)
-
     if (state.skillPoints) StateMemory.applyChangeRecord(this.model.skillPoints, state.skillPoints)
+    if (state.skills) {
+        setSkills.call(this, state.skills)
+        updateStats = true
+    }
+
+    if (updateStats) {
+        this.model.updateStats()
+    }
 
     if (state.charge !== undefined) {
         if (state.charge == 0) {
