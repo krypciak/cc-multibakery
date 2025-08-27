@@ -211,6 +211,7 @@ export class Client {
             /* fix crash when opening encyclopedia */
             sc.menu.newUnlocks[sc.MENU_SUBMENU.LORE] = []
         })
+
         runTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
                 if (client instanceof Client) {

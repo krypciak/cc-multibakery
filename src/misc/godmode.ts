@@ -42,10 +42,10 @@ prestart(() => {
             if (sc.skilltree.skills[i].statType == 'SPIKE_DMG') continue
             model.learnSkill(i)
         }
-        model.skillPoints.fill(0)
+        model.skillPoints.fill(3)
 
         /* filter out circuit override givers */
-        const skipItems = new Set([150, 225, 230, 231, 286, 410, 428])
+        const skipItems = new Set([150, 428])
         for (let i = 0; i < sc.inventory.items.length; i++) {
             if (skipItems.has(i)) continue
             model.items[i] = 99
