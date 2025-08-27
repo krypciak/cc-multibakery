@@ -53,6 +53,12 @@ prestart(() => {
         }
         model.updateStats()
 
+        /* disable new circuit tree animaition on first time circuit menu opening */
+        const startCircuits = (((ig.vars.storage.menu ??= {}).circuit ??= {}).start ??= {})
+        for (const element of Object.values(sc.ELEMENT)) {
+            startCircuits[element] = true
+        }
+
         /* unlock all areas */
         for (const area in sc.map.areas) sc.map.updateVisitedArea(area)
         /* unlock cargo ship area */
