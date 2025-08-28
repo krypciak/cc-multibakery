@@ -1,5 +1,5 @@
 import { assert } from '../misc/assert'
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
 

@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/ccmap'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'

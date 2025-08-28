@@ -1,4 +1,4 @@
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 
 declare global {
     namespace sc {

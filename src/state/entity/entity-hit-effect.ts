@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
 

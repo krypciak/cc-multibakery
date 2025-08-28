@@ -1,6 +1,6 @@
 import { Server } from './server/server'
 import { assert } from './misc/assert'
-import { prestart } from './plugin'
+import { prestart } from './loading-stages'
 
 import './misc/entity-netid'
 import './game-loop'

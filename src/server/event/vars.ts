@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { addVarModifyListener } from '../../misc/var-set-event'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 
 declare global {
     namespace ig {

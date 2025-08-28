@@ -1,4 +1,4 @@
-import { prestart } from '../../../plugin'
+import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
 import { PhysicsServer } from '../../../server/physics/physics-server'
 import { closePhysicsServerAndSaveState } from '../../../server/physics/create-from-current-state'

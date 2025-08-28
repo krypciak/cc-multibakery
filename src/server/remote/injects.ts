@@ -1,4 +1,4 @@
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { isParticleClass } from '../../state/entity/ig_ENTITY_Effect'
 import { RemoteServer } from './remote-server'
 

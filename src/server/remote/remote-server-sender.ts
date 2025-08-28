@@ -6,7 +6,7 @@ import {
     isInputData,
 } from '../../dummy/dummy-input-puppet'
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { RemoteServer } from './remote-server'
 

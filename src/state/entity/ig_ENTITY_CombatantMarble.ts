@@ -1,5 +1,5 @@
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
 import { createFakeEffectSheet } from '../entity'

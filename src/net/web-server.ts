@@ -35,7 +35,6 @@ export class PhysicsHttpServer {
         const serverDetailsString: string = JSON.stringify(serverDetails)
 
         const httpRoot = this.netInfo.connection.httpRoot
-        const ccbundler = this.netInfo.connection.ccbundler
 
         const { createServer } = PHYSICSNET && (await import('http-server'))
 
@@ -74,7 +73,7 @@ export class PhysicsHttpServer {
             https: this.netInfo.connection.https,
             before: [
                 //
-                ...await getCCBundlerHttpModules(this.netInfo.connection.ccbundler),
+                ...(await getCCBundlerHttpModules(this.netInfo.connection.ccbundler)),
                 serverHandleFunction,
             ],
         })

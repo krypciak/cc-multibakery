@@ -1,6 +1,6 @@
 import { assert } from '../../../misc/assert'
 import { generateRandomUsername, isUsernameValid } from '../../../misc/username-util'
-import { prestart } from '../../../plugin'
+import { prestart } from '../../../loading-stages'
 import {
     closePhysicsServerAndSaveState,
     createPhysicsServerFromCurrentState,

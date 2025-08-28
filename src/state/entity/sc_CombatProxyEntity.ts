@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'

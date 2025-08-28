@@ -1,30 +1,13 @@
 import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import ccmod from '../ccmod.json'
 import { Mod1 } from 'cc-instanceinator/src/types'
+import { executePostload, executePoststart, executePrestart, poststart } from './loading-stages'
 import { PhysicsServer } from './server/physics/physics-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import './multiplayer'
 import './options'
 import './misc/modify-prototypes'
 import './tests'
-
-let postloadFunctions: [() => void | Promise<void>, number][]
-export function postload(func: () => void | Promise<void>, priority: number = 100) {
-    postloadFunctions ??= []
-    postloadFunctions.push([func, priority])
-}
-
-let prestartFunctions: [() => void | Promise<void>, number][]
-export function prestart(func: () => void | Promise<void>, priority: number = 100) {
-    prestartFunctions ??= []
-    prestartFunctions.push([func, priority])
-}
-
-let poststartFunctions: [() => void | Promise<void>, number][]
-export function poststart(func: () => void | Promise<void>, priority: number = 100) {
-    poststartFunctions ??= []
-    poststartFunctions.push([func, priority])
-}
 
 export default class Multibakery implements PluginClass {
     static dir: string
@@ -40,15 +23,15 @@ export default class Multibakery implements PluginClass {
     }
 
     async prestart() {
-        await Promise.all((prestartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
+        await executePrestart()
     }
 
     async postload() {
-        await Promise.all((postloadFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
+        await executePostload()
     }
 
     async poststart() {
-        await Promise.all((poststartFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
+        await executePoststart()
     }
 }
 
@@ -56,6 +39,7 @@ poststart(() => {
     if (window.crossnode?.options.test) return
 
     if (PHYSICS && process.execPath.includes('server')) {
+        // TODO: save file loading
         multi.setServer(
             new PhysicsServer({
                 globalTps: 60,

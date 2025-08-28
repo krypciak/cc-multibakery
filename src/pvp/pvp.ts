@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { addCombatantParty } from '../misc/combatant-party-api'
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
 import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'

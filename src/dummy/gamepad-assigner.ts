@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { Html5GamepadHandler } from './fixed-Html5GamepadHandler'
 
 declare global {

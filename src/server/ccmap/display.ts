@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { CCMap, OnLinkChange } from './ccmap'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { ServerPlayer } from '../server-player'

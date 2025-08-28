@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { addStateHandler, StateKey } from './states'
 import { assert } from '../misc/assert'
 import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../misc/entity-netid'

@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { onStepHistoryAdd } from '../state/steps'
 

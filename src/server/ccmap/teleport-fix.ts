@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }

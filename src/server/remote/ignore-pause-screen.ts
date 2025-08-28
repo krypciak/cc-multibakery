@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { PhysicsServer } from '../physics/physics-server'
 
 declare global {

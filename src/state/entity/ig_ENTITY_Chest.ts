@@ -1,5 +1,5 @@
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'

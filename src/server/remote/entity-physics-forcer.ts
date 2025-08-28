@@ -1,4 +1,4 @@
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { RemoteServer } from './remote-server'
 
 declare global {

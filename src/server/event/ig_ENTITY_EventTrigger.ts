@@ -1,4 +1,4 @@
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { PhysicsServer } from '../physics/physics-server'
 import { setNextTriggeredBy, unsetNextTriggeredBy } from './event-manager'
 import { findSetByEntityByVars, setNextSetBy, unsetNextSetBy } from './vars'

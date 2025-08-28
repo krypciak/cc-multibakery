@@ -1,4 +1,4 @@
-import { postload } from '../plugin'
+import { postload } from '../loading-stages'
 import { assert } from '../misc/assert'
 
 postload(() => {

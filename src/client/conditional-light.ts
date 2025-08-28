@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 
 const force: Set<number> = new Set()
 export function forceConditionalLightOnInst(instanceId: number) {

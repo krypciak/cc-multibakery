@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { addStateHandler, StateKey } from './states'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'

@@ -1,5 +1,5 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 
 type Layer = keyof typeof ig.MAP
 export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {

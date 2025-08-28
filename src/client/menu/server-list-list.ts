@@ -1,4 +1,4 @@
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { getServerListInfo, NetServerInfoRemote } from './server-info'
 import './server-list-entry'
 

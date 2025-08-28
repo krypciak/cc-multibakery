@@ -1,4 +1,4 @@
-import { poststart } from '../plugin'
+import { poststart } from '../loading-stages'
 
 function mapFor(baseFont: ig.MultiFont, iconsFont: ig.Font, icons: string[]) {
     const page = baseFont.iconSets.length

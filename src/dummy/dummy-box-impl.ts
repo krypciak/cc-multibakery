@@ -1,5 +1,5 @@
 import { Opts } from '../options'
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 
 import './dummy-box-addon'
 

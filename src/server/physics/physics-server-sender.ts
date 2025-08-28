@@ -1,6 +1,6 @@
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { clearCollectedState, getStateUpdatePacket } from '../../state/states'
 import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'

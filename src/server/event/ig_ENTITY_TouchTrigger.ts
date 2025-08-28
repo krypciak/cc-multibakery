@@ -1,5 +1,5 @@
 import { runTasks } from 'cc-instanceinator/src/inst-util'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 prestart(() => {

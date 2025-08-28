@@ -1,4 +1,4 @@
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { defaultSelectionName } from './entity-selection'
 import { MarkerLike } from '../../server/ccmap/teleport-fix'
 import { assert } from '../../misc/assert'

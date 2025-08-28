@@ -1,8 +1,9 @@
 import type { Options } from 'ccmodmanager/types/mod-options'
-import Multibakery, { poststart, prestart } from './plugin'
+import { poststart, prestart } from './loading-stages'
 import { RemoteServer } from './server/remote/remote-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { generateRandomUsername, isUsernameValid } from './misc/username-util'
+import Multibakery from './plugin'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 

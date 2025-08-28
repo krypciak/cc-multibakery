@@ -1,6 +1,6 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from './misc/assert'
-import { prestart } from './plugin'
+import { prestart } from './loading-stages'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 
 export {}

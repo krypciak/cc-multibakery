@@ -1,7 +1,8 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type {} from 'ccmodmanager/types/local-mods'
-import Multibakery, { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { RemoteServer } from '../server/remote/remote-server'
+import Multibakery from '../plugin'
 
 prestart(() => {
     ig.System.inject({

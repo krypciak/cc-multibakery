@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { assert } from './assert'
 
 interface EntityClass extends ImpactClass<any> {

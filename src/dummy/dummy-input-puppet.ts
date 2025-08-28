@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { cleanRecord, StateMemory } from '../state/state-util'
 import { InputManagerBlock } from './dummy-input-clone'
 import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'

@@ -1,5 +1,5 @@
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 
 declare global {
     namespace ig.EVENT_STEP {

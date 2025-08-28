@@ -1,4 +1,5 @@
-import Multibakery, { poststart, prestart } from '../../plugin'
+import { poststart, prestart } from '../../loading-stages'
+import Multibakery from '../../plugin'
 
 import './title-screen-button'
 import './server-list-list'

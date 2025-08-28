@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
 import { StepHistoryEntry } from '../steps/event-call-history'
 import { runTask } from 'cc-instanceinator/src/inst-util'

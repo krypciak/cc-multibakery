@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 
 export type VarModifyEventListener = (path: string, oldValue: ig.VarValue, newValue: ig.VarValue) => void
 const listeners: VarModifyEventListener[] = []

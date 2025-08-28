@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 
 function disable(name: keyof typeof window) {
     const orig = window[name]

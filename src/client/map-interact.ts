@@ -1,7 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
 import { runTask, runTasks, scheduleTasks } from 'cc-instanceinator/src/inst-util'
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {

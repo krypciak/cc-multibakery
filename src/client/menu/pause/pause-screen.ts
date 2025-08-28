@@ -1,4 +1,5 @@
-import Multibakery, { prestart } from '../../../plugin'
+import { prestart } from '../../../loading-stages'
+import Multibakery from '../../../plugin'
 import { openManagerServerPopup } from './server-manage-button'
 
 import './leave-server-button'

@@ -1,5 +1,5 @@
 import { entityIgnoreDeath } from '../../misc/entity-netid'
-import { prestart } from '../../plugin'
+import { prestart } from '../../loading-stages'
 import { getEntityTypeId } from '../entity'
 import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'

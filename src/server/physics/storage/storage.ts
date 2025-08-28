@@ -1,5 +1,5 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { poststart, prestart } from '../../../plugin'
+import { poststart, prestart } from '../../../loading-stages'
 import type { getState } from '../../../state/entity/ig_ENTITY_Player-base'
 import { PhysicsServer } from '../physics-server'
 import { assert } from '../../../misc/assert'

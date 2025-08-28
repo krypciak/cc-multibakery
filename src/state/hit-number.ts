@@ -1,4 +1,4 @@
-import { prestart } from '../plugin'
+import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'

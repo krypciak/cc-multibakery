@@ -1,4 +1,4 @@
-import { prestart } from './plugin'
+import { prestart } from './loading-stages'
 
 prestart(() => {
     if (!PHYSICS || !window.crossnode?.options.test) return
