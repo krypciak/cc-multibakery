@@ -13,6 +13,7 @@ import './client/menu/server-list-menu'
 import './client/menu/pause/pause-screen'
 import './pvp/pvp'
 import './steps/all'
+import './misc/icons'
 
 declare global {
     namespace multi {
@@ -30,32 +31,30 @@ declare global {
     }
 }
 
-function initMultiplayer() {
+function initMultiplayer(): typeof window.multi {
     return {
         class: {} as any,
 
-        server: undefined as any,
-
         setServer(server: Server) {
-            assert(!this.server)
-            this.server = server
+            assert(!multi.server)
+            multi.server = server
         },
         destroy() {
-            this.server.destroy()
-            this.server = undefined as any
+            multi.server.destroy()
+            multi.server = undefined as any
         },
         destroyAndStartLoop() {
-            this.destroy()
+            multi.destroy()
             ig.system.startRunLoop()
         },
         async destroyNextFrameAndStartLoop() {
             await new Promise<void>(resolve => {
                 multi.server.postUpdateCallback = resolve
             })
-            this.destroy()
+            multi.destroy()
             ig.system.startRunLoop()
         },
-    }
+    } satisfies Partial<typeof window.multi> as typeof window.multi
 }
 
 prestart(() => {
