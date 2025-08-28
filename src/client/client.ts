@@ -134,12 +134,22 @@ export class Client {
         }
     }
 
+    async teleportInitial(mapNameOverride?: string) {
+        const state = this.player.getSaveState()
+
+        const mapName = mapNameOverride ?? state?.mapName ?? multi.server.settings.defalutMap?.map ?? 'multibakery/dev'
+        const marker = state?.marker ?? multi.server.settings.defalutMap?.marker ?? 'entrance'
+        await this.teleport(mapName, marker)
+    }
+
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
         await this.player.teleport(mapName, marker)
         const map = this.player.getMap()
         await this.linkMapToInstance(map)
 
         for (const obj of map.onLinkChange) obj.onClientLink(this)
+
+        multi.storage.save()
     }
 
     private async linkMapToInstance(map: CCMap) {

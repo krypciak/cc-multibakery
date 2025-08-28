@@ -1,28 +1,17 @@
-import { runTask, wrap } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
-import { assert } from '../../misc/assert'
-import { entityNetidStatic } from '../../misc/entity-netid'
 import { Opts } from '../../options'
-import { getEntityTypeId } from '../../state/entity'
-import { applyStateUpdatePacket, getStateUpdatePacket } from '../../state/states'
 import { PhysicsServer } from './physics-server'
 
-function filterOutProblematicEntityStates(packet: StateUpdatePacket) {
-    if (packet.states) {
-        for (const netid in packet.states) {
-            if (entityNetidStatic.has(getEntityTypeId(netid))) continue
-            delete packet.states[netid]
-        }
-    }
-}
-
 export async function createPhysicsServerFromCurrentState() {
-    const origMapName = ig.game.mapName
-    const playerPos = Vec3.create(ig.game.playerEntity.coll.pos)
-    const playerFace = Vec2.create(ig.game.playerEntity.face)
+    const username = Opts.clientLogin
+    multi.storage.savePlayerState(username, ig.game.playerEntity as dummy.DummyPlayer, ig.game.mapName, ig.game.marker)
 
-    const origMapState = getStateUpdatePacket()
-    filterOutProblematicEntityStates(origMapState)
+    const playerDataBackup = {
+        pos: Vec3.create(ig.game.playerEntity.coll.pos),
+        face: Vec2.create(ig.game.playerEntity.face),
+    }
+
     const origInputType = ig.input.currentDevice
 
     const server = new PhysicsServer({
@@ -46,32 +35,28 @@ export async function createPhysicsServerFromCurrentState() {
                   },
               }
             : undefined,
+        saveToSaveFile: Opts.serverSaveToSaveFile,
     })
     server.destroyOnLastClientLeave = true
     multi.setServer(server)
 
     await server.start()
 
-    const username = Opts.clientLogin
     await server.createAndJoinClient({
         username,
         inputType: 'clone',
         remote: false,
         initialInputType: origInputType,
-        mapName: origMapName,
     })
     server.masterUsername = username
-    const client = server.clients[username]
-    Vec3.assign(client.player.dummy.coll.pos, playerPos)
-    Vec2.assign(client.player.dummy.face, playerFace)
 
-    const map = server.maps[client.player.mapName]
-    assert(map)
-    map.inst.apply()
-    applyStateUpdatePacket(origMapState, 0, true)
-    server.serverInst.apply()
+    const client = server.clients[username]
 
     runTask(client.inst, () => {
+        const { x, y, z } = playerDataBackup.pos
+        ig.game.playerEntity.setPos(x, y, z)
+        Vec2.assign(ig.game.playerEntity.face, playerDataBackup.face)
+
         sc.model.enterPause()
         ig.multibakeryManageServerPopup = undefined
         openManagerServerPopup(true)
@@ -79,29 +64,9 @@ export async function createPhysicsServerFromCurrentState() {
 }
 
 export async function closePhysicsServerAndSaveState() {
-    const { playerPos, playerFace, origMapState } = wrap(() => {
-        assert(multi.server instanceof PhysicsServer)
-        assert(multi.server.masterUsername)
-        const client = multi.server.clients[multi.server.masterUsername]
-        assert(client)
-
-        const playerPos = Vec3.create(client.player.dummy.coll.pos)
-        const playerFace = Vec2.create(client.player.dummy.face)
-
-        const map = client.player.getMap()
-        map.inst.apply()
-        const origMapState = getStateUpdatePacket()
-        filterOutProblematicEntityStates(origMapState)
-
-        return { playerPos, playerFace, origMapState }
-    })
-
+    multi.storage.save()
     await multi.destroyNextFrameAndStartLoop()
 
-    if (!ig.game.playerEntity) return
-
-    Vec3.assign(ig.game.playerEntity.coll.pos, playerPos)
-    Vec2.assign(ig.game.playerEntity.face, playerFace)
-
-    applyStateUpdatePacket(origMapState, 0, true)
+    sc.model.enterRunning()
+    ig.storage.loadAutosave()
 }

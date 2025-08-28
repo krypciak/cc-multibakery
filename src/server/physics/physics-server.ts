@@ -10,9 +10,10 @@ import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
+import { ClientLeaveData } from '../remote/remote-server'
 
 import './physics-server-sender'
-import { ClientLeaveData } from '../remote/remote-server'
+import './storage/storage'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -26,6 +27,7 @@ export interface PhysicsServerConnectionSettings {
 export interface PhysicsServerSettings extends ServerSettings {
     godmode?: boolean
     netInfo?: NetServerInfoPhysics
+    saveToSaveFile?: boolean
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
@@ -46,12 +48,12 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.baseInst.display = false
 
         if (!window.crossnode?.options.test) {
-            await this.createAndJoinClient({
-                username: `lea_${1}`,
-                inputType: 'clone',
-                remote: false,
-            })
-            this.masterUsername = `lea_${1}`
+            // await this.createAndJoinClient({
+            //     username: `lea_${1}`,
+            //     inputType: 'clone',
+            //     remote: false,
+            // })
+            // this.masterUsername = `lea_${1}`
             // await this.createAndJoinClient({
             //     username: `lea_${2}`,
             //     inputType: 'clone',
@@ -89,6 +91,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
 
         if (window.crossnode && !window.crossnode.tests) startRepl()
+
+        if (this.settings.saveToSaveFile) multi.storage.loadFromCurrentData()
 
         // if (!window.crossnode?.options.test) {
         //     stagePvp()

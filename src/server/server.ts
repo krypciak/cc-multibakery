@@ -166,9 +166,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         await client.init()
         await this.joinClient(client)
-        const mapName = settings.mapName ?? this.settings.defalutMap?.map ?? 'multibakery/dev'
-        const marker = this.settings.defalutMap?.marker ?? 'entrance'
-        await client.teleport(mapName, marker)
+        await client.teleportInitial(settings.mapName)
 
         return client
     }

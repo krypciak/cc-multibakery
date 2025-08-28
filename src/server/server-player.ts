@@ -6,13 +6,14 @@ import { teleportPlayerToProperMarker } from './ccmap/teleport-fix'
 import { Client } from '../client/client'
 import { CCMap } from './ccmap/ccmap'
 import { inputBackup } from '../dummy/dummy-input'
+import { applyStateUpdatePacket } from '../state/states'
 
 export class ServerPlayer {
     private destroyed: boolean = false
 
     dummy!: dummy.DummyPlayer
     mapName: string = ''
-    marker: string | undefined = undefined
+    marker?: Nullable<string>
     ready: boolean = false
 
     mapInteract!: multi.class.ServerPlayer.MapInteract
@@ -21,6 +22,17 @@ export class ServerPlayer {
         public username: string,
         public inputManager: dummy.InputManager = new dummy.input.Puppet.InputManager()
     ) {}
+
+    getSaveState() {
+        return multi.storage.getPlayerState(this.username)
+    }
+
+    private loadState() {
+        const state = this.getSaveState()
+        if (state) {
+            applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
+        }
+    }
 
     private createPlayer() {
         if (this.dummy) assert(this.dummy._killed)
@@ -36,15 +48,21 @@ export class ServerPlayer {
         // }
 
         if (multi.server instanceof PhysicsServer && multi.server.settings.godmode) ig.godmode(this.dummy.model)
-        // do some player data loading here
+
+        this.loadState()
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
         assert(instanceinator.id == multi.server.serverInst.id)
+        if (this.dummy) {
+            multi.storage.savePlayerState(this.dummy.data.username, this.dummy, mapName, marker)
+        }
+
         this.ready = false
         let map = multi.server.maps[this.mapName]
         if (map && this.dummy) map.leave(this)
         this.mapName = mapName
+        this.marker = marker
         map = multi.server.maps[this.mapName]
         if (!map) {
             await multi.server.loadMap(this.mapName)

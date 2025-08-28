@@ -184,6 +184,12 @@ function registerOpts() {
                         name: 'Attempt crash recovery',
                         description: 'Attempt crash recovery on server crash',
                     },
+                    serverSaveToSaveFile: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Save to save file',
+                        description: 'Save multiplayer state to the save file',
+                    },
                 },
             },
         },

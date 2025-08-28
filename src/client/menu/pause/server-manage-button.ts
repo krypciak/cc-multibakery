@@ -99,6 +99,8 @@ prestart(() => {
                     buttons.push({
                         name: 'Start server',
                         onPress() {
+                            self.closeMenu()
+                            self.doStateTransition('HIDDEN', true, true)
                             createPhysicsServerFromCurrentState()
                         },
                     })
