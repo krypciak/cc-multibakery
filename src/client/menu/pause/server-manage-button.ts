@@ -152,7 +152,7 @@ prestart(() => {
                             generateRandomUsername(),
                             buttons,
                             text => {
-                                const isValid = isUsernameValid(text)
+                                const isValid = isUsernameValid(text) && !multi.server.clients[text]
                                 dialog?.userButtons![0].setActive(isValid)
                                 return isValid
                             }
