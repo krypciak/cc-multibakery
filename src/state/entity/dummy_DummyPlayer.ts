@@ -56,6 +56,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         skills: this == player?.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
 
         charge: memory.diff(chargeLevel),
+        element: memory.diff(this.model.currentElementMode),
     }
 }
 
@@ -149,6 +150,9 @@ function setState(this: dummy.DummyPlayer, state: Return) {
         } else {
             this.showChargeEffect(state.charge)
         }
+    }
+    if (state.element !== undefined) {
+        this.model.currentElementMode = state.element
     }
 }
 
