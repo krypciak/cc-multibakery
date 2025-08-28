@@ -29,7 +29,7 @@ function setSkills(this: dummy.DummyPlayer, skills: Record<number, number>) {
     }
 }
 
-type Return = ReturnType<typeof getState>
+export type DummyState = ReturnType<typeof getState>
 function getState(this: dummy.DummyPlayer, player?: StateKey) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
@@ -51,16 +51,16 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         feet: memory.diff(this.model.equip.feet),
 
         level: memory.diff(this.model.level),
-        items: this == player?.dummy ? memory.diffRecord(this.model.items) : undefined,
-        skillPoints: this == player?.dummy ? memory.diffRecord(this.model.skillPoints) : undefined,
-        skills: this == player?.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
+        items: !player || this == player.dummy ? memory.diffRecord(this.model.items) : undefined,
+        skillPoints: !player || this == player.dummy ? memory.diffRecord(this.model.skillPoints) : undefined,
+        skills: !player || this == player.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
 
         charge: memory.diff(chargeLevel),
         element: memory.diff(this.model.currentElementMode),
     }
 }
 
-function setState(this: dummy.DummyPlayer, state: Return) {
+function setState(this: dummy.DummyPlayer, state: DummyState) {
     if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
     if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
     if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
