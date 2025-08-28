@@ -97,7 +97,12 @@ function registerOpts() {
                 tabIcon: 'gamepad',
             },
             headers: {
-                general: {
+                networking: {
+                    serverNetworkingNotPossible: {
+                        type: 'INFO',
+                        name: 'Networking not available in this build of multibakery!',
+                        hidden: (): boolean => PHYSICSNET,
+                    },
                     serverEnableNet: {
                         type: 'CHECKBOX',
                         init: false,
@@ -105,6 +110,7 @@ function registerOpts() {
                         description: 'Share server to LAN',
                         changeEvent() {},
                         updateMenuOnChange: true,
+                        hidden: (): boolean => !PHYSICSNET,
                     },
                     serverHttpPort: {
                         type: 'INPUT_FIELD',
@@ -118,21 +124,21 @@ function registerOpts() {
                             if (port < 1024) return false
                             return true
                         },
-                        hidden: (): boolean => !Opts.serverEnableNet,
+                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
                     serverTitle: {
                         type: 'INPUT_FIELD',
                         name: 'Server title',
                         init: `my server`,
                         description: 'Server title',
-                        hidden: (): boolean => !Opts.serverEnableNet,
+                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
                     serverDescription: {
                         type: 'INPUT_FIELD',
                         name: 'Server description',
                         init: `hello!`,
                         description: 'Server description',
-                        hidden: (): boolean => !Opts.serverEnableNet,
+                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
                 },
                 advanced: {
