@@ -14,6 +14,7 @@ import './client/menu/pause/pause-screen'
 import './pvp/pvp'
 import './steps/all'
 import './misc/icons'
+import './map-gui/map-overlay'
 
 declare global {
     namespace multi {

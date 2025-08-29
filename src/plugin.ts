@@ -42,18 +42,18 @@ poststart(() => {
         multi.setServer(
             new PhysicsServer({
                 globalTps: 60,
-                godmode: true,
                 displayServerInstance: false,
                 displayMaps: true,
                 displayClientInstances: true,
                 displayRemoteClientInstances: true,
                 forceConsistentTickTimes: false,
                 attemptCrashRecovery: false,
-                save: {
-                    manualSaving: true,
-                    automaticlySave: true,
-                    loadFromSlot: 0,
-                },
+                godmode: true,
+                // save: {
+                //     manualSaving: true,
+                //     automaticlySave: true,
+                //     loadFromSlot: 0,
+                // },
                 netInfo: {
                     connection: {
                         httpPort: DEFAULT_HTTP_PORT,
@@ -75,8 +75,8 @@ poststart(() => {
                     },
                 },
                 defalutMap: {
-                    map: 'multibakery/dev',
-                    // map: 'rhombus-dng/room-1',
+                    // map: 'multibakery/dev',
+                    map: 'rhombus-dng/room-1',
                     // marker: 'entrance',
                     // marker: 'puzzle',
                     marker: 'pvp',
