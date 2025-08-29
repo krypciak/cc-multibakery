@@ -33,7 +33,6 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         savefile.multibakery = this.currentData
 
         if (!(multi.server instanceof PhysicsServer)) return
-        if (!multi.server.settings.saveToSaveFile) return
 
         this.currentData = savefile.multibakery ??= {}
         this.saveData()

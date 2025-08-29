@@ -67,6 +67,8 @@ export async function closePhysicsServerAndSaveState() {
     multi.storage.save()
     await multi.destroyNextFrameAndStartLoop()
 
+    if (!ig.game.playerEntity) return
+
     sc.model.enterRunning()
     ig.storage.loadAutosave()
 }
