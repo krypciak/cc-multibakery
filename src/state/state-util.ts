@@ -99,7 +99,10 @@ export class StateMemory {
         }
     }
 
-    diffRecord<T extends object>(currRecord: T): T | undefined {
+    diffRecord<T extends object>(
+        currRecord: T,
+        eq: (a: T[keyof T], b: T[keyof T]) => boolean = (a, b) => a == b
+    ): T | undefined {
         const i = this.i++
         if (this.data.length <= i) {
             this.data.push(currRecord)
@@ -117,7 +120,7 @@ export class StateMemory {
                 const currValue = currRecord[key]
                 const lastValue = lastRecord[key]
 
-                if (currValue != lastValue) {
+                if (!eq(currValue, lastValue)) {
                     changed[key] = currValue
                     atLeastOne = true
                 }

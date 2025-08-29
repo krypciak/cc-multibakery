@@ -18,21 +18,16 @@ type Return = ReturnType<typeof getState>
 function getState(this: dummy.DummyPlayer, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
+        ...igEntityPlayer.getState.call(this, player, memory),
+
         isControlBlocked: memory.diff(this.data.isControlBlocked),
         inCutscene: memory.diff(this.data.inCutscene),
         currentMenu: memory.diff(this.data.currentMenu),
         currentSubState: memory.diff(this.data.currentSubState),
-
-        ...igEntityPlayer.getState.call(this, player, memory),
     }
 }
 
 function setState(this: dummy.DummyPlayer, state: Return) {
-    if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
-    if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
-    if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
-    if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
-
     if (state.currentAnim !== undefined && this.currentAnim != state.currentAnim) {
         if (
             (state.currentAnim == 'attack' ||
@@ -47,6 +42,11 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     }
 
     igEntityPlayer.setState.call(this, state)
+
+    if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
+    if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
+    if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
+    if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
 }
 
 prestart(() => {
