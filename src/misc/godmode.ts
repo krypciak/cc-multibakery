@@ -59,6 +59,9 @@ prestart(() => {
             startCircuits[element] = true
         }
 
+        /* disable circuit override popups */
+        (ig.vars.storage.g ??= {}).gotCircuitOverride = 1
+
         /* unlock all areas */
         for (const area in sc.map.areas) sc.map.updateVisitedArea(area)
         /* unlock cargo ship area */
