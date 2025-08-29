@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
-import { runTask, } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Client } from './client'
 
 function getGamepadManager(client: Client) {

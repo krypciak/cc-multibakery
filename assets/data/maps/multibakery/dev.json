@@ -667,9 +667,30 @@
         { "type": "Marker", "x": 976, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 145, "name": "from_pvp_1", "dir": "NORTH" } },
         { "type": "Marker", "x": 976, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 146, "name": "from_pvp_3", "dir": "NORTH" } },
         { "type": "Marker", "x": 896, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 147, "name": "from_pvp_2", "dir": "NORTH" } },
-        { "type": "Destructible", "x": 510, "y": 476, "level": 2, "settings": { "name": "", "desType": "boxMedium", "enemyInfo": null, "spawnCondition": null, "mapId": 89 } },
-        { "type": "Destructible", "x": 507, "y": 517, "level": 2, "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 } },
-        { "type": "Destructible", "x": 510, "y": 441, "level": 2, "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 } },
+        { "type": "Switch", "x": 744, "y": 200, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 150, "variable": "tmp.sideMsg0", "name": "switchSideCond0" } },
+        { "type": "Marker", "x": 352, "y": 256, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 151, "name": "puzzle", "dir": "NORTH" } },
+        { "type": "Switch", "x": 688, "y": 1056, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 152, "name": "s_godmode_branch", "variable": "tmp.godmodeBranch" } },
+        { "type": "Switch", "x": 688, "y": 1080, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 154, "name": "s_godmode", "variable": "tmp.godmode" } },
+        {
+            "type": "EventTrigger",
+            "x": 688,
+            "y": 1032,
+            "level": 2,
+            "settings": {
+                "size": { "x": 16, "y": 16 },
+                "mapId": 155,
+                "event": [
+                    { "type": "CHANGE_VAR_BOOL", "varName": "tmp.godmode", "changeType": "set", "value": false },
+                    { "type": "GODMODE", "circuitBranch": { "varName": "tmp.godmodeBranch" } }
+                ],
+                "name": "godmodeEvent",
+                "eventType": "PARALLEL",
+                "startCondition": "tmp.godmode",
+                "endCondition": "false",
+                "triggerType": "ALWAYS",
+                "loadCondition": true
+            }
+        },
         {
             "type": "ScalableProp",
             "x": 1216,
@@ -835,27 +856,6 @@
             }
         },
         {
-            "type": "Prop",
-            "x": 256,
-            "y": 328,
-            "level": 2,
-            "settings": {
-                "name": "beltSign",
-                "interact": { "icon": "INFO", "hoverText": { "en_US": "Equip Consciousness", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } },
-                "mapId": 84,
-                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
-                "propAnim": "unsolved",
-                "spawnCondition": ""
-            }
-        },
-        {
-            "type": "Prop",
-            "x": 640,
-            "y": 216,
-            "level": 2,
-            "settings": { "name": "", "propType": { "sheet": "trading-autumn", "name": "boothNoChair" }, "propAnim": "trade", "spawnCondition": null, "mapId": 116 }
-        },
-        {
             "type": "NPC",
             "x": 696,
             "y": 208,
@@ -900,6 +900,30 @@
                 ],
                 "mapId": 35
             }
+        },
+        { "type": "Destructible", "x": 510, "y": 476, "level": 2, "settings": { "name": "", "desType": "boxMedium", "enemyInfo": null, "spawnCondition": null, "mapId": 89 } },
+        { "type": "Destructible", "x": 507, "y": 517, "level": 2, "settings": { "name": "", "desType": "boxLarge", "enemyInfo": null, "spawnCondition": null, "mapId": 90 } },
+        { "type": "Destructible", "x": 510, "y": 441, "level": 2, "settings": { "name": "", "desType": "boxMedNorth", "enemyInfo": null, "spawnCondition": null, "mapId": 91 } },
+        {
+            "type": "Prop",
+            "x": 256,
+            "y": 328,
+            "level": 2,
+            "settings": {
+                "name": "beltSign",
+                "interact": { "icon": "INFO", "hoverText": { "en_US": "Equip Consciousness", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } },
+                "mapId": 84,
+                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
+                "propAnim": "unsolved",
+                "spawnCondition": ""
+            }
+        },
+        {
+            "type": "Prop",
+            "x": 640,
+            "y": 216,
+            "level": 2,
+            "settings": { "name": "", "propType": { "sheet": "trading-autumn", "name": "boothNoChair" }, "propAnim": "trade", "spawnCondition": null, "mapId": 116 }
         },
         {
             "type": "Enemy",
@@ -962,8 +986,34 @@
             "level": 2,
             "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage" } }
         },
-        { "type": "Switch", "x": 744, "y": 200, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 150, "variable": "tmp.sideMsg0", "name": "switchSideCond0" } },
-        { "type": "Marker", "x": 352, "y": 256, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 151, "name": "puzzle", "dir": "NORTH" } }
+        {
+            "type": "Prop",
+            "x": 712,
+            "y": 1056,
+            "level": 2,
+            "settings": {
+                "name": "sign_godmode_branch",
+                "interact": { "icon": "INFO", "hoverText": { "en_US": "Switch branch", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } },
+                "mapId": 156,
+                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
+                "propAnim": "unsolved",
+                "spawnCondition": ""
+            }
+        },
+        {
+            "type": "Prop",
+            "x": 712,
+            "y": 1080,
+            "level": 2,
+            "settings": {
+                "name": "sign_godmode",
+                "interact": { "icon": "INFO", "hoverText": { "en_US": "Godmode", "de_DE": "", "fr_FR": "", "langUid": 0, "zh_CN": "", "ja_JP": "", "ko_KR": "", "zh_TW": "" } },
+                "mapId": 157,
+                "propType": { "sheet": "dungeon-ar", "name": "taskSign" },
+                "propAnim": "unsolved",
+                "spawnCondition": ""
+            }
+        }
     ],
     "layer": [
         {

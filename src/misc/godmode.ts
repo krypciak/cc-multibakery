@@ -2,7 +2,7 @@ import { prestart } from '../loading-stages'
 
 declare global {
     namespace ig {
-        var godmode: (model?: sc.PlayerModel) => void
+        var godmode: (model?: sc.PlayerModel, circuitBranch?: boolean) => void
     }
 
     interface Object {
@@ -11,7 +11,7 @@ declare global {
 }
 
 prestart(() => {
-    ig.godmode = (model: sc.PlayerModel = sc.model.player, circuitBranch: boolean = false) => {
+    ig.godmode = (model = sc.model.player, circuitBranch = false) => {
         Object.keysT = Object.keys as any
 
         sc.stats.statsEnabled = true
@@ -60,7 +60,7 @@ prestart(() => {
         }
 
         /* disable circuit override popups */
-        (ig.vars.storage.g ??= {}).gotCircuitOverride = 1
+        ;(ig.vars.storage.g ??= {}).gotCircuitOverride = 1
 
         /* unlock all areas */
         for (const area in sc.map.areas) sc.map.updateVisitedArea(area)
@@ -79,4 +79,33 @@ prestart(() => {
             })
         }
     }
+})
+
+declare global {
+    namespace ig.EVENT_STEP {
+        namespace GODMODE {
+            interface Settings {
+                circuitBranch?: ig.Event.BooleanExpression
+            }
+        }
+        interface GODMODE extends ig.EventStepBase {
+            circuitBranch?: ig.Event.BooleanExpression
+        }
+        interface GODMODE_CONSTRUCTOR extends ImpactClass<GODMODE> {
+            new (settings: ig.EVENT_STEP.GODMODE.Settings): GODMODE
+        }
+        var GODMODE: GODMODE_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.GODMODE = ig.EventStepBase.extend({
+        init(settings) {
+            this.circuitBranch = settings.circuitBranch
+        },
+        start() {
+            const circuitBranch = this.circuitBranch && ig.Event.getExpressionValue(this.circuitBranch)
+            ig.godmode(sc.model.player, circuitBranch)
+        },
+    })
 })
