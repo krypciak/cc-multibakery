@@ -120,7 +120,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             initialInputType: joinData.initialInputType,
         })
 
-        return { client, ackData: { status: 'ok' } }
+        return { client, ackData: { status: 'ok', mapName: client.player.mapName } }
     }
 
     onNetReceiveUpdate(conn: NetConnection, data: unknown) {

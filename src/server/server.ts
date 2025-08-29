@@ -43,6 +43,7 @@ export function isClientJoinData(_data: unknown): _data is ClientJoinData {
 }
 export interface ClientJoinAckData {
     status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
+    mapName?: string
 }
 
 export interface GameLoopUpdateable {
