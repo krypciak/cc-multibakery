@@ -132,3 +132,13 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.CrossCode.inject({
+        handleLoadingComplete() {
+            if (!multi.server) return this.parent()
+            if (!ig.game.playerEntity) return
+            return this.parent()
+        },
+    })
+})

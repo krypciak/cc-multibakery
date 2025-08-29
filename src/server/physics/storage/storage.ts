@@ -60,10 +60,17 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         }
     }
 
-    private getSaveData() {
-        const masterInstance = multi.server.masterUsername
-            ? multi.server.clients[multi.server.masterUsername].inst
-            : multi.server.serverInst
+    wrapFilterListeners(func: () => void) {
+        const listenersBackup = ig.storage.listeners
+        const relevantListeners = ig.storage.listeners.filter(
+            listener => !('_instanceId' in listener) || listener._instanceId == instanceinator.id
+        )
+        ig.storage.listeners = relevantListeners
+
+        func()
+
+        ig.storage.listeners = listenersBackup
+    }
 
     private getSaveData() {
         const masterInstance = multi.server.getMasterClient()?.inst ?? multi.server.serverInst
@@ -71,17 +78,11 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
         const partialSave: Partial<ig.SaveSlot.Data> = {}
         runTask(masterInstance, () => {
-            const listenersBackup = ig.storage.listeners
-            const relevantListeners = ig.storage.listeners.filter(
-                listener => !('_instanceId' in listener) || listener._instanceId == instanceinator.id
-            )
-            ig.storage.listeners = relevantListeners
-
             this.saving = true
-            ig.storage._saveState(partialSave, ig.game.mapName ?? 'multibakery/dev')
+            this.wrapFilterListeners(() => {
+                ig.storage._saveState(partialSave, ig.game.mapName ?? 'multibakery/dev')
+            })
             this.saving = false
-
-            ig.storage.listeners = listenersBackup
         })
         return partialSave as ig.SaveSlot.Data
     }
@@ -91,13 +92,31 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
         ig.storage.autoSlot = saveSlot
         ig.storage.checkPointSave = save
-        ig.storage.lastUsedSlot = -1
 
-        if (slotId !== undefined && multi.server instanceof PhysicsServer && multi.server.settings.saveToSaveFile) {
-            ig.storage.slots[slotId] && ig.storage.slots.splice(slotId, 1)
-            ig.storage.slots.unshift(saveSlot)
-            ig.storage.lastUsedSlot = 0
-            ig.storage._saveToStorage()
+        let saved = false
+
+        if (multi.server instanceof PhysicsServer) {
+            const { manualSaving, automaticlySave } = multi.server.settings.save ?? {}
+
+            if (slotId === undefined) {
+                if (automaticlySave) {
+                    slotId = ig.storage.lastUsedSlot
+                }
+            } else if (!manualSaving) {
+                slotId = undefined
+            }
+
+            if (slotId !== undefined && slotId != -1) {
+                if (ig.storage.slots[slotId]) ig.storage.slots.splice(slotId, 1)
+                ig.storage.slots.unshift(saveSlot)
+                ig.storage.lastUsedSlot = 0
+                ig.storage._saveToStorage()
+                saved = true
+            }
+        }
+
+        if (!saved) {
+            ig.storage.lastUsedSlot = -1
         }
     }
 
@@ -142,6 +161,20 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     getPlayerState(username: string): PlayerState | undefined {
         return this.currentData?.players?.[username]
     }
+
+    load() {
+        assert(multi.server instanceof PhysicsServer)
+        const slotId = multi.server.settings.save?.loadFromSlot
+        if (slotId === undefined) return
+
+        ig.storage.lastUsedSlot = slotId
+        const slot = ig.storage.getSlot(slotId)
+        if (!slot) throw new Error(`Slot: ${slotId} not found!`)
+
+        const data = slot.getData()
+        ig.storage.currentLoadFile = data
+        ig.storage.checkPointSave = data
+    }
 }
 
 declare global {
@@ -165,6 +198,16 @@ prestart(() => {
             if (!multi.server) return this.parent(slot)
 
             multi.storage.save(slot)
+        },
+        onLevelLoadStart(data) {
+            multi.storage.wrapFilterListeners(() => {
+                this.parent!(data)
+            })
+        },
+        onLevelLoaded(data) {
+            multi.storage.wrapFilterListeners(() => {
+                this.parent!(data)
+            })
         },
     })
 

@@ -27,7 +27,11 @@ export interface PhysicsServerConnectionSettings {
 export interface PhysicsServerSettings extends ServerSettings {
     godmode?: boolean
     netInfo?: NetServerInfoPhysics
-    saveToSaveFile?: boolean
+    save?: {
+        manualSaving?: boolean
+        loadFromSlot?: number
+        automaticlySave?: boolean
+    }
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
@@ -46,6 +50,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         await super.start()
 
         this.baseInst.display = false
+
+        multi.storage.load()
 
         if (!window.crossnode?.options.test) {
             this.setMasterClient(

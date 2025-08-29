@@ -39,7 +39,6 @@ poststart(() => {
     if (window.crossnode?.options.test) return
 
     if (PHYSICS && process.execPath.includes('server')) {
-        // TODO: save file loading
         multi.setServer(
             new PhysicsServer({
                 globalTps: 60,
@@ -50,6 +49,11 @@ poststart(() => {
                 displayRemoteClientInstances: true,
                 forceConsistentTickTimes: false,
                 attemptCrashRecovery: false,
+                save: {
+                    manualSaving: true,
+                    automaticlySave: true,
+                    loadFromSlot: 0,
+                },
                 netInfo: {
                     connection: {
                         httpPort: DEFAULT_HTTP_PORT,

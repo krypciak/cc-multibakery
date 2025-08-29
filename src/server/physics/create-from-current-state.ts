@@ -35,20 +35,23 @@ export async function createPhysicsServerFromCurrentState() {
                   },
               }
             : undefined,
-        saveToSaveFile: Opts.serverSaveToSaveFile,
+        save: {
+            manualSaving: Opts.serverEnableSave,
+        },
     })
     server.destroyOnLastClientLeave = true
     multi.setServer(server)
 
     await server.start()
 
-    await server.createAndJoinClient({
-        username,
-        inputType: 'clone',
-        remote: false,
-        initialInputType: origInputType,
-    })
-    server.masterUsername = username
+    server.setMasterClient(
+        await server.createAndJoinClient({
+            username,
+            inputType: 'clone',
+            remote: false,
+            initialInputType: origInputType,
+        })
+    )
 
     const client = server.clients[username]
 

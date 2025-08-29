@@ -116,6 +116,9 @@ prestart(() => {
         isControlBlocked() {
             return this.data.isControlBlocked || this.data.inCutscene || this.parent()
         },
+        updateSkinPet(showSpawnFx) {
+            return inputBackup(this.inputManager, () => this.parent(showSpawnFx))
+        },
     })
 }, 1)
 
