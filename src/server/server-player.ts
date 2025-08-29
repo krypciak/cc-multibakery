@@ -102,6 +102,8 @@ export class ServerPlayer {
     }
 
     destroy() {
+        multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
+
         assert(!this.destroyed)
         const map = multi.server.maps[this.mapName]
         map?.leave(this)
