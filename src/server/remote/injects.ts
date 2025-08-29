@@ -52,4 +52,11 @@ prestart(() => {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
         },
     })
+
+    sc.CommonEvents.inject({
+        triggerEvent(type, data) {
+            if (!(multi.server instanceof RemoteServer)) return this.parent(type, data)
+            return null
+        },
+    })
 }, 3)
