@@ -64,7 +64,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     serverInst!: InstanceinatorInstance
 
     clients: Record<string, Client> = {}
-    masterUsername?: string
+    private masterUsername?: string
 
     measureTraffic: boolean = false
     destroyed: boolean = false // or destroying
@@ -190,7 +190,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
                     multi.destroyNextFrameAndStartLoop()
                 }
             } else {
-                this.masterUsername = Object.values(this.clients)[0].player.username
+                this.setMasterClient(Object.values(this.clients)[0])
             }
         }
     }
@@ -203,6 +203,16 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
                 return () => {}
             },
         })
+    }
+
+    setMasterClient(client: Client) {
+        this.masterUsername = client.player.username
+        multi.storage.save()
+    }
+
+    getMasterClient(): Client | undefined {
+        if (!this.masterUsername) return
+        return this.clients[this.masterUsername]
     }
 
     destroy() {

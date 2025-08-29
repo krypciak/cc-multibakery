@@ -7,8 +7,8 @@ prestart(() => {
 
         const active =
             multi.server instanceof PhysicsServer &&
-            multi.server.settings.saveToSaveFile &&
-            (ig.ccmap || ig.client?.player.username == multi.server.masterUsername)
+            multi.server.settings.save?.manualSaving &&
+            (ig.ccmap || ig.client == multi.server.getMasterClient())
 
         button.setActive(!!active)
     }

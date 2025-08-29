@@ -48,12 +48,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.baseInst.display = false
 
         if (!window.crossnode?.options.test) {
-            // await this.createAndJoinClient({
-            //     username: `lea_${1}`,
-            //     inputType: 'clone',
-            //     remote: false,
-            // })
-            // this.masterUsername = `lea_${1}`
+            this.setMasterClient(
+                await this.createAndJoinClient({
+                    username: `lea_${1}`,
+                    inputType: 'clone',
+                    remote: false,
+                })
+            )
             // await this.createAndJoinClient({
             //     username: `lea_${2}`,
             //     inputType: 'clone',

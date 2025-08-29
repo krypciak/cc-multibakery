@@ -25,9 +25,7 @@ prestart(() => {
                 }
 
                 const isMaster =
-                    PHYSICS &&
-                    multi.server instanceof PhysicsServer &&
-                    multi.server.masterUsername == ig.client.player?.username
+                    PHYSICS && multi.server instanceof PhysicsServer && multi.server.getMasterClient() == ig.client
 
                 const { text, dialogText } = isMaster
                     ? {

@@ -398,7 +398,7 @@ export async function stagePvp() {
         })
     )
 
-    multi.server.masterUsername = masterPlayer.data.username
+    multi.server.setMasterClient(masterPlayer.getClient())
 
     const map = masterPlayer.getMap()
 

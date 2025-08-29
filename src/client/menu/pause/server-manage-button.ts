@@ -92,7 +92,7 @@ prestart(() => {
                 },
             })
 
-            const isMaster = ig.client && ig.client.player.username == multi.server.masterUsername
+            const isMaster = ig.client && ig.client == multi.server.getMasterClient()
 
             if (PHYSICS) {
                 if (!multi.server) {

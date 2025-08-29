@@ -42,13 +42,9 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.currentData = savefile.multibakery
     }
 
-    private addPrettyTextToSave(save: ig.SaveSlot.Data, setDefaultData: boolean) {
-        if (setDefaultData) {
-            save.area = { en_US: 'Multibakery server', langUid: 1 }
-            save.specialMap = { en_US: 'None', langUid: 1 }
-        }
-
-        if (multi.server.masterUsername) {
+    private addPrettyTextToSave(save: ig.SaveSlot.Data) {
+        const masterClient = multi.server.getMasterClient()
+        if (masterClient) {
             const specialMap = save.specialMap as Record<string, string>
             const suffix = '\\c[0])'
 
@@ -56,8 +52,11 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                 if (typeof specialMap[key] != 'string') continue
                 if (specialMap[key].endsWith(suffix)) continue
 
-                specialMap[key] += ` (player: \\c[3]${multi.server.masterUsername}${suffix}`
+                specialMap[key] += ` (player: \\c[3]${masterClient.player.username}${suffix}`
             }
+        } else {
+            save.area = { en_US: 'Multibakery server', langUid: 1 }
+            save.specialMap = { en_US: 'None', langUid: 1 }
         }
     }
 
@@ -66,6 +65,8 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
             ? multi.server.clients[multi.server.masterUsername].inst
             : multi.server.serverInst
 
+    private getSaveData() {
+        const masterInstance = multi.server.getMasterClient()?.inst ?? multi.server.serverInst
         assert(masterInstance)
 
         const partialSave: Partial<ig.SaveSlot.Data> = {}
@@ -102,7 +103,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
     save(slotId?: number) {
         const save = this.getSaveData()
-        this.addPrettyTextToSave(save, !multi.server.masterUsername)
+        this.addPrettyTextToSave(save)
         this.commitSave(save, slotId)
     }
 
