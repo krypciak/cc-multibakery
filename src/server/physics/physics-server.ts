@@ -92,8 +92,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         if (window.crossnode && !window.crossnode.tests) startRepl()
 
-        if (this.settings.saveToSaveFile) multi.storage.loadFromCurrentData()
-
         // if (!window.crossnode?.options.test) {
         //     stagePvp()
         // }

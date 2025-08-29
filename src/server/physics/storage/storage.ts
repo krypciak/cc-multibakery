@@ -5,6 +5,7 @@ import { PhysicsServer } from '../physics-server'
 import { assert } from '../../../misc/assert'
 
 import './save-slot-button'
+import './pause-screen-save-button'
 
 type PlayerGetStateReturn = ReturnType<typeof getState>
 type PlayerState = PlayerGetStateReturn & {
@@ -92,7 +93,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         ig.storage.checkPointSave = save
         ig.storage.lastUsedSlot = -1
 
-        if (slotId !== undefined) {
+        if (slotId !== undefined && multi.server instanceof PhysicsServer && multi.server.settings.saveToSaveFile) {
             ig.storage.slots[slotId] && ig.storage.slots.splice(slotId, 1)
             ig.storage.slots.unshift(saveSlot)
             ig.storage.lastUsedSlot = 0
@@ -137,8 +138,6 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     private saveData(): void {
         this.savePlayerStates()
     }
-
-    loadFromCurrentData() {}
 
     getPlayerState(username: string): PlayerState | undefined {
         return this.currentData?.players?.[username]
