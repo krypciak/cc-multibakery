@@ -315,3 +315,11 @@ export function notifyMapAndPlayerInsts(model: sc.Model, msg: number, data?: unk
         runTasks(map.getAllInstances(), notify)
     }
 }
+
+prestart(() => {
+    ig.ENTITY.EventTrigger.inject({
+        update() {
+            if (!ig.ccmap || ig.ccmap.ready) return this.parent()
+        },
+    })
+})

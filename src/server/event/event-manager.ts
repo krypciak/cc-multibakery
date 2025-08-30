@@ -24,7 +24,19 @@ prestart(() => {
         callEvent(...args) {
             if (!multi.server) return this.parent(...args)
 
-            const player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
+            let player: ig.Entity | undefined
+            if (this.nextTriggeredBy) {
+                if (this.nextTriggeredBy.code == 'true') {
+                    assert(ig.ccmap)
+                    assert(ig.ccmap.players.length > 0)
+                    const pl = ig.ccmap.players[0]
+                    assert(pl.ready)
+                    assert(pl.dummy)
+                    player = pl.dummy
+                } else {
+                    player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
+                }
+            }
             if (!player) return this.parent(...args)
 
             assert(player instanceof dummy.DummyPlayer)
