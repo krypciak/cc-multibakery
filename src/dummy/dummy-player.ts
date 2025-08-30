@@ -114,7 +114,7 @@ prestart(() => {
             if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
         },
         isControlBlocked() {
-            return this.data.isControlBlocked || this.data.inCutscene || this.parent()
+            return this.data.isControlBlocked || this.parent()
         },
         updateSkinPet(showSpawnFx) {
             return inputBackup(this.inputManager, () => this.parent(showSpawnFx))
