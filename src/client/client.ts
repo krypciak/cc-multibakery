@@ -16,6 +16,7 @@ import { isUsernameValid } from '../misc/username-util'
 import { addCombatantParty } from '../misc/combatant-party-api'
 
 import './injects'
+import { GameLoopUpdateable } from '../server/server'
 
 declare global {
     namespace ig {
@@ -39,7 +40,7 @@ export type ClientSettings = {
       }
 )
 
-export class Client {
+export class Client implements GameLoopUpdateable {
     player!: ServerPlayer
     inst!: InstanceinatorInstance
 
@@ -55,9 +56,7 @@ export class Client {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             'localclient-' + this.settings.username,
-            multi.server.settings.displayClientInstances &&
-                !this.settings.noShowInstance &&
-                (!this.settings.remote || multi.server.settings.displayRemoteClientInstances),
+            this.isVisible(),
             this.settings.forceDraw,
             inst => {
                 inst.ig.client = this
@@ -104,6 +103,18 @@ export class Client {
         assert(this.player)
         const map = this.player.getMap()
         map.attemptRecovery(e)
+    }
+
+    isActive() {
+        return true
+    }
+
+    isVisible() {
+        return !!(
+            multi.server.settings.displayClientInstances &&
+            !this.settings.noShowInstance &&
+            (!this.settings.remote || multi.server.settings.displayRemoteClientInstances)
+        )
     }
 
     update() {

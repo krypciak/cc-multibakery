@@ -59,19 +59,25 @@ export class ServerPlayer {
         }
 
         this.ready = false
-        let map = multi.server.maps[this.mapName]
-        if (map && this.dummy) map.leave(this)
+        const oldMap = multi.server.maps[this.mapName]
+        if (oldMap && this.dummy) oldMap.leave(this)
+        if (oldMap) oldMap.forceUpdate++
+
         this.mapName = mapName
         this.marker = marker
-        map = multi.server.maps[this.mapName]
+        let map = multi.server.maps[this.mapName]
         if (!map) {
             await multi.server.loadMap(this.mapName)
             map = this.getMap()
         }
         await map.readyPromise
+
+        if (oldMap) oldMap.forceUpdate--
+        map.forceUpdate++
         runTask(map.inst, () => {
             this.createPlayer()
         })
+        map.forceUpdate--
         map.enter(this)
         runTask(map.inst, () => {
             this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)

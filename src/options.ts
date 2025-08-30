@@ -153,21 +153,63 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display server inst',
+                        changeEvent() {
+                            if (multi.server) {
+                                multi.server.settings.displayServerInstance = Opts.serverDisplayServerInstance
+                            }
+                        },
                     },
                     serverDisplayMaps: {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display map insts',
+                        changeEvent() {
+                            if (multi.server) {
+                                multi.server.settings.displayMaps = Opts.serverDisplayMaps
+                            }
+                        },
+                    },
+                    serverForceMapsActive: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Force maps active',
+                        description: 'Prevent maps from becoming inactive',
+                        changeEvent() {
+                            if (multi.server) {
+                                multi.server.settings.forceMapsActive = Opts.serverForceMapsActive
+                            }
+                        },
+                    },
+                    serverDisplayInactiveMaps: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Display inactive map insts',
+                        changeEvent() {
+                            if (multi.server) {
+                                multi.server.settings.displayInactiveMaps = Opts.serverDisplayInactiveMaps
+                            }
+                        },
                     },
                     serverDisplayClientInstances: {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Display client insts',
+                        changeEvent() {
+                            if (multi.server) {
+                                multi.server.settings.displayClientInstances = Opts.serverDisplayClientInstances
+                            }
+                        },
                     },
                     serverDisplayRemoteClientInstances: {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display remote client insts',
+                        changeEvent() {
+                            if (multi.server) {
+                                multi.server.settings.displayRemoteClientInstances =
+                                    Opts.serverDisplayRemoteClientInstances
+                            }
+                        },
                     },
                     serverForceConsistentTickTimes: {
                         type: 'CHECKBOX',

@@ -34,6 +34,7 @@ export class CCMap implements GameLoopUpdateable {
     private readyResolve!: () => void
     noStateAppliedYet: boolean = true
     onLinkChange: OnLinkChange[] = []
+    forceUpdate: number = 0
 
     constructor(
         public name: string,
@@ -50,10 +51,8 @@ export class CCMap implements GameLoopUpdateable {
     async load() {
         this.display = new CCMapDisplay(this)
 
-        const displayMaps = multi.server.settings.displayMaps
-
         const levelDataPromise = this.readLevelData()
-        this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, displayMaps)
+        this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, this.isVisible())
         this.inst.ig.ccmap = this
         forceConditionalLightOnInst(this.inst.id)
 
@@ -79,6 +78,14 @@ export class CCMap implements GameLoopUpdateable {
 
         console.error(`ccmap crashed, inst: ${instanceinator.id}`, e)
         multi.server.unloadMap(this)
+    }
+
+    isActive() {
+        return multi.server.settings.forceMapsActive || !this.ready || this.forceUpdate != 0 || this.players.length > 0
+    }
+
+    isVisible() {
+        return !!multi.server.settings.displayMaps && (multi.server.settings.displayInactiveMaps || this.isActive())
     }
 
     update() {
@@ -113,7 +120,6 @@ export class CCMap implements GameLoopUpdateable {
     }
 
     enter(player: ServerPlayer) {
-        player.mapName = this.name
         this.players.push(player)
     }
 

@@ -13,6 +13,8 @@ export interface ServerSettings {
     forceConsistentTickTimes?: boolean
     displayServerInstance?: boolean
     displayMaps?: boolean
+    forceMapsActive?: boolean
+    displayInactiveMaps?: boolean
     disableMapDisplayCameraMovement?: boolean
     displayClientInstances?: boolean
     displayRemoteClientInstances?: boolean
@@ -49,6 +51,8 @@ export interface ClientJoinAckData {
 export interface GameLoopUpdateable {
     inst: InstanceinatorInstance
 
+    isActive(): boolean
+    isVisible(): boolean
     update(): void
     deferredUpdate(): void
 }
@@ -79,7 +83,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         instanceinator.displayFps = true
 
         this.baseInst = instanceinator.instances[0]
-        this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.settings.displayServerInstance)
+        this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.isServerInstVisible())
         this.serverInst.apply()
         this.safeguardServerInstance()
 
@@ -91,8 +95,18 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         multi.class.gamepadAssigner.initialize()
     }
 
+    private updateInstVisibility(inst: InstanceinatorInstance, visible: boolean) {
+        if (inst.display != visible) {
+            inst.display = visible
+            instanceinator.retile()
+        }
+    }
+
     private applyUpdateable(obj: GameLoopUpdateable): boolean {
         if (!obj.inst) return false
+
+        this.updateInstVisibility(obj.inst, obj.isVisible())
+        if (!obj.isActive()) return false
 
         copyTickInfo(this.serverInst, obj.inst)
         obj.inst.apply()
@@ -100,9 +114,14 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         return true
     }
 
+    private isServerInstVisible() {
+        return !!this.settings.displayServerInstance
+    }
+
     update() {
         multi.class.gamepadAssigner.update()
 
+        this.updateInstVisibility(this.serverInst, this.isServerInstVisible())
         ig.game.update()
 
         for (const name in this.maps) {

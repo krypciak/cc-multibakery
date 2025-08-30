@@ -44,6 +44,8 @@ poststart(() => {
                 globalTps: 60,
                 displayServerInstance: false,
                 displayMaps: true,
+                forceMapsActive: false,
+                displayInactiveMaps: false,
                 displayClientInstances: true,
                 displayRemoteClientInstances: true,
                 forceConsistentTickTimes: false,

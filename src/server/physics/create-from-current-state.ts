@@ -19,6 +19,8 @@ export async function createPhysicsServerFromCurrentState() {
         godmode: Opts.serverGodmode,
         displayServerInstance: Opts.serverDisplayServerInstance,
         displayMaps: Opts.serverDisplayMaps,
+        forceMapsActive: Opts.serverForceMapsActive,
+        displayInactiveMaps: Opts.serverDisplayInactiveMaps,
         displayClientInstances: Opts.serverDisplayClientInstances,
         displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
         forceConsistentTickTimes: Opts.serverForceConsistentTickTimes,
