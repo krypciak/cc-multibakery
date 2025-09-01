@@ -25,6 +25,7 @@ import './entity/sc_ItemDropEntity'
 import './entity/ig_ENTITY_Chest'
 import './entity/ig_ENTITY_FloorSwitch'
 import './entity/ig_ENTITY_NPC'
+import './entity/ig_ENTITY_BounceSwitch'
 
 declare global {
     interface StateUpdatePacket {
