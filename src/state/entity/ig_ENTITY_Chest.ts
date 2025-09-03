@@ -42,6 +42,6 @@ prestart(() => {
     ig.ENTITY.Chest.create = () => {
         throw new Error('ig.ENTITY.Chest.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Chest, typeId })
+    registerNetEntity({ entityClass: ig.ENTITY.Chest, typeId, netidStatic: true })
     ig.ENTITY.Chest.forceRemotePhysics = true
 }, 2)

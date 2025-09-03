@@ -30,5 +30,5 @@ prestart(() => {
     ig.ENTITY.NPC.create = () => {
         throw new Error('ig.ENTITY.NPC.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.NPC, typeId })
+    registerNetEntity({ entityClass: ig.ENTITY.NPC, typeId, netidStatic: true })
 }, 2)

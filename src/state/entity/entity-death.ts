@@ -1,8 +1,8 @@
-import { entityIgnoreDeath } from '../../misc/entity-netid'
+import { entityIgnoreDeath, entityNetidStatic } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { getEntityTypeId } from '../entity'
 import { shouldCollectStateData } from '../state-util'
-import { addStateHandler } from '../states'
+import { addStateHandler, StateKey } from '../states'
 
 declare global {
     interface StateUpdatePacket {
@@ -10,13 +10,23 @@ declare global {
     }
     namespace ig {
         var entityDeaths: string[] | undefined
+        var entityDeathsStatic: string[]
+        var entityDeathsStaticEverSent: Set<StateKey>
     }
 }
 
 prestart(() => {
     addStateHandler({
-        get(packet) {
+        get(packet, player) {
             packet.entityDeaths = ig.entityDeaths
+
+            ig.entityDeathsStaticEverSent ??= new Set()
+            if (ig.entityDeathsStatic && (!player || !ig.entityDeathsStaticEverSent.has(player))) {
+                if (player) ig.entityDeathsStaticEverSent.add(player)
+
+                packet.entityDeaths ??= []
+                packet.entityDeaths.push(...ig.entityDeathsStatic)
+            }
         },
         clear() {
             ig.entityDeaths = undefined
@@ -40,11 +50,19 @@ prestart(() => {
     ig.Entity.inject({
         kill(levelChange) {
             this.parent(levelChange)
-            if (!this.netid || !shouldCollectStateData()) return
-            if (entityIgnoreDeath.has(getEntityTypeId(this.netid))) return
+            if (!this.netid) return
+            const typeId = getEntityTypeId(this.netid)
+            if (entityIgnoreDeath.has(typeId)) return
 
-            ig.entityDeaths ??= []
-            ig.entityDeaths.push(this.netid)
+            if (shouldCollectStateData()) {
+                ig.entityDeaths ??= []
+                ig.entityDeaths.push(this.netid)
+            }
+
+            if (entityNetidStatic.has(typeId)) {
+                ig.entityDeathsStatic ??= []
+                ig.entityDeathsStatic.push(this.netid)
+            }
         },
     })
 }, 3)
