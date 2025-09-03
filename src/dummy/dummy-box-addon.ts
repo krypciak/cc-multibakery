@@ -28,7 +28,7 @@ declare global {
     namespace dummy {
         namespace BoxGuiAddon {
             interface BoxGuiAddon extends ig.GameAddon {
-                guiRefs: Record<string, sc.SmallEntityBox>
+                guiRefs: Map<dummy.DummyPlayer, sc.SmallEntityBox>
                 textGetter: (player: dummy.DummyPlayer) => string
                 condition: (player: dummy.DummyPlayer) => boolean
                 boxTime?: number
@@ -37,9 +37,9 @@ declare global {
                 boxHideSmall?: boolean
 
                 removeAll(this: this): void
-                removeFor(this: this, netid: string, skipTransition?: boolean): void
+                removeFor(this: this, player: dummy.DummyPlayer, skipTransition?: boolean): void
                 addFor(this: this, player: dummy.DummyPlayer, skipTransition?: boolean): void
-                updateText(this: this, netid: string, newText: string): void
+                updateText(this: this, player: dummy.DummyPlayer, newText: string): void
             }
             interface BoxGuiAddonConstructor extends ImpactClass<BoxGuiAddon> {
                 new (
@@ -62,7 +62,7 @@ prestart(() => {
     dummy.BoxGuiAddon.BoxGuiAddon = ig.GameAddon.extend({
         init(name, game, textGetter, condition = () => true, time, align, offY, small) {
             this.parent(name)
-            this.guiRefs = {}
+            this.guiRefs = new Map()
 
             this.textGetter = textGetter
             this.condition = condition
@@ -74,17 +74,17 @@ prestart(() => {
             addAddon(this, game)
         },
         removeAll() {
-            for (const netid in this.guiRefs) this.removeFor(netid)
+            for (const player of this.guiRefs.keys()) this.removeFor(player)
         },
-        removeFor(netid, skipTransition = false) {
-            const gui = this.guiRefs[netid]
+        removeFor(player, skipTransition = false) {
+            const gui = this.guiRefs.get(player)
             if (!gui) return
 
-            delete this.guiRefs[netid]
+            this.guiRefs.delete(player)
             gui.doStateTransition(gui.hideSmall ? 'HIDDEN_SMALL' : 'HIDDEN', skipTransition, true)
         },
         addFor(player, skipTransition = false) {
-            assert(!this.guiRefs[player.netid])
+            assert(!this.guiRefs.has(player))
             const gui = new sc.SmallEntityBox(
                 player,
                 this.textGetter(player),
@@ -95,28 +95,30 @@ prestart(() => {
             gui.hideSmall = !!this.boxHideSmall
             gui.doStateTransition('DEFAULT', skipTransition)
 
-            this.guiRefs[player.netid] = gui
+            this.guiRefs.set(player, gui)
             ig.gui.addGuiElement(gui)
         },
-        updateText(netid, newText) {
-            const gui = this.guiRefs[netid]
+        updateText(player, newText) {
+            const gui = this.guiRefs.get(player)
+            assert(gui)
             if (gui.textGui && gui.textGui.text?.toString() != newText) {
                 gui.textGui.setText(newText)
                 gui.setSize(gui.textGui.hook.size.x + 16, 11)
             }
         },
         onPostUpdate() {
-            const netidsPresent: Record<string, boolean> = {}
+            const playersPresent: Set<dummy.DummyPlayer> = new Set()
             for (const player of ig.game.getEntitiesByType(dummy.DummyPlayer)) {
-                netidsPresent[player.netid] = true
+                const gui = this.guiRefs.get(player)
+                if (gui && gui.entity != player) continue
+                playersPresent.add(player)
 
-                if (!this.guiRefs[player.netid] && this.condition(player)) this.addFor(player)
+                if (!gui && this.condition(player)) this.addFor(player)
             }
-            for (const netid in this.guiRefs) {
-                const player = ig.game.entitiesByNetid[netid] as dummy.DummyPlayer
-                if (!netidsPresent[netid] || !this.condition(player)) {
-                    this.removeFor(netid)
-                } else this.updateText(netid, this.textGetter(player))
+            for (const player of this.guiRefs.keys()) {
+                if (!playersPresent.has(player) || !this.condition(player)) {
+                    this.removeFor(player)
+                } else this.updateText(player, this.textGetter(player))
             }
         },
     })
