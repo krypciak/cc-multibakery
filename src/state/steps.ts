@@ -4,6 +4,7 @@ import { StepHistoryEntry } from '../steps/event-call-history'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { getStepSettings } from '../steps/step-id'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 interface StepObj {
     settings: ig.EventStepBase.Settings
@@ -83,13 +84,39 @@ function deserializeStepGroup(group: StepGroup): StepGroup {
     return group
 }
 
+function runSteps(steps: StepGroup[], inst: InstanceinatorInstance) {
+    const stepGroups = steps.map(deserializeStepGroup)
+    runTask(inst, () => {
+        for (const { steps, type, callEntity } of stepGroups) {
+            const allData = {}
+            const stepsSettings = steps.map(({ settings }) => settings)
+
+            for (const { data } of steps) Object.assign(allData, data)
+
+            const event = new ig.Event({ steps: stepsSettings })
+
+            const eventCall = new ig.EventCall(event, allData, type)
+            eventCall.callEntity = callEntity
+            eventCall.stack[0].stepData = allData
+            // console.log( 'pushing event call to:', instanceinator.id, ', steps:', stepsSettings.map(({ type }) => type), 'call:', eventCall)
+
+            if (!ig.game.events.blockingEventCall || type != ig.EventRunType.BLOCKING) {
+                ig.game.events._startEventCall(eventCall)
+            } else {
+                eventCall.blocked = true
+                ig.game.events.blockedEventCallQueue.push(eventCall)
+            }
+        }
+    })
+}
+
 prestart(() => {
     addStateHandler({
         get(packet, player) {
             const mapSteps = ig.stepsFired
             if (mapSteps && mapSteps.size > 0) {
-                packet.steps ??= {}
-                packet.steps.map = [...mapSteps.values()]
+                //     packet.steps ??= {}
+                //     packet.steps.map = [...mapSteps.values()].map(serializeStepGroup)
                 ig.stepsFired?.clear()
             }
 
@@ -106,6 +133,11 @@ prestart(() => {
         set(packet) {
             if (!packet.steps) return
 
+            // if (packet.steps.map) {
+            //     assert(ig.ccmap)
+            //     runSteps(packet.steps.map, ig.ccmap.inst)
+            // }
+
             if (packet.steps.clients) {
                 for (const username in packet.steps.clients) {
                     const client = multi.server.clients[username]
@@ -114,28 +146,7 @@ prestart(() => {
                         continue
                     }
 
-                    const stepGroups = packet.steps.clients[username].map(deserializeStepGroup)
-                    runTask(client.inst, () => {
-                        for (const { steps, type, callEntity } of stepGroups) {
-                            const allData = {}
-                            const stepsSettings = steps.map(({ settings }) => settings)
-
-                            for (const { data } of steps) Object.assign(allData, data)
-
-                            const event = new ig.Event({ steps: stepsSettings })
-
-                            const eventCall = new ig.EventCall(event, allData, type)
-                            eventCall.callEntity = callEntity
-                            // console.log( 'pushing event call to:', instanceinator.id, ', steps:', stepsSettings.map(({ type }) => type), 'call:', eventCall)
-
-                            if (!ig.game.events.blockingEventCall || type != ig.EventRunType.BLOCKING) {
-                                ig.game.events._startEventCall(eventCall)
-                            } else {
-                                eventCall.blocked = true
-                                ig.game.events.blockedEventCallQueue.push(eventCall)
-                            }
-                        }
-                    })
+                    runSteps(packet.steps.clients[username], client.inst)
                 }
             }
         },
