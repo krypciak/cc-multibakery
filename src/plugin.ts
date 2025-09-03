@@ -51,6 +51,7 @@ poststart(() => {
                 forceConsistentTickTimes: false,
                 attemptCrashRecovery: false,
                 godmode: true,
+                disablePlayerIdlePose: true,
                 // save: {
                 //     manualSaving: true,
                 //     automaticlySave: true,

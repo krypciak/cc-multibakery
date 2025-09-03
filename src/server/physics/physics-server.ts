@@ -14,6 +14,7 @@ import { ClientLeaveData } from '../remote/remote-server'
 
 import './physics-server-sender'
 import './storage/storage'
+import './disable-idle-pose'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -32,6 +33,7 @@ export interface PhysicsServerSettings extends ServerSettings {
         loadFromSlot?: number
         automaticlySave?: boolean
     }
+    disablePlayerIdlePose?: boolean
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
