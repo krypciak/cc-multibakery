@@ -40,16 +40,16 @@ prestart(() => {
             if (!client) return this.parent()
 
             const cameraBackup = ig.camera
-            const combatBackup = sc.combat
+            // const combatBackup = sc.combat
             const modelBackup = sc.model
             const isControlBlockedBackup = ig.game.isControlBlocked
             ig.camera = client.inst.ig.camera
-            sc.combat = client.inst.sc.combat
+            // sc.combat = client.inst.sc.combat
             sc.model = client.inst.sc.model
             ig.game.isControlBlocked = () => runTask(client.inst, () => ig.game.isControlBlocked())
             this.parent()
             ig.camera = cameraBackup
-            sc.combat = combatBackup
+            // sc.combat = combatBackup
             sc.model = modelBackup
             ig.game.isControlBlocked = isControlBlockedBackup
         },
