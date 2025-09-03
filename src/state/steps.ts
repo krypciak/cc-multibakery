@@ -64,7 +64,6 @@ function deserializeStepGroup(group: StepGroup): StepGroup {
         const entity = ig.game.entitiesByNetid[netid]
         assert(entity)
         group.callEntity = entity
-        // TODO: add npc as net entity
     }
 
     for (const step of group.steps) {

@@ -60,8 +60,6 @@ export function getEntityTypeId(netid: string): EntityTypeId {
 prestart(() => {
     addStateHandler({
         get(packet, player, cache) {
-            packet.states ??= {}
-
             for (const entity of ig.game.entities) {
                 if (isStateEntity(entity)) {
                     const typeId = getEntityTypeId(entity.netid)
@@ -77,6 +75,7 @@ prestart(() => {
                         }
                     }
 
+                    packet.states ??= {}
                     packet.states[entity.netid] ??= {}
                     Object.assign(packet.states[entity.netid], state)
                 }

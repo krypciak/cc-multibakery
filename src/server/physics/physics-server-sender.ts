@@ -6,6 +6,7 @@ import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
 import { ServerPlayer } from '../server-player'
 import { NetConnection } from '../../net/connection'
+import { cleanRecord } from '../../state/state-util'
 
 prestart(() => {
     if (!PHYSICS) return
@@ -49,8 +50,9 @@ function send() {
         for (const mapName in packets) {
             const map = packets[mapName]
             const packet = map.get(conn)
-            if (packet) {
-                connPackets[mapName] = packet
+            const cleanPacket = packet && cleanRecord(packet)
+            if (cleanPacket) {
+                connPackets[mapName] = cleanPacket
             }
         }
 
@@ -71,13 +73,13 @@ function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, player?: Serve
 }
 
 export interface PhysicsServerUpdatePacket {
-    mapPackets: Record</* mapName */ string, StateUpdatePacket>
+    mapPackets?: Record</* mapName */ string, StateUpdatePacket>
     tick: number
     sendAt: number
 }
 function getRemoteServerUpdatePacket(mapPackets: Record<string, StateUpdatePacket>): PhysicsServerUpdatePacket {
     const data: PhysicsServerUpdatePacket = {
-        mapPackets,
+        mapPackets: Object.keys(mapPackets).length > 0 ? mapPackets : undefined,
         tick: ig.system.tick,
         sendAt: Date.now(),
     }
