@@ -14,10 +14,8 @@ export function getPlayerLocations(): PlayerLocationRecord {
 }
 
 function updatePlayerLocations() {
-    for (const mapName in multi.server.maps) {
-        const map = multi.server.maps[mapName]
-        if (!map.ready) continue
-        const mapRecord = (locations[mapName] ??= {})
+    for (const map of multi.server.getActiveAndReadyMaps()) {
+        const mapRecord = (locations[map.name] ??= {})
 
         for (const entity of map.inst.ig.game.entities) {
             if (!(entity instanceof dummy.DummyPlayer)) continue

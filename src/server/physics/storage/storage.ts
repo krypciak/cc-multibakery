@@ -139,8 +139,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     private savePlayerStates() {
-        for (const mapName in multi.server.maps) {
-            const map = multi.server.maps[mapName]
+        for (const map of multi.server.getActiveAndReadyMaps()) {
             runTask(map.inst, () => {
                 for (const player of ig.game.entities) {
                     if (!(player instanceof dummy.DummyPlayer)) continue
@@ -148,7 +147,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                     const client = player.getClient()
                     if (!client.player.ready) return
 
-                    this.savePlayerState(client.player.username, player, mapName, client.player.marker)
+                    this.savePlayerState(client.player.username, player, map.name, client.player.marker)
                 }
             })
         }

@@ -160,6 +160,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         throw error
     }
 
+    getActiveAndReadyMaps() {
+        return Object.values(this.maps).filter(map => map.ready && map.isActive())
+    }
+
     async loadMap(name: string) {
         this.maps[name]?.destroy()
         const map = new CCMap(name, this.remote)
