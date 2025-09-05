@@ -45,10 +45,9 @@ prestart(() => {
 
                 const mapRecord = locations[mapName]
                 for (const username in mapRecord) {
-                    const loc = mapRecord[username]
-                    if (!loc) continue
+                    const pos = mapRecord[username]
+                    if (!pos) continue
 
-                    const { pos } = loc
                     const realX = room.hook.pos.x + room.hook.size.x * (pos.x / ig.game.size.x)
                     const realY = room.hook.pos.y + room.hook.size.y * ((pos.y - pos.z) / ig.game.size.y)
 

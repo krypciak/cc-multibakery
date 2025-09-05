@@ -1,9 +1,6 @@
 import { prestart } from '../loading-stages'
-import { PhysicsServer } from '../server/physics/physics-server'
 
-export interface PlayerLocation {
-    pos: Vec3
-}
+export type PlayerLocation = Vec3
 
 export type PlayerLocationRecord = Record<
     /* map name */ string,
@@ -13,7 +10,7 @@ export type PlayerLocationRecord = Record<
 let locations: PlayerLocationRecord = {}
 
 export function getPlayerLocations(): PlayerLocationRecord {
-    return locations
+    return { ...locations }
 }
 
 function updatePlayerLocations() {
@@ -22,22 +19,29 @@ function updatePlayerLocations() {
         if (!map.ready) continue
         const mapRecord = (locations[mapName] ??= {})
 
-        for (const player of map.players) {
-            const dummy = player.dummy
-            if (!dummy) continue
+        for (const entity of map.inst.ig.game.entities) {
+            if (!(entity instanceof dummy.DummyPlayer)) continue
 
-            mapRecord[player.username] = {
-                pos: Vec3.create(dummy.coll.pos),
-            }
+            mapRecord[entity.data.username] = Vec3.create(entity.coll.pos)
         }
     }
 }
 function invalidateOldPlayerLocations() {
     for (const mapName in locations) {
+        const map = multi.server.maps[mapName]
+        if (!map) continue
+
+        const players = Object.fromEntries(
+            (map.inst.ig.game.entities.filter(e => e instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]).map(e => [
+                e.data.username,
+                e,
+            ])
+        )
+
         const mapRecord = locations[mapName]
         for (const username in mapRecord) {
-            const client = multi.server.clients[username]
-            if (!client || client.player.mapName != mapName) {
+            const player = players[username]
+            if (!player) {
                 mapRecord[username] = null
             }
         }
@@ -50,7 +54,7 @@ export function mergePlayerLocations(newLocations: PlayerLocationRecord) {
         if (!newLocations[mapName]) {
             locations[mapName] = mapRecord
         } else {
-            const locationsMapRecord = locations[mapName]
+            const locationsMapRecord = (locations[mapName] ??= {})
             for (const username in mapRecord) {
                 locationsMapRecord[username] = mapRecord[username]
             }
@@ -67,9 +71,7 @@ prestart(() => {
             this.parent()
             if (multi.server && instanceinator.id == multi.server.serverInst.id) {
                 updatePlayerLocations()
-                if (multi.server instanceof PhysicsServer) {
-                    invalidateOldPlayerLocations()
-                }
+                invalidateOldPlayerLocations()
             }
         },
     })

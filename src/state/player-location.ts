@@ -1,7 +1,12 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler, StateKey } from './states'
 import { StateMemory } from './state-util'
-import { getPlayerLocations, mergePlayerLocations, PlayerLocationRecord } from '../map-gui/player-locations'
+import {
+    getPlayerLocations,
+    mergePlayerLocations,
+    PlayerLocation,
+    PlayerLocationRecord,
+} from '../map-gui/player-locations'
 
 declare global {
     interface StateUpdatePacket {
@@ -20,8 +25,15 @@ prestart(() => {
             ig.playerLocationsMemory ??= {}
             const memory = StateMemory.getBy(ig.playerLocationsMemory, player)
 
-            packet.playerLocations = getPlayerLocations()
-            // (a, b) => a === b || (a?.mapName == b?.mapName && Vec3.equal(a!.pos, b!.pos))
+            const locations = getPlayerLocations()
+            if (player) {
+                delete locations[player.mapName]
+            }
+            packet.playerLocations = memory.diffRecord2Deep(
+                locations,
+                (a, b) => a === b || (a?.z == b?.z && Vec2.equal(a!, b!)),
+                (a: Nullable<PlayerLocation>) => a && Vec3.create(a)
+            )
         },
         set(packet) {
             if (!packet.playerLocations) return

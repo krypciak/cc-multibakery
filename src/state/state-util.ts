@@ -44,13 +44,10 @@ export namespace StateMemory {
     }
 }
 export class StateMemory {
-    private i: number
-    private data: unknown[]
+    private i: number = 0
+    private data: unknown[] = []
 
-    private constructor() {
-        this.i = 0
-        this.data = []
-    }
+    private constructor() {}
 
     static getBy<K extends object>(obj: StateMemory.MapHolder<K>, key: K | undefined): StateMemory {
         obj.lastSent ??= new WeakMap()
@@ -128,6 +125,52 @@ export class StateMemory {
             this.data[i] = { ...currRecord }
 
             return atLeastOne ? changed : undefined
+        }
+    }
+
+    diffRecord2Deep<T extends Record<string, Record<string, V>>, V>(
+        currRecord: T,
+        eq: (a: V, b: V) => boolean = (a, b) => a == b,
+        clone: (a: V) => V = a => a
+    ): T | undefined {
+        const i = this.i++
+        if (this.data.length <= i) {
+            this.data.push(currRecord)
+            return currRecord
+        } else {
+            function cloneRecord(rec: Record<string, V>): Record<string, V> {
+                return Object.fromEntries(Object.entries(rec).map(([k, v]) => [k, clone(v)]))
+            }
+
+            const lastRecord = this.data[i] as T
+            const changed: Record<string, Record<string, V>> = {}
+            let atLeastOne = false
+
+            for (const key1 in currRecord) {
+                const currSubR = currRecord[key1] as Record<string, V>
+                const lastSubR = lastRecord[key1] as Record<string, V> | undefined
+
+                if (!lastSubR) {
+                    changed[key1] = cloneRecord(currSubR)
+                    atLeastOne = true
+                } else {
+                    for (const key2 in currSubR) {
+                        const currV = currSubR[key2]
+                        const lastV = lastSubR[key2]
+                        if (!eq(currV, lastV)) {
+                            ;(changed[key1] ??= {})[key2] = clone(currV)
+                            atLeastOne = true
+                        }
+                    }
+                }
+            }
+            const newRecord: Record<string, Record<string, V>> = { ...currRecord }
+            for (const key in newRecord) {
+                newRecord[key] = cloneRecord(newRecord[key])
+            }
+            this.data[i] = newRecord
+
+            return atLeastOne ? (changed as T) : undefined
         }
     }
 
