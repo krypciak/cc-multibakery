@@ -44,7 +44,9 @@ prestart(() => {
                             for (const [id, gui] of Object.entries(self.statusGuis)) {
                                 const func = gui[key] as Function
                                 assert(typeof func === 'function' && func)
-                                ret = runTask(instanceinator.instances[parseInt(id)], () => func.call(gui, ...args))
+                                const inst = instanceinator.instances[parseInt(id)]
+                                if (!inst) return
+                                ret = runTask(inst, () => func.call(gui, ...args))
                             }
                             if (key == 'remove') {
                                 self.statusGuis = {}
