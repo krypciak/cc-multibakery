@@ -49,13 +49,17 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
 }
 
+const typeId: EntityTypeId = 'du'
+export function createDummyNetid(username: string) {
+    return `${typeId}${username}`
+}
+
 prestart(() => {
-    const typeId: EntityTypeId = 'du'
     dummy.DummyPlayer.inject({
         getState,
         setState,
         createNetid(_x, _y, _z, settings) {
-            return `${typeId}${settings.data.username}`
+            return createDummyNetid(settings.data.username)
         },
     })
     dummy.DummyPlayer.create = (netid: string, _state) => {

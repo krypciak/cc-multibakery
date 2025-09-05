@@ -7,6 +7,8 @@ import { Client } from '../client/client'
 import { CCMap } from './ccmap/ccmap'
 import { inputBackup } from '../dummy/dummy-input'
 import { applyStateUpdatePacket } from '../state/states'
+import { RemoteServer } from './remote/remote-server'
+import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 
 export class ServerPlayer {
     private destroyed: boolean = false
@@ -42,7 +44,14 @@ export class ServerPlayer {
             data: { username: this.username },
         }
 
-        this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
+        const netid = createDummyNetid(this.username)
+        if (multi.server instanceof RemoteServer && ig.game.entitiesByNetid[netid]) {
+            const entity = ig.game.entitiesByNetid[netid]
+            assert(entity instanceof dummy.DummyPlayer)
+            this.dummy = entity
+        } else {
+            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
+        }
         // if (username.includes('luke')) {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
         // }
