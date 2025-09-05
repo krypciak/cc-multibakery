@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { getPlayerLocations, PlayerLocation } from './player-locations'
+import { getPlayerLocations } from './player-locations'
 
 declare global {
     namespace sc {
@@ -35,23 +35,25 @@ prestart(() => {
             const drawConfigs: {
                 pos: Vec2
                 username: string
-                loc: PlayerLocation
             }[] = []
 
             const locations = getPlayerLocations()
-            for (const username in locations) {
-                const loc = locations[username]
-                if (!loc) continue
-                const { pos, mapName } = loc
+            for (const mapName in locations) {
                 const mapNameCamel = mapName.toCamel()
-
                 const room = this.floor.roomClases.find(room => room.name == mapNameCamel)
                 if (!room) continue
 
-                const realX = room.hook.pos.x + room.hook.size.x * (pos.x / ig.game.size.x)
-                const realY = room.hook.pos.y + room.hook.size.y * ((pos.y - pos.z) / ig.game.size.y)
+                const mapRecord = locations[mapName]
+                for (const username in mapRecord) {
+                    const loc = mapRecord[username]
+                    if (!loc) continue
 
-                drawConfigs.push({ pos: { x: realX, y: realY }, loc, username })
+                    const { pos } = loc
+                    const realX = room.hook.pos.x + room.hook.size.x * (pos.x / ig.game.size.x)
+                    const realY = room.hook.pos.y + room.hook.size.y * ((pos.y - pos.z) / ig.game.size.y)
+
+                    drawConfigs.push({ pos: { x: realX, y: realY }, username })
+                }
             }
 
             for (const { pos } of drawConfigs) {
