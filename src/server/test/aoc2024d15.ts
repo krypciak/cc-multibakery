@@ -311,7 +311,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         async setup() {
             multi.setServer(
                 new PhysicsServer({
-                    globalTps: this.fps!,
+                    tps: this.fps!,
                     displayMaps: !this.skipFrameWait,
                     disableMapDisplayCameraMovement: true,
                 })

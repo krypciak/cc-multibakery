@@ -37,9 +37,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     netManager!: SocketNetManagerRemoteServer
     notifyReadyMaps?: string[]
 
-    constructor(public settings: RemoteServerSettings) {
+    constructor(settings: RemoteServerSettings) {
         console.info('ROLE: RemoteServer')
-        super()
+        super(settings)
         this.destroyOnLastClientLeave = true
     }
 

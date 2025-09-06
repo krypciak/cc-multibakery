@@ -72,7 +72,7 @@ export function createClientNetworkPacketTrafficLabel(client: Client) {
             const bytesSentAvg = this.avgSent.getAverage()
             const bytesReceivedAvg = this.avgReceived.getAverage()
 
-            const tps = multi.server.settings.globalTps
+            const tps = multi.server.settings.tps
             const kbSent = (bytesSentAvg * tps * 8) / 1024
             const kbReceived = (bytesReceivedAvg * tps * 8) / 1024
 

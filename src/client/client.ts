@@ -64,7 +64,7 @@ export class Client implements GameLoopUpdateable {
         return client
     }
 
-    private constructor(private settings: ClientSettings) {
+    private constructor(public settings: ClientSettings) {
         assert(isUsernameValid(settings.username))
         this.username = settings.username
     }

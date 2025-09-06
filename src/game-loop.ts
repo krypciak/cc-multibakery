@@ -12,7 +12,7 @@ declare global {
         }
     }
 }
-export function startGameLoop() {
+export function startGameLoop(useAnimationFrame = false) {
     assert(multi.server, 'multi.server is null when running startClientGameLoop!')
 
     ig.system.frame = 0
@@ -23,10 +23,26 @@ export function startGameLoop() {
 
     ig.system.stopRunLoop()
 
-    const tps = 1e3 / multi.server.settings.globalTps
-    ig.system.intervalId = setInterval(() => {
+    if (useAnimationFrame && !window.requestAnimationFrame) {
+        console.warn(
+            'useAnimationFrameLoop is enabled, but window.requestAnimationFrame is undefined! defaulting to setInterval'
+        )
+    }
+
+    function run() {
         ig.system.run()
-    }, tps) as unknown as number
+    }
+
+    if (useAnimationFrame && window.requestAnimationFrame) {
+        function loop() {
+            run()
+            window.requestAnimationFrame(loop)
+        }
+        window.requestAnimationFrame(loop)
+    } else {
+        const interval = 1e3 / multi.server.settings.tps
+        ig.system.intervalId = setInterval(run, interval) as unknown as number
+    }
 
     ig.system.running = true
 }
@@ -79,7 +95,7 @@ function physicsLoop() {
     ig.system.frame++
     if (ig.system.frame % ig.system.frameSkip == 0) {
         if (multi.server.settings.forceConsistentTickTimes) {
-            const time = ig.Timer._last + 1000 / multi.server.settings.globalTps
+            const time = ig.Timer._last + 1000 / multi.server.settings.tps
             ig.Timer.time += Math.min((time - ig.Timer._last) / 1e3, ig.Timer.maxStep) * ig.Timer.timeScale
             ig.Timer._last = time
         } else {

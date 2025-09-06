@@ -15,7 +15,8 @@ export async function createPhysicsServerFromCurrentState() {
     const origInputType = ig.input.currentDevice
 
     const server = new PhysicsServer({
-        globalTps: Opts.serverGlobalTps,
+        tps: Opts.serverGlobalTps,
+        useAnimationFrameLoop: Opts.serverUseAnimationFrameLoop,
         godmode: Opts.serverGodmode,
         displayServerInstance: Opts.serverDisplayServerInstance,
         displayMaps: Opts.serverDisplayMaps,

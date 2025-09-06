@@ -11,6 +11,7 @@ import { isUsernameValid } from '../../misc/username-util'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
 import { ClientLeaveData } from '../remote/remote-server'
+import { startGameLoop } from '../../game-loop'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -35,22 +36,30 @@ export interface PhysicsServerSettings extends ServerSettings {
         automaticlySave?: boolean
     }
     disablePlayerIdlePose?: boolean
+
+    /* when this is true, forceConsistentTickTimes is forced off */
+    useAnimationFrameLoop?: boolean
 }
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     remote = false
     netManager?: NetManagerPhysicsServer
     httpServer?: PhysicsHttpServer
+    anyRemoteClientsOn: boolean = false
 
     connectionReadyMaps: WeakMap<NetConnection, Set<string>> = new WeakMap()
 
-    constructor(public settings: PhysicsServerSettings) {
+    constructor(settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
-        super()
+
+        if (settings.useAnimationFrameLoop) {
+            settings.forceConsistentTickTimes = false
+        }
+        super(settings)
     }
 
     async start() {
-        await super.start()
+        await super.start(!!this.settings.useAnimationFrameLoop)
 
         this.baseInst.display = false
 
@@ -124,6 +133,32 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         })
 
         return { client, ackData: { status: 'ok', mapName: client.mapName } }
+    }
+
+    protected joinClient(client: Client): Promise<void> {
+        if (
+            client.settings.remote &&
+            this.netManager!.connections.length == 1 &&
+            this.netManager!.connections[0].clients.length == 0
+        ) {
+            startGameLoop(false)
+            this.anyRemoteClientsOn = true
+        }
+
+        return super.joinClient(client)
+    }
+
+    leaveClient(client: Client): void {
+        if (
+            client.settings.remote &&
+            this.netManager!.connections.length == 1 &&
+            this.netManager!.connections[0].clients.length == 0
+        ) {
+            startGameLoop(true)
+            this.anyRemoteClientsOn = false
+        }
+
+        return super.leaveClient(client)
     }
 
     onNetReceiveUpdate(conn: NetConnection, data: unknown) {

@@ -41,7 +41,8 @@ poststart(() => {
     if (PHYSICS && process.execPath.includes('server')) {
         multi.setServer(
             new PhysicsServer({
-                globalTps: 60,
+                tps: 60,
+                useAnimationFrameLoop: true,
                 displayServerInstance: false,
                 displayMaps: true,
                 forceMapsActive: false,

@@ -20,7 +20,7 @@ export async function tryJoinRemote(
         displayClientInstances: Opts.serverDisplayClientInstances,
         displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
 
-        globalTps: serverInfo.details.globalTps,
+        tps: serverInfo.details.globalTps,
         forceConsistentTickTimes: serverInfo.details.forceConsistentTickTimes,
         connection: serverInfo.connection,
     })

@@ -1,7 +1,7 @@
 import { PhysicsServer } from '../server/physics/physics-server'
 
 export function shouldCollectStateData(): boolean {
-    return !!(multi.server instanceof PhysicsServer && multi.server.netManager?.connections.length)
+    return multi.server instanceof PhysicsServer && multi.server.anyRemoteClientsOn
 }
 
 export function undefinedIfFalsy<T>(obj: T): T | undefined {

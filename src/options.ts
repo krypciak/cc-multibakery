@@ -227,6 +227,12 @@ function registerOpts() {
                             return index + 60
                         },
                     },
+                    serverUseAnimationFrameLoop: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Use requestAnimationFrame',
+                        description: 'Automaticly use screen refresh rate as tps when no remote clients are on the server',
+                    },
                     serverAttemptCrashRecovery: {
                         type: 'CHECKBOX',
                         init: false,

@@ -29,7 +29,7 @@ export class PhysicsHttpServer {
             description: this.netInfo.details.description,
             hasIcon: !!icon,
             multibakeryVersion: Multibakery.mod.version!.toString(),
-            globalTps: multi.server.settings.globalTps,
+            globalTps: multi.server.settings.tps,
             forceConsistentTickTimes: multi.server.settings.forceConsistentTickTimes,
         }
         const serverDetailsString: string = JSON.stringify(serverDetails)

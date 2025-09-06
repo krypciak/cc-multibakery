@@ -7,8 +7,9 @@ import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 
 export interface ServerSettings {
-    globalTps: number
+    tps: number
     forceConsistentTickTimes?: boolean
+
     displayServerInstance?: boolean
     displayMaps?: boolean
     forceMapsActive?: boolean
@@ -56,7 +57,6 @@ export interface GameLoopUpdateable {
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> {
-    abstract settings: S
     protected abstract remote: boolean
 
     maps: Record<string, CCMap> = {}
@@ -74,7 +74,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     destroyOnLastClientLeave: boolean = false
     postUpdateCallback?: () => void
 
-    async start() {
+    protected constructor(public settings: S) {}
+
+    async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
 
         instanceinator.displayId = true
@@ -88,7 +90,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         removeAddon(this.serverInst.ig.gamepad, this.serverInst.ig.game)
         this.serverInst.ig.gamepad = new multi.class.SingleGamepadManager()
 
-        startGameLoop()
+        startGameLoop(useAnimationFrame)
 
         multi.class.gamepadAssigner.initialize()
     }
@@ -177,7 +179,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         map.destroy()
     }
 
-    private async joinClient(client: Client) {
+    protected async joinClient(client: Client) {
         assert(!this.clients[client.username])
         this.clients[client.username] = client
         this.clientsById[client.inst.id] = client
