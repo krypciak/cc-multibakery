@@ -93,16 +93,17 @@ prestart(() => {
                     Vec2.mulC(move, 8)
                     if (ig.gamepad.isLeftStickDown()) Vec2.assignC(move, 0, 0)
 
-                    if (map.display.cameraTarget instanceof ig.Camera.PosTarget) {
+                    const target = map.display.cameraTarget
+                    if (target instanceof ig.Camera.PosTarget) {
                         if (ig.input.pressed('special') && map.clients.length > 0) {
                             map.display.currentPlayerI = 0
                             map.display.setPlayerCameraHandle(map.clients[0])
                         } else if (!multi.server.settings.disableMapDisplayCameraMovement) {
-                            Vec2.add(map.display.cameraTarget.pos, move)
+                            Vec2.add(target.pos, move)
                         }
-                    } else if (map.display.cameraTarget instanceof ig.Camera.EntityTarget) {
+                    } else if (target instanceof ig.Camera.EntityTarget) {
                         if (Vec2.isZero(move)) {
-                            if (ig.input.pressed('special')) {
+                            if (ig.input.pressed('special') || target.entity._killed) {
                                 map.display.currentPlayerI++
                                 if (map.display.currentPlayerI >= map.clients.length) map.display.currentPlayerI = 0
                                 const player = map.clients[map.display.currentPlayerI]
@@ -110,7 +111,7 @@ prestart(() => {
                             }
                         } else {
                             const pos = Vec2.create()
-                            map.display.cameraTarget.getPos(pos)
+                            target.getPos(pos)
                             map.display.setPosCameraHandle(pos)
                         }
                     }
