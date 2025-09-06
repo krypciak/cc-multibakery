@@ -1,5 +1,5 @@
-import { prestart } from '../../loading-stages'
-import { PhysicsServer } from '../physics/physics-server'
+import { prestart } from '../../../loading-stages'
+import { PhysicsServer } from '../../physics/physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 prestart(() => {

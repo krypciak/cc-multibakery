@@ -1,4 +1,5 @@
-import { prestart } from '../../loading-stages'
+import { prestart } from '../../../loading-stages'
+import { PhysicsServer } from '../physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 declare global {
@@ -10,6 +11,8 @@ declare global {
 }
 
 prestart(() => {
+    if (!PHYSICS) return
+
     ig.ENTITY.FloorSwitch.inject({
         collideWith(entity) {
             this.tmpEntity = entity
@@ -22,6 +25,7 @@ prestart(() => {
             this.tmpEntity = undefined
         },
         activate(noDelay) {
+            if (!(multi.server instanceof PhysicsServer)) return this.parent(noDelay)
             if (!this.isOn) setNextSetBy(this.tmpEntity!)
             this.parent(noDelay)
             unsetNextSetBy()

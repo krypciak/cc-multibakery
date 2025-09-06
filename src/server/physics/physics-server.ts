@@ -15,6 +15,7 @@ import { ClientLeaveData } from '../remote/remote-server'
 import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
+import './event/event'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number

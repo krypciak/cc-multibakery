@@ -6,8 +6,6 @@ import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 
-import './event/event'
-
 export interface ServerSettings {
     globalTps: number
     forceConsistentTickTimes?: boolean
