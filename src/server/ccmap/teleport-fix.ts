@@ -67,7 +67,8 @@ prestart(() => {
         start(data, eventCall) {
             if (!multi.server) return this.parent(data, eventCall)
 
-            const player: ig.ENTITY.Player | undefined = eventCall?.stack[0]?.stepData?._actionEntity
+            const player: ig.ENTITY.Player | undefined =
+                ig.client?.dummy ?? eventCall?.stack[0]?.stepData?._actionEntity
             assert(player, 'nuh uh ig.EVENT_STEP.TELEPORT player not sniffed :((')
             assert(player.isPlayer, 'that is just ridiculous ig.EVENT_STEP.TELEPORT')
             assert(player instanceof dummy.DummyPlayer)
