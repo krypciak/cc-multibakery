@@ -2,7 +2,7 @@ import { prestart } from '../loading-stages'
 
 declare global {
     namespace ig {
-        var godmode: (model?: sc.PlayerModel, circuitBranch?: boolean) => void
+        var godmode: (model?: sc.PlayerModel, settings?: GodmodeSettings) => void
     }
 
     interface Object {
@@ -10,8 +10,12 @@ declare global {
     }
 }
 
+export interface GodmodeSettings {
+    circuitBranch?: boolean
+}
+
 prestart(() => {
-    ig.godmode = (model = sc.model.player, circuitBranch = false) => {
+    ig.godmode = (model = sc.model.player, { circuitBranch = false }: GodmodeSettings = {}) => {
         Object.keysT = Object.keys as any
 
         sc.stats.statsEnabled = true
@@ -105,7 +109,7 @@ prestart(() => {
         },
         start() {
             const circuitBranch = this.circuitBranch && ig.Event.getExpressionValue(this.circuitBranch)
-            ig.godmode(sc.model.player, circuitBranch)
+            ig.godmode(sc.model.player, { circuitBranch })
         },
     })
 })

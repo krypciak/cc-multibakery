@@ -328,7 +328,10 @@ export class Client implements GameLoopUpdateable {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
         // }
 
-        if (multi.server instanceof PhysicsServer && multi.server.settings.godmode) ig.godmode(this.dummy.model)
+        if (multi.server instanceof PhysicsServer && multi.server.settings.godmode) {
+            ig.godmode(this.dummy.model)
+            runTask(this.inst, () => ig.godmode(this.dummy.model))
+        }
 
         this.loadState()
     }
