@@ -58,7 +58,7 @@ prestart(() => {
             const serializedTeams = sc.pvp.teams?.map(serializeTeam)
 
             packet.pvp = cleanRecord({
-                on: memory.diff(sc.pvp.multiplayerPvp),
+                on: memory.diff(sc.pvp.multiplayerPvp && sc.pvp.state !== 0),
                 teams:
                     sc.pvp.teams &&
                     (sc.pvp.teams.length > 0 ? true : undefined) &&
