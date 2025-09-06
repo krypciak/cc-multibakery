@@ -3,10 +3,16 @@ import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { NetConnection, NetManagerPhysicsServer } from './connection'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { ClientLeaveData, isClientLeaveData, RemoteServer } from '../server/remote/remote-server'
+import {
+    ClientLeaveData,
+    isClientLeaveData,
+    RemoteServer,
+    RemoteServerConnectionSettings,
+} from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
 import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
+import { getServerUrl } from './web-server'
 // import Parser from 'socket.io-msgpack-parser'
 const Parser = undefined
 
@@ -117,10 +123,7 @@ export class SocketNetManagerRemoteServer {
 
     private joinActCallbacks: Record<string, (data: ClientJoinAckData) => void> = {}
 
-    constructor(
-        public host: string,
-        public port: number
-    ) {}
+    constructor(public connectionSettings: RemoteServerConnectionSettings) {}
 
     async connect() {
         assert(REMOTE)
@@ -141,8 +144,8 @@ export class SocketNetManagerRemoteServer {
             ioclient = REMOTE && !BROWSER && (await import('socket.io-client'))
         } else assert(false, 'Unsupported platform')
 
-        const socket = ioclient.io(`https://${this.host}:${this.port}`, {
-            secure: true,
+        const socket = ioclient.io(getServerUrl(this.connectionSettings), {
+            secure: this.connectionSettings.https,
             rejectUnauthorized: false,
             parser: Parser,
         }) as ClientSocket

@@ -17,7 +17,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 export type RemoteServerConnectionSettings = {
     host: string
     port: number
-} & {
+    https?: boolean
     type: 'socket'
 }
 
@@ -51,7 +51,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         const connS = this.settings.connection
         if (connS.type == 'socket') {
-            this.netManager = new SocketNetManagerRemoteServer(connS.host, connS.port)
+            this.netManager = new SocketNetManagerRemoteServer(connS)
         } else assert(false)
 
         await this.netManager.connect()

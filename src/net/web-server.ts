@@ -96,8 +96,36 @@ export class PhysicsHttpServer {
     }
 }
 
+export function getServerUrl(connection: RemoteServerConnectionSettings) {
+    return `http${connection.https ? 's' : ''}://${connection.host}:${connection.port}`
+}
+
+function getDetailsUrl(connection: RemoteServerConnectionSettings) {
+    return `${getServerUrl(connection)}/details`
+}
+function getIconUrl(connection: RemoteServerConnectionSettings) {
+    return `${getServerUrl(connection)}/icon`
+}
+
+async function setHttps(connection: RemoteServerConnectionSettings) {
+    try {
+        connection.https = true
+        await fetch(getDetailsUrl(connection))
+    } catch (e) {
+        try {
+            connection.https = false
+            await fetch(getDetailsUrl(connection))
+        } catch (e) {
+            connection.https = undefined
+            throw e
+        }
+    }
+}
+
 export async function getServerDetailsAndPing(connection: RemoteServerConnectionSettings) {
-    const obj = await fetchUrlWithPing(`https://${connection.host}:${connection.port}/details`)
+    if (connection.https === undefined) await setHttps(connection)
+
+    const obj = await fetchUrlWithPing(getDetailsUrl(connection))
     if (!obj) return
     return {
         ping: obj.ping,
@@ -106,8 +134,7 @@ export async function getServerDetailsAndPing(connection: RemoteServerConnection
 }
 
 export async function getServerIcon(connection: RemoteServerConnectionSettings): Promise<HTMLImageElement> {
-    const reqUrl = `https://${connection.host}:${connection.port}/icon`
-    const res = await fetch(reqUrl)
+    const res = await fetch(getIconUrl(connection))
     assert(res.status == 200)
     const blob = await res.blob()
 
