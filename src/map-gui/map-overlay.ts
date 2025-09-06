@@ -40,7 +40,7 @@ prestart(() => {
             const locations = getPlayerLocations()
             for (const mapName in locations) {
                 const mapNameCamel = mapName.toCamel()
-                const room = this.floor.roomClases.find(room => room.name == mapNameCamel)
+                const room = this.floor.roomClases.find(room => room?.name == mapNameCamel)
                 if (!room) continue
 
                 const mapRecord = locations[mapName]
