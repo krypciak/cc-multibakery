@@ -81,6 +81,7 @@ function registerOpts() {
                     clientLogin: {
                         type: 'INPUT_FIELD',
                         name: 'Username',
+                        description: ' ',
                         init: defaultClientUsername,
                         changeEvent() {
                             if (Opts.clientLogin == defaultClientUsername) {
@@ -142,17 +143,12 @@ function registerOpts() {
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
                 },
-                advanced: {
-                    serverGodmode: {
-                        type: 'CHECKBOX',
-                        init: true,
-                        name: 'Godmode',
-                        description: 'Set all player stats to max',
-                    },
+                server: {
                     serverDisplayServerInstance: {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display server inst',
+                        description: ' ',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayServerInstance = Opts.serverDisplayServerInstance
@@ -163,6 +159,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display map insts',
+                        description: ' ',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayMaps = Opts.serverDisplayMaps
@@ -184,6 +181,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display inactive map insts',
+                        description: ' ',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayInactiveMaps = Opts.serverDisplayInactiveMaps
@@ -194,6 +192,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Display client insts',
+                        description: ' ',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayClientInstances = Opts.serverDisplayClientInstances
@@ -204,6 +203,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display remote client insts',
+                        description: ' ',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayRemoteClientInstances =
@@ -211,11 +211,14 @@ function registerOpts() {
                             }
                         },
                     },
-                    serverForceConsistentTickTimes: {
+                    serverAttemptCrashRecovery: {
                         type: 'CHECKBOX',
                         init: false,
-                        name: 'Force consistent tick times',
+                        name: 'Attempt crash recovery',
+                        description: 'Attempt crash recovery on server crash',
                     },
+                },
+                'physics server': {
                     serverGlobalTps: {
                         type: 'OBJECT_SLIDER',
                         init: 60,
@@ -223,6 +226,7 @@ function registerOpts() {
                         max: 240,
                         step: 1,
                         name: 'TPS',
+                        description: 'Ticks per second',
                         customNumberDisplay(index) {
                             return index + 60
                         },
@@ -231,13 +235,20 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Use requestAnimationFrame',
-                        description: 'Automaticly use screen refresh rate as tps when no remote clients are on the server',
+                        description:
+                            'Automaticly use screen refresh rate as tps when no remote clients are on the server',
                     },
-                    serverAttemptCrashRecovery: {
+                    serverForceConsistentTickTimes: {
                         type: 'CHECKBOX',
                         init: false,
-                        name: 'Attempt crash recovery',
-                        description: 'Attempt crash recovery on server crash',
+                        name: 'Force consistent tick times',
+                        description: 'Increment the game clock by a constant amount',
+                    },
+                    serverGodmode: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Godmode',
+                        description: 'Set all player stats to max',
                     },
                     serverEnableSave: {
                         type: 'CHECKBOX',
