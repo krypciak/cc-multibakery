@@ -33,7 +33,8 @@ function setState(this: dummy.DummyPlayer, state: Return) {
             (state.currentAnim == 'attack' ||
                 state.currentAnim == 'attackRev' ||
                 state.currentAnim == 'attackFinisher') &&
-            this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE &&
+            (this.inputManager.inputType === undefined ||
+                this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) &&
             this.model.getCore(sc.PLAYER_CORE.THROWING) &&
             sc.options.get('close-circle')
         ) {
