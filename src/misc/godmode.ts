@@ -82,6 +82,9 @@ prestart(() => {
                 }
             })
         }
+
+        /* add money */
+        model.addCredit(1e7)
     }
 })
 
