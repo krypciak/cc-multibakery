@@ -89,8 +89,9 @@ prestart(() => {
 
             runTasks(ig.ccmap.getAllInstances(), () => {
                 const clientEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
-                assert(clientEntry)
-                sc.mapInteract.removeEntry(clientEntry)
+                if (clientEntry) {
+                    sc.mapInteract.removeEntry(clientEntry)
+                }
             })
         },
         onPreUpdate() {
