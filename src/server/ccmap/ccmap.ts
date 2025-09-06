@@ -336,3 +336,15 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.ENTITY.TeleportCentral.inject({
+        update() {
+            if (!ig.ccmap) return this.parent()
+
+            runTasks(ig.ccmap.getAllInstances(), () => {
+                this.parent()
+            })
+        },
+    })
+})
