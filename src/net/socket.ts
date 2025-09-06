@@ -7,6 +7,8 @@ import { ClientLeaveData, isClientLeaveData, RemoteServer } from '../server/remo
 import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
 import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
+// import Parser from 'socket.io-msgpack-parser'
+const Parser = undefined
 
 type SocketData = never
 
@@ -64,6 +66,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             cors: {
                 origin: `*`,
             },
+            parser: Parser,
         })
 
         const server = multi.server
@@ -141,6 +144,7 @@ export class SocketNetManagerRemoteServer {
         const socket = ioclient.io(`https://${this.host}:${this.port}`, {
             secure: true,
             rejectUnauthorized: false,
+            parser: Parser,
         }) as ClientSocket
 
         socket.on('update', data => server.onNetReceive(this.conn!, data))
