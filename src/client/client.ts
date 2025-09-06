@@ -57,8 +57,6 @@ export class Client implements GameLoopUpdateable {
     marker?: Nullable<string>
     ready: boolean = false
 
-    // mapInteract!: multi.class.ServerPlayer.MapInteract
-
     static async create(settings: ClientSettings): Promise<Client> {
         const client = new Client(settings)
         await client.init(settings)
@@ -134,8 +132,6 @@ export class Client implements GameLoopUpdateable {
     }
 
     update() {
-        // todo: huh???
-        // this.mapInteract?.onPreUpdate()
         try {
             ig.game.update()
         } catch (e) {
@@ -199,8 +195,6 @@ export class Client implements GameLoopUpdateable {
         map.forceUpdate--
         map.enter(this)
         runTask(map.inst, () => {
-            // this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
-
             if (multi.server instanceof PhysicsServer) {
                 teleportPlayerToProperMarker(this.dummy, marker, undefined, true)
             }
@@ -365,35 +359,3 @@ export class Client implements GameLoopUpdateable {
 function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
 }
-
-/* todo: is this even used???????????? */
-// prestart(() => {
-//     multi.class.ServerPlayer = {} as any
-// }, 1)
-// declare global {
-//     namespace multi.class.ServerPlayer {
-//         interface MapInteract extends sc.MapInteract {
-//             player: ServerPlayer
-//             origMapInteract: sc.MapInteract
-//         }
-//         interface MapInteractConstructor extends ImpactClass<MapInteract> {
-//             new (player: ServerPlayer, origMapInteract: sc.MapInteract): MapInteract
-//         }
-//         var MapInteract: MapInteractConstructor
-//     }
-// }
-// prestart(() => {
-//     multi.class.ServerPlayer.MapInteract = sc.MapInteract.extend({
-//         init(player, origMapInteract) {
-//             this.parent()
-//             this.origMapInteract = origMapInteract
-//             this.entries = origMapInteract.entries
-//             this.player = player
-//         },
-//         onPreUpdate() {
-//             assert(!ig.game.playerEntity)
-//
-//             inputBackup(this.player.inputManager, () => this.parent())
-//         },
-//     })
-// })

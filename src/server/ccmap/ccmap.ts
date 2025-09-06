@@ -284,7 +284,7 @@ prestart(() => {
     })
     sc.MapInteract.inject({
         onPreUpdate() {
-            if (/* this instanceof multi.class.ServerPlayer.MapInteract || */ !ig.ccmap) return this.parent()
+            if (!ig.ccmap) return this.parent()
 
             for (const entry of this.entries) {
                 if (entry.thisTickState) entry.setState(entry.thisTickState)
