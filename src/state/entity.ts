@@ -109,9 +109,11 @@ export function createNetidStatic(
     x: number,
     y: number,
     z: number,
-    _settings: ig.Entity.Settings
+    settings: ig.Entity.Settings
 ): string {
-    return typeId + encodeJsonSafeNumber(Number(`${x}${y}${z}`))
+    let netid = typeId + encodeJsonSafeNumber(Number(`${x}${y}${z}`)) + settings.name
+    if (settings.name) netid += settings.name
+    return netid
 }
 
 const fakeEffect = { coll: { time: {} }, setIgnoreSlowdown() {} }
