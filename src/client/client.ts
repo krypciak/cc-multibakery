@@ -304,6 +304,10 @@ export class Client implements GameLoopUpdateable {
     }
 
     createPlayer(pos: Vec3) {
+        if (this.dummy && !this.dummy._killed) {
+            this.dummy.gui.crosshair.kill(true)
+            this.dummy.kill(true)
+        }
         if (multi.server instanceof PhysicsServer && this.dummy) assert(this.dummy._killed)
 
         const dummySettings: dummy.DummyPlayer.Settings = {
