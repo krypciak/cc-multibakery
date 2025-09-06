@@ -20,6 +20,10 @@ export function unsetNextTriggeredBy() {
     ig.game.events.nextTriggeredBy = undefined
 }
 
+function isConditionTriggeredAtMapEnter(code: string): boolean {
+    return code == 'true' || code.startsWith('plot.line')
+}
+
 prestart(() => {
     if (!PHYSICS) return
 
@@ -29,15 +33,14 @@ prestart(() => {
 
             let player: ig.Entity | undefined
             if (this.nextTriggeredBy) {
-                if (this.nextTriggeredBy.code == 'true') {
+                player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
+                if (!player && isConditionTriggeredAtMapEnter(this.nextTriggeredBy.pretty)) {
                     assert(ig.ccmap)
                     assert(ig.ccmap.clients.length > 0)
                     const pl = ig.ccmap.clients[0]
                     assert(pl.ready)
                     assert(pl.dummy)
                     player = pl.dummy
-                } else {
-                    player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
                 }
             }
             if (!player) return this.parent(...args)
