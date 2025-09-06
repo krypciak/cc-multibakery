@@ -256,6 +256,7 @@ export class Client implements GameLoopUpdateable {
         csc.model.player = this.dummy.model
         csc.pvp = msc.pvp
         csc.options = msc.options
+        csc.combat.activeCombatants = msc.combat.activeCombatants
 
         runTask(this.inst, () => {
             sc.model.enterNewGame()

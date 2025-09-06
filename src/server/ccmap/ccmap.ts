@@ -326,3 +326,13 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    dummy.DummyPlayer.inject({
+        _removeTargetedBy(combatant) {
+            if (!multi.server || !ig.ccmap) return this.parent(combatant)
+
+            runTask(this.getClient().inst, () => this.parent(combatant))
+        },
+    })
+})
