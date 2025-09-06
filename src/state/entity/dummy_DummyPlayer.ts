@@ -62,15 +62,25 @@ prestart(() => {
             return createDummyNetid(settings.data.username)
         },
     })
-    dummy.DummyPlayer.create = (netid: string, _state) => {
-        const inputManager = new dummy.input.Puppet.InputManager()
+    dummy.DummyPlayer.create = (netid: string, state: Return) => {
         const username = netid.substring(2)
-        const entity = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
-            netid,
-            data: { username },
-            inputManager,
-        })
-        return entity
+        const client = multi.server.clients[username]
+        let player: dummy.DummyPlayer
+        const { pos } = state
+
+        if (client) {
+            assert(pos)
+            client.createPlayer(pos)
+            player = client.dummy
+        } else {
+            player = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
+                netid,
+                data: { username },
+                inputManager: new dummy.input.Puppet.InputManager(),
+            })
+        }
+
+        return player
     }
     registerNetEntity({ entityClass: dummy.DummyPlayer, typeId })
 

@@ -193,7 +193,7 @@ export class Client implements GameLoopUpdateable {
         if (oldMap) oldMap.forceUpdate--
         map.forceUpdate++
         runTask(map.inst, () => {
-            this.createPlayer()
+            this.createPlayer(Vec3.create())
         })
         map.forceUpdate--
         map.enter(this)
@@ -303,7 +303,7 @@ export class Client implements GameLoopUpdateable {
         }
     }
 
-    private createPlayer() {
+    createPlayer(pos: Vec3) {
         if (multi.server instanceof PhysicsServer && this.dummy) assert(this.dummy._killed)
 
         const dummySettings: dummy.DummyPlayer.Settings = {
@@ -317,7 +317,7 @@ export class Client implements GameLoopUpdateable {
             assert(entity instanceof dummy.DummyPlayer)
             this.dummy = entity
         } else {
-            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
+            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, pos.x, pos.y, pos.z, dummySettings)
         }
         // if (username.includes('luke')) {
         //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
