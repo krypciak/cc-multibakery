@@ -28,8 +28,8 @@ prestart(() => {
             if (this.nextTriggeredBy) {
                 if (this.nextTriggeredBy.code == 'true') {
                     assert(ig.ccmap)
-                    assert(ig.ccmap.players.length > 0)
-                    const pl = ig.ccmap.players[0]
+                    assert(ig.ccmap.clients.length > 0)
+                    const pl = ig.ccmap.clients[0]
                     assert(pl.ready)
                     assert(pl.dummy)
                     player = pl.dummy

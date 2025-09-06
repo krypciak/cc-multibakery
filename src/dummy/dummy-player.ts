@@ -78,7 +78,7 @@ prestart(() => {
             return client
         },
         getMap() {
-            return this.getClient().player.getMap()
+            return this.getClient().getMap()
         },
 
         update() {
@@ -130,7 +130,7 @@ prestart(() => {
             let inp = this.thrower.inputManager
             let backup: sc.PlayerCrossHairController['updatePos'] | undefined
             if (multi.server instanceof RemoteServer) {
-                const clientInp = multi.server.clients[this.thrower.data.username]?.player?.inputManager
+                const clientInp = multi.server.clients[this.thrower.data.username]?.inputManager
                 if (clientInp?.player) {
                     inp = clientInp
                 } else {

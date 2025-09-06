@@ -4,6 +4,8 @@ import Multibakery from '../../plugin'
 import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../physics/physics-server'
 import { InputData } from '../../dummy/dummy-input-puppet'
+import { Client } from '../../client/client'
+import { CCMap } from '../ccmap/ccmap'
 
 declare global {
     namespace ig.ENTITY {
@@ -290,6 +292,8 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         moveI: number
         moveDone: boolean
         sum: number
+        client: Client
+        map: CCMap
     }>({
         fps: 60,
         timeoutSeconds: 400,
@@ -302,6 +306,8 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         moveI: -1,
         moveDone: true,
         sum: 0,
+        client: undefined as any,
+        map: undefined as any,
         async setup() {
             multi.setServer(
                 new PhysicsServer({
@@ -313,23 +319,16 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await multi.server.start()
         },
         async postSetup() {
-            await multi.server.createAndJoinClient({
+            this.client = await multi.server.createAndJoinClient({
                 username: 'aoc',
                 inputType: 'puppet',
                 remote: false,
                 mapName: map,
             })
+            this.map = multi.server.maps[map]
+            assert(this.map)
         },
         update() {
-            const ccmap = multi.server.maps[map]
-            const p = ccmap.players[0].dummy
-            const client = p.getClient()
-
-            // scheduleTask(ccmap.inst, () => {
-            //     const path = `/home/krypek/Temp/frames/${frame.toString().padStart(5, '0')}.png`
-            //     const data = ig.system.canvas.toDataURL().split(',')[1]
-            //     require('fs').promises.writeFile(path, Buffer.from(data, 'base64'))
-            // })
             if (this.moveI == moves.length) {
                 if (this.sum == expected) {
                     this.finish(true)
@@ -341,7 +340,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                     this.moveI++
                 } while (this.moveI < moves.length && moves[this.moveI].trim().length == 0)
                 if (this.moveI == moves.length) {
-                    scheduleTask(ccmap.inst, () => {
+                    scheduleTask(this.map.inst, () => {
                         const boxes = ig.game
                             .getEntitiesByType(ig.ENTITY.AocBox)
                             .filter(box => !box.linked || box.motherLinked)
@@ -364,7 +363,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                     else if (move == 'v') dir = 'down'
                     else if (move == '^') dir = 'up'
 
-                    moveDummy(p, client.inst, dir).then(() => {
+                    moveDummy(this.client.dummy, this.client.inst, dir).then(() => {
                         this.moveDone = true
                     })
                 }

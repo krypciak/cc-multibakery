@@ -1,10 +1,10 @@
-import { ServerPlayer } from '../server/server-player'
+import { Client } from '../client/client'
 
 declare global {
     interface StateUpdatePacket {}
 }
 
-export type StateKey = ServerPlayer
+export type StateKey = Client
 
 import './entity'
 import './vars'

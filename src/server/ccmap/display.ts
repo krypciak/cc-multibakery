@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { CCMap, OnLinkChange } from './ccmap'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { ServerPlayer } from '../server-player'
+import { Client } from '../../client/client'
 
 export class CCMapDisplay implements OnLinkChange {
     camera!: ig.Camera.TargetHandle
@@ -65,16 +65,16 @@ export class CCMapDisplay implements OnLinkChange {
         })
     }
 
-    setPlayerCameraHandle(player: ServerPlayer) {
-        assert(player)
-        this.setEntityCameraHandle(player.dummy)
+    setPlayerCameraHandle(client: Client) {
+        assert(client)
+        this.setEntityCameraHandle(client.dummy)
     }
 
     onClientLink() {
         if (!multi.server.settings.displayMaps) return
 
-        if (this.map.players.length == 1) {
-            this.setPlayerCameraHandle(this.map.players[0])
+        if (this.map.clients.length == 1) {
+            this.setPlayerCameraHandle(this.map.clients[0])
         }
     }
 
@@ -94,9 +94,9 @@ prestart(() => {
                     if (ig.gamepad.isLeftStickDown()) Vec2.assignC(move, 0, 0)
 
                     if (map.display.cameraTarget instanceof ig.Camera.PosTarget) {
-                        if (ig.input.pressed('special') && map.players.length > 0) {
+                        if (ig.input.pressed('special') && map.clients.length > 0) {
                             map.display.currentPlayerI = 0
-                            map.display.setPlayerCameraHandle(map.players[0])
+                            map.display.setPlayerCameraHandle(map.clients[0])
                         } else if (!multi.server.settings.disableMapDisplayCameraMovement) {
                             Vec2.add(map.display.cameraTarget.pos, move)
                         }
@@ -104,8 +104,8 @@ prestart(() => {
                         if (Vec2.isZero(move)) {
                             if (ig.input.pressed('special')) {
                                 map.display.currentPlayerI++
-                                if (map.display.currentPlayerI >= map.players.length) map.display.currentPlayerI = 0
-                                const player = map.players[map.display.currentPlayerI]
+                                if (map.display.currentPlayerI >= map.clients.length) map.display.currentPlayerI = 0
+                                const player = map.clients[map.display.currentPlayerI]
                                 if (player) map.display.setPlayerCameraHandle(player)
                             }
                         } else {

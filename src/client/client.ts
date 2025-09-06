@@ -1,5 +1,4 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { ServerPlayer } from '../server/server-player'
 import { assert } from '../misc/assert'
 import { CCMap } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
@@ -17,6 +16,10 @@ import { addCombatantParty } from '../misc/combatant-party-api'
 
 import './injects'
 import { GameLoopUpdateable } from '../server/server'
+import { applyStateUpdatePacket } from '../state/states'
+import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
+import { PhysicsServer } from '../server/physics/physics-server'
+import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 
 declare global {
     namespace ig {
@@ -41,30 +44,44 @@ export type ClientSettings = {
 )
 
 export class Client implements GameLoopUpdateable {
-    player!: ServerPlayer
     inst!: InstanceinatorInstance
 
     private destroyed: boolean = false
 
     lastPingMs: number = 0
 
-    constructor(public settings: ClientSettings) {
-        assert(isUsernameValid(settings.username))
+    username: string
+    inputManager!: dummy.InputManager
+    dummy!: dummy.DummyPlayer
+    mapName: string = ''
+    marker?: Nullable<string>
+    ready: boolean = false
+
+    // mapInteract!: multi.class.ServerPlayer.MapInteract
+
+    static async create(settings: ClientSettings): Promise<Client> {
+        const client = new Client(settings)
+        await client.init(settings)
+        return client
     }
 
-    async init() {
+    private constructor(private settings: ClientSettings) {
+        assert(isUsernameValid(settings.username))
+        this.username = settings.username
+    }
+
+    private async init(settings: ClientSettings) {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
-            'localclient-' + this.settings.username,
+            'localclient-' + settings.username,
             this.isVisible(),
-            this.settings.forceDraw,
+            settings.forceDraw,
             inst => {
                 inst.ig.client = this
             }
         )
 
-        const inputManager = this.initInputManager()
-        this.player = new ServerPlayer(this.settings.username, inputManager)
+        this.inputManager = this.initInputManager()
 
         new dummy.BoxGuiAddon.Username(this.inst.ig.game)
         new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
@@ -100,8 +117,7 @@ export class Client implements GameLoopUpdateable {
     private attemptRecovery(e: unknown) {
         if (!multi.server.settings.attemptCrashRecovery) throw e
 
-        assert(this.player)
-        const map = this.player.getMap()
+        const map = this.getMap()
         map.attemptRecovery(e)
     }
 
@@ -118,6 +134,8 @@ export class Client implements GameLoopUpdateable {
     }
 
     update() {
+        // todo: huh???
+        // this.mapInteract?.onPreUpdate()
         try {
             ig.game.update()
         } catch (e) {
@@ -136,9 +154,9 @@ export class Client implements GameLoopUpdateable {
 
     updateGamepadForcer() {
         assert(instanceinator.id == this.inst.id)
-        if (this.player.inputManager instanceof dummy.input.Puppet.InputManager) return
+        if (this.inputManager instanceof dummy.input.Puppet.InputManager) return
 
-        if (this.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD) {
+        if (this.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD) {
             forceGamepad(this)
         } else {
             clearForceGamepad(this)
@@ -146,7 +164,7 @@ export class Client implements GameLoopUpdateable {
     }
 
     async teleportInitial(mapNameOverride?: string) {
-        const state = this.player.getSaveState()
+        const state = this.getSaveState()
 
         const mapName = mapNameOverride ?? state?.mapName ?? multi.server.settings.defalutMap?.map ?? 'multibakery/dev'
         const marker = state?.marker ?? multi.server.settings.defalutMap?.marker ?? 'entrance'
@@ -154,8 +172,41 @@ export class Client implements GameLoopUpdateable {
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
-        await this.player.teleport(mapName, marker)
-        const map = this.player.getMap()
+        assert(instanceinator.id == multi.server.serverInst.id)
+        if (this.dummy) {
+            multi.storage.savePlayerState(this.dummy.data.username, this.dummy, mapName, marker)
+        }
+
+        this.ready = false
+        const oldMap = multi.server.maps[this.mapName]
+        if (oldMap && this.dummy) oldMap.leave(this)
+        if (oldMap) oldMap.forceUpdate++
+
+        this.mapName = mapName
+        this.marker = marker
+        let map = multi.server.maps[this.mapName]
+        if (!map) {
+            await multi.server.loadMap(this.mapName)
+            map = this.getMap()
+        }
+        await map.readyPromise
+
+        if (oldMap) oldMap.forceUpdate--
+        map.forceUpdate++
+        runTask(map.inst, () => {
+            this.createPlayer()
+        })
+        map.forceUpdate--
+        map.enter(this)
+        runTask(map.inst, () => {
+            // this.mapInteract = new multi.class.ServerPlayer.MapInteract(this, map.inst.sc.mapInteract)
+
+            if (multi.server instanceof PhysicsServer) {
+                teleportPlayerToProperMarker(this.dummy, marker, undefined, true)
+            }
+            this.ready = true
+        })
+
         await this.linkMapToInstance(map)
 
         for (const obj of map.onLinkChange) obj.onClientLink(this)
@@ -198,14 +249,14 @@ export class Client implements GameLoopUpdateable {
         cig.rumble = mig.rumble
         addAddon(cig.rumble, cig.game)
 
-        cig.game.playerEntity = this.player.dummy
+        cig.game.playerEntity = this.dummy
 
         const csc = this.inst.sc
         const msc = map.inst.sc
 
-        rehookObservers(csc.model.player.params, this.player.dummy.model.params)
-        rehookObservers(csc.model.player, this.player.dummy.model)
-        csc.model.player = this.player.dummy.model
+        rehookObservers(csc.model.player.params, this.dummy.model.params)
+        rehookObservers(csc.model.player, this.dummy.model)
+        csc.model.player = this.dummy.model
         csc.pvp = msc.pvp
         csc.options = msc.options
 
@@ -236,22 +287,75 @@ export class Client implements GameLoopUpdateable {
         runTask(map.inst, () => {
             for (const client of Object.values(multi.server.clients)) {
                 if (client instanceof Client) {
-                    client.player.dummy.model.updateStats()
-                    sc.Model.notifyObserver(client.player.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
+                    client.dummy.model.updateStats()
+                    sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
                 }
             }
-            this.player.dummy.party = addCombatantParty(`player${this.inst.id}`)
+            this.dummy.party = addCombatantParty(`player${this.inst.id}`)
         })
+    }
+
+    getSaveState() {
+        return multi.storage.getPlayerState(this.username)
+    }
+
+    private loadState() {
+        const state = this.getSaveState()
+        if (state) {
+            applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
+        }
+    }
+
+    private createPlayer() {
+        if (this.dummy) assert(this.dummy._killed)
+
+        const dummySettings: dummy.DummyPlayer.Settings = {
+            inputManager: this.inputManager,
+            data: { username: this.username },
+        }
+
+        const netid = createDummyNetid(this.username)
+        if (multi.server instanceof RemoteServer && ig.game.entitiesByNetid[netid]) {
+            const entity = ig.game.entitiesByNetid[netid]
+            assert(entity instanceof dummy.DummyPlayer)
+            this.dummy = entity
+        } else {
+            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
+        }
+        // if (username.includes('luke')) {
+        //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
+        // }
+
+        if (multi.server instanceof PhysicsServer && multi.server.settings.godmode) ig.godmode(this.dummy.model)
+
+        this.loadState()
+    }
+
+    getClient(noAssert: true): Client | undefined
+    getClient(noAssert?: false): Client
+    getClient(noAssert?: any): Client | undefined {
+        return this.dummy.getClient(noAssert)
+    }
+
+    getMap(noAssert: true): CCMap | undefined
+    getMap(noAssert?: false): CCMap
+    getMap(noAssert?: any): CCMap | undefined {
+        const map = multi.server.maps[this.mapName]
+        if (!noAssert) assert(map)
+        return map
     }
 
     destroy() {
         if (this.destroyed) return
         this.destroyed = true
-        if (this.inst.ig.gamepad.destroy) {
-            this.inst.ig.gamepad.destroy()
-        }
-        this.player.destroy()
-        for (const obj of this.player.getMap(true)?.onLinkChange ?? []) obj.onClientDestroy(this)
+        this.inst.ig.gamepad.destroy?.()
+
+        multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
+
+        const map = multi.server.maps[this.mapName]
+        map?.leave(this)
+
+        for (const obj of map?.onLinkChange ?? []) obj.onClientDestroy(this)
 
         multi.server.serverInst.apply()
         instanceinator.delete(this.inst)
@@ -261,3 +365,35 @@ export class Client implements GameLoopUpdateable {
 function rehookObservers(from: sc.Model, to: sc.Model) {
     to.observers.push(...from.observers)
 }
+
+/* todo: is this even used???????????? */
+// prestart(() => {
+//     multi.class.ServerPlayer = {} as any
+// }, 1)
+// declare global {
+//     namespace multi.class.ServerPlayer {
+//         interface MapInteract extends sc.MapInteract {
+//             player: ServerPlayer
+//             origMapInteract: sc.MapInteract
+//         }
+//         interface MapInteractConstructor extends ImpactClass<MapInteract> {
+//             new (player: ServerPlayer, origMapInteract: sc.MapInteract): MapInteract
+//         }
+//         var MapInteract: MapInteractConstructor
+//     }
+// }
+// prestart(() => {
+//     multi.class.ServerPlayer.MapInteract = sc.MapInteract.extend({
+//         init(player, origMapInteract) {
+//             this.parent()
+//             this.origMapInteract = origMapInteract
+//             this.entries = origMapInteract.entries
+//             this.player = player
+//         },
+//         onPreUpdate() {
+//             assert(!ig.game.playerEntity)
+//
+//             inputBackup(this.player.inputManager, () => this.parent())
+//         },
+//     })
+// })

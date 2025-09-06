@@ -45,7 +45,7 @@ function send() {
         let packet: RemoteServerClientPacket | undefined
 
         if (!inPauseScreen) {
-            const input = inst.ig.input.getInput(client.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD)
+            const input = inst.ig.input.getInput(client.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD)
             if (input) {
                 for (const action of disallowedInputActions) {
                     delete input.presses?.[action]

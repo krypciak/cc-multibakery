@@ -1,10 +1,9 @@
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { clearCollectedState, getStateUpdatePacket } from '../../state/states'
+import { clearCollectedState, getStateUpdatePacket, StateKey } from '../../state/states'
 import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
-import { ServerPlayer } from '../server-player'
 import { NetConnection } from '../../net/connection'
 import { cleanRecord } from '../../state/state-util'
 
@@ -31,7 +30,7 @@ function send() {
         const readyMaps = multi.server.connectionReadyMaps.get(conn)
 
         for (const client of conn.clients) {
-            const mapName = client.player.mapName
+            const mapName = client.mapName
             const map = multi.server.maps[mapName]
             if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
 
@@ -43,7 +42,7 @@ function send() {
                 packets[mapName].set(conn, dest)
             }
 
-            getMapUpdatePacket(map, dest, client.player, cachePacket)
+            getMapUpdatePacket(map, dest, client, cachePacket)
         }
 
         const connPackets: Record</* mapName */ string, StateUpdatePacket> = {}
@@ -68,8 +67,8 @@ function send() {
     )
 }
 
-function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, player?: ServerPlayer, cache?: StateUpdatePacket) {
-    runTask(map.inst, () => getStateUpdatePacket(dest, player, cache))
+function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey, cache?: StateUpdatePacket) {
+    runTask(map.inst, () => getStateUpdatePacket(dest, key, cache))
 }
 
 export interface PhysicsServerUpdatePacket {

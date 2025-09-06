@@ -13,7 +13,7 @@ function clearGamepad(client: Client, startWait: boolean) {
     getGamepadManager(client).clearSingleGamepad()
     client.inst.ig.input.currentDevice = ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
 
-    if (client.player.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD && startWait) {
+    if (client.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD && startWait) {
         waitForGamepad(client)
     }
 }

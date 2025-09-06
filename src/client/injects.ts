@@ -29,7 +29,7 @@ prestart(() => {
     ig.Camera.inject({
         onPostUpdate() {
             this.parent()
-            const inp = ig.client?.player?.inputManager
+            const inp = ig.client?.inputManager
             if (inp) Vec2.assign(inp.screen, ig.game.screen)
         },
     })
@@ -146,7 +146,7 @@ prestart(() => {
         deferredUpdate() {
             this.parent()
             if (!(multi.server instanceof PhysicsServer)) return
-            const inp = ig.client?.player?.inputManager
+            const inp = ig.client?.inputManager
             if (!inp) return
             const menu = sc.menu.currentMenu
             const subState = sc.model.currentSubState

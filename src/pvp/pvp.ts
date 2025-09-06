@@ -173,7 +173,7 @@ prestart(() => {
             }
         },
         onClientDestroy(client) {
-            const player = client.player.dummy
+            const player = client.dummy
 
             delete this.hpBars[client.inst.id]
             for (const key in this.hpBars) {
@@ -388,10 +388,10 @@ export async function stagePvp() {
                         remote: false,
                         noShowInstance: !isMaster,
                     })
-                    if (isMaster) masterPlayer = client.player.dummy
+                    if (isMaster) masterPlayer = client.dummy
 
-                    assert(client.player.dummy)
-                    return client.player.dummy
+                    assert(client.dummy)
+                    return client.dummy
                 })
             )
             return { name, players }

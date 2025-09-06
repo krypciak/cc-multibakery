@@ -52,7 +52,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                 if (typeof specialMap[key] != 'string') continue
                 if (specialMap[key].endsWith(suffix)) continue
 
-                specialMap[key] += ` (player: \\c[3]${masterClient.player.username}${suffix}`
+                specialMap[key] += ` (player: \\c[3]${masterClient.username}${suffix}`
             }
         } else {
             save.area = { en_US: 'Multibakery server', langUid: 1 }
@@ -145,9 +145,9 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                     if (!(player instanceof dummy.DummyPlayer)) continue
 
                     const client = player.getClient()
-                    if (!client.player.ready) return
+                    if (!client.ready) return
 
-                    this.savePlayerState(client.player.username, player, map.name, client.player.marker)
+                    this.savePlayerState(client.username, player, map.name, client.marker)
                 }
             })
         }

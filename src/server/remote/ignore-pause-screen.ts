@@ -17,7 +17,7 @@ prestart(() => {
 
             function trySetBlock(value: boolean) {
                 if (multi.server instanceof PhysicsServer) {
-                    const inp = ig.client!.player?.inputManager
+                    const inp = ig.client!.inputManager
                     if (inp instanceof dummy.input.Puppet.InputManager) {
                         setPauseScreenBlock(inp, value)
                     }

@@ -180,15 +180,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     private async joinClient(client: Client) {
-        assert(!this.clients[client.player.username])
-        this.clients[client.player.username] = client
+        assert(!this.clients[client.username])
+        this.clients[client.username] = client
         this.clientsById[client.inst.id] = client
     }
 
     async createAndJoinClient(settings: ClientSettings) {
-        const client = new Client(settings)
-
-        await client.init()
+        const client = await Client.create(settings)
         await this.joinClient(client)
         await client.teleportInitial(settings.mapName)
 
@@ -205,7 +203,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         const id = client.inst.id
         assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
         delete this.clientsById[id]
-        delete this.clients[client.player.username]
+        delete this.clients[client.username]
         client.destroy()
 
         if (this.destroyOnLastClientLeave) {
@@ -230,7 +228,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     setMasterClient(client: Client) {
-        this.masterUsername = client.player.username
+        this.masterUsername = client.username
         multi.storage.save()
     }
 

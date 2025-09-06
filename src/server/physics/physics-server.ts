@@ -122,7 +122,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             initialInputType: joinData.initialInputType,
         })
 
-        return { client, ackData: { status: 'ok', mapName: client.player.mapName } }
+        return { client, ackData: { status: 'ok', mapName: client.mapName } }
     }
 
     onNetReceiveUpdate(conn: NetConnection, data: unknown) {
@@ -148,7 +148,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         for (const username in data.clients) {
             const client = multi.server.clients[username]
             if (!client) continue
-            const inp = client.player.inputManager
+            const inp = client.inputManager
             assert(inp instanceof dummy.input.Puppet.InputManager)
 
             const packet = data.clients[username]
@@ -177,7 +177,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     onNetClientLeave(conn: NetConnection, data?: ClientLeaveData) {
         let clients: Client[]
         if (data) {
-            const client = conn.clients.find(client => client.player.username == data.username)
+            const client = conn.clients.find(client => client.username == data.username)
             if (client) {
                 clients = [client]
             } else {

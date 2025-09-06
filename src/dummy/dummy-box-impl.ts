@@ -24,7 +24,7 @@ prestart(() => {
                 player => {
                     if (!ig.client) return true
                     if (!Opts.hideClientUsername) return true
-                    return ig.client.player.username != player.data.username
+                    return ig.client.username != player.data.username
                 }
             )
         },

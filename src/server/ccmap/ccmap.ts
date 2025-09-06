@@ -1,7 +1,6 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { GameLoopUpdateable } from '../server'
 import { assert } from '../../misc/assert'
-import { ServerPlayer } from '../server-player'
 import { CCMapDisplay } from './display'
 import { setDataFromLevelData } from './data-load'
 import { prestart } from '../../loading-stages'
@@ -24,7 +23,7 @@ export interface OnLinkChange {
 export class CCMap implements GameLoopUpdateable {
     rawLevelData!: sc.MapModel.Map
 
-    players: ServerPlayer[] = []
+    clients: Client[] = []
 
     inst!: InstanceinatorInstance
     display!: CCMapDisplay
@@ -81,7 +80,7 @@ export class CCMap implements GameLoopUpdateable {
     }
 
     isActive() {
-        return multi.server.settings.forceMapsActive || !this.ready || this.forceUpdate != 0 || this.players.length > 0
+        return multi.server.settings.forceMapsActive || !this.ready || this.forceUpdate != 0 || this.clients.length > 0
     }
 
     isVisible() {
@@ -119,23 +118,22 @@ export class CCMap implements GameLoopUpdateable {
         })
     }
 
-    enter(player: ServerPlayer) {
-        this.players.push(player)
+    enter(client: Client) {
+        this.clients.push(client)
     }
 
-    leave(player: ServerPlayer) {
-        const prevLen = this.players.length
-        this.players.erase(player)
-        if (prevLen == this.players.length) return
+    leave(client: Client) {
+        const prevLen = this.clients.length
+        this.clients.erase(client)
+        if (prevLen == this.clients.length) return
 
-        this.leaveEntity(player.dummy)
+        this.leaveEntity(client.dummy)
     }
 
     private leaveEntity(e: ig.Entity) {
         if (this.remote) return
 
         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
-            /* this promise will finish by the end of this function, so there's no need to await it */
             this.leaveEntity(e.gui.crosshair)
         }
 
@@ -146,13 +144,13 @@ export class CCMap implements GameLoopUpdateable {
     }
 
     getAllInstances(includeMapInst?: boolean) {
-        const insts = this.players.map(player => player.getClient().inst)
+        const insts = this.clients.map(player => player.getClient().inst)
         if (includeMapInst) insts.push(this.inst)
         return insts
     }
 
     destroy() {
-        for (const player of this.players) {
+        for (const player of this.clients) {
             const client = player.getClient()
             multi.server.leaveClient(client)
         }
@@ -175,7 +173,7 @@ prestart(() => {
             if (!multi.server) return this.parent(party)
 
             assert(ig.ccmap)
-            ig.game.playerEntity = ig.ccmap.players[0].dummy
+            ig.game.playerEntity = ig.ccmap.clients[0].dummy
             const ret = this.parent(party)
             ig.game.playerEntity = undefined as any
             return ret
@@ -217,7 +215,7 @@ prestart(() => {
         resolveItemDrops(enemyEntity) {
             if (!ig.ccmap) return this.parent(enemyEntity)
             assert(!ig.game.playerEntity)
-            ig.game.playerEntity = ig.ccmap.players[0].dummy
+            ig.game.playerEntity = ig.ccmap.clients[0].dummy
             this.parent(enemyEntity)
             ig.game.playerEntity = undefined as any
         },
@@ -286,7 +284,7 @@ prestart(() => {
     })
     sc.MapInteract.inject({
         onPreUpdate() {
-            if (this instanceof multi.class.ServerPlayer.MapInteract || !ig.ccmap) return this.parent()
+            if (/* this instanceof multi.class.ServerPlayer.MapInteract || */ !ig.ccmap) return this.parent()
 
             for (const entry of this.entries) {
                 if (entry.thisTickState) entry.setState(entry.thisTickState)

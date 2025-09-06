@@ -165,7 +165,7 @@ prestart(() => {
                 })
             }
 
-            const inputManager = ig.client?.player.inputManager
+            const inputManager = ig.client?.inputManager
             let inputButton: InputButton | undefined
             if (inputManager) {
                 inputButton = new InputButton(ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE, () => {

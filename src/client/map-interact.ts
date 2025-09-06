@@ -94,8 +94,8 @@ prestart(() => {
             })
         },
         onPreUpdate() {
-            if (!multi.server || ig.ccmap || !ig.client || !ig.client.player.dummy) return this.parent()
-            wrapInput(ig.client.player.dummy.inputManager, () => this.parent())
+            if (!multi.server || ig.ccmap || !ig.client || !ig.client.dummy) return this.parent()
+            wrapInput(ig.client.dummy.inputManager, () => this.parent())
         },
     })
 })
@@ -105,7 +105,7 @@ prestart(() => {
         _isInRange(range, noIgnoreZ) {
             if (!multi.server) return this.parent(range, noIgnoreZ)
             assert(ig.ccmap)
-            return ig.ccmap.players.some(player => {
+            return ig.ccmap.clients.some(player => {
                 assert(!ig.game.playerEntity)
                 ig.game.playerEntity = player.dummy
                 const ret = this.parent(range, noIgnoreZ)
@@ -128,7 +128,7 @@ prestart(() => {
         onSkipInteract(msg) {
             if (!multi.server || ig.ccmap) return this.parent(msg)
             assert(ig.client)
-            const map = ig.client.player.getMap()
+            const map = ig.client.getMap()
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {
                 if (this.textGui.textBlock.isFinished()) {
