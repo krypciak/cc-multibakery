@@ -193,3 +193,15 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.BounceSwitchGroups.inject({
+        setCameraBall(groupName, ball) {
+            if (!multi.server) return this.parent(groupName, ball)
+
+            if (!ig.game.playerEntity) return
+
+            this.parent(groupName, ball)
+        },
+    })
+})
