@@ -98,6 +98,13 @@ prestart(() => {
             if (!multi.server || ig.ccmap || !ig.client || !ig.client.dummy) return this.parent()
             wrapInput(ig.client.dummy.inputManager, () => this.parent())
         },
+        onLevelLoadStart(data) {
+            this.parent?.(data)
+            for (const entry of this.entries) {
+                entry.gui.remove()
+            }
+            this.entries = []
+        },
     })
 })
 
