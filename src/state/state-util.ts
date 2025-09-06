@@ -98,7 +98,7 @@ export class StateMemory {
 
     diffRecord<T extends object>(
         currRecord: T,
-        eq: (a: T[keyof T], b: T[keyof T]) => boolean = (a, b) => a == b
+        eq: (a: T[keyof T], b: T[keyof T] | undefined) => boolean = (a, b) => a == b
     ): T | undefined {
         const i = this.i++
         if (this.data.length <= i) {

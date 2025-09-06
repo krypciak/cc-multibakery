@@ -106,8 +106,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             client.lastPingMs = msPing
         }
 
-        // console.log(JSON.stringify(data, null, 4))
-
+        // if (data.mapPackets) console.log(JSON.stringify(data.mapPackets, null, 4))
         for (const mapName in data.mapPackets) {
             const stateUpdatePacket = data.mapPackets[mapName]
 
@@ -122,6 +121,18 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 }
                 map.noStateAppliedYet = false
             })
+        }
+
+        if (data.playerMaps) {
+            // console.log(JSON.stringify(data.playerMaps, null, 4))
+            for (const mapName in data.playerMaps) {
+                const mapRecord = data.playerMaps[mapName]
+                for (const username of mapRecord) {
+                    const client = multi.server.clients[username]
+                    assert(client)
+                    client.teleport(mapName, undefined)
+                }
+            }
         }
     }
 

@@ -55,7 +55,7 @@ function send() {
             }
         }
 
-        const data = getRemoteServerUpdatePacket(connPackets)
+        const data = getRemoteServerUpdatePacket(connPackets, conn)
         conn.send('update', data)
     }
 
@@ -71,16 +71,30 @@ function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey
     runTask(map.inst, () => getStateUpdatePacket(dest, key, cache))
 }
 
+type PlayerMapChangeRecord = Record</* mapName*/ string, /* username */ string[]>
 export interface PhysicsServerUpdatePacket {
     mapPackets?: Record</* mapName */ string, StateUpdatePacket>
     tick: number
     sendAt: number
+    playerMaps?: PlayerMapChangeRecord
 }
-function getRemoteServerUpdatePacket(mapPackets: Record<string, StateUpdatePacket>): PhysicsServerUpdatePacket {
+function getRemoteServerUpdatePacket(
+    mapPackets: Record<string, StateUpdatePacket>,
+    conn: NetConnection
+): PhysicsServerUpdatePacket {
+    const maps = conn.clients.reduce((acc, client) => {
+        if (client.justTeleported) {
+            client.justTeleported = false
+            ;(acc[client.mapName] ??= []).push(client.username)
+        }
+        return acc
+    }, {} as PlayerMapChangeRecord)
+
     const data: PhysicsServerUpdatePacket = {
         mapPackets: Object.keys(mapPackets).length > 0 ? mapPackets : undefined,
         tick: ig.system.tick,
         sendAt: Date.now(),
+        playerMaps: cleanRecord(maps),
     }
     return data
 }

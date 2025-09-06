@@ -17,9 +17,9 @@ import { addCombatantParty } from '../misc/combatant-party-api'
 import './injects'
 import { GameLoopUpdateable } from '../server/server'
 import { applyStateUpdatePacket } from '../state/states'
-import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
+import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 
 declare global {
     namespace ig {
@@ -56,6 +56,7 @@ export class Client implements GameLoopUpdateable {
     mapName: string = ''
     marker?: Nullable<string>
     ready: boolean = false
+    justTeleported: boolean = false
 
     static async create(settings: ClientSettings): Promise<Client> {
         const client = new Client(settings)
@@ -180,6 +181,8 @@ export class Client implements GameLoopUpdateable {
 
         this.mapName = mapName
         this.marker = marker
+        this.justTeleported = true
+
         let map = multi.server.maps[this.mapName]
         if (!map) {
             await multi.server.loadMap(this.mapName)
@@ -301,7 +304,7 @@ export class Client implements GameLoopUpdateable {
     }
 
     private createPlayer() {
-        if (this.dummy) assert(this.dummy._killed)
+        if (multi.server instanceof PhysicsServer && this.dummy) assert(this.dummy._killed)
 
         const dummySettings: dummy.DummyPlayer.Settings = {
             inputManager: this.inputManager,
