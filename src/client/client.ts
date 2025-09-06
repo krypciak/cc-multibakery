@@ -360,5 +360,9 @@ export class Client implements GameLoopUpdateable {
 }
 
 function rehookObservers(from: sc.Model, to: sc.Model) {
-    to.observers.push(...from.observers)
+    const toObservers = new Set(to.observers)
+    for (const fromObserver of from.observers) {
+        toObservers.add(fromObserver)
+    }
+    to.observers = [...toObservers]
 }
