@@ -1,4 +1,5 @@
 import './vars'
+import './fixes'
 import './event-manager'
 import './ig_ENTITY_EventTrigger'
 import './ig_ENTITY_Switch'

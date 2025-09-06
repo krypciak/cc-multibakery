@@ -170,9 +170,8 @@ prestart(() => {
 
     sc.Combat.inject({
         getPartyHpFactor(party) {
-            if (!multi.server) return this.parent(party)
+            if (!multi.server || !ig.ccmap) return this.parent(party)
 
-            assert(ig.ccmap)
             ig.game.playerEntity = ig.ccmap.clients[0].dummy
             const ret = this.parent(party)
             ig.game.playerEntity = undefined as any
