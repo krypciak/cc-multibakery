@@ -44,17 +44,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
     private addPrettyTextToSave(save: ig.SaveSlot.Data) {
         const masterClient = multi.server.getMasterClient()
-        if (masterClient) {
-            const specialMap = save.specialMap as Record<string, string>
-            const suffix = '\\c[0])'
-
-            for (const key in specialMap) {
-                if (typeof specialMap[key] != 'string') continue
-                if (specialMap[key].endsWith(suffix)) continue
-
-                specialMap[key] += ` (player: \\c[3]${masterClient.username}${suffix}`
-            }
-        } else {
+        if (!masterClient) {
             save.area = { en_US: 'Multibakery server', langUid: 1 }
             save.specialMap = { en_US: 'None', langUid: 1 }
         }
