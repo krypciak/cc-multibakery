@@ -62,10 +62,20 @@ prestart(() => {
         createStatusGui() {
             const gui = new ig.GUI.StatusBar(this)
             ig.gui.addGuiElement(gui)
+            
+            this.statusGuis[instanceinator.id]?.forceRemove()
             this.statusGuis[instanceinator.id] = gui
         },
         hide() {
             this.parent()
+            if (!multi.server) return
+
+            const map = ig.ccmap
+            assert(map)
+            map.onLinkChange.erase(this)
+        },
+        onKill(levelChange) {
+            this.parent(levelChange)
             if (!multi.server) return
 
             const map = ig.ccmap
