@@ -19,6 +19,7 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { InstanceUpdateable } from '../server/instance-updateable'
+import { updateDummyData } from './injects'
 
 declare global {
     namespace ig {
@@ -134,6 +135,12 @@ export class Client extends InstanceUpdateable {
             this.inputManager.mainGamepadManagerData.popInput()
         }
         super.preUpdate()
+    }
+
+    update() {
+        super.update()
+
+        updateDummyData(this)
     }
 
     updateGamepadForcer() {

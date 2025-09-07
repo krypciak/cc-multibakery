@@ -1,5 +1,3 @@
-import { prestart } from '../loading-stages'
-
 export type PlayerLocation = Vec3
 
 export type PlayerLocationRecord = Record<
@@ -13,7 +11,7 @@ export function getPlayerLocations(): PlayerLocationRecord {
     return { ...locations }
 }
 
-function updatePlayerLocations() {
+export function updatePlayerLocations() {
     for (const map of multi.server.getActiveAndReadyMaps()) {
         const mapRecord = (locations[map.name] ??= {})
 
@@ -24,7 +22,7 @@ function updatePlayerLocations() {
         }
     }
 }
-function invalidateOldPlayerLocations() {
+export function invalidateOldPlayerLocations() {
     for (const mapName in locations) {
         const map = multi.server.maps.get(mapName)
         if (!map) continue
@@ -62,15 +60,3 @@ export function mergePlayerLocations(newLocations: PlayerLocationRecord) {
         newLocations[username] = newLocations[username]
     }
 }
-
-prestart(() => {
-    ig.Game.inject({
-        update() {
-            this.parent()
-            if (multi.server && instanceinator.id == multi.server.serverInst.inst.id) {
-                updatePlayerLocations()
-                invalidateOldPlayerLocations()
-            }
-        },
-    })
-})

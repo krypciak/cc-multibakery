@@ -2,6 +2,7 @@ import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
+import { Client } from './client'
 
 prestart(() => {
     ig.Physics.inject({
@@ -143,32 +144,26 @@ declare global {
         }
     }
 }
-prestart(() => {
-    if (!PHYSICS) return
-    ig.Game.inject({
-        deferredUpdate() {
-            this.parent()
-            if (!(multi.server instanceof PhysicsServer)) return
-            const inp = ig.client?.inputManager
-            if (!inp) return
-            const menu = sc.menu.currentMenu
-            const subState = sc.model.currentSubState
-            if (inp.player) {
-                inp.player.data.currentMenu = menu
-                inp.player.data.currentSubState = subState
-                inp.player.data.isControlBlocked = subState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU
-                inp.player.data.inCutscene = ig.client!.inst.ig.game.isControlBlocked()
-            }
+export function updateDummyData(client: Client) {
+    if (!(multi.server instanceof PhysicsServer)) return
+    const inp = client.inputManager
 
-            const inMenu = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
-            if (inMenu) {
-                inp.block.blockBoth('PAUSED')
-            } else {
-                inp.block.unblockBoth('PAUSED')
-            }
-        },
-    })
-})
+    const menu = sc.menu.currentMenu
+    const subState = sc.model.currentSubState
+    if (inp.player) {
+        inp.player.data.currentMenu = menu
+        inp.player.data.currentSubState = subState
+        inp.player.data.isControlBlocked = subState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU
+        inp.player.data.inCutscene = ig.client!.inst.ig.game.isControlBlocked()
+    }
+
+    const inMenu = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
+    if (inMenu) {
+        inp.block.blockBoth('PAUSED')
+    } else {
+        inp.block.unblockBoth('PAUSED')
+    }
+}
 
 function broadcastCombatArtNameLabel(player: dummy.DummyPlayer, applyCharge: number) {
     const actionName = player.getChargeAction(player.charging.type, applyCharge) as keyof typeof sc.PLAYER_ACTION

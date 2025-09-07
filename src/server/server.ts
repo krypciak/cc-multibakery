@@ -6,6 +6,7 @@ import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../dummy/dummy-box-addon'
+import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 
 export interface ServerSettings {
     tps: number
@@ -89,13 +90,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         })
     }
 
-    // update() {
-    //     super.update()
-    //
-    //     updatePlayerLocations()
-    //     invalidateOldPlayerLocations()
-    // }
-
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
 
@@ -113,6 +107,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         startGameLoop(useAnimationFrame)
 
         multi.class.gamepadAssigner.initialize()
+    }
+
+    update() {
+        super.update()
+
+        updatePlayerLocations()
+        invalidateOldPlayerLocations()
     }
 
     private preUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
@@ -133,7 +134,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         }
     }
 
-    update() {
+    runUpdate() {
         multi.class.gamepadAssigner.update()
 
         this.preUpdateFor([this])
@@ -147,7 +148,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.inst.apply()
     }
 
-    deferredUpdate() {
+    runDeferredUpdate() {
         this.deferredUpdateFor([this])
         this.deferredUpdateFor(this.maps.values())
         this.deferredUpdateFor(this.clients.values())

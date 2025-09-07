@@ -1,25 +1,12 @@
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
-import { prestart } from '../../loading-stages'
 import { clearCollectedState, getStateUpdatePacket, StateKey } from '../../state/states'
 import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
 import { NetConnection } from '../../net/connection'
 import { cleanRecord } from '../../state/state-util'
 
-prestart(() => {
-    if (!PHYSICS) return
-    ig.Game.inject({
-        update() {
-            this.parent()
-            if (multi.server instanceof PhysicsServer && instanceinator.id == multi.server.inst.id) {
-                send()
-            }
-        },
-    })
-})
-
-function send() {
+export function sendPhysicsServerPacket() {
     assert(multi.server instanceof PhysicsServer)
     if (!multi.server.netManager) return
 

@@ -10,18 +10,6 @@ import { prestart } from '../../loading-stages'
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { RemoteServer } from './remote-server'
 
-prestart(() => {
-    if (!REMOTE) return
-    ig.Game.inject({
-        update() {
-            this.parent()
-            if (multi.server instanceof RemoteServer && instanceinator.id == multi.server.inst.id) {
-                send()
-            }
-        },
-    })
-})
-
 declare global {
     namespace ig {
         var remoteSenderStateMemory: StateMemory | undefined
@@ -30,7 +18,7 @@ declare global {
 
 const maxInputFieldTextLength = 50
 
-function send() {
+export function sendRemoteServerPacket() {
     assert(multi.server instanceof RemoteServer)
     const conn = multi.server.netManager.conn
     if (!conn) return

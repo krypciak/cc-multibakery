@@ -6,13 +6,13 @@ import { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
 import { Client } from '../../client/client'
 import { Opts } from '../../options'
+import { TemporarySet } from '../../misc/temporary-set'
+import { runTask } from 'cc-instanceinator/src/inst-util'
+import { sendRemoteServerPacket } from './remote-server-sender'
 
-import './remote-server-sender'
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import { TemporarySet } from '../../misc/temporary-set'
-import { runTask } from 'cc-instanceinator/src/inst-util'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -58,6 +58,11 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.measureTraffic = Opts.showPacketNetworkTraffic
 
         TemporarySet.resetAll()
+    }
+
+    update() {
+        super.update()
+        sendRemoteServerPacket()
     }
 
     async tryJoinClient(

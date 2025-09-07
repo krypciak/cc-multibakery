@@ -140,7 +140,7 @@ prestart(() => {
                         ig.system.actualTick = Math.min(0.05, nextTick)
                         ig.system.tick = ig.system.actualTick * ig.system.timeFactor
 
-                        multi.server.update()
+                        multi.server.runUpdate()
                         assert(instanceinator.id == multi.server.inst.id)
 
                         this.firstUpdateLoop = false
@@ -152,7 +152,7 @@ prestart(() => {
                 }
                 this.firstUpdateLoop = true
 
-                multi.server.deferredUpdate()
+                multi.server.runDeferredUpdate()
                 assert(instanceinator.instances[instanceinator.id])
             }
             ig.soundManager.update()

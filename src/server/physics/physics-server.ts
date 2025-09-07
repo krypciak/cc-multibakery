@@ -17,6 +17,7 @@ import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
+import { sendPhysicsServerPacket } from './physics-server-sender'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -121,6 +122,12 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         // if (!window.crossnode?.options.test) {
         //     stagePvp()
         // }
+    }
+
+    update() {
+        super.update()
+
+        sendPhysicsServerPacket()
     }
 
     async tryJoinClient(
