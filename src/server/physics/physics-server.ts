@@ -52,6 +52,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     constructor(settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
 
+        if (settings.useAnimationFrameLoop && !window.requestAnimationFrame) {
+            settings.useAnimationFrameLoop = false
+            console.warn(
+                'useAnimationFrameLoop is enabled, but window.requestAnimationFrame is undefined! defaulting to setInterval'
+            )
+        }
+
         if (settings.useAnimationFrameLoop) {
             settings.forceConsistentTickTimes = false
         }
@@ -138,6 +145,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     protected joinClient(client: Client): Promise<void> {
         if (
             client.settings.remote &&
+            this.settings.useAnimationFrameLoop &&
             this.netManager!.connections.length == 1 &&
             this.netManager!.connections[0].clients.length == 0
         ) {
@@ -151,6 +159,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     leaveClient(client: Client): void {
         if (
             client.settings.remote &&
+            this.settings.useAnimationFrameLoop &&
             this.netManager!.connections.length == 1 &&
             this.netManager!.connections[0].clients.length == 0
         ) {

@@ -23,12 +23,6 @@ export function startGameLoop(useAnimationFrame = false) {
 
     ig.system.stopRunLoop()
 
-    if (useAnimationFrame && !window.requestAnimationFrame) {
-        console.warn(
-            'useAnimationFrameLoop is enabled, but window.requestAnimationFrame is undefined! defaulting to setInterval'
-        )
-    }
-
     function run() {
         ig.system.run()
     }
