@@ -20,7 +20,7 @@ export async function startRepl() {
     server.defineCommand('kick', {
         help: 'Kick client',
         action(name) {
-            const client = multi.server.clients[name]
+            const client = multi.server.clients.get(name)
             if (!client) {
                 console.error(`Client: "${name}" not found!`)
                 server.displayPrompt()

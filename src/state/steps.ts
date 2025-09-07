@@ -140,7 +140,7 @@ prestart(() => {
 
             if (packet.steps.clients) {
                 for (const username in packet.steps.clients) {
-                    const client = multi.server.clients[username]
+                    const client = multi.server.clients.get(username)
                     if (!client) {
                         console.warn(`steps.ts client not found!: "${username}"`)
                         continue

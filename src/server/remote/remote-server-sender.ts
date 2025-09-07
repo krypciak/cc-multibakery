@@ -37,7 +37,7 @@ function send() {
 
     const clientPackets: RemoteServerClientPackets = {}
     for (const username in multi.server.clients) {
-        const client = multi.server.clients[username]
+        const client = multi.server.clients.get(username)!
         const inst = client.inst
         assert(inst)
 
@@ -107,7 +107,7 @@ function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientP
 
     if (typeof data != 'object' || !data) return false
     for (const username in data) {
-        const client = multi.server.clients[username]
+        const client = multi.server.clients.get(username)
         if (!client) continue
 
         const packet = data[username]

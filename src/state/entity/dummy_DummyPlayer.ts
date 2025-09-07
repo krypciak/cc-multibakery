@@ -65,7 +65,7 @@ prestart(() => {
     })
     dummy.DummyPlayer.create = (netid: string, state: Return) => {
         const username = netid.substring(2)
-        const client = multi.server.clients[username]
+        const client = multi.server.clients.get(username)
         let player: dummy.DummyPlayer
         const { pos } = state
 

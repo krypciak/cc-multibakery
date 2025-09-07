@@ -73,9 +73,9 @@ prestart(() => {
             return sc.party.models[playerName].getHeadIdx()
         },
         getClient(noAssert) {
-            const client = multi.server.clients[this.data.username]
+            const client = multi.server.clients.get(this.data.username)
             if (!noAssert) assert(client)
-            return client
+            return client!
         },
         getMap() {
             return this.getClient().getMap()
@@ -130,7 +130,7 @@ prestart(() => {
             let inp = this.thrower.inputManager
             let backup: sc.PlayerCrossHairController['updatePos'] | undefined
             if (multi.server instanceof RemoteServer) {
-                const clientInp = multi.server.clients[this.thrower.data.username]?.inputManager
+                const clientInp = multi.server.clients.get(this.thrower.data.username)?.inputManager
                 if (clientInp?.player) {
                     inp = clientInp
                 } else {

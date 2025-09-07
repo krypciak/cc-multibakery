@@ -51,14 +51,15 @@ export interface ClientJoinAckData {
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     protected abstract remote: boolean
 
-    maps: Map<string, CCMap> = new Map()
-    mapsById: Map<number, CCMap> = new Map()
-    clientsById: Record<number, Client> = {}
-
     baseInst!: InstanceinatorInstance
     serverInst: ServerInstance
 
-    clients: Record<string, Client> = {}
+    maps: Map<string, CCMap> = new Map()
+    mapsById: Map<number, CCMap> = new Map()
+
+    clients: Map<string, Client> = new Map()
+    clientsById: Map<number, Client> = new Map()
+
     private masterUsername?: string
 
     measureTraffic: boolean = false
@@ -152,9 +153,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     protected async joinClient(client: Client) {
-        assert(!this.clients[client.username])
-        this.clients[client.username] = client
-        this.clientsById[client.inst.id] = client
+        assert(!this.clients.has(client.username))
+        this.clients.set(client.username, client)
+        this.clientsById.set(client.inst.id, client)
     }
 
     async createAndJoinClient(settings: ClientSettings) {
@@ -174,8 +175,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
         assert(this.serverInst.inst.id != id && this.baseInst.id != id && !this.mapsById.has(id))
-        delete this.clientsById[id]
-        delete this.clients[client.username]
+        this.clientsById.delete(id)
+        this.clients.delete(client.username)
         client.destroy()
 
         if (this.destroyOnLastClientLeave) {
@@ -189,14 +190,15 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         }
     }
 
-    setMasterClient(client: Client) {
+    setMasterClient(client: Client): Client {
         this.masterUsername = client.username
         multi.storage.save()
+        return client
     }
 
     getMasterClient(): Client | undefined {
         if (!this.masterUsername) return
-        return this.clients[this.masterUsername]
+        return this.clients.get(this.masterUsername)
     }
 
     destroy() {

@@ -59,7 +59,7 @@ prestart(() => {
             if (packet.gameModelState.clients) {
                 for (const username in packet.gameModelState.clients) {
                     const state = packet.gameModelState.clients[username]
-                    const client = multi.server.clients[username]
+                    const client = multi.server.clients.get(username)
                     assert(client)
 
                     runTask(client.inst, () => setState(state))

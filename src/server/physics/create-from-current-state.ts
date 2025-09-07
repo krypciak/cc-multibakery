@@ -47,7 +47,7 @@ export async function createPhysicsServerFromCurrentState() {
 
     await server.start()
 
-    server.setMasterClient(
+    const client = server.setMasterClient(
         await server.createAndJoinClient({
             username,
             inputType: 'clone',
@@ -55,8 +55,6 @@ export async function createPhysicsServerFromCurrentState() {
             initialInputType: origInputType,
         })
     )
-
-    const client = server.clients[username]
 
     runTask(client.inst, () => {
         const { x, y, z } = playerDataBackup.pos

@@ -123,7 +123,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         const username = joinData.username
 
         if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
-        if (this.clients[username]) return { ackData: { status: 'username_taken' } }
+        if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
 
         const client = await this.createAndJoinClient({
             username,
@@ -182,7 +182,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             }
         }
         for (const username in data.clients) {
-            const client = multi.server.clients[username]
+            const client = multi.server.clients.get(username)
             if (!client) continue
             const inp = client.inputManager
             assert(inp instanceof dummy.input.Puppet.InputManager)

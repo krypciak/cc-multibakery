@@ -102,7 +102,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
         const msPing = this.netManager.calculatePing(data.sendAt)
         for (const username in this.clients) {
-            const client = this.clients[username]
+            const client = this.clients.get(username)!
             client.lastPingMs = msPing
         }
 
@@ -128,7 +128,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             for (const mapName in data.playerMaps) {
                 const mapRecord = data.playerMaps[mapName]
                 for (const username of mapRecord) {
-                    const client = multi.server.clients[username]
+                    const client = multi.server.clients.get(username)
                     assert(client)
                     client.teleport(mapName, undefined)
                 }
