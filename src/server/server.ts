@@ -94,6 +94,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         }
     }
 
+    private deferredUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
+        for (const updateable of updateables) {
+            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.deferredUpdate()
+        }
+    }
+
     update() {
         multi.class.gamepadAssigner.update()
 
@@ -106,12 +112,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.updateFor(this.clients.values())
 
         this.serverInst.inst.apply()
-    }
-
-    private deferredUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
-        for (const updateable of updateables) {
-            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.deferredUpdate()
-        }
     }
 
     deferredUpdate() {

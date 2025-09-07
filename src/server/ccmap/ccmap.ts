@@ -138,6 +138,7 @@ export class CCMap extends InstanceUpdateable {
             const client = player.getClient()
             multi.server.leaveClient(client)
         }
+
         multi.server.serverInst.inst.apply()
         super.destroy()
     }
