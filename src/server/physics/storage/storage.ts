@@ -63,7 +63,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     private getSaveData() {
-        const masterInstance = multi.server.getMasterClient()?.inst ?? multi.server.serverInst.inst
+        const masterInstance = multi.server.getMasterClient()?.inst ?? multi.server.inst
         assert(masterInstance)
 
         const partialSave: Partial<ig.SaveSlot.Data> = {}

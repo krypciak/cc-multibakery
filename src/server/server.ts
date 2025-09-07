@@ -5,7 +5,7 @@ import { Client, ClientSettings } from '../client/client'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
-import { ServerInstance } from './server-instance'
+import { removeAddon } from '../dummy/dummy-box-addon'
 
 export interface ServerSettings {
     tps: number
@@ -48,11 +48,10 @@ export interface ClientJoinAckData {
     mapName?: string
 }
 
-export abstract class Server<S extends ServerSettings = ServerSettings> {
+export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
     protected abstract remote: boolean
 
     baseInst!: InstanceinatorInstance
-    serverInst: ServerInstance
 
     maps: Map<string, CCMap> = new Map()
     clients: Map<string, Client> = new Map()
@@ -64,9 +63,38 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     destroyOnLastClientLeave: boolean = false
     postUpdateCallback?: () => void
 
-    protected constructor(public settings: S) {
-        this.serverInst = new ServerInstance()
+    constructor(public settings: S) {
+        super()
     }
+
+    isActive() {
+        return true
+    }
+
+    isVisible() {
+        return !!this.settings.displayServerInstance
+    }
+
+    protected attemptRecovery(e: unknown) {
+        throw e
+    }
+
+    private safeguardInst() {
+        Object.defineProperty(this.inst.ig.game.entities, 'push', {
+            get() {
+                console.warn('push on server entities!', instanceinator.id)
+                debugger
+                return () => {}
+            },
+        })
+    }
+
+    // update() {
+    //     super.update()
+    //
+    //     updatePlayerLocations()
+    //     invalidateOldPlayerLocations()
+    // }
 
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
@@ -75,7 +103,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         instanceinator.displayFps = true
 
         this.baseInst = instanceinator.instances[0]
-        await this.serverInst.init()
+        this.inst = await instanceinator.copy(multi.server.baseInst, 'server', this.isVisible())
+        this.inst.apply()
+        this.safeguardInst()
+
+        removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
+        this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
 
         startGameLoop(useAnimationFrame)
 
@@ -84,42 +117,42 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     private preUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
         for (const updateable of updateables) {
-            if (applyUpdateable(updateable, this.serverInst.inst, true)) updateable.preUpdate()
+            if (applyUpdateable(updateable, this.inst, true)) updateable.preUpdate()
         }
     }
 
     private updateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
         for (const updateable of updateables) {
-            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.update()
+            if (applyUpdateable(updateable, this.inst)) updateable.update()
         }
     }
 
     private deferredUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
         for (const updateable of updateables) {
-            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.deferredUpdate()
+            if (applyUpdateable(updateable, this.inst)) updateable.deferredUpdate()
         }
     }
 
     update() {
         multi.class.gamepadAssigner.update()
 
-        this.preUpdateFor([this.serverInst])
+        this.preUpdateFor([this])
         this.preUpdateFor(this.maps.values())
         this.preUpdateFor(this.clients.values())
 
-        this.updateFor([this.serverInst])
+        this.updateFor([this])
         this.updateFor(this.maps.values())
         this.updateFor(this.clients.values())
 
-        this.serverInst.inst.apply()
+        this.inst.apply()
     }
 
     deferredUpdate() {
-        this.deferredUpdateFor([this.serverInst])
+        this.deferredUpdateFor([this])
         this.deferredUpdateFor(this.maps.values())
         this.deferredUpdateFor(this.clients.values())
 
-        this.serverInst.inst.apply()
+        this.inst.apply()
         this.postUpdateCallback?.()
     }
 
@@ -168,7 +201,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
-        assert(this.serverInst.inst.id != id && this.baseInst.id != id)
+        assert(this.inst.id != id && this.baseInst.id != id)
         this.clients.delete(client.username)
         client.destroy()
 
@@ -199,7 +232,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.destroyed = true
         this.postUpdateCallback = undefined
 
-        this.serverInst.inst.apply()
+        this.inst.apply()
 
         for (const client of this.clients.values()) {
             this.leaveClient(client)
@@ -211,8 +244,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
             map.destroy()
         }
         this.baseInst.apply()
-
-        this.serverInst.destroy()
+        super.destroy()
 
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId

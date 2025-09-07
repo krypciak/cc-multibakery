@@ -49,7 +49,7 @@ prestart(() => {
                                 closePhysicsServerAndSaveState()
                             } else {
                                 const client = ig.client
-                                schedulePostTask(multi.server.serverInst.inst, () => {
+                                schedulePostTask(multi.server.inst, () => {
                                     multi.server.leaveClient(client)
                                 })
                             }

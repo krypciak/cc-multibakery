@@ -156,7 +156,7 @@ export class Client extends InstanceUpdateable {
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
-        assert(instanceinator.id == multi.server.serverInst.inst.id)
+        assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
             multi.storage.savePlayerState(this.dummy.data.username, this.dummy, mapName, marker)
         }
@@ -350,7 +350,7 @@ export class Client extends InstanceUpdateable {
             for (const obj of map.onLinkChange) obj.onClientDestroy(this)
         }
 
-        multi.server.serverInst.inst.apply()
+        multi.server.inst.apply()
         super.destroy()
     }
 }

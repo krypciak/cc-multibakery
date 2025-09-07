@@ -12,7 +12,7 @@ prestart(() => {
     ig.Game.inject({
         update() {
             this.parent()
-            if (multi.server instanceof PhysicsServer && instanceinator.id == multi.server.serverInst.inst.id) {
+            if (multi.server instanceof PhysicsServer && instanceinator.id == multi.server.inst.id) {
                 send()
             }
         },

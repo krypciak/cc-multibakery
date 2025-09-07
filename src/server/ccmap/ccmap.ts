@@ -119,7 +119,7 @@ export class CCMap extends InstanceUpdateable {
             this.leaveEntity(e.gui.crosshair)
         }
 
-        assert(instanceinator.id == multi.server.serverInst.inst.id)
+        assert(instanceinator.id == multi.server.inst.id)
         runTask(this.inst, () => {
             e.kill()
         })
@@ -139,7 +139,7 @@ export class CCMap extends InstanceUpdateable {
             multi.server.leaveClient(client)
         }
 
-        multi.server.serverInst.inst.apply()
+        multi.server.inst.apply()
         super.destroy()
     }
 }
