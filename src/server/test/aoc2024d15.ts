@@ -240,7 +240,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
 
     await waitFrames(1)
 
-    input.mainInputData.setInput(moveInp)
+    input.mainInputData.pushInput(moveInp)
 
     let collided: string = 'none'
     for (let frame = 0; collided == 'none' && frame < 10; frame++) {
@@ -264,7 +264,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             }
         })
     }
-    input.mainInputData.setInput(emptyInput)
+    input.mainInputData.pushInput(emptyInput)
 
     if (collided == 'box') {
         const holdTime = 20
@@ -279,12 +279,12 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
                 if (frame >= holdTime) {
                     inp.actions![dir] = true
                 }
-                input.mainInputData.setInput(inp)
+                input.mainInputData.pushInput(inp)
             })
         }
     }
 
-    input.mainInputData.setInput(emptyInput)
+    input.mainInputData.pushInput(emptyInput)
 }
 
 function genTest(name: string, moves: string, map: string, expected: number, part2: boolean = false) {
@@ -297,7 +297,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
     }>({
         fps: 60,
         timeoutSeconds: 400,
-        skipFrameWait: true,
+        skipFrameWait: false,
         flushPromises: true,
 
         modId: Multibakery.mod.id,
@@ -313,6 +313,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                 new PhysicsServer({
                     tps: this.fps!,
                     displayMaps: !this.skipFrameWait,
+                    displayClientInstances: !this.skipFrameWait,
                     disableMapDisplayCameraMovement: true,
                 })
             )
