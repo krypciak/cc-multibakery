@@ -334,12 +334,13 @@ export class Client extends InstanceUpdateable {
 
         this.inst.ig.gamepad.destroy?.()
 
-        multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
+        if (this.dummy) multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
 
         const map = multi.server.maps.get(this.mapName)
-        map?.leave(this)
-
-        for (const obj of map?.onLinkChange ?? []) obj.onClientDestroy(this)
+        if (map) {
+            map.leave(this)
+            for (const obj of map.onLinkChange) obj.onClientDestroy(this)
+        }
 
         multi.server.serverInst.inst.apply()
         super.destroy()
