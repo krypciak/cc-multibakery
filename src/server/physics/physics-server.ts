@@ -143,13 +143,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     }
 
     protected joinClient(client: Client): Promise<void> {
-        if (
-            client.settings.remote &&
-            this.settings.useAnimationFrameLoop &&
-            this.netManager!.connections.length == 1 &&
-            this.netManager!.connections[0].clients.length == 0
-        ) {
-            startGameLoop(false)
+        if (this.netManager?.connections.length == 1 && this.netManager!.connections[0].clients.length == 0) {
+            if (client.settings.remote && this.settings.useAnimationFrameLoop) startGameLoop(false)
             this.anyRemoteClientsOn = true
         }
 
@@ -157,13 +152,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     }
 
     leaveClient(client: Client): void {
-        if (
-            client.settings.remote &&
-            this.settings.useAnimationFrameLoop &&
-            this.netManager!.connections.length == 1 &&
-            this.netManager!.connections[0].clients.length == 0
-        ) {
-            startGameLoop(true)
+        if (this.netManager?.connections.length == 1 && this.netManager!.connections[0].clients.length == 0) {
+            if (client.settings.remote && this.settings.useAnimationFrameLoop) startGameLoop(true)
             this.anyRemoteClientsOn = false
         }
 
