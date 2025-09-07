@@ -60,7 +60,7 @@ function send() {
     }
 
     runTasks(
-        Object.values(multi.server.maps).map(map => map.inst),
+        [...multi.server.maps.values()].map(map => map.inst),
         () => {
             clearCollectedState()
         }

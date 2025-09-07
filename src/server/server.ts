@@ -102,11 +102,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         this.preUpdateFor([this.serverInst])
         this.preUpdateFor(this.maps.values())
-        this.preUpdateFor(Object.values(this.clients))
+        this.preUpdateFor(this.clients.values())
 
         this.updateFor([this.serverInst])
         this.updateFor(this.maps.values())
-        this.updateFor(Object.values(this.clients))
+        this.updateFor(this.clients.values())
 
         this.serverInst.inst.apply()
     }
@@ -120,7 +120,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     deferredUpdate() {
         this.deferredUpdateFor([this.serverInst])
         this.deferredUpdateFor(this.maps.values())
-        this.deferredUpdateFor(Object.values(this.clients))
+        this.deferredUpdateFor(this.clients.values())
 
         this.serverInst.inst.apply()
         this.postUpdateCallback?.()
@@ -134,7 +134,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     getActiveAndReadyMaps() {
-        return Object.values(this.maps).filter(map => map.ready && map.isActive())
+        return [...this.maps.values()].filter(map => map.ready && map.isActive())
     }
 
     async loadMap(name: string) {
@@ -180,12 +180,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         client.destroy()
 
         if (this.destroyOnLastClientLeave) {
-            if (Object.keys(this.clients).length == 0) {
+            if (this.clients.size == 0) {
                 if (!this.destroyed) {
                     multi.destroyNextFrameAndStartLoop()
                 }
             } else {
-                this.setMasterClient(Object.values(this.clients)[0])
+                this.setMasterClient(this.clients.values().next()?.value!)
             }
         }
     }
@@ -208,13 +208,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
         this.serverInst.inst.apply()
 
-        for (const client of Object.values(this.clientsById)) {
+        for (const client of this.clients.values()) {
             this.leaveClient(client)
         }
 
         ig.system.stopRunLoop()
 
-        for (const map of Object.values(this.maps)) {
+        for (const map of this.maps.values()) {
             map.destroy()
         }
         this.baseInst.apply()

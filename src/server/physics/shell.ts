@@ -13,7 +13,7 @@ export async function startRepl() {
     server.defineCommand('clients', {
         help: 'Display client names',
         action() {
-            console.log(Object.keys(multi.server.clients))
+            console.log(multi.server.clients)
             server.displayPrompt()
         },
     })

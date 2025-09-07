@@ -262,7 +262,7 @@ export class Client extends InstanceUpdateable {
         })
 
         runTask(map.inst, () => {
-            for (const client of Object.values(multi.server.clients)) {
+            for (const client of multi.server.clients.values()) {
                 if (client instanceof Client) {
                     client.dummy.model.updateStats()
                     sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)

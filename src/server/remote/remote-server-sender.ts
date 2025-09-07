@@ -36,8 +36,7 @@ function send() {
     if (!conn) return
 
     const clientPackets: RemoteServerClientPackets = {}
-    for (const username in multi.server.clients) {
-        const client = multi.server.clients.get(username)!
+    for (const client of multi.server.clients.values()) {
         const inst = client.inst
         assert(inst)
 
@@ -66,7 +65,7 @@ function send() {
         }
 
         if (packet) {
-            clientPackets[username] = cleanRecord(packet)
+            clientPackets[client.username] = cleanRecord(packet)
         }
     }
 
