@@ -1,10 +1,11 @@
-import { copyTickInfo, startGameLoop } from '../game-loop'
+import { startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { Client, ClientSettings } from '../client/client'
-import { removeAddon } from '../dummy/dummy-box-addon'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
+import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
+import { ServerInstance } from './server-instance'
 
 export interface ServerSettings {
     tps: number
@@ -47,15 +48,6 @@ export interface ClientJoinAckData {
     mapName?: string
 }
 
-export interface GameLoopUpdateable {
-    inst: InstanceinatorInstance
-
-    isActive(): boolean
-    isVisible(): boolean
-    update(): void
-    deferredUpdate(): void
-}
-
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     protected abstract remote: boolean
 
@@ -64,7 +56,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     clientsById: Record<number, Client> = {}
 
     baseInst!: InstanceinatorInstance
-    serverInst!: InstanceinatorInstance
+    serverInst: ServerInstance
 
     clients: Record<string, Client> = {}
     private masterUsername?: string
@@ -74,7 +66,9 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     destroyOnLastClientLeave: boolean = false
     postUpdateCallback?: () => void
 
-    protected constructor(public settings: S) {}
+    protected constructor(public settings: S) {
+        this.serverInst = new ServerInstance()
+    }
 
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
@@ -83,73 +77,44 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         instanceinator.displayFps = true
 
         this.baseInst = instanceinator.instances[0]
-        this.serverInst = await instanceinator.copy(this.baseInst, 'server', this.isServerInstVisible())
-        this.serverInst.apply()
-        this.safeguardServerInstance()
-
-        removeAddon(this.serverInst.ig.gamepad, this.serverInst.ig.game)
-        this.serverInst.ig.gamepad = new multi.class.SingleGamepadManager()
+        await this.serverInst.init()
 
         startGameLoop(useAnimationFrame)
 
         multi.class.gamepadAssigner.initialize()
     }
 
-    private updateInstVisibility(inst: InstanceinatorInstance, visible: boolean) {
-        if (inst.display != visible) {
-            inst.display = visible
-            instanceinator.retile()
-        }
-    }
-
-    private applyUpdateable(obj: GameLoopUpdateable): boolean {
-        if (!obj.inst) return false
-
-        this.updateInstVisibility(obj.inst, obj.isVisible())
-        if (!obj.isActive()) return false
-
-        copyTickInfo(this.serverInst, obj.inst)
-        obj.inst.apply()
-
-        return true
-    }
-
-    private isServerInstVisible() {
-        return !!this.settings.displayServerInstance
-    }
-
     update() {
         multi.class.gamepadAssigner.update()
 
-        this.updateInstVisibility(this.serverInst, this.isServerInstVisible())
-        ig.game.update()
+        const updateables: InstanceUpdateable[] = [
+            this.serverInst,
+            ...Object.values(this.maps),
+            ...Object.values(this.clients),
+        ]
+        for (const updateable of updateables) {
+            if (applyUpdateable(updateable, this.serverInst.inst, true)) updateable.preUpdate()
+        }
 
-        for (const name in this.maps) {
-            const map = this.maps[name]
-            if (this.applyUpdateable(map)) map.update()
+        for (const updateable of updateables) {
+            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.update()
         }
-        for (const clientId in this.clients) {
-            const client = this.clients[clientId]
-            if (this.applyUpdateable(client)) client.update()
-        }
-        this.serverInst.apply()
+
+        this.serverInst.inst.apply()
     }
 
     deferredUpdate() {
-        ig.game.deferredUpdate()
+        const updateables: InstanceUpdateable[] = [
+            this.serverInst,
+            ...Object.values(this.maps),
+            ...Object.values(this.clients),
+        ]
 
-        for (const name in this.maps) {
-            const map = this.maps[name]
-            if (this.applyUpdateable(map)) map.deferredUpdate()
+        for (const updateable of updateables) {
+            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.deferredUpdate()
         }
-        for (const clientId in this.clients) {
-            const client = this.clients[clientId]
-            if (this.applyUpdateable(client)) client.deferredUpdate()
-        }
 
-        this.serverInst.apply()
-        ig.input.clearPressed()
-
+        this.serverInst.inst.apply()
         this.postUpdateCallback?.()
     }
 
@@ -168,7 +133,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.maps[name]?.destroy()
         const map = new CCMap(name, this.remote)
         this.maps[name] = map
-        await map.load()
+        await map.init()
         this.mapsById[map.inst.id] = map
     }
 
@@ -201,7 +166,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
-        assert(this.serverInst.id != id && this.baseInst.id != id && !this.mapsById[id])
+        assert(this.serverInst.inst.id != id && this.baseInst.id != id && !this.mapsById[id])
         delete this.clientsById[id]
         delete this.clients[client.username]
         client.destroy()
@@ -215,16 +180,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
                 this.setMasterClient(Object.values(this.clients)[0])
             }
         }
-    }
-
-    private safeguardServerInstance() {
-        Object.defineProperty(this.serverInst.ig.game.entities, 'push', {
-            get() {
-                console.warn('push on server entities!', instanceinator.id)
-                debugger
-                return () => {}
-            },
-        })
     }
 
     setMasterClient(client: Client) {
@@ -242,7 +197,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.destroyed = true
         this.postUpdateCallback = undefined
 
-        this.serverInst.apply()
+        this.serverInst.inst.apply()
 
         for (const client of Object.values(this.clientsById)) {
             this.leaveClient(client)
@@ -255,7 +210,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         }
         this.baseInst.apply()
 
-        instanceinator.delete(this.serverInst)
+        this.serverInst.destroy()
 
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId

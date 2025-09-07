@@ -67,7 +67,7 @@ prestart(() => {
     ig.Game.inject({
         update() {
             this.parent()
-            if (multi.server && instanceinator.id == multi.server.serverInst.id) {
+            if (multi.server && instanceinator.id == multi.server.serverInst.inst.id) {
                 updatePlayerLocations()
                 invalidateOldPlayerLocations()
             }

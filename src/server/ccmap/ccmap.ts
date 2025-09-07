@@ -1,5 +1,3 @@
-import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { GameLoopUpdateable } from '../server'
 import { assert } from '../../misc/assert'
 import { CCMapDisplay } from './display'
 import { setDataFromLevelData } from './data-load'
@@ -8,6 +6,7 @@ import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import { Client } from '../../client/client'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
+import { InstanceUpdateable } from '../instance-updateable'
 
 declare global {
     namespace ig {
@@ -20,12 +19,11 @@ export interface OnLinkChange {
     onClientDestroy(this: this, client: Client): void
 }
 
-export class CCMap implements GameLoopUpdateable {
+export class CCMap extends InstanceUpdateable {
     rawLevelData!: sc.MapModel.Map
 
     clients: Client[] = []
 
-    inst!: InstanceinatorInstance
     display!: CCMapDisplay
 
     ready: boolean = false
@@ -39,6 +37,7 @@ export class CCMap implements GameLoopUpdateable {
         public name: string,
         private remote: boolean
     ) {
+        super()
         this.readyPromise = new Promise<void>(resolve => {
             this.readyResolve = () => {
                 this.ready = true
@@ -47,7 +46,7 @@ export class CCMap implements GameLoopUpdateable {
         })
     }
 
-    async load() {
+    async init() {
         this.display = new CCMapDisplay(this)
 
         const levelDataPromise = this.readLevelData()
@@ -87,23 +86,6 @@ export class CCMap implements GameLoopUpdateable {
         return !!multi.server.settings.displayMaps && (multi.server.settings.displayInactiveMaps || this.isActive())
     }
 
-    update() {
-        try {
-            ig.game.update()
-        } catch (e) {
-            this.attemptRecovery(e)
-        }
-    }
-
-    deferredUpdate() {
-        try {
-            ig.game.deferredUpdate()
-            ig.input.clearPressed()
-        } catch (e) {
-            this.attemptRecovery(e)
-        }
-    }
-
     private async readLevelData() {
         return new Promise<sc.MapModel.Map>(resolve => {
             $.ajax({
@@ -137,7 +119,7 @@ export class CCMap implements GameLoopUpdateable {
             this.leaveEntity(e.gui.crosshair)
         }
 
-        assert(instanceinator.id == multi.server.serverInst.id)
+        assert(instanceinator.id == multi.server.serverInst.inst.id)
         runTask(this.inst, () => {
             e.kill()
         })
@@ -150,14 +132,14 @@ export class CCMap implements GameLoopUpdateable {
     }
 
     destroy() {
+        if (this.destroyed) return
+
         for (const player of this.clients) {
             const client = player.getClient()
             multi.server.leaveClient(client)
         }
-        if (this.inst) {
-            multi.server.serverInst.apply()
-            instanceinator.delete(this.inst)
-        }
+        multi.server.serverInst.inst.apply()
+        super.destroy()
     }
 }
 

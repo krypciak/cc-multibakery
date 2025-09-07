@@ -15,7 +15,7 @@ prestart(() => {
     ig.Game.inject({
         update() {
             this.parent()
-            if (multi.server instanceof RemoteServer && instanceinator.id == multi.server.serverInst.id) {
+            if (multi.server instanceof RemoteServer && instanceinator.id == multi.server.serverInst.inst.id) {
                 send()
             }
         },

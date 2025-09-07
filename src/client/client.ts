@@ -1,4 +1,3 @@
-import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
 import { CCMap } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
@@ -15,11 +14,11 @@ import { isUsernameValid } from '../misc/username-util'
 import { addCombatantParty } from '../misc/combatant-party-api'
 
 import './injects'
-import { GameLoopUpdateable } from '../server/server'
 import { applyStateUpdatePacket } from '../state/states'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
+import { InstanceUpdateable } from '../server/instance-updateable'
 
 declare global {
     namespace ig {
@@ -43,11 +42,7 @@ export type ClientSettings = {
       }
 )
 
-export class Client implements GameLoopUpdateable {
-    inst!: InstanceinatorInstance
-
-    private destroyed: boolean = false
-
+export class Client extends InstanceUpdateable {
     lastPingMs: number = 0
 
     username: string
@@ -65,6 +60,7 @@ export class Client implements GameLoopUpdateable {
     }
 
     private constructor(public settings: ClientSettings) {
+        super()
         assert(isUsernameValid(settings.username))
         this.username = settings.username
     }
@@ -113,7 +109,7 @@ export class Client implements GameLoopUpdateable {
         return inputManager
     }
 
-    private attemptRecovery(e: unknown) {
+    protected attemptRecovery(e: unknown) {
         if (!multi.server.settings.attemptCrashRecovery) throw e
 
         const map = this.getMap()
@@ -130,23 +126,6 @@ export class Client implements GameLoopUpdateable {
             !this.settings.noShowInstance &&
             (!this.settings.remote || multi.server.settings.displayRemoteClientInstances)
         )
-    }
-
-    update() {
-        try {
-            ig.game.update()
-        } catch (e) {
-            this.attemptRecovery(e)
-        }
-    }
-
-    deferredUpdate() {
-        try {
-            ig.game.deferredUpdate()
-            ig.input.clearPressed()
-        } catch (e) {
-            this.attemptRecovery(e)
-        }
     }
 
     updateGamepadForcer() {
@@ -169,7 +148,7 @@ export class Client implements GameLoopUpdateable {
     }
 
     async teleport(mapName: string, marker: Nullable<string> | undefined) {
-        assert(instanceinator.id == multi.server.serverInst.id)
+        assert(instanceinator.id == multi.server.serverInst.inst.id)
         if (this.dummy) {
             multi.storage.savePlayerState(this.dummy.data.username, this.dummy, mapName, marker)
         }
@@ -352,7 +331,7 @@ export class Client implements GameLoopUpdateable {
 
     destroy() {
         if (this.destroyed) return
-        this.destroyed = true
+
         this.inst.ig.gamepad.destroy?.()
 
         multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
@@ -362,8 +341,8 @@ export class Client implements GameLoopUpdateable {
 
         for (const obj of map?.onLinkChange ?? []) obj.onClientDestroy(this)
 
-        multi.server.serverInst.apply()
-        instanceinator.delete(this.inst)
+        multi.server.serverInst.inst.apply()
+        super.destroy()
     }
 }
 

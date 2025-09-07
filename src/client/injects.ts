@@ -43,15 +43,18 @@ prestart(() => {
             // const combatBackup = sc.combat
             const modelBackup = sc.model
             const isControlBlockedBackup = ig.game.isControlBlocked
+            const interactBackup = ig.interact
             ig.camera = client.inst.ig.camera
             // sc.combat = client.inst.sc.combat
             sc.model = client.inst.sc.model
             ig.game.isControlBlocked = () => runTask(client.inst, () => ig.game.isControlBlocked())
+            ig.interact = client.inst.ig.interact
             this.parent()
             ig.camera = cameraBackup
             // sc.combat = combatBackup
             sc.model = modelBackup
             ig.game.isControlBlocked = isControlBlockedBackup
+            ig.interact = interactBackup
         },
     })
 })

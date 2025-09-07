@@ -68,7 +68,7 @@ prestart(() => {
             if (!multi.server) return this.parent()
 
             if (!multi.server.serverInst) return
-            assert(instanceinator.id == multi.server.serverInst.id)
+            assert(instanceinator.id == multi.server.serverInst.inst.id)
 
             try {
                 physicsLoop()
@@ -87,7 +87,7 @@ function draw() {
             ig.game.finalDraw()
         }
     })
-    if (multi.server) assert(instanceinator.id == multi.server?.serverInst.id)
+    if (multi.server) assert(instanceinator.id == multi.server?.serverInst.inst.id)
 }
 
 let previousMusicTime = 0
@@ -133,7 +133,7 @@ prestart(() => {
         run() {
             if (!multi.server) return this.parent()
 
-            assert(instanceinator.id == multi.server.serverInst.id)
+            assert(instanceinator.id == multi.server.serverInst.inst.id)
 
             if (!(ig.system.hasFocusLost() && this.fullyStopped)) {
                 this.fullyStopped = false
@@ -147,7 +147,7 @@ prestart(() => {
                         ig.system.tick = ig.system.actualTick * ig.system.timeFactor
 
                         multi.server.update()
-                        assert(instanceinator.id == multi.server.serverInst.id)
+                        assert(instanceinator.id == multi.server.serverInst.inst.id)
 
                         this.firstUpdateLoop = false
                         nextTick -= ig.system.actualTick

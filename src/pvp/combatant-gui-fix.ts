@@ -62,7 +62,7 @@ prestart(() => {
         createStatusGui() {
             const gui = new ig.GUI.StatusBar(this)
             ig.gui.addGuiElement(gui)
-            
+
             this.statusGuis[instanceinator.id]?.forceRemove()
             this.statusGuis[instanceinator.id] = gui
         },
