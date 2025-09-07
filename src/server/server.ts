@@ -55,7 +55,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     serverInst: ServerInstance
 
     maps: Map<string, CCMap> = new Map()
-    mapsById: Map<number, CCMap> = new Map()
 
     clients: Map<string, Client> = new Map()
     clientsById: Map<number, Client> = new Map()
@@ -142,13 +141,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         const map = new CCMap(name, this.remote)
         this.maps.set(name, map)
         await map.init()
-        this.mapsById.set(map.inst.id, map)
     }
 
     async unloadMap(map: CCMap) {
         assert(map)
         this.maps.delete(map.name)
-        this.mapsById.delete(map.inst.id)
         map.destroy()
     }
 
@@ -174,7 +171,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
-        assert(this.serverInst.inst.id != id && this.baseInst.id != id && !this.mapsById.has(id))
+        assert(this.serverInst.inst.id != id && this.baseInst.id != id)
         this.clientsById.delete(id)
         this.clients.delete(client.username)
         client.destroy()
