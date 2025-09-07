@@ -51,8 +51,6 @@ export interface ClientJoinAckData {
 export abstract class Server<S extends ServerSettings = ServerSettings> {
     protected abstract remote: boolean
 
-    private updateables: InstanceUpdateable[]
-
     maps: Map<string, CCMap> = new Map()
     mapsById: Map<number, CCMap> = new Map()
     clientsById: Record<number, Client> = {}
@@ -70,7 +68,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     protected constructor(public settings: S) {
         this.serverInst = new ServerInstance()
-        this.updateables = [this.serverInst]
     }
 
     async start(useAnimationFrame = false) {
@@ -87,24 +84,42 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         multi.class.gamepadAssigner.initialize()
     }
 
+    private preUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
+        for (const updateable of updateables) {
+            if (applyUpdateable(updateable, this.serverInst.inst, true)) updateable.preUpdate()
+        }
+    }
+
+    private updateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
+        for (const updateable of updateables) {
+            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.update()
+        }
+    }
+
     update() {
         multi.class.gamepadAssigner.update()
 
-        for (const updateable of this.updateables) {
-            if (applyUpdateable(updateable, this.serverInst.inst, true)) updateable.preUpdate()
-        }
+        this.preUpdateFor([this.serverInst])
+        this.preUpdateFor(this.maps.values())
+        this.preUpdateFor(Object.values(this.clients))
 
-        for (const updateable of this.updateables) {
-            if (applyUpdateable(updateable, this.serverInst.inst)) updateable.update()
-        }
+        this.updateFor([this.serverInst])
+        this.updateFor(this.maps.values())
+        this.updateFor(Object.values(this.clients))
 
         this.serverInst.inst.apply()
     }
 
-    deferredUpdate() {
-        for (const updateable of this.updateables) {
+    private deferredUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
+        for (const updateable of updateables) {
             if (applyUpdateable(updateable, this.serverInst.inst)) updateable.deferredUpdate()
         }
+    }
+
+    deferredUpdate() {
+        this.deferredUpdateFor([this.serverInst])
+        this.deferredUpdateFor(this.maps.values())
+        this.deferredUpdateFor(Object.values(this.clients))
 
         this.serverInst.inst.apply()
         this.postUpdateCallback?.()
@@ -125,7 +140,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         this.maps.get(name)?.destroy()
         const map = new CCMap(name, this.remote)
         this.maps.set(name, map)
-        this.updateables.push(map)
         await map.init()
         this.mapsById.set(map.inst.id, map)
     }
@@ -134,7 +148,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         assert(map)
         this.maps.delete(map.name)
         this.mapsById.delete(map.inst.id)
-        this.updateables.erase(map)
         map.destroy()
     }
 
@@ -142,7 +155,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         assert(!this.clients[client.username])
         this.clients[client.username] = client
         this.clientsById[client.inst.id] = client
-        this.updateables.push(client)
     }
 
     async createAndJoinClient(settings: ClientSettings) {
@@ -164,7 +176,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
         assert(this.serverInst.inst.id != id && this.baseInst.id != id && !this.mapsById.has(id))
         delete this.clientsById[id]
         delete this.clients[client.username]
-        this.updateables.erase(client)
         client.destroy()
 
         if (this.destroyOnLastClientLeave) {
