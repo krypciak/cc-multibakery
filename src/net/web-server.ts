@@ -107,23 +107,25 @@ function getIconUrl(connection: RemoteServerConnectionSettings) {
     return `${getServerUrl(connection)}/icon`
 }
 
-async function setHttps(connection: RemoteServerConnectionSettings) {
+async function setHttps(connection: RemoteServerConnectionSettings): Promise<boolean> {
     try {
         connection.https = true
         await fetch(getDetailsUrl(connection))
+        return false
     } catch (e) {
         try {
             connection.https = false
             await fetch(getDetailsUrl(connection))
+            return false
         } catch (e) {
             connection.https = undefined
-            throw e
+            return true
         }
     }
 }
 
 export async function getServerDetailsAndPing(connection: RemoteServerConnectionSettings) {
-    if (connection.https === undefined) await setHttps(connection)
+    if (connection.https === undefined && (await setHttps(connection))) return
 
     const obj = await fetchUrlWithPing(getDetailsUrl(connection))
     if (!obj) return
