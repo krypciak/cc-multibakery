@@ -57,18 +57,6 @@ prestart(() => {
     initInputManager()
 }, 4)
 
-prestart(() => {
-    dummy.DummyPlayer.inject({
-        update() {
-            if (this.inputManager instanceof dummy.input.Puppet.InputManager) {
-                this.inputManager.mainInputData.popInput()
-                this.inputManager.mainGamepadManagerData.popInput()
-            }
-            this.parent()
-        },
-    })
-})
-
 export const disallowedInputActions = ['snapshot', 'savedialog', 'langedit', 'fullscreen'] as const
 
 export function isInputData(data: any): data is InputData {

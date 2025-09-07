@@ -128,6 +128,14 @@ export class Client extends InstanceUpdateable {
         )
     }
 
+    preUpdate() {
+        if (this.inputManager instanceof dummy.input.Puppet.InputManager) {
+            this.inputManager.mainInputData.popInput()
+            this.inputManager.mainGamepadManagerData.popInput()
+        }
+        super.preUpdate()
+    }
+
     updateGamepadForcer() {
         assert(instanceinator.id == this.inst.id)
         if (this.inputManager instanceof dummy.input.Puppet.InputManager) return
