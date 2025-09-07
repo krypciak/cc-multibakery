@@ -31,7 +31,7 @@ function send() {
 
         for (const client of conn.clients) {
             const mapName = client.mapName
-            const map = multi.server.maps[mapName]
+            const map = multi.server.maps.get(mapName)
             if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
 
             packets[mapName] ??= new Map()

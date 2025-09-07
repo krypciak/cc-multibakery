@@ -26,7 +26,7 @@ function updatePlayerLocations() {
 }
 function invalidateOldPlayerLocations() {
     for (const mapName in locations) {
-        const map = multi.server.maps[mapName]
+        const map = multi.server.maps.get(mapName)
         if (!map) continue
 
         const players = Object.fromEntries(

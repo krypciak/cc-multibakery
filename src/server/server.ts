@@ -53,8 +53,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
 
     private updateables: InstanceUpdateable[]
 
-    maps: Record<string, CCMap> = {}
-    mapsById: Record<number, CCMap> = {}
+    maps: Map<string, CCMap> = new Map()
+    mapsById: Map<number, CCMap> = new Map()
     clientsById: Record<number, Client> = {}
 
     baseInst!: InstanceinatorInstance
@@ -122,18 +122,18 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     }
 
     async loadMap(name: string) {
-        this.maps[name]?.destroy()
+        this.maps.get(name)?.destroy()
         const map = new CCMap(name, this.remote)
-        this.maps[name] = map
+        this.maps.set(name, map)
         this.updateables.push(map)
         await map.init()
-        this.mapsById[map.inst.id] = map
+        this.mapsById.set(map.inst.id, map)
     }
 
     async unloadMap(map: CCMap) {
         assert(map)
-        delete this.maps[map.name]
-        delete this.mapsById[map.inst.id]
+        this.maps.delete(map.name)
+        this.mapsById.delete(map.inst.id)
         this.updateables.erase(map)
         map.destroy()
     }
@@ -161,7 +161,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> {
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
-        assert(this.serverInst.inst.id != id && this.baseInst.id != id && !this.mapsById[id])
+        assert(this.serverInst.inst.id != id && this.baseInst.id != id && !this.mapsById.has(id))
         delete this.clientsById[id]
         delete this.clients[client.username]
         this.updateables.erase(client)

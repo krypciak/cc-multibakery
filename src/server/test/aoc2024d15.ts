@@ -325,7 +325,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                 remote: false,
                 mapName: map,
             })
-            this.map = multi.server.maps[map]
+            this.map = multi.server.maps.get(map)!
             assert(this.map)
         },
         update() {

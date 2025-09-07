@@ -110,7 +110,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         for (const mapName in data.mapPackets) {
             const stateUpdatePacket = data.mapPackets[mapName]
 
-            const map = multi.server.maps[mapName]
+            const map = multi.server.maps.get(mapName)
             if (!map?.ready) continue
 
             runTask(map.inst, () => {

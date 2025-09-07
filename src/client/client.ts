@@ -154,7 +154,7 @@ export class Client extends InstanceUpdateable {
         }
 
         this.ready = false
-        const oldMap = multi.server.maps[this.mapName]
+        const oldMap = multi.server.maps.get(this.mapName)
         if (oldMap && this.dummy) oldMap.leave(this)
         if (oldMap) oldMap.forceUpdate++
 
@@ -162,7 +162,7 @@ export class Client extends InstanceUpdateable {
         this.marker = marker
         this.justTeleported = true
 
-        let map = multi.server.maps[this.mapName]
+        let map = multi.server.maps.get(this.mapName)
         if (!map) {
             await multi.server.loadMap(this.mapName)
             map = this.getMap()
@@ -324,7 +324,7 @@ export class Client extends InstanceUpdateable {
     getMap(noAssert: true): CCMap | undefined
     getMap(noAssert?: false): CCMap
     getMap(noAssert?: any): CCMap | undefined {
-        const map = multi.server.maps[this.mapName]
+        const map = multi.server.maps.get(this.mapName)
         if (!noAssert) assert(map)
         return map
     }
@@ -336,7 +336,7 @@ export class Client extends InstanceUpdateable {
 
         multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
 
-        const map = multi.server.maps[this.mapName]
+        const map = multi.server.maps.get(this.mapName)
         map?.leave(this)
 
         for (const obj of map?.onLinkChange ?? []) obj.onClientDestroy(this)
