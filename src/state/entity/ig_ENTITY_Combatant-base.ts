@@ -2,7 +2,7 @@ import { StateMemory } from '../state-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { notifyMapAndPlayerInsts } from '../../server/ccmap/ccmap'
+import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
