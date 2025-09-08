@@ -20,6 +20,7 @@ import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
+import { initMapsAndLevels } from '../server/ccmap/data-load'
 
 declare global {
     namespace ig {
@@ -209,7 +210,6 @@ export class Client extends InstanceUpdateable {
         const cig = this.inst.ig
         const mig = map.inst.ig
 
-        cig.game.size = mig.game.size
         cig.game.mapName = mig.game.mapName
         cig.game.entities = mig.game.entities
         cig.game.entitiesByNetid = mig.game.entitiesByNetid
@@ -218,11 +218,8 @@ export class Client extends InstanceUpdateable {
         cig.game.freeEntityIds = mig.game.freeEntityIds
         cig.game.namedEntities = mig.game.namedEntities
         cig.game.conditionalEntities = mig.game.conditionalEntities
-        cig.game.maps = mig.game.maps
-        cig.game.levels = mig.game.levels
-        cig.game.maxLevel = mig.game.maxLevel
-        cig.game.minLevelZ = mig.game.minLevelZ
-        cig.game.masterLevel = mig.game.masterLevel
+
+        initMapsAndLevels.call(cig.game, map.rawLevelData)
 
         cig.game.physics = mig.game.physics
 

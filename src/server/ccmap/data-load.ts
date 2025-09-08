@@ -2,21 +2,10 @@ import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../loading-stages'
 
 type Layer = keyof typeof ig.MAP
-export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
-    /* mostly stolen from ig.Game#loadLevel */
-
-    ig.game.mapName = mapName
-    ig.game.marker = ''
-    for (const addon of this.addons.teleport) addon.onTeleport(mapName, new ig.TeleportPosition(), undefined)
-
-    // this.currentLoadingResource = 'CREATING MAP:  ' + data.name
-    ig.ready = false
-
-    for (const addon of this.addons.levelLoadStart) addon.onLevelLoadStart(data)
+export function initMapsAndLevels(this: ig.Game, data: sc.MapModel.Map) {
     this.minLevelZ = 1e5
     this.maxLevel = data.levels.length
 
-    ig.vars.onLevelChange(data.name)
     this.levels = {}
     this.levels.first = { maps: [] }
     for (let i = 0; i < data.levels.length; i++) {
@@ -34,15 +23,8 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
     this.levels.object2 = { maps: [] }
     this.levels.object3 = { maps: [] }
     this.masterLevel = data.masterLevel ? data.masterLevel.limit(0, this.maxLevel - 1) : 0
-    let sizeX: number = 0
-    let sizeY: number = 0
-    for (let i = 0; i < data.layer.length; i++) {
-        const layer = data.layer[i],
-            level = layer.level || 0
-        if (!layer.distance || layer.distance == 1) {
-            sizeX = Math.max(sizeX, layer.tilesize * layer.width)
-            sizeY = Math.max(sizeY, layer.tilesize * layer.height)
-        }
+    for (const layer of data.layer) {
+        const level = layer.level || 0
         const LayerConstructor = ig.MAP[layer.type as Layer]
         const layerClass = new LayerConstructor(layer, this.levels[level].height!)
         this.maps.push(layerClass)
@@ -58,8 +40,34 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
             this.levels[level].maps!.push(layerClass1)
         }
     }
+
+    let sizeX: number = 0
+    let sizeY: number = 0
+    for (const layer of data.layer) {
+        if (!layer.distance || layer.distance == 1) {
+            sizeX = Math.max(sizeX, layer.tilesize * layer.width)
+            sizeY = Math.max(sizeY, layer.tilesize * layer.height)
+        }
+    }
+
     this.size.x = sizeX
     this.size.y = sizeY
+}
+
+export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
+    /* mostly stolen from ig.Game#loadLevel */
+
+    ig.game.mapName = mapName
+    ig.game.marker = ''
+    for (const addon of this.addons.teleport) addon.onTeleport(mapName, new ig.TeleportPosition(), undefined)
+
+    // this.currentLoadingResource = 'CREATING MAP:  ' + data.name
+    ig.ready = false
+
+    for (const addon of this.addons.levelLoadStart) addon.onLevelLoadStart(data)
+
+    ig.vars.onLevelChange(data.name)
+    initMapsAndLevels.call(this, data)
     this.physics.mapCleared()
     this.physics.mapLoaded()
 
@@ -94,9 +102,6 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
     this.currentLoadingResource = loader
 
     /* stuff below from ig.Game#loadingComplete() */
-
-    /* uncommenting this causes some ig.ENTITY.ObjectLayerView to not render on rookie-harbor/inner-harbor-pub */
-    // this.preDrawMaps()
 
     let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
     collisionLayer?.prepare()
