@@ -7,6 +7,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { InstanceUpdateable } from '../instance-updateable'
 
 import './injects'
+import { linkVars } from './var-link'
 
 declare global {
     namespace ig {
@@ -53,6 +54,7 @@ export class CCMap extends InstanceUpdateable {
         this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, this.isVisible())
         this.inst.ig.ccmap = this
         forceConditionalLightOnInst(this.inst.id)
+        linkVars(this.inst.ig.vars, multi.server.inst.ig.vars)
 
         const levelData = await levelDataPromise
         this.rawLevelData = levelData
