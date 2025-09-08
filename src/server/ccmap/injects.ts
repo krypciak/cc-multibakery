@@ -190,3 +190,20 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.ENTITY.NPC.inject({
+        postActionUpdate() {
+            if (!multi.server) return
+            const map = ig.ccmap
+            assert(map)
+
+            const backup = sc.model.isCutscene
+            sc.model.isCutscene = function () {
+                return backup.call(this) || map.clients.some(client => client.inst.sc.model.isCutscene())
+            }
+            this.parent()
+            sc.model.isCutscene = backup
+        },
+    })
+})
