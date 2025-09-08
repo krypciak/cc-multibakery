@@ -94,7 +94,9 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
     this.currentLoadingResource = loader
 
     /* stuff below from ig.Game#loadingComplete() */
-    this.preDrawMaps()
+
+    /* uncommenting this causes some ig.ENTITY.ObjectLayerView to not render on rookie-harbor/inner-harbor-pub */
+    // this.preDrawMaps()
 
     let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
     collisionLayer?.prepare()
