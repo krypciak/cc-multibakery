@@ -90,4 +90,10 @@ prestart(() => {
             this.coll.ignoreCollision = false
         },
     })
+    ig.ENTITY.TeleportGround.inject({
+        collideWith(entity, dir) {
+            this.parent(entity, dir)
+            this.coll.ignoreCollision = false
+        },
+    })
 })
