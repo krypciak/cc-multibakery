@@ -1,6 +1,5 @@
-import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
-import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { Client } from './client'
 
@@ -164,33 +163,6 @@ export function updateDummyData(client: Client) {
         inp.block.unblockBoth('PAUSED')
     }
 }
-
-function broadcastCombatArtNameLabel(player: dummy.DummyPlayer, applyCharge: number) {
-    const actionName = player.getChargeAction(player.charging.type, applyCharge) as keyof typeof sc.PLAYER_ACTION
-    if (!actionName) return
-    const combatArtName = player.model.getCombatArtName(sc.PLAYER_ACTION[actionName])
-    assert(ig.ccmap)
-    runTasks(ig.ccmap.getAllInstances(), () => {
-        if (!sc.options.get('combat-art-name')) return
-
-        const box = new sc.SmallEntityBox(player, combatArtName, 1)
-        box.stopRumble()
-        ig.gui.addGuiElement(box)
-    })
-}
-
-prestart(() => {
-    dummy.DummyPlayer.inject({
-        handleStateStart(state, input) {
-            this.parent(state, input)
-            if (!multi.server) return
-
-            if (state.startState == 5) {
-                broadcastCombatArtNameLabel(this, state.applyCharge)
-            }
-        },
-    })
-})
 
 prestart(() => {
     sc.BounceSwitchGroups.inject({

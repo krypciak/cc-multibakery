@@ -2,7 +2,7 @@ import { prestart } from '../loading-stages'
 import { Opts } from '../options'
 import { DummyBoxGuiConfig } from './dummy-box-addon'
 
-export const dummyBoxGuiConfigUsername: DummyBoxGuiConfig = {
+const dummyBoxGuiConfigUsername: DummyBoxGuiConfig = {
     yPriority: 0,
 
     textGetter: player => player.data.username,
@@ -55,10 +55,53 @@ function getText(player: dummy.DummyPlayer): string | undefined {
     if (player.data.inCutscene) return '(Cutscene)'
 }
 
-export const dummyBoxGuiConfigMenu: DummyBoxGuiConfig = {
-    yPriority: 1,
+const dummyBoxGuiConfigMenu: DummyBoxGuiConfig = {
+    yPriority: 2,
     hideSmall: true,
 
     textGetter: player => getText(player)!,
     condition: player => !!getText(player),
 }
+
+declare global {
+    namespace dummy {
+        interface DummyPlayer {
+            combatArtLabelTitle?: string
+        }
+    }
+}
+
+prestart(() => {
+    dummy.DummyPlayer.inject({
+        handleStateStart(state, input) {
+            const backup = sc.options.values['combat-art-name']
+            sc.options.values['combat-art-name'] = false
+            this.parent(state, input)
+            sc.options.values['combat-art-name'] = backup
+
+            if (state.startState == 5) {
+                const actionName = this.getChargeAction(
+                    this.charging.type,
+                    state.applyCharge
+                ) as keyof typeof sc.PLAYER_ACTION
+                if (!actionName) return
+
+                this.combatArtLabelTitle = this.model.getCombatArtName(sc.PLAYER_ACTION[actionName]).value
+            }
+        },
+    })
+})
+
+const dummyBoxGuiConfigCombatArt: DummyBoxGuiConfig = {
+    yPriority: 1,
+    hideSmall: true,
+    time: 1,
+    condition: player => !!player.combatArtLabelTitle,
+    textGetter: player => player.combatArtLabelTitle,
+    onCreate: box => box.stopRumble(),
+    onRemove: player => {
+        player.combatArtLabelTitle = undefined
+    },
+}
+
+export const dummyBoxGuiConfigs = [dummyBoxGuiConfigUsername, dummyBoxGuiConfigMenu, dummyBoxGuiConfigCombatArt]

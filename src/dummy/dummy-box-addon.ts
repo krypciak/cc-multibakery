@@ -29,8 +29,10 @@ export interface DummyBoxGuiConfig {
     hideSmall?: boolean
     time?: number
 
-    textGetter: (player: dummy.DummyPlayer) => string
+    textGetter: (player: dummy.DummyPlayer) => string | undefined
     condition: (player: dummy.DummyPlayer) => boolean
+    onCreate?: (box: dummy.BoxGuiAddon.SmallEntityBox) => void
+    onRemove?: (player: dummy.DummyPlayer) => void
 }
 
 declare global {
@@ -71,17 +73,20 @@ prestart(() => {
     dummy.BoxGuiAddon ??= {} as any
     dummy.BoxGuiAddon.SmallEntityBox = sc.SmallEntityBox.extend({
         init(player, config, onRemove) {
-            this.parent(player, config.textGetter(player), config.time ?? 1e100, sc.SMALL_BOX_ALIGN.TOP)
+            this.parent(player, config.textGetter(player) ?? '', config.time ?? 1e100, sc.SMALL_BOX_ALIGN.TOP)
             this.config = config
             this.onRemove = onRemove
 
             this.hideSmall = !!config.hideSmall
+
+            config.onCreate?.(this)
 
             ig.gui.addGuiElement(this)
         },
         remove() {
             this.parent()
             this.onRemove?.()
+            this.config.onRemove?.(this.entity)
         },
         update() {
             this.parent()
