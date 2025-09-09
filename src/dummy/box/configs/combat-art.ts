@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { addDummyBoxGuiConfig, disableAddGuiElement } from '../configs'
+import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
 
 declare global {
     namespace dummy {
@@ -12,17 +12,8 @@ declare global {
 prestart(() => {
     dummy.DummyPlayer.inject({
         handleStateStart(state, input) {
-            disableAddGuiElement(() => this.parent(state, input))
-
-            if (state.startState == 5) {
-                const actionName = this.getChargeAction(
-                    this.charging.type,
-                    state.applyCharge
-                ) as keyof typeof sc.PLAYER_ACTION
-                if (!actionName) return
-
-                this.combatArtLabelTitle = this.model.getCombatArtName(sc.PLAYER_ACTION[actionName]).value
-            }
+            const { text } = disableSmallEntityBoxAdding(() => this.parent(state, input))
+            if (text) this.combatArtLabelTitle = text
         },
     })
 })

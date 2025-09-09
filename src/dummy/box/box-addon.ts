@@ -1,6 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { getDummyBoxGuiConfigs } from './configs'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 export function removeAddon(addon: ig.GameAddon, game: ig.Game) {
     for (const key in game.addons) {
@@ -85,9 +86,12 @@ prestart(() => {
             ig.gui.addGuiElement(this)
         },
         remove() {
-            this.parent()
-            this.onRemove?.()
-            this.config.onRemove?.(this.entity)
+            if (this.finished) return
+            runTask(instanceinator.instances[this._instanceId], () => {
+                this.parent()
+                this.onRemove?.()
+                this.config.onRemove?.(this.entity)
+            })
         },
         update() {
             this.parent()

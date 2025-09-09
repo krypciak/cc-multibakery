@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { addDummyBoxGuiConfig, disableAddGuiElement } from '../configs'
+import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
 
 declare global {
     namespace dummy {
@@ -12,8 +12,8 @@ declare global {
 prestart(() => {
     dummy.PlayerModel.inject({
         enterElementalOverload() {
-            disableAddGuiElement(() => this.parent())
-            this.elementalOverloadLabelTitle = ig.lang.get('sc.gui.combat.element-overload')
+            const { text } = disableSmallEntityBoxAdding(() => this.parent())
+            this.elementalOverloadLabelTitle = text
         },
     })
 })
