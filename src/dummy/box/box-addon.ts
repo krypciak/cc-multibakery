@@ -1,5 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
+import { getDummyBoxGuiConfigs } from './configs'
 
 export function removeAddon(addon: ig.GameAddon, game: ig.Game) {
     for (const key in game.addons) {
@@ -62,7 +63,7 @@ declare global {
                 reorderBoxes(this: this): void
             }
             interface BoxGuiAddonConstructor extends ImpactClass<BoxGuiAddon> {
-                new (game: ig.Game, configs: DummyBoxGuiConfig[]): BoxGuiAddon
+                new (game: ig.Game): BoxGuiAddon
             }
             var BoxGuiAddon: BoxGuiAddonConstructor
         }
@@ -109,11 +110,11 @@ prestart(() => {
     })
 
     dummy.BoxGuiAddon.BoxGuiAddon = ig.GameAddon.extend({
-        init(game, configs) {
+        init(game) {
             this.parent('dummy.BoxGuiAddon.BoxGuiAddon')
 
             this.guis = new Map()
-            this.configs = configs
+            this.configs = getDummyBoxGuiConfigs()
 
             addAddon(this, game)
         },

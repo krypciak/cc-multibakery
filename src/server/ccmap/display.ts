@@ -3,7 +3,6 @@ import { prestart } from '../../loading-stages'
 import { CCMap, OnLinkChange } from './ccmap'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Client } from '../../client/client'
-import { dummyBoxGuiConfigs } from '../../dummy/box/configs'
 
 export class CCMapDisplay implements OnLinkChange {
     camera!: ig.Camera.TargetHandle
@@ -53,7 +52,7 @@ export class CCMapDisplay implements OnLinkChange {
     }
 
     addDummyUsernameBoxes() {
-        new dummy.BoxGuiAddon.BoxGuiAddon(ig.game, dummyBoxGuiConfigs)
+        new dummy.BoxGuiAddon.BoxGuiAddon(ig.game)
     }
 
     private setEntityCameraHandle(e: ig.Entity) {
