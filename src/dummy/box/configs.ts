@@ -1,6 +1,6 @@
-import { prestart } from '../loading-stages'
-import { Opts } from '../options'
-import { DummyBoxGuiConfig } from './dummy-box-addon'
+import { prestart } from '../../loading-stages'
+import { Opts } from '../../options'
+import { DummyBoxGuiConfig } from './box-addon'
 
 const usernameConfig: DummyBoxGuiConfig = {
     yPriority: 0,

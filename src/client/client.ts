@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { CCMap } from '../server/ccmap/ccmap'
-import { addAddon, removeAddon } from '../dummy/dummy-box-addon'
+import { addAddon, removeAddon } from '../dummy/box/box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
 import { runTask } from 'cc-instanceinator/src/inst-util'
@@ -21,7 +21,7 @@ import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
-import { dummyBoxGuiConfigs } from '../dummy/dummy-box-configs'
+import { dummyBoxGuiConfigs } from '../dummy/box/configs'
 
 declare global {
     namespace ig {

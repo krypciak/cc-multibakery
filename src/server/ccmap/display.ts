@@ -3,7 +3,7 @@ import { prestart } from '../../loading-stages'
 import { CCMap, OnLinkChange } from './ccmap'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Client } from '../../client/client'
-import { dummyBoxGuiConfigs } from '../../dummy/dummy-box-configs'
+import { dummyBoxGuiConfigs } from '../../dummy/box/configs'
 
 export class CCMapDisplay implements OnLinkChange {
     camera!: ig.Camera.TargetHandle

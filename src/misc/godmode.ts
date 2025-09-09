@@ -27,6 +27,7 @@ prestart(() => {
             model.core[k] = true
         }
 
+        // model.setSpLevel(1)
         model.setSpLevel(4)
         sc.newgame.setActive(true)
         if (!sc.newgame.get('infinite-sp')) sc.newgame.toggle('infinite-sp')

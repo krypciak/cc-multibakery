@@ -5,7 +5,7 @@ import { Client, ClientSettings } from '../client/client'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
-import { removeAddon } from '../dummy/dummy-box-addon'
+import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 
 export interface ServerSettings {

@@ -1,5 +1,5 @@
-import { assert } from '../misc/assert'
-import { prestart } from '../loading-stages'
+import { assert } from '../../misc/assert'
+import { prestart } from '../../loading-stages'
 
 export function removeAddon(addon: ig.GameAddon, game: ig.Game) {
     for (const key in game.addons) {
