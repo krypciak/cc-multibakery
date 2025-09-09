@@ -21,6 +21,7 @@ import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
+import { dummyBoxGuiConfigMenu, dummyBoxGuiConfigUsername } from '../dummy/dummy-box-configs'
 
 declare global {
     namespace ig {
@@ -80,8 +81,7 @@ export class Client extends InstanceUpdateable {
 
         this.inputManager = this.initInputManager()
 
-        new dummy.BoxGuiAddon.Username(this.inst.ig.game)
-        new dummy.BoxGuiAddon.Menu(this.inst.ig.game)
+        new dummy.BoxGuiAddon.BoxGuiAddon(this.inst.ig.game, [dummyBoxGuiConfigUsername, dummyBoxGuiConfigMenu])
 
         if (multi.server instanceof RemoteServer) {
             createClientPingLabel(this)

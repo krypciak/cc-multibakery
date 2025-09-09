@@ -24,101 +24,153 @@ export function addAddon(addon: ig.GameAddon, game: ig.Game) {
     if (addon.onWindowFocusChanged) game.addons.windowFocusChanged.push(addon as any)
 }
 
+export interface DummyBoxGuiConfig {
+    yPriority: number
+    hideSmall?: boolean
+    time?: number
+
+    textGetter: (player: dummy.DummyPlayer) => string
+    condition: (player: dummy.DummyPlayer) => boolean
+}
+
 declare global {
     namespace dummy {
         namespace BoxGuiAddon {
-            interface BoxGuiAddon extends ig.GameAddon {
-                guiRefs: Map<dummy.DummyPlayer, sc.SmallEntityBox>
-                textGetter: (player: dummy.DummyPlayer) => string
-                condition: (player: dummy.DummyPlayer) => boolean
-                boxTime?: number
-                boxAlign?: sc.SmallBoxAlign
-                boxOffY?: number
-                boxHideSmall?: boolean
+            interface SmallEntityBox extends sc.SmallEntityBox {
+                entity: dummy.DummyPlayer
+                config: DummyBoxGuiConfig
+                onRemove?: () => void
 
-                removeAll(this: this): void
-                removeFor(this: this, player: dummy.DummyPlayer, skipTransition?: boolean): void
-                addFor(this: this, player: dummy.DummyPlayer, skipTransition?: boolean): void
+                isBoxVisible(this: this): boolean
+                updateOffsetY(this: this, y: number): void
+            }
+            interface SmallEntityBoxConstructor extends ImpactClass<SmallEntityBox> {
+                new (player: dummy.DummyPlayer, config: DummyBoxGuiConfig, onRemove: () => void): SmallEntityBox
+            }
+            var SmallEntityBox: SmallEntityBoxConstructor
+
+            interface BoxGuiAddon extends ig.GameAddon {
+                guis: Map<dummy.DummyPlayer, Map<DummyBoxGuiConfig, SmallEntityBox>>
+                configs: DummyBoxGuiConfig[]
+
+                rearrangeBoxes(this: this, player: dummy.DummyPlayer): void
+                removeFor(this: this, player: dummy.DummyPlayer, config: DummyBoxGuiConfig): void
+                addFor(this: this, player: dummy.DummyPlayer, config: DummyBoxGuiConfig): void
                 updateText(this: this, player: dummy.DummyPlayer, newText: string): void
+                reorderBoxes(this: this): void
             }
             interface BoxGuiAddonConstructor extends ImpactClass<BoxGuiAddon> {
-                new (
-                    name: string,
-                    game: ig.Game,
-                    textGetter: (player: dummy.DummyPlayer) => string,
-                    condition?: (player: dummy.DummyPlayer) => boolean,
-                    time?: number,
-                    align?: sc.SmallBoxAlign,
-                    offY?: number,
-                    small?: boolean
-                ): BoxGuiAddon
+                new (game: ig.Game, configs: DummyBoxGuiConfig[]): BoxGuiAddon
             }
             var BoxGuiAddon: BoxGuiAddonConstructor
         }
     }
 }
+
 prestart(() => {
     dummy.BoxGuiAddon ??= {} as any
-    dummy.BoxGuiAddon.BoxGuiAddon = ig.GameAddon.extend({
-        init(name, game, textGetter, condition = () => true, time, align, offY, small) {
-            this.parent(name)
-            this.guiRefs = new Map()
+    dummy.BoxGuiAddon.SmallEntityBox = sc.SmallEntityBox.extend({
+        init(player, config, onRemove) {
+            this.parent(player, config.textGetter(player), config.time ?? 1e100, sc.SMALL_BOX_ALIGN.TOP)
+            this.config = config
+            this.onRemove = onRemove
 
-            this.textGetter = textGetter
-            this.condition = condition
-            this.boxTime = time
-            this.boxAlign = align
-            this.boxOffY = offY
-            this.boxHideSmall = small
+            this.hideSmall = !!config.hideSmall
+
+            ig.gui.addGuiElement(this)
+        },
+        remove() {
+            this.parent()
+            this.onRemove?.()
+        },
+        update() {
+            this.parent()
+
+            if (!this.isBoxVisible()) return
+
+            const newText = this.config.textGetter(this.entity)
+            if (newText && this.textGui.text?.toString() != newText) {
+                this.textGui.setText(newText)
+                this.setSize(this.textGui.hook.size.x + 16, 11)
+                this.setPivot(this.hook.size.x / 2, this.hook.size.y / 2)
+            }
+        },
+        isBoxVisible() {
+            return this.hook.currentStateName == 'DEFAULT'
+        },
+        updateOffsetY(y) {
+            this.offY = y
+        },
+    })
+
+    dummy.BoxGuiAddon.BoxGuiAddon = ig.GameAddon.extend({
+        init(game, configs) {
+            this.parent('dummy.BoxGuiAddon.BoxGuiAddon')
+
+            this.guis = new Map()
+            this.configs = configs
 
             addAddon(this, game)
         },
-        removeAll() {
-            for (const player of this.guiRefs.keys()) this.removeFor(player)
+        rearrangeBoxes(player) {
+            const configMap = this.guis.get(player)
+            assert(configMap)
+            let y = 0
+            for (const gui of [...configMap.values()].sort((a, b) => a.config.yPriority - b.config.yPriority)) {
+                if (!gui.isBoxVisible()) continue
+                gui.updateOffsetY(y)
+                y += 11
+            }
         },
-        removeFor(player, skipTransition = false) {
-            const gui = this.guiRefs.get(player)
+        removeFor(player, config) {
+            const configMap = this.guis.get(player)!
+            const gui = configMap.get(config)
             if (!gui) return
+            configMap.delete(config)
+            gui.onRemove = undefined
+            gui.remove()
+            this.rearrangeBoxes(player)
+        },
+        addFor(player, config) {
+            const configMap = this.guis.get(player)!
 
-            this.guiRefs.delete(player)
-            gui.doStateTransition(gui.hideSmall ? 'HIDDEN_SMALL' : 'HIDDEN', skipTransition, true)
-        },
-        addFor(player, skipTransition = false) {
-            assert(!this.guiRefs.has(player))
-            const gui = new sc.SmallEntityBox(
-                player,
-                this.textGetter(player),
-                this.boxTime ?? 1e100,
-                this.boxAlign,
-                this.boxOffY
-            )
-            gui.hideSmall = !!this.boxHideSmall
-            gui.doStateTransition('DEFAULT', skipTransition)
+            assert(!configMap.has(config))
+            const gui = new dummy.BoxGuiAddon.SmallEntityBox(player, config, () => {
+                this.removeFor(player, config)
+            })
 
-            this.guiRefs.set(player, gui)
-            ig.gui.addGuiElement(gui)
+            configMap.set(config, gui)
+            this.rearrangeBoxes(player)
         },
-        updateText(player, newText) {
-            const gui = this.guiRefs.get(player)
-            assert(gui)
-            if (gui.textGui && gui.textGui.text?.toString() != newText) {
-                gui.textGui.setText(newText)
-                gui.setSize(gui.textGui.hook.size.x + 16, 11)
-            }
-        },
-        onPostUpdate() {
+        onPreUpdate() {
             const playersPresent: Set<dummy.DummyPlayer> = new Set()
-            for (const player of ig.game.getEntitiesByType(dummy.DummyPlayer)) {
-                const gui = this.guiRefs.get(player)
-                if (gui && gui.entity != player) continue
-                playersPresent.add(player)
 
-                if (!gui && this.condition(player)) this.addFor(player)
+            for (const player of ig.game.getEntitiesByType(dummy.DummyPlayer)) {
+                let configMap = this.guis.get(player)
+                if (!configMap) {
+                    configMap = new Map()
+                    this.guis.set(player, configMap)
+                }
+
+                for (const config of this.configs) {
+                    const gui = configMap.get(config)
+                    if (gui && gui.entity != player) continue
+                    playersPresent.add(player)
+
+                    if (!gui && config.condition(player)) this.addFor(player, config)
+                }
             }
-            for (const player of this.guiRefs.keys()) {
-                if (!playersPresent.has(player) || !this.condition(player)) {
-                    this.removeFor(player)
-                } else this.updateText(player, this.textGetter(player))
+
+            for (const player of this.guis.keys()) {
+                if (!playersPresent.has(player)) {
+                    for (const config of this.configs) this.removeFor(player, config)
+                } else {
+                    for (const config of this.configs) {
+                        if (!config.condition(player)) {
+                            this.removeFor(player, config)
+                        }
+                    }
+                }
             }
         },
     })
