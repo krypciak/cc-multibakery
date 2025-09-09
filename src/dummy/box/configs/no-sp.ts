@@ -10,6 +10,8 @@ declare global {
 }
 
 prestart(() => {
+    if (!PHYSICS) return
+
     dummy.DummyPlayer.inject({
         startCharge(actionKey) {
             const { ret, text } = disableSmallEntityBoxAdding(() => this.parent(actionKey))

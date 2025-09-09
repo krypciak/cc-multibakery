@@ -33,7 +33,7 @@ export interface DummyBoxGuiConfig {
 
     textGetter: (player: dummy.DummyPlayer) => string | undefined
     condition: (player: dummy.DummyPlayer) => boolean
-    onCreate?: (box: dummy.BoxGuiAddon.SmallEntityBox) => void
+    onCreate?: (box: dummy.BoxGuiAddon.SmallEntityBox, player: dummy.DummyPlayer) => void
     onRemove?: (player: dummy.DummyPlayer) => void
 }
 
@@ -81,7 +81,7 @@ prestart(() => {
 
             this.hideSmall = !!config.hideSmall
 
-            config.onCreate?.(this)
+            config.onCreate?.(this, player)
 
             ig.gui.addGuiElement(this)
         },

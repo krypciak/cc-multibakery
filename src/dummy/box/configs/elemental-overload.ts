@@ -10,6 +10,8 @@ declare global {
 }
 
 prestart(() => {
+    if (!PHYSICS) return
+
     dummy.PlayerModel.inject({
         enterElementalOverload() {
             const { text } = disableSmallEntityBoxAdding(() => this.parent())
