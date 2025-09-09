@@ -28,6 +28,7 @@ declare global {
             inputManager: dummy.InputManager
             data: dummy.DummyPlayer.Data
             itemConsumer: dummy.ItemConsumption
+            model: dummy.PlayerModel
 
             getHeadIdx(this: this): number
             getClient(this: this, noAssert: true): Client | undefined

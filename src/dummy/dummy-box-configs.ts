@@ -2,7 +2,7 @@ import { prestart } from '../loading-stages'
 import { Opts } from '../options'
 import { DummyBoxGuiConfig } from './dummy-box-addon'
 
-const dummyBoxGuiConfigUsername: DummyBoxGuiConfig = {
+const usernameConfig: DummyBoxGuiConfig = {
     yPriority: 0,
 
     textGetter: player => player.data.username,
@@ -55,12 +55,19 @@ function getText(player: dummy.DummyPlayer): string | undefined {
     if (player.data.inCutscene) return '(Cutscene)'
 }
 
-const dummyBoxGuiConfigMenu: DummyBoxGuiConfig = {
-    yPriority: 2,
+const menuConfig: DummyBoxGuiConfig = {
+    yPriority: 10,
     hideSmall: true,
 
     textGetter: player => getText(player)!,
     condition: player => !!getText(player),
+}
+
+function disableAddGuiElement(func: () => void) {
+    const backup = ig.gui.addGuiElement
+    ig.gui.addGuiElement = () => {}
+    func()
+    ig.gui.addGuiElement = backup
 }
 
 declare global {
@@ -74,10 +81,7 @@ declare global {
 prestart(() => {
     dummy.DummyPlayer.inject({
         handleStateStart(state, input) {
-            const backup = sc.options.values['combat-art-name']
-            sc.options.values['combat-art-name'] = false
-            this.parent(state, input)
-            sc.options.values['combat-art-name'] = backup
+            disableAddGuiElement(() => this.parent(state, input))
 
             if (state.startState == 5) {
                 const actionName = this.getChargeAction(
@@ -92,7 +96,7 @@ prestart(() => {
     })
 })
 
-const dummyBoxGuiConfigCombatArt: DummyBoxGuiConfig = {
+const combatArtConfig: DummyBoxGuiConfig = {
     yPriority: 1,
     hideSmall: true,
     time: 1,
@@ -104,4 +108,32 @@ const dummyBoxGuiConfigCombatArt: DummyBoxGuiConfig = {
     },
 }
 
-export const dummyBoxGuiConfigs = [dummyBoxGuiConfigUsername, dummyBoxGuiConfigMenu, dummyBoxGuiConfigCombatArt]
+declare global {
+    namespace dummy {
+        interface PlayerModel {
+            elementalOverloadLabelTitle?: string
+        }
+    }
+}
+
+prestart(() => {
+    dummy.PlayerModel.inject({
+        enterElementalOverload() {
+            disableAddGuiElement(() => this.parent())
+            this.elementalOverloadLabelTitle = ig.lang.get('sc.gui.combat.element-overload')
+        },
+    })
+})
+
+const elementalOverloadConfig: DummyBoxGuiConfig = {
+    yPriority: 2,
+    hideSmall: true,
+    time: 1,
+    condition: player => !!player.model.elementalOverloadLabelTitle,
+    textGetter: player => player.model.elementalOverloadLabelTitle,
+    onRemove: player => {
+        player.model.elementalOverloadLabelTitle = undefined
+    },
+}
+
+export const dummyBoxGuiConfigs = [usernameConfig, menuConfig, combatArtConfig, elementalOverloadConfig]
