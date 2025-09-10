@@ -175,3 +175,11 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.CrossCode.inject({
+        onGameLoopStart() {
+            if (!multi.server) return this.parent()
+        },
+    })
+})
