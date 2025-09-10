@@ -84,6 +84,14 @@ prestart(() => {
             })
         }
 
+        /* unlock all landmarks */
+        for (const areaName in sc.map.areas) {
+            const area = sc.map.areas[areaName]
+            for (const landmarkName in area.landmarks) {
+                ;((sc.map.activeLandmarks[areaName] ??= {})[landmarkName] ??= { active: true }).active = true
+            }
+        }
+
         /* add money */
         model.addCredit(1e7)
     }
