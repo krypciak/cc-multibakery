@@ -7,7 +7,7 @@ declare global {
         interface DummyPlayer {
             combatantLabelInfo?: {
                 text: string
-                time: number
+                time?: number
             }
         }
     }
@@ -25,7 +25,7 @@ prestart(() => {
             if (text && box) {
                 entity.combatantLabelInfo = {
                     text,
-                    time: box.timer,
+                    time: box.timer == 1 ? undefined : box.timer,
                 }
             }
         },
@@ -39,7 +39,9 @@ addDummyBoxGuiConfig({
     condition: player => !!player.combatantLabelInfo,
     textGetter: player => player.combatantLabelInfo!.text,
     onCreate: (box, player) => {
-        box.timer = player.combatantLabelInfo!.time
+        if (player.combatantLabelInfo!.time !== undefined) {
+            box.timer = player.combatantLabelInfo!.time
+        }
     },
     onRemove: player => {
         player.combatantLabelInfo = undefined

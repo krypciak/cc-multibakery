@@ -24,6 +24,12 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         inCutscene: memory.diff(this.data.inCutscene),
         currentMenu: memory.diff(this.data.currentMenu),
         currentSubState: memory.diff(this.data.currentSubState),
+
+        combatArtLabelText: memory.diff(this.combatArtLabelText),
+        combatantLabelText: memory.diff(this.combatantLabelInfo?.text),
+        combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time),
+        showElementalOverloadLabel: memory.diff(this.model.showElementalOverloadLabel),
+        showNoSpLabel: memory.diff(this.showNoSpLabel),
     }
 }
 
@@ -48,6 +54,17 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
     if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
     if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
+
+    if (state.combatArtLabelText !== undefined) this.combatArtLabelText = state.combatArtLabelText
+    if (state.combatantLabelText !== undefined) {
+        this.combatantLabelInfo = {
+            text: state.combatantLabelText,
+            time: state.combatantLabelTimer,
+        }
+    }
+    if (state.showElementalOverloadLabel !== undefined)
+        this.model.showElementalOverloadLabel = state.showElementalOverloadLabel
+    if (state.showNoSpLabel !== undefined) this.showNoSpLabel = state.showNoSpLabel
 }
 
 const typeId: EntityTypeId = 'du'
