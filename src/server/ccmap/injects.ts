@@ -2,6 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
+import { PhysicsServer } from '../physics/physics-server'
 
 prestart(() => {
     const backup = ig.CollTools.isInScreen
@@ -88,15 +89,6 @@ prestart(() => {
                 ig.EffectTools.clearEffects(this)
                 this.resetStunData()
             }
-        },
-    })
-
-    sc.ItemDropEntity.inject({
-        onKill() {
-            if (!ig.ccmap) return this.parent()
-            assert(!ig.game.playerEntity)
-            assert(this.target instanceof dummy.DummyPlayer)
-            inputBackup(this.target.inputManager, () => this.parent())
         },
     })
 })
@@ -204,6 +196,54 @@ prestart(() => {
             }
             this.parent()
             sc.model.isCutscene = backup
+        },
+    })
+})
+
+prestart(() => {
+    sc.ItemDropEntity.inject({
+        onKill() {
+            if (!ig.ccmap) return this.parent()
+            assert(!ig.game.playerEntity)
+            assert(this.target instanceof dummy.DummyPlayer)
+            inputBackup(this.target.inputManager, () => this.parent())
+        },
+    })
+})
+
+declare global {
+    namespace ig.ENTITY {
+        interface ItemDestruct {
+            destroyedBy?: ig.ENTITY.Combatant
+        }
+    }
+}
+
+prestart(() => {
+    if (!PHYSICS) return
+
+    ig.ENTITY.ItemDestruct.inject({
+        ballHit(ballLike, blockDir) {
+            if (!(multi.server instanceof PhysicsServer)) return this.parent!(ballLike, blockDir)
+
+            this.destroyedBy = ballLike.getCombatantRoot()
+            const ret = this.parent!(ballLike, blockDir)
+            this.destroyedBy = undefined
+            return ret
+        },
+        dropItem() {
+            if (!(multi.server instanceof PhysicsServer)) return this.parent()
+
+            assert(ig.ccmap)
+            assert(this.destroyedBy)
+            let player: dummy.DummyPlayer
+            if (this.destroyedBy instanceof dummy.DummyPlayer) {
+                player = this.destroyedBy
+            } else {
+                console.warn('ig.ENTITY.ItemDestruct not destroyed by player, picking first player on map')
+                player = ig.ccmap.clients[0].dummy
+            }
+            inputBackup(player.inputManager, () => this.parent())
         },
     })
 })
