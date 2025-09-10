@@ -4,7 +4,7 @@ import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
 declare global {
     namespace dummy {
         interface PlayerModel {
-            elementalOverloadLabelTitle?: string
+            showElementalOverloadLabel?: boolean
         }
     }
 }
@@ -14,8 +14,8 @@ prestart(() => {
 
     dummy.PlayerModel.inject({
         enterElementalOverload() {
-            const { text } = disableSmallEntityBoxAdding(() => this.parent())
-            this.elementalOverloadLabelTitle = text
+            disableSmallEntityBoxAdding(() => this.parent())
+            this.showElementalOverloadLabel = true
         },
     })
 })
@@ -24,9 +24,9 @@ addDummyBoxGuiConfig({
     yPriority: 2,
     hideSmall: true,
     time: 1,
-    condition: player => !!player.model.elementalOverloadLabelTitle,
-    textGetter: player => player.model.elementalOverloadLabelTitle,
+    condition: player => !!player.model.showElementalOverloadLabel,
+    textGetter: _ => ig.lang.get('sc.gui.combat.element-overload'),
     onRemove: player => {
-        player.model.elementalOverloadLabelTitle = undefined
+        player.model.showElementalOverloadLabel = undefined
     },
 })
