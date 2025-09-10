@@ -85,7 +85,11 @@ export class CCMap extends InstanceUpdateable {
     }
 
     isVisible() {
-        return !!multi.server.settings.displayMaps && (multi.server.settings.displayInactiveMaps || this.isActive())
+        return (
+            !!multi.server.settings.displayMaps &&
+            this.ready &&
+            (multi.server.settings.displayInactiveMaps || this.isActive())
+        )
     }
 
     private async readLevelData() {
