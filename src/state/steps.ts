@@ -11,18 +11,25 @@ interface StepObj {
     data?: Record<string, unknown>
 }
 
-interface StepGroup {
+interface StepGroupBase {
     steps: StepObj[]
     type: ig.EventRunType
+}
+
+interface StepGroupDeserialized extends StepGroupBase {
     callEntity?: ig.Entity
 }
 
-interface StepArray {
-    map?: StepGroup[]
-    clients?: Record<string, StepGroup[]>
+interface StepGroupSerialized extends StepGroupBase {
+    callEntity?: string
 }
 
-type StepsFiredMap = Map<ig.EventCall, StepGroup>
+interface StepArray {
+    map?: StepGroupSerialized[]
+    clients?: Record<string, StepGroupSerialized[]>
+}
+
+type StepsFiredMap = Map<ig.EventCall, StepGroupDeserialized>
 declare global {
     interface StateUpdatePacket {
         steps?: StepArray
@@ -32,7 +39,7 @@ declare global {
     }
 }
 
-function serializeStepGroup(group: StepGroup): StepGroup {
+function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
     if (group.callEntity) {
         assert(group.callEntity.netid)
         group.callEntity = group.callEntity.netid as any
@@ -56,15 +63,15 @@ function serializeStepGroup(group: StepGroup): StepGroup {
             }
         }
     }
-    return group
+    return group as StepGroupSerialized
 }
 
-function deserializeStepGroup(group: StepGroup): StepGroup {
+function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized {
     if (group.callEntity) {
         const netid = group.callEntity as unknown as string
         const entity = ig.game.entitiesByNetid[netid]
         assert(entity)
-        group.callEntity = entity
+        group.callEntity = entity as any
     }
 
     for (const step of group.steps) {
@@ -81,10 +88,10 @@ function deserializeStepGroup(group: StepGroup): StepGroup {
             }
         }
     }
-    return group
+    return group as StepGroupDeserialized
 }
 
-function runSteps(steps: StepGroup[], inst: InstanceinatorInstance) {
+function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
     const stepGroups = steps.map(deserializeStepGroup)
     runTask(inst, () => {
         for (const { steps, type, callEntity } of stepGroups) {

@@ -4,7 +4,7 @@ type Return = ReturnType<typeof getState>
 export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
     return {
         pos: memory.diffVec3(this.coll.pos),
-        currentAnim: memory.diff(this.currentAnim),
+        currentAnim: memory.diff(this.currentAnim as string),
         currentAnimTimer: memory.onlyOnce(this.animState.timer),
         resetAnimTimer: undefinedIfFalsy(this.animState.timer - ig.system.tick == 0),
 

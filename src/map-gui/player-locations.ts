@@ -2,7 +2,7 @@ export type PlayerLocation = Vec3
 
 export type PlayerLocationRecord = Record<
     /* map name */ string,
-    Record</* username */ string, Nullable<PlayerLocation>>
+    Record</* username */ string, Nullable<PlayerLocation> | undefined>
 >
 
 let locations: PlayerLocationRecord = {}

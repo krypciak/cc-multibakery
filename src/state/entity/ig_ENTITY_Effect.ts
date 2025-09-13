@@ -241,7 +241,7 @@ prestart(() => {
     ig.ENTITY.Effect.inject({
         stop() {
             this.parent()
-            if (!shouldCollectStateData()) return
+            if (!shouldCollectStateData() || !this.netid) return
             ig.stopEffects ??= []
             ig.stopEffects.push(this.netid)
         },

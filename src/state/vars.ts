@@ -4,7 +4,7 @@ import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 
-type VarObj = Record<string, ig.VarValue>
+type VarObj = Record<string, unknown>
 
 declare global {
     interface StateUpdatePacket {
