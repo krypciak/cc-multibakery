@@ -3,10 +3,14 @@ import { prestart } from '../../loading-stages'
 import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
+import { u2 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
         interface BounceBlock extends StateMemory.MapHolder<StateKey> {}
+    }
+    interface EntityStates {
+        'ig.ENTITY.BounceBlock': Return
     }
 }
 
@@ -15,13 +19,13 @@ function getState(this: ig.ENTITY.BounceBlock, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        blockState: memory.diff(this.blockState),
+        blockState: memory.diff(this.blockState as u2),
     }
 }
 
 function setState(this: ig.ENTITY.BounceBlock, state: Return) {
     if (state.blockState !== undefined) {
-        this.blockState = state.blockState
+        this.blockState = state.blockState as 0 | 1 | 2
         if (ig.settingStateImmediately) {
             if (this.blockState) {
                 this.onGroupResolve(true)

@@ -10,6 +10,9 @@ declare global {
     namespace sc {
         interface ItemDropEntity extends StateMemory.MapHolder<StateKey> {}
     }
+    interface EntityStates {
+        'sc.ItemDropEntity': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

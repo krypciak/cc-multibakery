@@ -92,7 +92,7 @@ prestart(() => {
                     strength,
                     shieldResult,
                     isCrit,
-                    appenix,
+                    appenix: appenix ? appenix : undefined,
                 })
             }
 

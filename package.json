@@ -3,13 +3,13 @@
     "version": "0.0.1",
     "type": "module",
     "scripts": {
-        "start": "bun build.ts build",
-        "watch": "bun build.ts watch",
-        "build": "bun build.ts build minifySyntax=true minifyWhitespace=true",
-        "buildRemote": "bun build.ts build minifySyntax=true minifyWhitespace=true physics=false extraTreeShaking=true",
-        "buildRemoteBrowser": "bun build.ts build minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
-        "buildPhysics": "bun build.ts build minifySyntax=true minifyWhitespace=true remote=false extraTreeShaking=true",
-        "buildPhysicsNetless": "bun build.ts build minifySyntax=true minifyWhitespace=true remote=false physicsnet=false extraTreeShaking=true",
+        "start": "bun build/build.ts build",
+        "watch": "bun build/build.ts watch",
+        "build": "bun build/build.ts build minifySyntax=true minifyWhitespace=true",
+        "buildRemote": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false extraTreeShaking=true",
+        "buildRemoteBrowser": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
+        "buildPhysics": "bun build/build.ts build minifySyntax=true minifyWhitespace=true remote=false extraTreeShaking=true",
+        "buildPhysicsNetless": "bun build/build.ts build minifySyntax=true minifyWhitespace=true remote=false physicsnet=false extraTreeShaking=true",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 200 --bracket-same-line",
         "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"
@@ -34,14 +34,11 @@
         "socket.io": "^4.8.1",
         "socket.io-client": "^4.8.1",
         "spdy": "^4.0.2",
+        "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^5.9.2",
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
     },
     "pnpm": {
-        "onlyBuiltDependencies": [
-            "bun",
-            "esbuild",
-            "node"
-        ]
+        "onlyBuiltDependencies": ["bun", "esbuild", "node"]
     }
 }

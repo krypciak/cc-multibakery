@@ -5,6 +5,7 @@ import { CCMap } from '../ccmap/ccmap'
 import { PhysicsServer } from './physics-server'
 import { NetConnection } from '../../net/connection'
 import { cleanRecord } from '../../state/state-util'
+import { PhysicsStatePacketEncoderDecoder } from '../../net/binary/physics-state-packet-encoder-decoder.generated'
 
 export function sendPhysicsServerPacket() {
     assert(multi.server instanceof PhysicsServer)
@@ -43,7 +44,8 @@ export function sendPhysicsServerPacket() {
         }
 
         const data = getRemoteServerUpdatePacket(connPackets, conn)
-        conn.send('update', data)
+        const bin = PhysicsStatePacketEncoderDecoder.encode(data)
+        conn.send('update', bin)
     }
 
     runTasks(
@@ -85,3 +87,5 @@ function getRemoteServerUpdatePacket(
     }
     return data
 }
+
+export type GenerateType = PhysicsServerUpdatePacket

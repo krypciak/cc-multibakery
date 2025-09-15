@@ -8,6 +8,9 @@ declare global {
     namespace ig.ENTITY {
         interface BounceSwitch extends StateMemory.MapHolder<StateKey> {}
     }
+    interface EntityStates {
+        'ig.ENTITY.BounceSwitch': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

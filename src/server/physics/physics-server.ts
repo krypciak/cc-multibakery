@@ -74,13 +74,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         multi.storage.load()
 
         if (!window.crossnode?.options.test) {
-            this.setMasterClient(
-                await this.createAndJoinClient({
-                    username: `lea_${1}`,
-                    inputType: 'clone',
-                    remote: false,
-                })
-            )
+            // this.setMasterClient(
+            //     await this.createAndJoinClient({
+            //         username: `lea_${1}`,
+            //         inputType: 'clone',
+            //         remote: false,
+            //     })
+            // )
             // await this.createAndJoinClient({
             //     username: `lea_${2}`,
             //     inputType: 'clone',

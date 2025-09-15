@@ -4,6 +4,7 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
+import { u10, u3, u7, u8, u9 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
@@ -11,16 +12,16 @@ declare global {
     }
 }
 
-function getSkills(this: ig.ENTITY.Player): number[] {
+function getSkills(this: ig.ENTITY.Player): boolean[] {
     const skillCount = this.model.skills.length
     const skills = new Array(skillCount)
     for (let i = 0; i < skillCount; i++) {
-        skills[i] = this.model.skills[i] ? 1 : 0
+        skills[i] = this.model.skills[i] ? true : false
     }
     return skills
 }
 
-function setSkills(this: ig.ENTITY.Player, skills: Record<number, number>) {
+function setSkills(this: ig.ENTITY.Player, skills: Record<number, boolean>) {
     for (const idStr in skills) {
         const id = parseInt(idStr)
         this.model.skills[id] = skills[id] ? sc.skilltree.skills[id] : null
@@ -37,19 +38,19 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        head: memory.diff(this.model.equip.head),
-        leftArm: memory.diff(this.model.equip.leftArm),
-        rightArm: memory.diff(this.model.equip.rightArm),
-        torso: memory.diff(this.model.equip.torso),
-        feet: memory.diff(this.model.equip.feet),
+        head: memory.diff(this.model.equip.head as u10),
+        leftArm: memory.diff(this.model.equip.leftArm as u10),
+        rightArm: memory.diff(this.model.equip.rightArm as u10),
+        torso: memory.diff(this.model.equip.torso as u10),
+        feet: memory.diff(this.model.equip.feet as u10),
 
-        level: memory.diff(this.model.level),
-        items: !player || this == player.dummy ? memory.diffRecord(this.model.items) : undefined,
-        skillPoints: !player || this == player.dummy ? memory.diffRecord(this.model.skillPoints) : undefined,
+        level: memory.diff(this.model.level as u7),
+        items: !player || this == player.dummy ? memory.diffRecord(this.model.items as (u10 | null)[]) : undefined,
+        skillPoints: !player || this == player.dummy ? memory.diffRecord(this.model.skillPoints as u8[]) : undefined,
         skills: !player || this == player.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
 
-        charge: memory.diff(chargeLevel),
-        element: memory.diff(this.model.currentElementMode),
+        charge: memory.diff(chargeLevel as u3),
+        element: memory.diff(this.model.currentElementMode as u3),
     }
 }
 

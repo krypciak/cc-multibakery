@@ -5,12 +5,16 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as igEntityPlayer from './ig_ENTITY_Player-base'
+import { f32, u32 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace dummy {
         interface DummyPlayer {
             createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
         }
+    }
+    interface EntityStates {
+        'dummy.DummyPlayer': Return
     }
 }
 
@@ -22,12 +26,12 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
 
         isControlBlocked: memory.diff(this.data.isControlBlocked),
         inCutscene: memory.diff(this.data.inCutscene),
-        currentMenu: memory.diff(this.data.currentMenu),
+        currentMenu: memory.diff(this.data.currentMenu as u32),
         currentSubState: memory.diff(this.data.currentSubState),
 
         combatArtLabelText: memory.diff(this.combatArtLabelText),
         combatantLabelText: memory.diff(this.combatantLabelInfo?.text),
-        combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time),
+        combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time as f32),
         showElementalOverloadLabel: memory.diff(this.model.showElementalOverloadLabel),
         showNoSpLabel: memory.diff(this.showNoSpLabel),
     }

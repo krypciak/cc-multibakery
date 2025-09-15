@@ -2,6 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
+import { u16 } from 'ts-binarifier/src/type-aliases'
 
 interface HitConfig {
     entity: string
@@ -11,7 +12,7 @@ interface HitConfig {
     shielded: boolean
     critical: boolean
     ignoreSounds: boolean
-    spriteFilter?: number[]
+    spriteFilter?: u16[]
 }
 
 declare global {

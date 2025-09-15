@@ -9,6 +9,7 @@ import { Opts } from '../../options'
 import { TemporarySet } from '../../misc/temporary-set'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { sendRemoteServerPacket } from './remote-server-sender'
+import { PhysicsStatePacketEncoderDecoder } from '../../net/binary/physics-state-packet-encoder-decoder.generated'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -98,7 +99,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     onNetReceive(conn: NetConnection, data: unknown) {
         try {
-            this.processPacket(conn, data as PhysicsServerUpdatePacket)
+            const buf = data as Uint8Array
+            const packet = PhysicsStatePacketEncoderDecoder.decode(buf)
+            this.processPacket(conn, packet)
         } catch (e) {
             console.error(`Error applying packet!`, e)
         }

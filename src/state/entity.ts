@@ -29,9 +29,13 @@ import './entity/ig_ENTITY_BounceBlock'
 import './entity/ig_ENTITY_BounceSwitch'
 import './entity/ig_ENTITY_Destructible'
 
+type EntityStateUnion = EntityStates[keyof EntityStates]
+
 declare global {
+    interface EntityStates {}
+
     interface StateUpdatePacket {
-        states?: Record<string, object>
+        states?: Record<string, EntityStateUnion> & { entityStateRecordUnion?: never }
     }
 }
 

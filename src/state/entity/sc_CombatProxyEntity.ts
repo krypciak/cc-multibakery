@@ -12,6 +12,9 @@ declare global {
     namespace sc {
         interface CombatProxyEntity extends StateMemory.MapHolder<StateKey> {}
     }
+    interface EntityStates {
+        'sc.CombatProxyEntity': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

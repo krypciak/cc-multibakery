@@ -3,10 +3,14 @@ import { prestart } from '../../loading-stages'
 import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
+import { i5 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
         interface OLPlatform extends StateMemory.MapHolder<StateKey> {}
+    }
+    interface EntityStates {
+        'ig.ENTITY.OLPlatform': Return
     }
 }
 
@@ -15,7 +19,7 @@ function getState(this: ig.ENTITY.OLPlatform, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        currentState: memory.diff(this.states.indexOf(this.currentState)),
+        currentState: memory.diff(this.states.indexOf(this.currentState) as i5),
     }
 }
 function setState(this: ig.ENTITY.OLPlatform, state: Return) {

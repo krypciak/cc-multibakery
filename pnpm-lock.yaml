@@ -65,12 +65,15 @@ importers:
       spdy:
         specifier: ^4.0.2
         version: 4.0.2
+      ts-binarifier:
+        specifier: github:krypciak/ts-binarifier
+        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e176dbb627565d64c624fd025421eeef8246c98c(typescript@5.9.2)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
       ultimate-crosscode-typedefs:
         specifier: github:krypciak/ultimate-crosscode-typedefs
-        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/32220f631d7982c0b1849928821fa314e4f2e1c9
+        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/ea108ebdda04e3f7c1bccc4009ef29eef38563ec
 
 packages:
 
@@ -938,6 +941,12 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e176dbb627565d64c624fd025421eeef8246c98c:
+    resolution: {tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e176dbb627565d64c624fd025421eeef8246c98c}
+    version: 0.0.0
+    peerDependencies:
+      typescript: ^5
+
   tsx@4.20.3:
     resolution: {integrity: sha512-qjbnuR9Tr+FJOMBqJCW5ehvIo/buZq7vH7qD7JziU98h6l3qGy0a/yPFjwO+y0/T7GFpNgNAvEcPPVfyT8rrPQ==}
     engines: {node: '>=18.0.0'}
@@ -948,8 +957,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/32220f631d7982c0b1849928821fa314e4f2e1c9:
-    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/32220f631d7982c0b1849928821fa314e4f2e1c9}
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/ea108ebdda04e3f7c1bccc4009ef29eef38563ec:
+    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/ea108ebdda04e3f7c1bccc4009ef29eef38563ec}
     version: 0.0.1
     engines: {node: '>=10.0.0'}
 
@@ -1862,6 +1871,10 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e176dbb627565d64c624fd025421eeef8246c98c(typescript@5.9.2):
+    dependencies:
+      typescript: 5.9.2
+
   tsx@4.20.3:
     dependencies:
       esbuild: 0.25.9
@@ -1871,7 +1884,7 @@ snapshots:
 
   typescript@5.9.2: {}
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/32220f631d7982c0b1849928821fa314e4f2e1c9:
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/ea108ebdda04e3f7c1bccc4009ef29eef38563ec:
     dependencies:
       '@types/jquery': 1.10.45
       '@types/node': 24.3.0

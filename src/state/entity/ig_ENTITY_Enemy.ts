@@ -10,6 +10,9 @@ declare global {
     namespace ig.ENTITY {
         interface Enemy extends StateMemory.MapHolder<StateKey> {}
     }
+    interface EntityStates {
+        'ig.ENTITY.Enemy': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

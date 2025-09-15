@@ -7,6 +7,7 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
 import { TemporarySet } from '../../misc/temporary-set'
+import { f64, i5, u16 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
@@ -14,6 +15,10 @@ declare global {
     }
     namespace ig {
         var ignoreEffectNetid: boolean | undefined
+    }
+
+    interface EntityStates {
+        'ig.ENTITY.Effect': Return
     }
 }
 
@@ -32,13 +37,13 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
         target2Align: memory.onlyOnce(undefinedIfFalsy(this.target2.align)),
         target2Offset: memory.onlyOnce(undefinedIfVec3Zero(this.target2.offset)),
         noMultiGroup: memory.onlyOnce(undefinedIfFalsy(this.noMultiGroup)),
-        spriteFilter: memory.onlyOnce(undefinedIfFalsy(this.spriteFilter)),
+        spriteFilter: memory.onlyOnce(undefinedIfFalsy(this.spriteFilter as u16[])),
         offset: memory.onlyOnce(undefinedIfVec3Zero(this.offset)),
         rotOffset: memory.onlyOnce(undefinedIfFalsy(this.rotOffset)),
         align: memory.onlyOnce(undefinedIfFalsy(this.align)),
-        angle: memory.onlyOnce(undefinedIfFalsy(this.angle)),
+        angle: memory.onlyOnce(undefinedIfFalsy(this.angle as f64)),
         flipX: memory.onlyOnce(undefinedIfFalsy(this.flipX)),
-        rotateFace: memory.onlyOnce(undefinedIfFalsy(this.rotateFace)),
+        rotateFace: memory.onlyOnce(undefinedIfFalsy(this.rotateFace as i5)),
         flipLeftFace: memory.onlyOnce(undefinedIfFalsy(this.flipLeftFace)),
         duration: memory.onlyOnce(this.duration == this.effect?.loopEndTime ? undefined : this.duration),
         group: memory.onlyOnce(undefinedIfFalsy(this.attachGroup)),

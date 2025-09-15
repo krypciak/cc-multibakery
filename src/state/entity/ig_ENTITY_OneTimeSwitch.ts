@@ -9,6 +9,9 @@ declare global {
     namespace ig.ENTITY {
         interface OneTimeSwitch extends StateMemory.MapHolder<StateKey> {}
     }
+    interface EntityStates {
+        'ig.ENTITY.OneTimeSwitch': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

@@ -19,6 +19,9 @@ declare global {
             justThrown?: boolean
         }
     }
+    interface EntityStates {
+        'ig.ENTITY.Crosshair': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

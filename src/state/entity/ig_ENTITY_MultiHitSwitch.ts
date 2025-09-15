@@ -4,10 +4,14 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
+import { u4 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
         interface MultiHitSwitch extends StateMemory.MapHolder<StateKey> {}
+    }
+    interface EntityStates {
+        'ig.ENTITY.MultiHitSwitch': Return
     }
 }
 
@@ -16,7 +20,7 @@ function getState(this: ig.ENTITY.MultiHitSwitch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        currentHits: memory.diff(this.currentHits),
+        currentHits: memory.diff(this.currentHits as u4),
     }
 }
 function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {

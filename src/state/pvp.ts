@@ -3,6 +3,7 @@ import { addStateHandler, StateKey } from './states'
 import { cleanRecord, StateMemory } from './state-util'
 import { PvpTeam } from '../pvp/pvp'
 import { assert } from '../misc/assert'
+import { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
 
 export interface PvpTeamSerialized {
     name: string
@@ -12,11 +13,11 @@ export interface PvpTeamSerialized {
 
 interface PvpObj {
     on?: boolean
-    winPoints?: number
+    winPoints?: u6
     teams?: PvpTeamSerialized[]
-    round?: number
-    state?: number
-    points?: PartialRecord<sc.COMBATANT_PARTY, number>
+    round?: u8
+    state?: u3
+    points?: PartialRecord<sc.COMBATANT_PARTY, u6>
 }
 
 declare global {

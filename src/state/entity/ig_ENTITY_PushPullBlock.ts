@@ -9,6 +9,9 @@ declare global {
     namespace ig.ENTITY {
         interface PushPullBlock extends StateMemory.MapHolder<StateKey> {}
     }
+    interface EntityStates {
+        'ig.ENTITY.PushPullBlock': Return
+    }
 }
 
 type Return = ReturnType<typeof getState>

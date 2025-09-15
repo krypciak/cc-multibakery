@@ -1,5 +1,7 @@
 import * as esbuild from 'esbuild'
 import * as fs from 'fs'
+import * as path from 'path'
+import { isMissingFiles, generateBinaryTypes } from './generate-binary-encode-decode-scripts'
 
 interface Options {
     sourcemap?: boolean
@@ -14,7 +16,10 @@ interface Options {
     target?: string
     dropAssert?: boolean
     noWrite?: boolean
+    forceRegenerateBinaryEncodeDecodeScripts?: boolean
 }
+
+const projectRoot = new URL('..', import.meta.url).pathname
 
 async function run(
     type: 'build' | 'watch',
@@ -31,11 +36,12 @@ async function run(
         target = 'es2018',
         dropAssert = false,
         noWrite = false,
+        forceRegenerateBinaryEncodeDecodeScripts = false,
     }: Options
 ) {
     if (!physics) physicsnet = false
 
-    const outputFile = 'plugin.js'
+    const outputFile = `${projectRoot}/plugin.js`
 
     const commonOptions = {
         target,
@@ -49,9 +55,19 @@ async function run(
         treeShaking: true,
     } as const satisfies Partial<esbuild.BuildOptions>
 
+    if (await isMissingFiles()) {
+        await generateBinaryTypes()
+    }
+
     const plugin: esbuild.Plugin = {
         name: 'print',
         setup(build) {
+            build.onStart(async () => {
+                if (forceRegenerateBinaryEncodeDecodeScripts) {
+                    await generateBinaryTypes()
+                }
+            })
+
             build.onEnd(async res => {
                 let output = res.outputFiles?.[0]?.text
                 if (!output) return
@@ -73,13 +89,13 @@ async function run(
                 }
 
                 if (res.metafile) {
-                    await fs.promises.writeFile('metafile.json', JSON.stringify(res.metafile))
+                    await fs.promises.writeFile(`${projectRoot}/metafile.json`, JSON.stringify(res.metafile))
                 }
 
                 if (!noWrite) {
                     const bytes = output.length
                     const kb = bytes / 1024
-                    console.log(outputFile, kb.toFixed(1) + 'kb')
+                    console.log(path.relative(projectRoot, outputFile), kb.toFixed(1) + 'kb')
                 }
             })
 
@@ -123,7 +139,7 @@ async function run(
     }
 
     const ctx = await esbuild.context({
-        entryPoints: ['./src/plugin.ts'],
+        entryPoints: [`${projectRoot}/src/plugin.ts`],
         bundle: true,
         write: false,
         ...commonOptions,
