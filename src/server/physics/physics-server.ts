@@ -12,12 +12,13 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
 import { ClientLeaveData } from '../remote/remote-server'
 import { startGameLoop } from '../../game-loop'
+import { sendPhysicsServerPacket } from './physics-server-sender'
+import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 
 import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
-import { sendPhysicsServerPacket } from './physics-server-sender'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -168,12 +169,21 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     }
 
     onNetReceiveUpdate(conn: NetConnection, data: unknown) {
-        if (!isRemoteServerUpdatePacket(data)) {
+        let packet: RemoteServerUpdatePacket
+        try {
+            const buf = data as Uint8Array
+            packet = RemoteUpdatePacketEncoderDecoder.decode(buf)
+
+            if (!isRemoteServerUpdatePacket(packet)) {
+                throw new Error('invalid json packet')
+            }
+        } catch (e) {
+            console.log(e)
             console.warn('invalid update packet received from', conn.clients, ', contents: ', data, ', closing')
             conn.close()
             return
         }
-        this.processUpdatePacket(conn, data)
+        this.processUpdatePacket(conn, packet)
     }
 
     private processUpdatePacket(conn: NetConnection, data: RemoteServerUpdatePacket) {

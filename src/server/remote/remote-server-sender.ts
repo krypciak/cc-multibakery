@@ -6,7 +6,7 @@ import {
     isInputData,
 } from '../../dummy/dummy-input-puppet'
 import { assert } from '../../misc/assert'
-import { prestart } from '../../loading-stages'
+import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { RemoteServer } from './remote-server'
 
@@ -64,7 +64,10 @@ export function sendRemoteServerPacket() {
     multi.server.notifyReadyMaps = undefined
 
     const cleanPacket = cleanRecord(packet)
-    if (cleanPacket) conn.send('update', cleanPacket)
+    if (cleanPacket) {
+        const buf = RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
+        conn.send('update', buf)
+    }
 }
 
 export interface RemoteServerUpdatePacket {
@@ -115,3 +118,5 @@ function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientP
 
     return true
 }
+
+export type GenerateType = RemoteServerUpdatePacket

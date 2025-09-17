@@ -3,7 +3,7 @@ import { cleanRecord, StateMemory } from '../state/state-util'
 import { InputManagerBlock } from './dummy-input-clone'
 import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'
 
-export type InputData = ReturnType<typeof getInput>
+export type InputData = ReturnType<typeof getInputWhenNotUsingGamepad>
 
 export type GamepadManagerData = ReturnType<typeof getGamepadInput>
 
@@ -82,16 +82,7 @@ declare global {
     }
 }
 
-function getInputActual(this: ig.Input, isUsingGamepad: boolean) {
-    const memory = (this.memory = StateMemory.get(this.memory))
-
-    if (isUsingGamepad) {
-        return {
-            currentDevice: memory.diff(ig.INPUT_DEVICES.GAMEPAD),
-            presses: memory.diff(this.presses['pause'] ? ({ pause: true } as ig.Input['presses']) : undefined),
-        }
-    }
-
+function getInputWhenNotUsingGamepad(this: ig.Input, memory: StateMemory) {
     return {
         currentDevice: memory.diff(this.currentDevice),
         presses: memory.diffRecord(this.presses),
@@ -109,8 +100,19 @@ function getInputActual(this: ig.Input, isUsingGamepad: boolean) {
     }
 }
 
-function getInput(this: ig.Input, isUsingGamepad: boolean) {
-    return cleanRecord(getInputActual.call(this, isUsingGamepad))
+function getInputActual(this: ig.Input, isUsingGamepad: boolean) {
+    const memory = (this.memory = StateMemory.get(this.memory))
+
+    if (isUsingGamepad) {
+        return {
+            currentDevice: memory.diff(ig.INPUT_DEVICES.GAMEPAD),
+            presses: memory.diff(this.presses['pause'] ? ({ pause: true } as ig.Input['presses']) : undefined),
+        }
+    } else return getInputWhenNotUsingGamepad.call(this, memory)
+}
+
+function getInput(this: ig.Input, isUsingGamepad: boolean): InputData {
+    return cleanRecord(getInputActual.call(this, isUsingGamepad)) as InputData
 }
 prestart(() => {
     ig.Input.inject({ getInput })
@@ -121,7 +123,7 @@ declare global {
         interface Input extends ig.Input {
             inputQueue: InputData[]
 
-            setInput(this: this, input: InputData): void
+            setInput(this: this, input: InputData | undefined): void
             pushInput(this: this, input: InputData): void
             popInput(this: this): void
         }

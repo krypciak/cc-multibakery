@@ -1,21 +1,31 @@
-import { Config, generateEncodeDecodeScripts } from 'ts-binarifier/src/index'
+import { Config, generateEncodeDecodeScripts, SingleConfig } from 'ts-binarifier/src/index'
 import { createEntityStateRecordUnionNode } from './entity-state-record-union-node'
 import fs from 'fs'
 
 const projectRoot = new URL('..', import.meta.url).pathname
 
+const configBase = {
+    projectRoot,
+    typeType: 'type',
+    typeName: 'GenerateType',
+    printNode: true,
+    baseImportPath: 'ts-binarifier',
+} satisfies Partial<SingleConfig>
+
 const config: Config = {
     configs: [
         {
-            projectRoot,
+            ...configBase,
             path: 'src/server/physics/physics-server-sender.ts',
-            typeType: 'type',
-            typeName: 'GenerateType',
-            outPath: projectRoot + '/src/net/binary/physics-state-packet-encoder-decoder.generated.ts',
-            outClassName: 'PhysicsStatePacketEncoderDecoder',
-            printNode: true,
+            outPath: projectRoot + '/src/net/binary/physics-update-packet-encoder-decoder.generated.ts',
+            outClassName: 'PhysicsUpdatePacketEncoderDecoder',
             parserOptions: { customNodes: { entityStateRecordUnion: createEntityStateRecordUnionNode } },
-            baseImportPath: 'ts-binarifier',
+        },
+        {
+            ...configBase,
+            path: 'src/server/remote/remote-server-sender.ts',
+            outPath: projectRoot + '/src/net/binary/remote-update-packet-encoder-decoder.generated.ts',
+            outClassName: 'RemoteUpdatePacketEncoderDecoder',
         },
     ],
 }
