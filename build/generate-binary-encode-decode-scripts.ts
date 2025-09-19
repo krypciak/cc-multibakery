@@ -10,6 +10,7 @@ const configBase = {
     typeName: 'GenerateType',
     printNode: true,
     baseImportPath: 'ts-binarifier',
+    insertTsIgnore: true
 } satisfies Partial<SingleConfig>
 
 const config: Config = {
