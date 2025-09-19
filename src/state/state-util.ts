@@ -174,7 +174,7 @@ export class StateMemory {
         }
     }
 
-    static applyChangeRecord<T extends object>(into: T, change: T | undefined) {
+    static applyChangeRecord<T extends object>(into: NoInfer<T>, change: T | undefined) {
         if (!change) return
 
         Object.assign(into, change)

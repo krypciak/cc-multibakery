@@ -4,7 +4,7 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
-import { u10, u3, u7, u8, u9 } from 'ts-binarifier/src/type-aliases'
+import { u10, u3, u7, u8 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
@@ -33,6 +33,9 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
     memory ??= StateMemory.getBy(this, player)
+    const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (u10 | null)[]) : undefined
+    const itemsDiff =
+        !player || this == player.dummy ? memory.diffRecord(this.model.items as Record<u10, u10 | null>) : undefined
     return {
         ...igEntityCombatant.getState.call(this, memory),
 
@@ -45,7 +48,8 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
         feet: memory.diff(this.model.equip.feet as u10),
 
         level: memory.diff(this.model.level as u7),
-        items: !player || this == player.dummy ? memory.diffRecord(this.model.items as (u10 | null)[]) : undefined,
+        items,
+        itemsDiff: items ? undefined : itemsDiff,
         skillPoints: !player || this == player.dummy ? memory.diffRecord(this.model.skillPoints as u8[]) : undefined,
         skills: !player || this == player.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
 
@@ -108,7 +112,9 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         sc.inventory.updateScaledEquipment(state.level)
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
-    if (state.items) StateMemory.applyChangeRecord(this.model.items, state.items)
+    if (state.items) this.model.items = state.items
+    if (state.itemsDiff) StateMemory.applyChangeRecord(this.model.items, state.itemsDiff)
+
     if (state.skillPoints) StateMemory.applyChangeRecord(this.model.skillPoints, state.skillPoints)
     if (state.skills) {
         setSkills.call(this, state.skills)

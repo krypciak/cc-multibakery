@@ -56,7 +56,7 @@ async function run(
     } as const satisfies Partial<esbuild.BuildOptions>
 
     if (await isMissingFiles()) {
-        await generateBinaryTypes()
+        await generateBinaryTypes(!dropAssert)
     }
 
     const plugin: esbuild.Plugin = {
@@ -64,7 +64,7 @@ async function run(
         setup(build) {
             build.onStart(async () => {
                 if (forceRegenerateBinaryEncodeDecodeScripts) {
-                    await generateBinaryTypes()
+                    await generateBinaryTypes(!dropAssert)
                 }
             })
 

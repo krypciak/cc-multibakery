@@ -5,9 +5,11 @@ import { getRecordKeyType, getRecordValueType, TypeParser } from 'ts-binarifier/
 import { NumberNode } from 'ts-binarifier/src/nodes/number'
 import { findVariableDeclaration } from 'ts-binarifier/src/type-extractor'
 import { assert } from 'ts-binarifier/src/assert'
+import { StringNode } from 'ts-binarifier/src/nodes/string'
 
 class EntityStateRecordUnionNode extends Node {
     private unionIdNode: NumberNode
+    private netidNode = new StringNode(false, 63)
 
     constructor(
         optional: boolean | undefined,
@@ -41,84 +43,87 @@ class EntityStateRecordUnionNode extends Node {
         )
     }
 
-    genEncode(varName: string, indent: number = 0): string {
-        const netidVar = `k${indent}`
-        const valueVar = `v${indent}`
-        const idVar = `id${indent}`
+    genEncode(data: GenEncodeData): string {
+        const netidVar = `k${data.varCounter.v++}`
+        const valueVar = `v${data.varCounter.v++}`
+        const idVar = `id${data.varCounter.v++}`
+
         return this.genEncodeWrapOptional(
-            varName,
-            indent =>
-                `encoder.u16(Object.keys(${varName}).length)\n` +
-                Node.indent(indent) +
-                `for (const [${netidVar}, ${valueVar}] of Object.entries(${varName}) as unknown as [keyof typeof ${varName}, any][]) {\n` +
-                Node.indent(indent + 1) +
-                `encoder.string(${netidVar})\n` +
-                Node.indent(indent + 1) +
+            data,
+            data =>
+                `encoder.u16(Object.keys(${data.varName}).length)\n` +
+                Node.indent(data.indent) +
+                `for (const [${netidVar}, ${valueVar}] of Object.entries(${data.varName}) as unknown as [keyof typeof ${data.varName}, any][]) {\n` +
+                Node.indent(data.indent + 1) +
+                this.netidNode.genEncode({ ...data, varName: netidVar }) +
+                '\n' +
+                Node.indent(data.indent + 1) +
                 `const ${idVar} = ` +
                 `[${this.stringIds.map(id => `'${id}'`).join(', ')}]` +
                 `.indexOf(${netidVar}.substring(0, 2))` +
                 '\n' +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
                 `switch (${idVar}) { \n` +
                 this.values
                     .map(
                         (t, i) =>
-                            Node.indent(indent + 2) +
+                            Node.indent(data.indent + 2) +
                             `case ${i}: {\n` +
-                            Node.indent(indent + 3) +
-                            t.genEncode(valueVar, indent + 3) +
+                            Node.indent(data.indent + 3) +
+                            t.genEncode({ ...data, varName: valueVar, indent: data.indent + 3 }) +
                             '\n' +
-                            Node.indent(indent + 3) +
+                            Node.indent(data.indent + 3) +
                             `break\n` +
-                            Node.indent(indent + 2) +
+                            Node.indent(data.indent + 2) +
                             `}\n`
                     )
                     .join('') +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
                 `}\n` +
-                Node.indent(indent) +
-                `}`,
-            indent
+                Node.indent(data.indent) +
+                `}`
         )
     }
 
-    genDecode(indent: number = 0): string {
-        const netidVar = `netid${indent}`
-        const valueVar = `v${indent}`
-        const idVar = `id${indent}`
+    genDecode(data: GenDecodeData): string {
+        const netidVar = `netid${data.varCounter.v++}`
+        const valueVar = `v${data.varCounter.v++}`
+        const idVar = `id${data.varCounter.v++}`
         return this.genDecodeWrapOptional(
             `Object.fromEntries(new Array(decoder.u16()).fill(null).map(_ => {\n` +
-                Node.indent(indent + 1) +
-                `const ${netidVar} = decoder.string()\n` +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
+                `const ${netidVar} = ` +
+                this.netidNode.genDecode(data) +
+                '\n' +
+                Node.indent(data.indent + 1) +
                 `const ${idVar} = ` +
                 `[${this.stringIds.map(id => `'${id}'`).join(', ')}]` +
                 `.indexOf(${netidVar}.substring(0, 2))` +
                 '\n' +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
                 `let ${valueVar}: any\n` +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
                 `switch (${idVar}) { \n` +
                 this.values
                     .map(
                         (t, i) =>
-                            Node.indent(indent + 2) +
+                            Node.indent(data.indent + 2) +
                             `case ${i}: {\n` +
-                            Node.indent(indent + 3) +
+                            Node.indent(data.indent + 3) +
                             `${valueVar} = ` +
-                            t.genDecode(indent + 3) +
+                            t.genDecode({ ...data, indent: data.indent + 3 }) +
                             '\n' +
-                            Node.indent(indent + 3) +
+                            Node.indent(data.indent + 3) +
                             `break\n` +
-                            Node.indent(indent + 2) +
+                            Node.indent(data.indent + 2) +
                             `}\n`
                     )
                     .join('') +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
                 `}\n` +
-                Node.indent(indent + 1) +
+                Node.indent(data.indent + 1) +
                 `return [${netidVar}, ${valueVar}]\n` +
-                Node.indent(indent) +
+                Node.indent(data.indent) +
                 `}))`
         )
     }

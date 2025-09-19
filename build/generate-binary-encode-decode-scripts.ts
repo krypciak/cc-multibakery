@@ -30,7 +30,11 @@ const config: Config = {
     ],
 }
 
-export async function generateBinaryTypes() {
+export async function generateBinaryTypes(asserts: boolean) {
+    for (const singleConfig of config.configs) {
+        singleConfig.encodeConfig ??= {}
+        singleConfig.encodeConfig.asserts = asserts
+    }
     await generateEncodeDecodeScripts(config)
 }
 

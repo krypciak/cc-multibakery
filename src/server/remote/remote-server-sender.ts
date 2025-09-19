@@ -53,7 +53,10 @@ export function sendRemoteServerPacket() {
         }
 
         if (packet) {
-            clientPackets[client.username] = cleanRecord(packet)
+            const cleanPacket = cleanRecord(packet)
+            if (cleanPacket) {
+                clientPackets[client.username] = cleanPacket
+            }
         }
     }
 
@@ -74,7 +77,7 @@ export interface RemoteServerUpdatePacket {
     clients?: RemoteServerClientPackets
     readyMaps?: string[]
 }
-type RemoteServerClientPackets = PartialRecord</* username */ string, RemoteServerClientPacket>
+type RemoteServerClientPackets = Record</* username */ string, RemoteServerClientPacket>
 
 export interface RemoteServerClientPacket {
     input?: InputData
