@@ -46,7 +46,7 @@ function setIntervalWorkaround() {
         if (typeof id === 'number' || typeof id === 'string') {
             origClearInterval(id)
         } else {
-            origClearInterval(id.id)
+            origClearInterval((id as any).id)
         }
     }
 }

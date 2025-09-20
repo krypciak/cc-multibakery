@@ -10,7 +10,6 @@ const configBase = {
     typeName: 'GenerateType',
     printNode: true,
     baseImportPath: 'ts-binarifier',
-    insertTsIgnore: true
 } satisfies Partial<SingleConfig>
 
 const config: Config = {
@@ -21,6 +20,7 @@ const config: Config = {
             outPath: projectRoot + '/src/net/binary/physics-update-packet-encoder-decoder.generated.ts',
             outClassName: 'PhysicsUpdatePacketEncoderDecoder',
             parserOptions: { customNodes: { entityStateRecordUnion: createEntityStateRecordUnionNode } },
+            insertTsIgnore: true,
         },
         {
             ...configBase,

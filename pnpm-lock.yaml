@@ -8,6 +8,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/bun':
+        specifier: ^1.2.22
+        version: 1.2.22(@types/react@19.1.13)
       '@types/http-server':
         specifier: ^0.12.4
         version: 0.12.4
@@ -67,7 +70,7 @@ importers:
         version: 4.0.2
       ts-binarifier:
         specifier: github:krypciak/ts-binarifier
-        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1db61ee8200d3155ebf8d08870606237728f069f(typescript@5.9.2)
+        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1bec685e8ba60c612772044799aec301f949e7ff(typescript@5.9.2)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -297,6 +300,9 @@ packages:
   '@socket.io/component-emitter@3.1.2':
     resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
 
+  '@types/bun@1.2.22':
+    resolution: {integrity: sha512-5A/KrKos2ZcN0c6ljRSOa1fYIyCKhZfIVYeuyb4snnvomnpFqC0tTsEkdqNxbAgExV384OETQ//WAjl3XbYqQA==}
+
   '@types/chai@4.3.20':
     resolution: {integrity: sha512-/pC9HAB5I/xMlc5FP77qjCnI16ChlJfW0tGa0IUcFn38VJrTV6DeZ60NU5KZBtaOZqjdpwTWohz5HU1RrhiYxQ==}
 
@@ -320,6 +326,9 @@ packages:
 
   '@types/node@24.3.0':
     resolution: {integrity: sha512-aPTXCrfwnDLj4VvXrm+UUCQjNEvJgNA8s5F1cvwQU+3KNltTOkBm1j30uNLyqqPNe7gE3KFzImYoZEfLhp4Yow==}
+
+  '@types/react@19.1.13':
+    resolution: {integrity: sha512-hHkbU/eoO3EG5/MZkuFSKmYqPbSVk5byPFa3e7y/8TybHiLMACgI8seVYlicwk7H5K/rI2px9xrQp/C+AUDTiQ==}
 
   '@types/semver@6.2.7':
     resolution: {integrity: sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==}
@@ -387,6 +396,11 @@ packages:
 
   buffer-crc32@0.2.13:
     resolution: {integrity: sha512-VO9Ht/+p3SN7SKWqcrgEzjGbRSJYTx+Q1pTQC0wrWqHx0vpJraQ6GtHx8tvcg1rlK1byhU5gccxgOgj7B0TDkQ==}
+
+  bun-types@1.2.22:
+    resolution: {integrity: sha512-hwaAu8tct/Zn6Zft4U9BsZcXkYomzpHJX28ofvx7k0Zz2HNz54n1n+tDgxoWFGB4PcFvJXJQloPhaV2eP3Q6EA==}
+    peerDependencies:
+      '@types/react': ^19
 
   bun@1.2.20:
     resolution: {integrity: sha512-1ZGQynT+jPOHLY4IfzSubjbWcXsY2Z+irhW5D8RKC0wQ6KG4MvtgniAYQbSFYINGg8Wb2ydx+WgAG2BdhngAfw==}
@@ -466,6 +480,9 @@ packages:
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940:
     resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940}
     version: 1.0.0
+
+  csstype@3.1.3:
+    resolution: {integrity: sha512-M1uQkMl8rQK/szD0LNhtqxIPLpimGm8sOBwU7lLnCpSbTyY3yeU1Vc7l4KT5zT4s/yOxHH5O7tIuuLOCnLADRw==}
 
   debug@4.3.7:
     resolution: {integrity: sha512-Er2nc/H7RrMXZBFCEim6TCmMk02Z8vLC2Rbi1KEBggpo0fS6l0S1nnapwmIi3yW/+GOJap1Krg4w0Hg80oCqgQ==}
@@ -941,8 +958,8 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1db61ee8200d3155ebf8d08870606237728f069f:
-    resolution: {tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1db61ee8200d3155ebf8d08870606237728f069f}
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1bec685e8ba60c612772044799aec301f949e7ff:
+    resolution: {tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1bec685e8ba60c612772044799aec301f949e7ff}
     version: 1.0.0
     peerDependencies:
       typescript: ^5
@@ -1159,6 +1176,12 @@ snapshots:
 
   '@socket.io/component-emitter@3.1.2': {}
 
+  '@types/bun@1.2.22(@types/react@19.1.13)':
+    dependencies:
+      bun-types: 1.2.22(@types/react@19.1.13)
+    transitivePeerDependencies:
+      - '@types/react'
+
   '@types/chai@4.3.20': {}
 
   '@types/connect@3.4.38':
@@ -1184,6 +1207,10 @@ snapshots:
   '@types/node@24.3.0':
     dependencies:
       undici-types: 7.10.0
+
+  '@types/react@19.1.13':
+    dependencies:
+      csstype: 3.1.3
 
   '@types/semver@6.2.7': {}
 
@@ -1236,6 +1263,11 @@ snapshots:
   browser-stdout@1.3.1: {}
 
   buffer-crc32@0.2.13: {}
+
+  bun-types@1.2.22(@types/react@19.1.13):
+    dependencies:
+      '@types/node': 24.3.0
+      '@types/react': 19.1.13
 
   bun@1.2.20:
     optionalDependencies:
@@ -1335,6 +1367,8 @@ snapshots:
   corser@2.0.1: {}
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/591d901dc3f5e52e61eedbc9736c5da5be0df940: {}
+
+  csstype@3.1.3: {}
 
   debug@4.3.7:
     dependencies:
@@ -1871,7 +1905,7 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1db61ee8200d3155ebf8d08870606237728f069f(typescript@5.9.2):
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/1bec685e8ba60c612772044799aec301f949e7ff(typescript@5.9.2):
     dependencies:
       typescript: 5.9.2
 

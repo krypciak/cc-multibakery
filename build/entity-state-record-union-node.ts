@@ -6,8 +6,10 @@ import { findVariableDeclaration } from 'ts-binarifier/src/type-extractor'
 import { assert } from 'ts-binarifier/src/assert'
 import { StringNode } from 'ts-binarifier/src/nodes/string'
 import { StringEnumNode } from 'ts-binarifier/src/nodes/string-enum'
+import { NumberNode, NumberType } from 'ts-binarifier/src/nodes/number'
 
 class EntityStateRecordUnionNode extends Node {
+    private recordSizeNode = new NumberNode(false, 10, NumberType.Unsigned)
     private netidNode = new StringNode(false, 63)
     private entityTypeNode: StringEnumNode
 
@@ -17,7 +19,7 @@ class EntityStateRecordUnionNode extends Node {
         private stringIds: string[]
     ) {
         super(optional)
-        this.entityTypeNode = new StringEnumNode(false, stringIds)
+        this.entityTypeNode = new StringEnumNode(false, stringIds, true)
     }
 
     print(noColor?: boolean, indent: number = 0, ignoreOptional?: boolean) {
@@ -47,19 +49,27 @@ class EntityStateRecordUnionNode extends Node {
         const netidVar = `k${data.varCounter.v++}`
         const valueVar = `v${data.varCounter.v++}`
         const idVar = `id${data.varCounter.v++}`
+        const entriesVar = `entries${data.varCounter.v++}`
 
         return this.genEncodeWrapOptional(
             data,
             data =>
-                `encoder.u16(Object.keys(${data.varName}).length)\n` +
+                `const ${entriesVar} = Object.entries(${data.varName}) as unknown as [keyof typeof ${data.varName}, any][]\n` +
                 Node.indent(data.indent) +
-                `for (const [${netidVar}, ${valueVar}] of Object.entries(${data.varName}) as unknown as [keyof typeof ${data.varName}, any][]) {\n` +
+                this.recordSizeNode.genEncode({ ...data, varName: `${entriesVar}.length` }) +
+                '\n' +
+                Node.indent(data.indent) +
+                `for (const [${netidVar}, ${valueVar}] of ${entriesVar}) {\n` +
                 Node.indent(data.indent + 1) +
                 this.netidNode.genEncode({ ...data, varName: netidVar, indent: data.indent + 1 }) +
                 '\n' +
                 Node.indent(data.indent + 1) +
                 `const ${idVar} = ` +
-                this.entityTypeNode.genEncodeAccess({ ...data, varName: netidVar, indent: data.indent + 1 }) +
+                this.entityTypeNode.genEncodeAccess({
+                    ...data,
+                    varName: `${netidVar}.substring(0, 2)`,
+                    indent: data.indent + 1,
+                }) +
                 '\n' +
                 Node.indent(data.indent + 1) +
                 this.entityTypeNode.unionIdNode.genEncode({ ...data, varName: idVar, indent: data.indent + 1 }) +
@@ -92,7 +102,9 @@ class EntityStateRecordUnionNode extends Node {
         const valueVar = `v${data.varCounter.v++}`
         const idVar = `id${data.varCounter.v++}`
         return this.genDecodeWrapOptional(
-            `Object.fromEntries(new Array(decoder.u16()).fill(null).map(_ => {\n` +
+            `Object.fromEntries(new Array(` +
+                this.recordSizeNode.genDecode({ ...data }) +
+                `).fill(null).map(_ => {\n` +
                 Node.indent(data.indent + 1) +
                 `const ${netidVar} = ` +
                 this.netidNode.genDecode(data) +

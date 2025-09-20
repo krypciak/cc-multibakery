@@ -16,6 +16,7 @@
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"
     },
     "devDependencies": {
+        "@types/bun": "^1.2.22",
         "@types/http-server": "^0.12.4",
         "@types/jquery": "^3.5.32",
         "@types/node": "^24.3.0",
@@ -40,6 +41,10 @@
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
     },
     "pnpm": {
-        "onlyBuiltDependencies": ["bun", "esbuild", "node"]
+        "onlyBuiltDependencies": [
+            "bun",
+            "esbuild",
+            "node"
+        ]
     }
 }
