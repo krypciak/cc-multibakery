@@ -5,6 +5,7 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { createFakeEffectSheet } from '.././entity'
 import { StateMemory } from '.././state-util'
 import { StateKey } from '.././states'
+import { u10, u8 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace sc {
@@ -15,6 +16,8 @@ declare global {
     }
 }
 
+export type ItemType = u10
+
 type Return = ReturnType<typeof getState>
 function getState(this: sc.ItemDropEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
@@ -23,9 +26,9 @@ function getState(this: sc.ItemDropEntity, player?: StateKey) {
         pos: memory.diffVec3(this.coll.pos),
 
         dropType: memory.onlyOnce(Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0]),
-        item: memory.onlyOnce(this.item),
+        item: memory.onlyOnce(this.item) as ItemType,
         target: memory.onlyOnce(this.target.netid),
-        amount: memory.onlyOnce(this.amount),
+        amount: memory.onlyOnce(this.amount) as u8,
     }
 }
 

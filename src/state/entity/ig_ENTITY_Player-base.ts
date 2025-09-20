@@ -5,6 +5,7 @@ import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import { u10, u3, u7, u8 } from 'ts-binarifier/src/type-aliases'
+import { ItemType } from './sc_ItemDropEntity'
 
 declare global {
     namespace ig.ENTITY {
@@ -41,11 +42,11 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        head: memory.diff(this.model.equip.head as u10),
-        leftArm: memory.diff(this.model.equip.leftArm as u10),
-        rightArm: memory.diff(this.model.equip.rightArm as u10),
-        torso: memory.diff(this.model.equip.torso as u10),
-        feet: memory.diff(this.model.equip.feet as u10),
+        head: memory.diff(this.model.equip.head as ItemType),
+        leftArm: memory.diff(this.model.equip.leftArm as ItemType),
+        rightArm: memory.diff(this.model.equip.rightArm as ItemType),
+        torso: memory.diff(this.model.equip.torso as ItemType),
+        feet: memory.diff(this.model.equip.feet as ItemType),
 
         level: memory.diff(this.model.level as u7),
         items,

@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { Node } from 'ts-binarifier/src/nodes/node'
-import { green, yellow } from 'ts-binarifier/src/colors'
+import { gray, green, yellow } from 'ts-binarifier/src/colors'
 import { getRecordKeyType, getRecordValueType, TypeParser } from 'ts-binarifier/src/type-parser'
 import { findVariableDeclaration } from 'ts-binarifier/src/type-extractor'
 import { assert } from 'ts-binarifier/src/assert'
@@ -32,11 +32,14 @@ class EntityStateRecordUnionNode extends Node {
                 .map(
                     (v, i) =>
                         Node.indent(indent + 1) +
-                        `/* id: ` +
+                        gray(`/* id: `, noColor) +
                         yellow(`${i}`, noColor) +
-                        ` (${this.entityTypeNode.unionIdNode.print(noColor)}) typeId: ` +
+                        gray(` (`, noColor) +
+                        this.entityTypeNode.unionIdNode.print(noColor) +
+                        gray(`)`, noColor) +
+                        gray(` typeId: `, noColor) +
                         green(`'${this.stringIds[i]}' `, noColor) +
-                        `*/ ` +
+                        gray(`*/ `, noColor) +
                         v.print(noColor, indent + 1)
                 )
                 .join(' | \n') +

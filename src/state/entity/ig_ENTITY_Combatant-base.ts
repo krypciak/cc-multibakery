@@ -13,17 +13,16 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
 
         hp: memory.diff(this.params?.currentHp),
         baseParams: memory.diffRecord(
-            this.params?.baseParams ??
-                ({} as {
-                    hp: u14
-                    attack: u14
-                    defense: u14
-                    focus: u14
+            (this.params?.baseParams ?? {}) as {
+                hp: u14
+                attack: u14
+                defense: u14
+                focus: u14
 
-                    elemFactor: f64[]
-                    statusInflict?: f64[]
-                    statusEffect?: f64[]
-                })
+                elemFactor?: f64[]
+                statusInflict?: f64[]
+                statusEffect?: f64[]
+            }
         ),
         spLevel: memory.diff(this.params?.maxSp as u6),
         sp: memory.diff(sp === undefined ? undefined : (sp as f32)),
