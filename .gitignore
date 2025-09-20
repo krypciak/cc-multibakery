@@ -10,4 +10,4 @@ assets/data/maps/multibakery/test/aoc50x50*
 *.drawio
 *.bkp
 metafile.json
-*.generated.ts
+*.generated*.ts
