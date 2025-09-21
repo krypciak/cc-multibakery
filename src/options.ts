@@ -257,6 +257,14 @@ function registerOpts() {
                         description: 'Enable saving to save slots',
                     },
                 },
+                'remote server': {
+                    serverTimeSynchronization: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Synchronize time',
+                        description: 'Required for accurate ping measurements',
+                    },
+                },
             },
         },
     } as const satisfies Options

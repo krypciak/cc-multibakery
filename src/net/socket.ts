@@ -117,7 +117,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
 export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
-    timeOffset?: number
+    timeOffset: number = 0
 
     private joinActCallbacks: Record<string, (data: ClientJoinAckData) => void> = {}
 
@@ -180,6 +180,8 @@ export class SocketNetManagerRemoteServer {
     }
 
     private async measureClockOffset() {
+        if (!Opts.serverTimeSynchronization) return
+
         const probeFor = 1e3
         const start = performance.now()
 
@@ -199,7 +201,7 @@ export class SocketNetManagerRemoteServer {
     }
 
     calculatePing(serverTime: number): number {
-        return Date.now() - serverTime + (this.timeOffset ?? 0)
+        return Date.now() - serverTime + this.timeOffset
     }
 
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
