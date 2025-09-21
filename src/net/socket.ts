@@ -13,8 +13,7 @@ import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
 import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
 import { getServerUrl } from './web-server'
-// import Parser from 'socket.io-msgpack-parser'
-const Parser = undefined
+import { parser } from './socket-io-parser'
 
 type SocketData = never
 
@@ -24,9 +23,8 @@ interface ClientToServerEvents {
     ping1(callback: (date: number) => void): void
     leave(data: ClientLeaveData): void
 }
-interface ServerToClientEvents {
+export interface ServerToClientEvents {
     update(data: unknown): void
-    error(msg: string): void
 }
 type InterServerEvents = {}
 type Socket = _Socket //<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
@@ -72,7 +70,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             cors: {
                 origin: `*`,
             },
-            parser: Parser,
+            parser,
         })
 
         const server = multi.server
@@ -147,7 +145,7 @@ export class SocketNetManagerRemoteServer {
         const socket = ioclient.io(getServerUrl(this.connectionSettings), {
             secure: this.connectionSettings.https,
             rejectUnauthorized: false,
-            parser: Parser,
+            parser,
         }) as ClientSocket
 
         socket.on('update', data => server.onNetReceive(this.conn!, data))

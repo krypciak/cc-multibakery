@@ -28,6 +28,12 @@ const config: Config = {
             outPath: projectRoot + '/src/net/binary/remote-update-packet-encoder-decoder.generated.ts',
             outClassName: 'RemoteUpdatePacketEncoderDecoder',
         },
+        {
+            ...configBase,
+            path: 'src/net/socket-io-parser.ts',
+            outPath: projectRoot + '/src/net/binary/socket-io-packet-encoder-decoder.generated.ts',
+            outClassName: 'SocketIoPacketEncoderDecoder',
+        },
     ],
 }
 

@@ -34,6 +34,7 @@
         "prettier": "3.6.2",
         "setimmediate": "^1.0.5",
         "socket.io": "^4.8.1",
+        "socket.io-adapter": "^2.5.5",
         "socket.io-client": "^4.8.1",
         "spdy": "^4.0.2",
         "ts-binarifier": "github:krypciak/ts-binarifier",

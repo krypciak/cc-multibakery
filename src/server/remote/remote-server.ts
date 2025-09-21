@@ -14,6 +14,7 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
+import { u8 } from 'ts-binarifier/src/type-aliases'
 
 export type RemoteServerConnectionSettings = {
     host: string
@@ -99,8 +100,21 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     onNetReceive(conn: NetConnection, data: unknown) {
         try {
-            const buf = data as Uint8Array
-            const packet = PhysicsUpdatePacketEncoderDecoder.decode(buf)
+            const buf = data as u8[]
+            const packet = PhysicsUpdatePacketEncoderDecoder.decode(buf as unknown as Uint8Array)
+
+            // if (buf.length > 100) {
+            //     const json = JSON.stringify(packet)
+            //     console.log(
+            //         'big packet!',
+            //         'buf size:',
+            //         buf.length,
+            //         'json buf size:',
+            //         new TextEncoder().encode(json).byteLength,
+            //         '\n',
+            //         json
+            //     )
+            // }
             this.processPacket(conn, packet)
         } catch (e) {
             console.error(`Error applying packet!`, e)

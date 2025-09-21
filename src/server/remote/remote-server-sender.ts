@@ -77,6 +77,8 @@ export interface RemoteServerUpdatePacket {
     clients?: RemoteServerClientPackets
     readyMaps?: string[]
 }
+export type GenerateType = RemoteServerUpdatePacket
+
 type RemoteServerClientPackets = Record</* username */ string, RemoteServerClientPacket>
 
 export interface RemoteServerClientPacket {
@@ -121,5 +123,3 @@ function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientP
 
     return true
 }
-
-export type GenerateType = RemoteServerUpdatePacket

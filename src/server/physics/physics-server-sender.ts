@@ -6,6 +6,7 @@ import { PhysicsServer } from './physics-server'
 import { NetConnection } from '../../net/connection'
 import { cleanRecord } from '../../state/state-util'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
+import { f64 } from 'ts-binarifier/src/type-aliases'
 
 export function sendPhysicsServerPacket() {
     assert(multi.server instanceof PhysicsServer)
@@ -62,11 +63,14 @@ function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey
 
 type PlayerMapChangeRecord = Record</* mapName*/ string, /* username */ string[]>
 export interface PhysicsServerUpdatePacket {
+    /* sentAt has to be first! my custom socket-io-parser extracts this timestamp from the binary data */
+    sendAt: f64
+    tick: f64
     mapPackets?: Record</* mapName */ string, StateUpdatePacket>
-    tick: number
-    sendAt: number
     playerMaps?: PlayerMapChangeRecord
 }
+export type GenerateType = PhysicsServerUpdatePacket
+
 function getRemoteServerUpdatePacket(
     mapPackets: Record<string, StateUpdatePacket>,
     conn: NetConnection
@@ -87,5 +91,3 @@ function getRemoteServerUpdatePacket(
     }
     return data
 }
-
-export type GenerateType = PhysicsServerUpdatePacket
