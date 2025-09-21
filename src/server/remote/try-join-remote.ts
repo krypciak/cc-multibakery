@@ -14,6 +14,8 @@ export async function tryJoinRemote(
     }
     assert(serverInfo.details)
 
+    serverInfo.connection.forceJsonCommunication = serverInfo.details.forceJsonCommunication
+
     const server = new RemoteServer({
         displayServerInstance: Opts.serverDisplayServerInstance,
         displayMaps: Opts.serverDisplayMaps,

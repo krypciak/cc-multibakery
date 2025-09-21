@@ -35,6 +35,7 @@ export async function createPhysicsServerFromCurrentState() {
                   details: {
                       title: Opts.serverTitle,
                       description: Opts.serverDescription,
+                      forceJsonCommunication: Opts.serverForceJsonCommunication,
                   },
               }
             : undefined,

@@ -5,6 +5,9 @@ import { PhysicsServerConnectionSettings } from '../../server/physics/physics-se
 interface ServerDetailsBase {
     title: string
     description: string
+
+    /* disables binary encoding */
+    forceJsonCommunication?: boolean
 }
 export interface ServerDetailsRemote extends ServerDetailsBase {
     multibakeryVersion: string

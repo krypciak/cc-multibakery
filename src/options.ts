@@ -256,6 +256,12 @@ function registerOpts() {
                         name: 'Enable saving',
                         description: 'Enable saving to save slots',
                     },
+                    serverForceJsonCommunication: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Force JSON communication',
+                        description: 'Disable message binary encoding',
+                    },
                 },
                 'remote server': {
                     serverTimeSynchronization: {

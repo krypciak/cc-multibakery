@@ -110,7 +110,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             await this.httpServer.start()
 
             if (netInfo.connection.type == 'socket') {
-                this.netManager = new SocketNetManagerPhysicsServer(this.httpServer.httpServer)
+                this.netManager = new SocketNetManagerPhysicsServer(netInfo, this.httpServer.httpServer)
             } else assert(false, 'not implemented')
         }
 
@@ -171,8 +171,12 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     onNetReceiveUpdate(conn: NetConnection, data: unknown) {
         let packet: RemoteServerUpdatePacket
         try {
-            const buf = data as Uint8Array
-            packet = RemoteUpdatePacketEncoderDecoder.decode(buf)
+            if (this.settings.netInfo!.details.forceJsonCommunication) {
+                packet = data as any
+            } else {
+                const buf = data as Uint8Array
+                packet = RemoteUpdatePacketEncoderDecoder.decode(buf)
+            }
 
             if (!isRemoteServerUpdatePacket(packet)) {
                 throw new Error('invalid json packet')

@@ -68,8 +68,10 @@ export function sendRemoteServerPacket() {
 
     const cleanPacket = cleanRecord(packet)
     if (cleanPacket) {
-        const buf = RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
-        conn.send('update', buf)
+        const toSend = multi.server.settings.connection.forceJsonCommunication
+            ? cleanPacket
+            : RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
+        conn.send('update', toSend)
     }
 }
 

@@ -27,6 +27,8 @@ export class PhysicsHttpServer {
         const serverDetails: ServerDetailsRemote = {
             title: this.netInfo.details.title,
             description: this.netInfo.details.description,
+            forceJsonCommunication: this.netInfo.details.forceJsonCommunication,
+
             hasIcon: !!icon,
             multibakeryVersion: Multibakery.mod.version!.toString(),
             globalTps: multi.server.settings.tps,

@@ -45,8 +45,10 @@ export function sendPhysicsServerPacket() {
         }
 
         const data = getRemoteServerUpdatePacket(connPackets, conn)
-        const bin = PhysicsUpdatePacketEncoderDecoder.encode(data)
-        conn.send('update', bin)
+        const toSend = multi.server.settings.netInfo!.details.forceJsonCommunication
+            ? data
+            : PhysicsUpdatePacketEncoderDecoder.encode(data)
+        conn.send('update', toSend)
     }
 
     runTasks(

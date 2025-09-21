@@ -16,11 +16,12 @@ import './entity-physics-forcer'
 import './injects'
 import { u8 } from 'ts-binarifier/src/type-aliases'
 
-export type RemoteServerConnectionSettings = {
+export interface RemoteServerConnectionSettings {
     host: string
     port: number
     https?: boolean
     type: 'socket'
+    forceJsonCommunication?: boolean
 }
 
 export interface RemoteServerSettings extends ServerSettings {
@@ -100,8 +101,13 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     onNetReceive(conn: NetConnection, data: unknown) {
         try {
-            const buf = data as u8[]
-            const packet = PhysicsUpdatePacketEncoderDecoder.decode(buf as unknown as Uint8Array)
+            let packet: PhysicsServerUpdatePacket
+            if (this.settings.connection.forceJsonCommunication) {
+                packet = data as any
+            } else {
+                const buf = data as u8[]
+                packet = PhysicsUpdatePacketEncoderDecoder.decode(buf as unknown as Uint8Array)
+            }
 
             // if (buf.length > 100) {
             //     const json = JSON.stringify(packet)

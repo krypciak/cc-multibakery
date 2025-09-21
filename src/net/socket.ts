@@ -13,7 +13,9 @@ import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
 import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
 import { getServerUrl } from './web-server'
-import { parser } from './socket-io-parser'
+import { parser as binaryParser } from './socket-io-parser'
+import { NetServerInfoPhysics } from '../client/menu/server-info'
+import { Opts } from '../options'
 
 type SocketData = never
 
@@ -53,7 +55,10 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     connections: SocketNetConnection[] = []
     io!: SocketServer
 
-    constructor(private httpServer: HttpServer) {
+    constructor(
+        private netInfo: NetServerInfoPhysics,
+        private httpServer: HttpServer
+    ) {
         setIntervalWorkaround()
     }
 
@@ -70,7 +75,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             cors: {
                 origin: `*`,
             },
-            parser,
+            parser: this.netInfo.details.forceJsonCommunication ? undefined : binaryParser,
         })
 
         const server = multi.server
@@ -145,7 +150,7 @@ export class SocketNetManagerRemoteServer {
         const socket = ioclient.io(getServerUrl(this.connectionSettings), {
             secure: this.connectionSettings.https,
             rejectUnauthorized: false,
-            parser,
+            parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
         }) as ClientSocket
 
         socket.on('update', data => server.onNetReceive(this.conn!, data))
