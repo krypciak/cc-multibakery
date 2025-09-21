@@ -12,7 +12,6 @@ enum PacketType {
     CONNECT_ERROR,
 }
 
-type EventTypes = 'update' | 'leave'
 interface SocketIoPacket {
     type: PacketType
     ackData?: {
@@ -20,8 +19,10 @@ interface SocketIoPacket {
         data: any[]
     }
     ids?: { pid: string; sid: string }
-    data?: {
-        eventType: EventTypes
+    otherEventsData?: {
+        data: any
+    }
+    updateEventData?: {
         data: u8[]
     }
 }
@@ -50,8 +51,8 @@ class Encoder {
 function converIntoNewFormat(packet: SocketIoOrigianlPacket): SocketIoPacket {
     const hasId = packet.id !== undefined
     const hasSessionIds = !Array.isArray(packet.data)
-    if (hasId) assert(!hasSessionIds)
-    if (hasSessionIds) assert(!hasId)
+    const isOtherData = !hasId && !hasSessionIds && packet.data[0] != 'update'
+    assert(Number(hasId) + Number(hasSessionIds) + Number(isOtherData) <= 1)
     return {
         type: packet.type,
         ackData: hasId
@@ -60,20 +61,20 @@ function converIntoNewFormat(packet: SocketIoOrigianlPacket): SocketIoPacket {
                   data: packet.data,
               }
             : undefined,
-        data:
-            !hasId && !hasSessionIds
+        updateEventData:
+            !hasId && !hasSessionIds && !isOtherData
                 ? {
-                      eventType: packet.data[0],
                       data: packet.data[1],
                   }
                 : undefined,
+        otherEventsData: isOtherData ? packet.data : undefined,
         ids: hasSessionIds ? packet.data : undefined,
     }
 }
 function convertFromNewFormat(packet: SocketIoPacket): SocketIoOrigianlPacket {
     let data: any
-    if (packet.data) {
-        const buf = packet.data.data
+    if (packet.updateEventData) {
+        const buf = packet.updateEventData.data
         const timestamp = buf && BinaryDecoder.IEEE64ToDouble(new Uint8Array(buf.slice(0, 8)))
 
         /* RemoteServerUpdatePacket does not contain a timestamp field so the timestamp on these
@@ -81,11 +82,14 @@ function convertFromNewFormat(packet: SocketIoPacket): SocketIoOrigianlPacket {
          * to happen if a jumbled timestamp is passed in anyways */
         if (timestamp > 1758455430514 /* 2025/09/21 */) {
             const timestampStr = encodeYeast(timestamp)
-            data = [packet.data.eventType, buf, timestampStr]
+            data = ['update', buf, timestampStr]
         } else {
-            data = [packet.data.eventType, buf]
+            data = ['update', buf]
         }
+    } else {
+        data = packet.otherEventsData
     }
+
     return {
         type: packet.type,
         data: packet.ids ?? packet.ackData?.data ?? data,
