@@ -67,7 +67,7 @@ type PlayerMapChangeRecord = Record</* mapName*/ string, /* username */ string[]
 export interface PhysicsServerUpdatePacket {
     /* sentAt has to be first! my custom socket-io-parser extracts this timestamp from the binary data */
     sendAt: f64
-    tick: f64
+    // tick: f64
     mapPackets?: Record</* mapName */ string, StateUpdatePacket>
     playerMaps?: PlayerMapChangeRecord
 }
@@ -87,7 +87,7 @@ function getRemoteServerUpdatePacket(
 
     const data: PhysicsServerUpdatePacket = {
         mapPackets: Object.keys(mapPackets).length > 0 ? mapPackets : undefined,
-        tick: ig.system.tick,
+        // tick: ig.system.tick,
         sendAt: Date.now(),
         playerMaps: cleanRecord(maps),
     }

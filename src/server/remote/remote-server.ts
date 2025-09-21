@@ -142,7 +142,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             runTask(map.inst, () => {
                 try {
-                    applyStateUpdatePacket(stateUpdatePacket, data.tick, map.noStateAppliedYet)
+                    applyStateUpdatePacket(stateUpdatePacket, ig.system.tick, map.noStateAppliedYet)
                 } catch (e) {
                     this.onInstanceUpdateError(e)
                 }
