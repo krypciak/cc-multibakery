@@ -297,7 +297,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
     }>({
         fps: 60,
         timeoutSeconds: 400,
-        skipFrameWait: false,
+        skipFrameWait: true,
         flushPromises: true,
 
         modId: Multibakery.mod.id,
