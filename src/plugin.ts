@@ -63,8 +63,8 @@ poststart(() => {
                         httpPort: DEFAULT_HTTP_PORT,
                         httpRoot: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/dist',
                         https: {
-                            cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2.pem',
-                            key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+2-key.pem',
+                            cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+1.pem',
+                            key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+1-key.pem',
                         },
                         ccbundler: {
                             modProxy: true,

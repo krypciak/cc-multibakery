@@ -54,7 +54,7 @@ async function liveModUpdates() {
             repoPath: './assets/mods/cc-multibakery',
             buildCmd: 'bun',
             buildArguments: [
-                'build.ts',
+                'build/build.ts',
                 'build',
                 `minifySyntax=${minifySyntax}`,
                 `minifyWhitespace=${minifyWhitespace}`,

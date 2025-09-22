@@ -25,10 +25,10 @@ importers:
         version: 1.2.20
       cc-bundler:
         specifier: github:krypciak/cc-bundler
-        version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/4c75ecf9ab61b0d97c0183272cb4d89f4be61d13
+        version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/970b5274d5e5b15aa5e21acf7b618a8e53bc565c
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0d0c63488a06c4c3b5fc356fc42470905c8f7c43
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/42c7b71575fbf18dae0266b18d2e7daf10817d3e
       ccmoddb:
         specifier: github:CCDirectLink/CCModDB
         version: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1
@@ -423,12 +423,12 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/4c75ecf9ab61b0d97c0183272cb4d89f4be61d13:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/4c75ecf9ab61b0d97c0183272cb4d89f4be61d13}
+  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/970b5274d5e5b15aa5e21acf7b618a8e53bc565c:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/970b5274d5e5b15aa5e21acf7b618a8e53bc565c}
     version: 1.0.0
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0d0c63488a06c4c3b5fc356fc42470905c8f7c43:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0d0c63488a06c4c3b5fc356fc42470905c8f7c43}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/42c7b71575fbf18dae0266b18d2e7daf10817d3e:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/42c7b71575fbf18dae0266b18d2e7daf10817d3e}
     version: 0.0.1
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
@@ -1298,9 +1298,9 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/4c75ecf9ab61b0d97c0183272cb4d89f4be61d13: {}
+  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/970b5274d5e5b15aa5e21acf7b618a8e53bc565c: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0d0c63488a06c4c3b5fc356fc42470905c8f7c43: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/42c7b71575fbf18dae0266b18d2e7daf10817d3e: {}
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
     dependencies:
