@@ -180,15 +180,11 @@ function getGamepadInput(this: ig.GamepadManager) {
 
     const memory = (this.memory = StateMemory.get(this.memory))
 
-    function filterRecord<T extends object>(record: T): T {
-        return Object.fromEntries(Object.entries(record).filter(([_, v]) => v)) as T
-    }
-
     const packet = cleanRecord({
-        axesStates: memory.diffRecord(gp.axesStates),
-        buttonStates: memory.diffRecord(gp.buttonStates),
-        pressedStates: memory.diffRecord(filterRecord(gp.pressedStates)),
-        releasedStates: memory.diffRecord(filterRecord(gp.releasedStates)),
+        axesStates: memory.diffArray(gp.axesStates),
+        buttonStates: memory.diffArray(gp.buttonStates),
+        pressedStates: memory.diffArray(gp.pressedStates),
+        releasedStates: memory.diffArray(gp.releasedStates),
     })
     return packet
 }
@@ -251,10 +247,10 @@ prestart(() => {
             }
 
             if (!input) return
-            StateMemory.applyChangeRecord(gp.buttonStates, input.buttonStates)
-            StateMemory.applyChangeRecord(gp.axesStates, input.axesStates)
-            StateMemory.applyChangeRecord(gp.pressedStates, input.pressedStates)
-            StateMemory.applyChangeRecord(gp.releasedStates, input.releasedStates)
+            if (input.buttonStates) gp.buttonStates = input.buttonStates
+            if (input.axesStates) gp.axesStates = input.axesStates
+            if (input.pressedStates) gp.pressedStates = input.pressedStates
+            if (input.releasedStates) gp.releasedStates = input.releasedStates
         },
         pushInput(input) {
             this.inputQueue.push(input)

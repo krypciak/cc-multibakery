@@ -45,7 +45,7 @@ class InputButton {
     private dialog!: modmanager.gui.MultiPageButtonBoxGui
 
     constructor(
-        public inputType: ig.INPUT_DEVICES,
+        public inputType: ig.INPUT_DEVICES = ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE,
         public onPress: () => void = () => {}
     ) {}
 
@@ -144,7 +144,7 @@ prestart(() => {
                             },
                         })
 
-                        const inputButton = new InputButton(ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE)
+                        const inputButton = new InputButton()
                         inputButton.pushConfig(buttons)
 
                         let dialog: multi.class.InputFieldDialog
@@ -168,7 +168,7 @@ prestart(() => {
             const inputManager = ig.client?.inputManager
             let inputButton: InputButton | undefined
             if (inputManager) {
-                inputButton = new InputButton(ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE, () => {
+                inputButton = new InputButton(inputManager.inputType, () => {
                     inputManager.setInputType(inputButton!.inputType)
                     assert(ig.client)
                     ig.client.updateGamepadForcer()

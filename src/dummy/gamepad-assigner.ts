@@ -17,12 +17,13 @@ class GamepadAssigner {
 
     initialize() {
         if (!navigator.getGamepads) return
+        this.clearAllState()
 
         const newId = (id: string) => {
             const gamepad = this.gamepads[id]
             if (this.requestsPromiseResolves.length > 0) {
                 this.requestsPromiseResolves[0].resolve(gamepad)
-                this.requestsPromiseResolves.splice(0, 1)
+                this.requestsPromiseResolves.shift()
             } else {
                 this.freeGamepads.push(id)
             }
@@ -38,7 +39,7 @@ class GamepadAssigner {
             id => {
                 const gamepad = this.gamepads[id]
                 this.freeGamepads.erase(id)
-                if (gamepad.onDisconnect) gamepad.onDisconnect()
+                gamepad.onDisconnect?.()
             }
         )
     }
@@ -49,9 +50,10 @@ class GamepadAssigner {
     }
 
     async requestGamepad(instanceId: number, onDisconnect: () => void): Promise<ig.Gamepad> {
+        console.log('request number for', instanceId, 'free gamepads:', this.freeGamepads.length)
         if (this.freeGamepads.length > 0) {
             const id = this.freeGamepads[0]
-            this.freeGamepads.splice(0, 1)
+            this.freeGamepads.shift()
 
             const gamepad = this.gamepads[id]
             gamepad.onDisconnect = onDisconnect
@@ -68,6 +70,13 @@ class GamepadAssigner {
                 this.requestsPromiseResolves.sort((a, b) => a.instanceId - b.instanceId)
             })
         }
+    }
+
+    clearAllState() {
+        this.freeGamepads = []
+        this.requestsPromiseResolves = []
+        this.gamepads = {}
+        this.handler = undefined as any
     }
 }
 declare global {

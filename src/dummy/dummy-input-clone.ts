@@ -64,6 +64,10 @@ class CloneInputManager {
             this.block.blockGamepad(id)
         }
     }
+
+    destroy() {
+        this.gamepadManager.destroy()
+    }
 }
 
 declare global {
@@ -219,6 +223,10 @@ prestart(() => {
         isRightStickDown() {
             if (this.block.isGamepadBlocked()) return false
             return this.realGM.isRightStickDown()
+        },
+        destroy() {
+            this.parent?.()
+            this.realGM.destroy?.()
         },
     })
 }, 3)

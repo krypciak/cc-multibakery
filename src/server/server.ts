@@ -247,6 +247,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.baseInst.apply()
         super.destroy()
 
+        multi.class.gamepadAssigner.clearAllState()
+
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId
         instanceinator.displayFps = modmanager.options['cc-instanceinator'].displayFps

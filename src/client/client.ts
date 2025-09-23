@@ -107,6 +107,8 @@ export class Client extends InstanceUpdateable {
         } else assert(false)
         addAddon(this.inst.ig.gamepad, this.inst.ig.game)
 
+        this.inst.ig.input.currentDevice = inputManager.inputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
+
         return inputManager
     }
 
@@ -301,6 +303,8 @@ export class Client extends InstanceUpdateable {
         }
         if (multi.server instanceof PhysicsServer && this.dummy) assert(this.dummy._killed)
 
+        this.inputManager?.destroy()
+
         const dummySettings: dummy.DummyPlayer.Settings = {
             inputManager: this.inputManager,
             data: { username: this.username },
@@ -343,7 +347,7 @@ export class Client extends InstanceUpdateable {
     destroy() {
         if (this.destroyed) return
 
-        this.inst.ig.gamepad.destroy?.()
+        this.inputManager?.destroy()
 
         if (this.dummy) multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
 
