@@ -19,9 +19,7 @@ interface SocketIoPacket {
         data: any[]
     }
     ids?: { pid: string; sid: string }
-    otherEventsData?: {
-        data: any
-    }
+    otherEventsData?: any
     updateEventData?: {
         data: u8[]
     }
