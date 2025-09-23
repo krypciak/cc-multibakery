@@ -39,6 +39,7 @@ class Encoder {
     encode(packet: SocketIoOrigianlPacket) {
         assert(packet.nsp == '/')
         const newPacket: SocketIoPacket = converIntoNewFormat(packet)
+        // console.log('encoding', packet, 'into new:', newPacket)
         const buf = SocketIoPacketEncoderDecoder.encode(newPacket)
 
         // const size = buf.byteLength
@@ -104,11 +105,12 @@ function isObject(value: any) {
 
 type ListenerFunc = Function
 class Decoder {
-    add(buf: Uint8Array) {
+    add(data: ArrayBuffer) {
         try {
+            const buf = new Uint8Array(data)
             const packet = SocketIoPacketEncoderDecoder.decode(buf)
             const oldPacket: SocketIoOrigianlPacket = convertFromNewFormat(packet)
-            // console.log('decode to', oldPacket, 'from', packet)
+            // console.log('decoding from new', packet, 'to', oldPacket)
 
             if (this.isPacketValid(oldPacket)) {
                 for (const func of this.decodedListeners) func(oldPacket)

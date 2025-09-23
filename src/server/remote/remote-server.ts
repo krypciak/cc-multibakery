@@ -14,7 +14,6 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import { u8 } from 'ts-binarifier/src/type-aliases'
 
 export interface RemoteServerConnectionSettings {
     host: string
@@ -105,8 +104,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             if (this.settings.connection.forceJsonCommunication) {
                 packet = data as any
             } else {
-                const buf = data as u8[]
-                packet = PhysicsUpdatePacketEncoderDecoder.decode(buf as unknown as Uint8Array)
+                const buf = new Uint8Array(data as ArrayBuffer)
+                packet = PhysicsUpdatePacketEncoderDecoder.decode(buf)
             }
 
             // if (buf.length > 100) {

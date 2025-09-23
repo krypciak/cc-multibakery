@@ -74,14 +74,14 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         multi.storage.load()
 
-        if (!window.crossnode?.options.test) {
-            // this.setMasterClient(
-            //     await this.createAndJoinClient({
-            //         username: `lea_${1}`,
-            //         inputType: 'clone',
-            //         remote: false,
-            //     })
-            // )
+        if (!window.crossnode?.options.test && process.execPath.includes('server')) {
+            this.setMasterClient(
+                await this.createAndJoinClient({
+                    username: `lea_${1}`,
+                    inputType: 'clone',
+                    remote: false,
+                })
+            )
             // await this.createAndJoinClient({
             //     username: `lea_${2}`,
             //     inputType: 'clone',
@@ -174,7 +174,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             if (this.settings.netInfo!.details.forceJsonCommunication) {
                 packet = data as any
             } else {
-                const buf = data as Uint8Array
+                const buf = new Uint8Array(data as ArrayBuffer)
                 packet = RemoteUpdatePacketEncoderDecoder.decode(buf)
             }
 
