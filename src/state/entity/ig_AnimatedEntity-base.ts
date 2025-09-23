@@ -16,6 +16,7 @@ export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
 export function setState(this: ig.AnimatedEntity, state: Return) {
     if (state.pos) {
         Vec3.assign(this.coll.pos, state.pos)
+        this.coll.baseZPos = this.coll.pos.z
     }
 
     if (state.currentAnim !== undefined) {
