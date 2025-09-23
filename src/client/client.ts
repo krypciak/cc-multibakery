@@ -220,15 +220,19 @@ export class Client extends InstanceUpdateable {
         cig.game.namedEntities = mig.game.namedEntities
         cig.game.conditionalEntities = mig.game.conditionalEntities
 
-        initMapsAndLevels.call(cig.game, map.rawLevelData)
+        runTask(this.inst, () => {
+            initMapsAndLevels.call(cig.game, map.rawLevelData)
+        })
 
         cig.game.physics = mig.game.physics
 
         cig.vars = mig.vars
 
-        removeAddon(cig.light, cig.game)
-        cig.light = mig.light
-        addAddon(cig.light, cig.game)
+        cig.light.lightHandles = mig.light.lightHandles
+        cig.light.darknessHandles = mig.light.darknessHandles
+        cig.light.screenFlashHandles = mig.light.screenFlashHandles
+        cig.light.condLights = mig.light.condLights // this may unlink, may cause problems
+        cig.light.condLightList = mig.light.condLightList
 
         removeAddon(cig.screenBlur, cig.game)
         cig.screenBlur = mig.screenBlur
