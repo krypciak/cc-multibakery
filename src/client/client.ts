@@ -221,6 +221,7 @@ export class Client extends InstanceUpdateable {
         cig.game.conditionalEntities = mig.game.conditionalEntities
 
         runTask(this.inst, () => {
+            ig.light.shadowProviders = []
             initMapsAndLevels.call(cig.game, map.rawLevelData)
         })
 
