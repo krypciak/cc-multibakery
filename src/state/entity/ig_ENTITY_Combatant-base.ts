@@ -39,7 +39,10 @@ export function setState(this: ig.ENTITY.Combatant, state: Return) {
         }
 
         if (state.baseParams !== undefined) {
-            StateMemory.applyChangeRecord(this.params.baseParams, state.baseParams)
+            StateMemory.applyChangeRecord(
+                this.params.baseParams,
+                Object.fromEntries(Object.entries(state.baseParams).filter(([_, v]) => v)) as typeof state.baseParams
+            )
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED, ig.settingStateImmediately)
         }
 
