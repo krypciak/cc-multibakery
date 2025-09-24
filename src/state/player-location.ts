@@ -31,8 +31,8 @@ prestart(() => {
             }
             packet.playerLocations = memory.diffRecord2Deep(
                 locations,
-                (a, b) => a === b || (a?.z == b?.z && Vec2.equal(a!, b!)),
-                (a: Nullable<PlayerLocation> | undefined) => a && Vec3.create(a)
+                (a, b) => a.pos === b.pos || (a.pos?.z == b.pos?.z && Vec3.equal(a.pos!, b.pos!)),
+                (a: PlayerLocation) => ({ pos: a.pos && Vec3.create(a.pos) })
             )
         },
         set(packet) {

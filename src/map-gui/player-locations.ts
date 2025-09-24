@@ -1,9 +1,8 @@
-export type PlayerLocation = Vec3
+export type PlayerLocation = {
+    pos: Vec3 | undefined
+}
 
-export type PlayerLocationRecord = Record<
-    /* map name */ string,
-    Record</* username */ string, Nullable<PlayerLocation> | undefined>
->
+export type PlayerLocationRecord = Record</* map name */ string, Record</* username */ string, PlayerLocation>>
 
 let locations: PlayerLocationRecord = {}
 
@@ -18,7 +17,9 @@ export function updatePlayerLocations() {
         for (const entity of map.inst.ig.game.entities) {
             if (!(entity instanceof dummy.DummyPlayer)) continue
 
-            mapRecord[entity.data.username] = Vec3.create(entity.coll.pos)
+            mapRecord[entity.data.username] = {
+                pos: Vec3.create(entity.coll.pos),
+            }
         }
     }
 }
@@ -38,7 +39,7 @@ export function invalidateOldPlayerLocations() {
         for (const username in mapRecord) {
             const player = players[username]
             if (!player) {
-                mapRecord[username] = null
+                mapRecord[username] = { pos: undefined }
             }
         }
     }
