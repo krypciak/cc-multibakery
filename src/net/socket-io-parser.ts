@@ -74,12 +74,12 @@ function convertFromNewFormat(packet: SocketIoPacket): SocketIoOrigianlPacket {
     let data: any
     if (packet.updateEventData) {
         const buf = packet.updateEventData.data
-        const timestamp = buf && BinaryDecoder.IEEE64ToDouble(new Uint8Array(buf.slice(0, 8)))
+        const timestamp = buf?.length >= 8 && BinaryDecoder.IEEE64ToDouble(new Uint8Array(buf.slice(0, 8)))
 
         /* RemoteServerUpdatePacket does not contain a timestamp field so the timestamp on these
          * packets will be a random mess, this is a good enough check, and nothing bad seems
          * to happen if a jumbled timestamp is passed in anyways */
-        if (timestamp > 1758455430514 /* 2025/09/21 */) {
+        if (timestamp && timestamp > 1758455430514 /* 2025/09/21 */) {
             const timestampStr = encodeYeast(timestamp)
             data = ['update', buf, timestampStr]
         } else {

@@ -44,12 +44,11 @@ prestart(() => {
         set(packet) {
             if (!packet.gameModelState) return
             function setState(state: sc.GAME_MODEL_STATE) {
-                assert(state != sc.GAME_MODEL_STATE.TITLE)
                 if (state == sc.GAME_MODEL_STATE.GAME) {
                     sc.model.enterGame()
                 } else if (state == sc.GAME_MODEL_STATE.CUTSCENE) {
                     sc.model.enterCutscene()
-                } else assert(false)
+                }
             }
 
             if (packet.gameModelState.map !== undefined) {
