@@ -84,10 +84,6 @@ prestart(() => {
                 return
             }
 
-            if (ig.game.entitiesByNetid[this.netid]) {
-                delete ig.game.entitiesByNetid[this.netid]
-            }
-
             assert(!ig.game.entitiesByNetid[netid], 'Entity netid overlap')
             this.netid = netid
             ig.game.entitiesByNetid[this.netid] = this

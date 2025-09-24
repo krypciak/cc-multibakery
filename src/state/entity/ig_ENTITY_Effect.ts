@@ -84,19 +84,13 @@ prestart(() => {
         getState,
         setState,
         createNetid() {
-            if (!this.effect) return
             if (ig.ignoreEffectNetid) return undefined
 
             return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
         },
-        init(x, y, z, settings) {
-            this.parent(x, y, z, settings)
-            this.setNetid(x, y, z, settings)
-        },
         reset(x, y, z, settings) {
             this.effect = undefined
             this.parent(x, y, z, settings)
-            this.setNetid(x, y, z, settings)
             this.lastSent = new WeakMap()
         },
     })

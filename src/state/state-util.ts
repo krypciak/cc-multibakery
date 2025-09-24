@@ -195,4 +195,32 @@ export class StateMemory {
     diffVec3(vec: Vec3) {
         return this.diff(vec, Vec3.equal, Vec3.create)
     }
+
+    diffGrowingSet<V>(currSet: Set<V>) {
+        const i = this.i++
+        if (this.data.length <= i) {
+            this.data.push(new Set(currSet))
+            return [...currSet]
+        } else {
+            const lastSet = this.data[i] as Set<V>
+
+            const newValues: V[] = []
+            for (const currValue of currSet) {
+                if (!lastSet.has(currValue)) {
+                    newValues.push(currValue)
+                }
+            }
+
+            if (newValues.length == 0) return undefined
+            this.data[i] = new Set(currSet)
+            return newValues
+        }
+    }
+
+    static applyGrowingSet<V>(into: Set<V>, change: V[] | undefined) {
+        if (!change) return
+        for (const v of change) {
+            into.add(v)
+        }
+    }
 }

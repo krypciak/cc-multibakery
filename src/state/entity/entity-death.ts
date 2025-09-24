@@ -1,7 +1,7 @@
-import { entityIgnoreDeath, entityNetidStatic } from '../../misc/entity-netid'
+import { entityIgnoreDeath } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { getEntityTypeId } from '../entity'
-import { shouldCollectStateData } from '../state-util'
+import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, StateKey } from '../states'
 
 declare global {
@@ -9,27 +9,20 @@ declare global {
         entityDeaths?: string[]
     }
     namespace ig {
-        var entityDeaths: string[] | undefined
-        var entityDeathsStatic: string[]
-        var entityDeathsStaticEverSent: Set<StateKey>
+        var entityDeaths: Set<string> | undefined
+        var entityDeathsStateMemory: StateMemory.MapHolder<StateKey>
     }
 }
 
 prestart(() => {
     addStateHandler({
         get(packet, player) {
-            packet.entityDeaths = ig.entityDeaths
+            if (!ig.entityDeaths) return
 
-            ig.entityDeathsStaticEverSent ??= new Set()
-            if (ig.entityDeathsStatic && (!player || !ig.entityDeathsStaticEverSent.has(player))) {
-                if (player) ig.entityDeathsStaticEverSent.add(player)
+            ig.entityDeathsStateMemory ??= {}
+            const memory = StateMemory.getBy(ig.entityDeathsStateMemory, player)
 
-                packet.entityDeaths ??= []
-                packet.entityDeaths.push(...ig.entityDeathsStatic)
-            }
-        },
-        clear() {
-            ig.entityDeaths = undefined
+            packet.entityDeaths = memory.diffGrowingSet(ig.entityDeaths)
         },
         set(packet) {
             if (!packet.entityDeaths) return
@@ -48,6 +41,11 @@ prestart(() => {
     if (!PHYSICSNET) return
 
     ig.Entity.inject({
+        setNetid(x, y, z, settings) {
+            ig.entityDeaths?.delete(this.netid)
+            this.parent(x, y, z, settings)
+            ig.entityDeaths?.delete(this.netid)
+        },
         kill(levelChange) {
             this.parent(levelChange)
             if (!this.netid) return
@@ -55,13 +53,8 @@ prestart(() => {
             if (entityIgnoreDeath.has(typeId)) return
 
             if (shouldCollectStateData()) {
-                ig.entityDeaths ??= []
-                ig.entityDeaths.push(this.netid)
-            }
-
-            if (entityNetidStatic.has(typeId)) {
-                ig.entityDeathsStatic ??= []
-                ig.entityDeathsStatic.push(this.netid)
+                ig.entityDeaths ??= new Set()
+                ig.entityDeaths.add(this.netid)
             }
         },
     })

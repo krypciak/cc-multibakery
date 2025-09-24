@@ -175,7 +175,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         await map.init()
     }
 
-    async unloadMap(map: CCMap) {
+    unloadMap(map: CCMap) {
         assert(map)
         this.maps.delete(map.name)
         map.destroy()

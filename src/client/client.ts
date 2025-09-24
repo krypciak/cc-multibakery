@@ -303,8 +303,10 @@ export class Client extends InstanceUpdateable {
 
     createPlayer(pos: Vec3) {
         if (this.dummy && !this.dummy._killed) {
-            this.dummy.gui.crosshair.kill(true)
-            this.dummy.kill(true)
+            runTask(instanceinator.instances[this.dummy._instanceId], () => {
+                this.dummy.gui.crosshair.kill(true)
+                this.dummy.kill(true)
+            })
         }
         if (multi.server instanceof PhysicsServer && this.dummy) assert(this.dummy._killed)
 
