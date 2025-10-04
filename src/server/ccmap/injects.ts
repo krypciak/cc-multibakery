@@ -202,6 +202,11 @@ prestart(() => {
 
 prestart(() => {
     sc.ItemDropEntity.inject({
+        collectItem(count) {
+            if (!ig.ccmap) return this.parent(count)
+            assert(this.target instanceof dummy.DummyPlayer)
+            inputBackup(this.target.inputManager, () => this.parent(count))
+        },
         onKill() {
             if (!ig.ccmap) return this.parent()
             assert(!ig.game.playerEntity)
