@@ -246,7 +246,7 @@ function registerOpts() {
                     },
                     serverGodmode: {
                         type: 'CHECKBOX',
-                        init: true,
+                        init: false,
                         name: 'Godmode',
                         description: 'Set all player stats to max',
                     },
@@ -291,6 +291,7 @@ prestart(() => {
 
 poststart(() => {
     if (Opts.clientLogin == defaultClientUsername) {
+        /* trigger option chengeEvent */
         Opts.clientLogin = defaultClientUsername
     }
 })
