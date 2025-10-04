@@ -11,9 +11,9 @@
     },
     "dependencies": {
         "crosscode": ">=1.4.0",
-        "cc-instanceinator": ">=0.0.1",
-        "nax-ccuilib": ">=1.5.0",
-        "ccmodmanager": ">=1.1.0"
+        "cc-instanceinator": ">=1.0.0",
+        "nax-ccuilib": ">=1.5.2",
+        "ccmodmanager": ">=1.1.1"
     },
     "plugin": "plugin.js"
 }
