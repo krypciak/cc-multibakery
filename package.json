@@ -5,7 +5,7 @@
     "scripts": {
         "start": "bun build/build.ts build",
         "watch": "bun build/build.ts watch",
-        "build": "bun build/build.ts build minifySyntax=true minifyWhitespace=true",
+        "build": "bun build/build.ts build",
         "regenerateBin": "bun build/build.ts build forceRegenerateBinaryEncodeDecodeScripts=true",
         "buildRemote": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false extraTreeShaking=true",
         "buildRemoteBrowser": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
