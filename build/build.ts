@@ -79,7 +79,7 @@ async function run(
                 /* fflate fix */
                 output = output.replace(
                     /import\s*\{\s*createRequire\s*\}\s*from\s*"module";/,
-                    'const { createRequire } = require("module")'
+                    'const { createRequire } = require("module");'
                 )
 
                 if (noWrite) {
