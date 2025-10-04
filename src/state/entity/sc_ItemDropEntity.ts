@@ -67,7 +67,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.ItemDropEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.ItemDropEntity, typeId })
+    registerNetEntity({ entityClass: sc.ItemDropEntity, typeId, ignoreDeath: true })
 
     sc.ItemDropEntity.forceRemotePhysics = true
 

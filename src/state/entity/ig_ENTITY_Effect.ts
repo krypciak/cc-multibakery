@@ -6,7 +6,6 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
-import { TemporarySet } from '../../misc/temporary-set'
 import { f64, i5, u16 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
@@ -95,11 +94,7 @@ prestart(() => {
         },
     })
 
-    const effectsSpawnedBefore = new TemporarySet<string>(400)
     ig.ENTITY.Effect.create = (netid: string, state: Return) => {
-        if (effectsSpawnedBefore.has(netid)) return
-        effectsSpawnedBefore.push(netid)
-
         const { target, target2, effect } = resolveObjects(state)
         const { x, y, z } = state.pos ?? { x: 0, y: 0, z: 0 }
         const settings: ig.ENTITY.Effect.Settings = Object.assign({}, state, {

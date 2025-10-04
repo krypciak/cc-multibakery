@@ -1,7 +1,13 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler, StateKey } from './states'
 import { assert } from '../misc/assert'
-import { entityApplyPriority, entitySendEmpty, EntityTypeId, entityTypeIdToClass } from '../misc/entity-netid'
+import {
+    entityApplyPriority,
+    entityIgnoreDeath,
+    entitySendEmpty,
+    EntityTypeId,
+    entityTypeIdToClass,
+} from '../misc/entity-netid'
 import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
 import { cleanRecord } from './state-util'
 
@@ -28,6 +34,7 @@ import './entity/ig_ENTITY_NPC'
 import './entity/ig_ENTITY_BounceBlock'
 import './entity/ig_ENTITY_BounceSwitch'
 import './entity/ig_ENTITY_Destructible'
+import { TemporarySet } from '../misc/temporary-set'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 
@@ -62,6 +69,7 @@ export function getEntityTypeId(netid: string): EntityTypeId {
 }
 
 prestart(() => {
+    const entitiesSpawnedBefore = new TemporarySet<string>(1000)
     addStateHandler({
         get(packet, player, cache) {
             for (const entity of ig.game.entities) {
@@ -96,6 +104,11 @@ prestart(() => {
                 if (!entity) {
                     const clazz = entityTypeIdToClass[typeId]
                     if (!clazz.create) continue
+
+                    if (entityIgnoreDeath.has(typeId)) {
+                        if (entitiesSpawnedBefore.has(netid)) continue
+                        entitiesSpawnedBefore.push(netid)
+                    }
 
                     entity = clazz.create(netid, data)
                     if (!entity) continue
