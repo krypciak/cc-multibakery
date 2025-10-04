@@ -1,6 +1,6 @@
 <!-- markdownlint-disable MD013 MD024 MD001 MD045 -->
 
-# CrossCode multiplayer server
+# CrossCode coop/multiplayer
 
 ## Building
 
