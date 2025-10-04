@@ -114,7 +114,18 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
     if (state.items) this.model.items = state.items
-    if (state.itemsDiff) StateMemory.applyChangeRecord(this.model.items, state.itemsDiff)
+    if (state.itemsDiff) {
+        StateMemory.applyChangeRecord(this.model.items, state.itemsDiff)
+        for (const id of Object.keysT(state.itemsDiff)) {
+            const amount = state.itemsDiff[id]
+            notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
+                id,
+                amount,
+                skip: false,
+                cutscene: undefined,
+            })
+        }
+    }
 
     if (state.skillPoints) StateMemory.applyChangeRecord(this.model.skillPoints, state.skillPoints)
     if (state.skills) {

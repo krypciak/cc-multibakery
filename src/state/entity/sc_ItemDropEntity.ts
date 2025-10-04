@@ -22,10 +22,12 @@ type Return = ReturnType<typeof getState>
 function getState(this: sc.ItemDropEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
+    const dropType = Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0]
+
     return {
         pos: memory.diffVec3(this.coll.pos),
 
-        dropType: memory.onlyOnce(Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0]),
+        dropType: memory.onlyOnce(dropType),
         item: memory.onlyOnce(this.item) as ItemType,
         target: memory.onlyOnce(this.target.netid),
         amount: memory.onlyOnce(this.amount) as u8,

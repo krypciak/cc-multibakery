@@ -53,7 +53,7 @@ prestart(() => {
         const skipItems = new Set([150, 428])
         for (let i = 0; i < sc.inventory.items.length; i++) {
             if (skipItems.has(i)) continue
-            model.items[i] = 99
+            model.items[i] = 90
             model._addNewItem(i)
         }
         model.updateStats()
