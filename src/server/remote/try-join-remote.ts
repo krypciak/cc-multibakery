@@ -29,7 +29,7 @@ export async function tryJoinRemote(
     multi.setServer(server)
     await server.start()
 
-    const { client, ackData } = await server.tryJoinClient(joinData, false)
+    const { client, ackData } = await server.tryJoinClient(joinData)
     if (client) server.setMasterClient(client)
     if (ackData.status != 'ok') {
         await multi.destroyNextFrameAndStartLoop()

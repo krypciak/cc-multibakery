@@ -131,20 +131,34 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         sendPhysicsServerPacket()
     }
 
+    private validatePrefferedMap(
+        mapName: string | undefined,
+        connection: NetConnection | undefined
+    ): string | undefined {
+        if (!mapName || !this.maps.has(mapName)) return
+
+        if (connection && !connection.clients.map(client => client.mapName).includes(mapName)) return
+
+        return mapName
+    }
+
     async tryJoinClient(
         joinData: ClientJoinData,
-        remote: boolean
+        connection: NetConnection
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
         const username = joinData.username
 
         if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
         if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
 
+        const mapName = this.validatePrefferedMap(joinData.prefferedMap, connection)
+
         const client = await this.createAndJoinClient({
             username,
-            inputType: remote ? 'puppet' : 'clone',
-            remote,
+            inputType: connection ? 'puppet' : 'clone',
+            remote: !!connection,
             initialInputType: joinData.initialInputType,
+            mapName,
         })
 
         return { client, ackData: { status: 'ok', mapName: client.mapName } }

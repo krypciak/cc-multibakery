@@ -7,6 +7,7 @@ import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
+import { NetConnection } from '../net/connection'
 
 export interface ServerSettings {
     tps: number
@@ -29,6 +30,7 @@ export interface ServerSettings {
 export interface ClientJoinData {
     username: string
     initialInputType: ig.INPUT_DEVICES
+    prefferedMap?: string
 }
 export function createClientJoinData(options: ClientJoinData): ClientJoinData {
     return options
@@ -196,7 +198,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     abstract tryJoinClient(
         joinData: ClientJoinData,
-        remote: boolean
+        connection?: NetConnection
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
 
     leaveClient(client: Client) {

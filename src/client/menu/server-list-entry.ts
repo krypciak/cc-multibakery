@@ -233,6 +233,7 @@ prestart(() => {
             const joinData = createClientJoinData({
                 username,
                 initialInputType: ig.input.currentDevice,
+                prefferedMap: ig.game.mapName,
             })
             const resp = await tryJoinRemote(this.serverInfo, joinData)
             showTryNetJoinResponseDialog(joinData, resp)

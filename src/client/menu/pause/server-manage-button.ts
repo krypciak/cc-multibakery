@@ -128,9 +128,10 @@ prestart(() => {
                                 const joinData = createClientJoinData({
                                     username,
                                     initialInputType: inputButton.inputType,
+                                    prefferedMap: ig.game.mapName,
                                 })
                                 const igBackup = ig
-                                const { ackData } = await multi.server.tryJoinClient(joinData, false)
+                                const { ackData } = await multi.server.tryJoinClient(joinData)
                                 igBackup.game.scheduledTasks.push(() => {
                                     showTryNetJoinResponseDialog(joinData, ackData)
                                 })

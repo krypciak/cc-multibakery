@@ -69,9 +69,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     async tryJoinClient(
         joinData: ClientJoinData,
-        remote: boolean
+        connection?: NetConnection
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
-        assert(!remote)
+        assert(!connection)
 
         const ackData = await this.netManager.sendJoin(joinData)
         let client: Client | undefined
@@ -80,7 +80,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             client = await this.createAndJoinClient({
                 username: joinData.username,
                 inputType: 'clone',
-                remote,
+                remote: false,
                 initialInputType: joinData.initialInputType,
                 mapName: ackData.mapName,
             })

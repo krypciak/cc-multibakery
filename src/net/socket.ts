@@ -93,7 +93,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             socket.on('update', data => server.onNetReceiveUpdate(connection, data))
             socket.on('join', async (data, callback) => {
                 if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-                const { client, ackData } = await server.tryJoinClient(data, true)
+                const { client, ackData } = await server.tryJoinClient(data, connection)
                 if (ackData.status == 'ok') connection.join(client!)
                 callback(ackData)
             })
