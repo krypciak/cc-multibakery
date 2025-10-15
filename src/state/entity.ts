@@ -10,6 +10,7 @@ import {
 } from '../misc/entity-netid'
 import { encodeJsonSafeNumber } from '../misc/json-safe-encoding'
 import { cleanRecord } from './state-util'
+import { TemporarySet } from '../misc/temporary-set'
 
 import './entity/entity-death'
 import './entity/entity-hit-effect'
@@ -34,7 +35,7 @@ import './entity/ig_ENTITY_NPC'
 import './entity/ig_ENTITY_BounceBlock'
 import './entity/ig_ENTITY_BounceSwitch'
 import './entity/ig_ENTITY_Destructible'
-import { TemporarySet } from '../misc/temporary-set'
+import './entity/ig_ENTITY_EnemyCounter'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 
