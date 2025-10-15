@@ -15,7 +15,8 @@ declare global {
     }
 }
 export function openManagerServerPopup(immediately?: boolean) {
-    ig.multibakeryManageServerPopup ??= new multi.class.ManageServerPopup()
+    ig.multibakeryManageServerPopup?.closeMenu()
+    ig.multibakeryManageServerPopup = new multi.class.ManageServerPopup()
     ig.multibakeryManageServerPopup.openMenu()
     if (immediately) {
         ig.multibakeryManageServerPopup.doStateTransition('DEFAULT', true)
@@ -189,6 +190,7 @@ prestart(() => {
         closeMenu() {
             this.parent()
             ig.canLeavePauseMenu = true
+            ig.multibakeryManageServerPopup = undefined
         },
         updateContent() {
             this.setContent('Server', [
