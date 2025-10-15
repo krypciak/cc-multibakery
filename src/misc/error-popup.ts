@@ -2,7 +2,9 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type {} from 'ccmodmanager/types/local-mods'
 import { prestart } from '../loading-stages'
 import { RemoteServer } from '../server/remote/remote-server'
+import { PhysicsServer } from '../server/physics/physics-server'
 import Multibakery from '../plugin'
+import { assert } from './assert'
 
 prestart(() => {
     ig.System.inject({
@@ -29,20 +31,19 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const instName = inst.name
 
     const server = multi.server
-    let serverTypeSpecificInfo: string
+    let serverTypeSpecificInfo: string = `clients: [${[...server.clients.values()].map(c => `(${c.username}, ${c.mapName})`).join(', ')}]\n`
     if (server instanceof RemoteServer) {
         const connectionInfo = server.netManager?.conn?.getConnectionInfo()
-        serverTypeSpecificInfo = `${connectionInfo ? `connection: ${connectionInfo}` : ''}`
-    } else {
-        serverTypeSpecificInfo = `physics ay`
-    }
+        serverTypeSpecificInfo += `${connectionInfo ? `connection: ${connectionInfo}` : ''}\n`
+    } else if (server instanceof PhysicsServer) {
+    } else assert(false)
 
     const infoText =
         `ccV: ${version},   cclV: ${isCCL3 ? '3' : '2'},  OS: ${os},   platform: ${platform},   ` +
         `nwjsV: ${nwjsVersion},   browserV: ${browserVersion},   instance: ${instName}` +
         '\n' +
         serverTypeSpecificInfo +
-        '\n\n' +
+        '\n' +
         `${stackTrace}`
 
     const mods: [string, string | undefined][] = isCCL3
