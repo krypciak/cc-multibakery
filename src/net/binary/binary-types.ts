@@ -1,4 +1,4 @@
-import { f32 } from 'ts-binarifier/src/type-aliases'
+import { f32, u16 } from 'ts-binarifier/src/type-aliases'
 
 export {}
 declare global {
@@ -12,3 +12,5 @@ declare global {
         z: f32
     }
 }
+
+export type COMBATANT_PARTY = u16

@@ -4,10 +4,11 @@ import { cleanRecord, StateMemory } from './state-util'
 import { PvpTeam } from '../pvp/pvp'
 import { assert } from '../misc/assert'
 import { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
+import { COMBATANT_PARTY } from '../net/binary/binary-types'
 
 export interface PvpTeamSerialized {
     name: string
-    party: sc.COMBATANT_PARTY
+    party: COMBATANT_PARTY
     players: string[]
 }
 
@@ -17,7 +18,7 @@ interface PvpObj {
     teams?: PvpTeamSerialized[]
     round?: u8
     state?: u3
-    points?: PartialRecord<sc.COMBATANT_PARTY, u6>
+    points?: PartialRecord<COMBATANT_PARTY, u6>
 }
 
 declare global {
