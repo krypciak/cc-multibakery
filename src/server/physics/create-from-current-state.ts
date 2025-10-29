@@ -5,7 +5,10 @@ import { PhysicsServer } from './physics-server'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
-    multi.storage.savePlayerState(username, ig.game.playerEntity as dummy.DummyPlayer, ig.game.mapName, ig.game.marker)
+    multi.storage.savePlayerState(username, ig.game.playerEntity as dummy.DummyPlayer, {
+        map: ig.game.mapName,
+        marker: ig.game.marker,
+    })
 
     const playerDataBackup = {
         pos: Vec3.create(ig.game.playerEntity.coll.pos),

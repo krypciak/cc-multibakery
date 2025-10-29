@@ -1,6 +1,6 @@
 import { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
-import { ClientJoinAckData, ClientJoinData, Server, ServerSettings } from '../server'
+import { ClientJoinAckData, ClientJoinData, MapTpInfo, Server, ServerSettings } from '../server'
 import { isRemoteServerUpdatePacket, RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import { NetServerInfoPhysics } from '../../client/menu/server-info'
@@ -132,14 +132,20 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     }
 
     private validatePrefferedMap(
-        mapName: string | undefined,
+        tpInfo: MapTpInfo | undefined,
         connection: NetConnection | undefined
-    ): string | undefined {
-        if (!mapName || !this.maps.has(mapName)) return
+    ): MapTpInfo | undefined {
+        const map = tpInfo?.map
+        if (!map || !this.maps.has(map)) return
 
-        if (connection && !connection.clients.map(client => client.mapName).includes(mapName)) return
+        if (
+            connection &&
+            !connection.clients.some(client => client.tpInfo.map == tpInfo.map && client.tpInfo.marker == tpInfo.marker)
+        ) {
+            return
+        }
 
-        return mapName
+        return tpInfo
     }
 
     async tryJoinClient(
@@ -151,17 +157,17 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
         if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
 
-        const mapName = this.validatePrefferedMap(joinData.prefferedMap, connection)
+        const tpInfo = this.validatePrefferedMap(joinData.prefferedTpInfo, connection)
 
         const client = await this.createAndJoinClient({
             username,
             inputType: connection ? 'puppet' : 'clone',
             remote: !!connection,
             initialInputType: joinData.initialInputType,
-            mapName,
+            tpInfo,
         })
 
-        return { client, ackData: { status: 'ok', mapName: client.mapName } }
+        return { client, ackData: { status: 'ok', mapName: client.tpInfo.map } }
     }
 
     protected joinClient(client: Client): Promise<void> {

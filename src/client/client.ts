@@ -22,6 +22,7 @@ import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
 import { linkMusic } from '../server/music'
+import { MapTpInfo } from '../server/server'
 
 declare global {
     namespace ig {
@@ -34,7 +35,7 @@ export type ClientSettings = {
     remote: boolean
     noShowInstance?: boolean
     forceDraw?: boolean
-    mapName?: string
+    tpInfo?: MapTpInfo
 } & (
     | {
           inputType: 'clone'
@@ -51,8 +52,7 @@ export class Client extends InstanceUpdateable {
     username: string
     inputManager!: dummy.InputManager
     dummy!: dummy.DummyPlayer
-    mapName: string = ''
-    marker?: Nullable<string>
+    tpInfo: MapTpInfo = { map: '' }
     ready: boolean = false
     justTeleported: boolean = false
 
@@ -159,32 +159,33 @@ export class Client extends InstanceUpdateable {
         }
     }
 
-    async teleportInitial(mapNameOverride?: string) {
+    async teleportInitial(tpInfoOverride?: MapTpInfo) {
         const state = this.getSaveState()
 
-        const mapName = mapNameOverride ?? state?.mapName ?? multi.server.settings.defalutMap?.map ?? 'multibakery/dev'
-        const marker = state?.marker ?? multi.server.settings.defalutMap?.marker ?? 'entrance'
-        await this.teleport(mapName, marker)
+        const tpInfo: MapTpInfo = {
+            map: tpInfoOverride?.map ?? state?.map ?? multi.server.settings.defaultMap?.map ?? 'multibakery/dev',
+            marker: tpInfoOverride?.marker ?? state?.marker ?? multi.server.settings.defaultMap?.marker ?? 'entrance',
+        }
+        await this.teleport(tpInfo)
     }
 
-    async teleport(mapName: string, marker: Nullable<string> | undefined) {
+    async teleport(tpInfo: MapTpInfo) {
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
-            multi.storage.savePlayerState(this.dummy.data.username, this.dummy, mapName, marker)
+            multi.storage.savePlayerState(this.dummy.data.username, this.dummy, tpInfo)
         }
 
         this.ready = false
-        const oldMap = multi.server.maps.get(this.mapName)
+        const oldMap = multi.server.maps.get(this.tpInfo.map)
         if (oldMap && this.dummy) oldMap.leave(this)
         if (oldMap) oldMap.forceUpdate++
 
-        this.mapName = mapName
-        this.marker = marker
+        this.tpInfo = tpInfo
         this.justTeleported = true
 
-        let map = multi.server.maps.get(this.mapName)
+        let map = multi.server.maps.get(this.tpInfo.map)
         if (!map) {
-            await multi.server.loadMap(this.mapName)
+            await multi.server.loadMap(this.tpInfo.map)
             map = this.getMap()
         }
         await map.readyPromise
@@ -198,7 +199,7 @@ export class Client extends InstanceUpdateable {
         map.enter(this)
         runTask(map.inst, () => {
             if (multi.server instanceof PhysicsServer) {
-                teleportPlayerToProperMarker(this.dummy, marker, undefined, true)
+                teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker, undefined, true)
             }
             this.ready = true
         })
@@ -351,7 +352,7 @@ export class Client extends InstanceUpdateable {
     getMap(noAssert: true): CCMap | undefined
     getMap(noAssert?: false): CCMap
     getMap(noAssert?: any): CCMap | undefined {
-        const map = multi.server.maps.get(this.mapName)
+        const map = multi.server.maps.get(this.tpInfo.map)
         if (!noAssert) assert(map)
         return map
     }
@@ -361,9 +362,9 @@ export class Client extends InstanceUpdateable {
 
         this.inputManager?.destroy()
 
-        if (this.dummy) multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.mapName, this.marker)
+        if (this.dummy) multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.tpInfo)
 
-        const map = multi.server.maps.get(this.mapName)
+        const map = multi.server.maps.get(this.tpInfo.map)
         if (map) {
             map.leave(this)
             for (const obj of map.onLinkChange) obj.onClientDestroy(this)

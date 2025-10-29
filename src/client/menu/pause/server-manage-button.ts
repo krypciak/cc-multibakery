@@ -129,7 +129,7 @@ prestart(() => {
                                 const joinData = createClientJoinData({
                                     username,
                                     initialInputType: inputButton.inputType,
-                                    prefferedMap: ig.game.mapName,
+                                    prefferedTpInfo: ig.client?.tpInfo,
                                 })
                                 const igBackup = ig
                                 const { ackData } = await multi.server.tryJoinClient(joinData)

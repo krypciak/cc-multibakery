@@ -7,12 +7,10 @@ import { assert } from '../../../misc/assert'
 import './save-slot-button'
 import './pause-screen-save-button'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { MapTpInfo } from '../../server'
 
 type PlayerGetStateReturn = ReturnType<typeof getState>
-type PlayerState = PlayerGetStateReturn & {
-    mapName: string
-    marker?: Nullable<string>
-}
+type PlayerState = PlayerGetStateReturn & MapTpInfo
 
 export interface MultibakerySaveData {
     players?: Record<string, PlayerState>
@@ -117,15 +115,13 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.commitSave(save, slotId)
     }
 
-    savePlayerState(username: string, player: ig.ENTITY.Player, mapName: string, marker?: Nullable<string>) {
+    savePlayerState(username: string, player: ig.ENTITY.Player, tpInfo: MapTpInfo) {
         this.currentData ??= {}
         this.currentData.players ??= {}
         this.currentData.players[username] = {
             ...(player.getState!() as PlayerGetStateReturn),
             animAlpha: 1,
-
-            mapName,
-            marker,
+            ...tpInfo,
         }
     }
 
@@ -135,7 +131,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                 for (const client of map.clients) {
                     if (!client.ready) continue
 
-                    this.savePlayerState(client.username, client.dummy, map.name, client.marker)
+                    this.savePlayerState(client.username, client.dummy, client.tpInfo)
                 }
             })
         }

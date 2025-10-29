@@ -324,7 +324,7 @@ function genTest(name: string, moves: string, map: string, expected: number, par
                 username: 'aoc',
                 inputType: 'puppet',
                 remote: false,
-                mapName: map,
+                tpInfo: { map },
             })
             this.map = multi.server.maps.get(map)!
             assert(this.map)

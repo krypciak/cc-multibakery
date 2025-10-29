@@ -31,7 +31,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const instName = inst.name
 
     const server = multi.server
-    let serverTypeSpecificInfo: string = `clients: [${[...server.clients.values()].map(c => `(${c.username}, ${c.mapName})`).join(', ')}]\n`
+    let serverTypeSpecificInfo: string = `clients: [${[...server.clients.values()].map(c => `(${c.username}, ${c.tpInfo.map})`).join(', ')}]\n`
     if (server instanceof RemoteServer) {
         const connectionInfo = server.netManager?.conn?.getConnectionInfo()
         serverTypeSpecificInfo += `${connectionInfo ? `connection: ${connectionInfo}` : ''}\n`

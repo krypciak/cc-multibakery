@@ -78,7 +78,7 @@ prestart(() => {
             const destMapName = this.map.replace(/\./g, '/')
 
             runTask(multi.server.inst, async () => {
-                await client.teleport(destMapName, this.marker)
+                await client.teleport({ map: destMapName, marker: this.marker })
             })
         },
     })

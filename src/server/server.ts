@@ -10,6 +10,11 @@ import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/
 import { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
 
+export interface MapTpInfo {
+    map: string
+    marker?: Nullable<string>
+}
+
 export interface ServerSettings {
     tps: number
     forceConsistentTickTimes?: boolean
@@ -21,17 +26,14 @@ export interface ServerSettings {
     disableMapDisplayCameraMovement?: boolean
     displayClientInstances?: boolean
     displayRemoteClientInstances?: boolean
-    defalutMap?: {
-        map: string
-        marker?: string
-    }
+    defaultMap?: MapTpInfo
     attemptCrashRecovery?: boolean
 }
 
 export interface ClientJoinData {
     username: string
     initialInputType: ig.INPUT_DEVICES
-    prefferedMap?: string
+    prefferedTpInfo?: MapTpInfo
 }
 export function createClientJoinData(options: ClientJoinData): ClientJoinData {
     return options
@@ -197,7 +199,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     async createAndJoinClient(settings: ClientSettings) {
         const client = await Client.create(settings)
         await this.joinClient(client)
-        await client.teleportInitial(settings.mapName)
+        await client.teleportInitial(settings.tpInfo)
 
         return client
     }

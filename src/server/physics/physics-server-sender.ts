@@ -7,6 +7,7 @@ import { NetConnection } from '../../net/connection'
 import { cleanRecord } from '../../state/state-util'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { f64 } from 'ts-binarifier/src/type-aliases'
+import { MapTpInfo } from '../server'
 
 export function sendPhysicsServerPacket() {
     assert(multi.server instanceof PhysicsServer)
@@ -19,7 +20,7 @@ export function sendPhysicsServerPacket() {
         const readyMaps = multi.server.connectionReadyMaps.get(conn)
 
         for (const client of conn.clients) {
-            const mapName = client.mapName
+            const mapName = client.tpInfo.map
             const map = multi.server.maps.get(mapName)
             if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
 
@@ -63,7 +64,10 @@ function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey
     runTask(map.inst, () => getStateUpdatePacket(dest, key, cache))
 }
 
-type PlayerMapChangeRecord = Record</* mapName*/ string, /* username */ string[]>
+type PlayerMapChangeRecord = Record<
+    /* mapName*/ string,
+    /* username */ { username: string; marker: MapTpInfo['marker'] }[]
+>
 export interface PhysicsServerUpdatePacket {
     /* sentAt has to be first! my custom socket-io-parser extracts this timestamp from the binary data */
     sendAt: f64
@@ -80,7 +84,7 @@ function getRemoteServerUpdatePacket(
     const maps = conn.clients.reduce((acc, client) => {
         if (client.justTeleported) {
             client.justTeleported = false
-            ;(acc[client.mapName] ??= []).push(client.username)
+            ;(acc[client.tpInfo.map] ??= []).push({ username: client.username, marker: client.tpInfo.marker })
         }
         return acc
     }, {} as PlayerMapChangeRecord)

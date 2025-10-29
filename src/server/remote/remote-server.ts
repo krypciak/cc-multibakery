@@ -82,7 +82,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 inputType: 'clone',
                 remote: false,
                 initialInputType: joinData.initialInputType,
-                mapName: ackData.mapName,
+                tpInfo: { map: ackData.mapName! },
             })
             assert(this.netManager.conn)
             this.netManager.conn.join(client)
@@ -153,10 +153,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             // console.log(JSON.stringify(data.playerMaps, null, 4))
             for (const mapName in data.playerMaps) {
                 const mapRecord = data.playerMaps[mapName]
-                for (const username of mapRecord) {
+                for (const { username, marker } of mapRecord) {
                     const client = multi.server.clients.get(username)
                     assert(client)
-                    client.teleport(mapName, undefined)
+                    client.teleport({ map: mapName, marker })
                 }
             }
         }

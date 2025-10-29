@@ -83,7 +83,7 @@ poststart(() => {
                         // forceJsonCommunication: true,
                     },
                 },
-                defalutMap: {
+                defaultMap: {
                     map: 'multibakery/dev',
                     // map: 'rhombus-dng/room-1',
                     // map: 'rhombus-dng/boss',

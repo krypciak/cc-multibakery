@@ -27,7 +27,7 @@ prestart(() => {
 
             const locations = getPlayerLocations()
             if (player) {
-                delete locations[player.mapName]
+                delete locations[player.tpInfo.map]
             }
             packet.playerLocations = memory.diffRecord2Deep(
                 locations,
