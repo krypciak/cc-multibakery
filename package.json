@@ -1,6 +1,6 @@
 {
     "name": "cc-multibakery",
-    "version": "0.5.2",
+    "version": "0.5.3",
     "type": "module",
     "scripts": {
         "start": "bun build/build.ts build",
