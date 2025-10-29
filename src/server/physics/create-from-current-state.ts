@@ -72,6 +72,9 @@ export async function closePhysicsServerAndSaveState() {
     multi.storage.save()
     await multi.destroyNextFrameAndStartLoop()
 
+    ig.system.setMusicVolume(sc.options.values['volume-music'])
+    ig.system.setSoundVolume(sc.options.values['volume-sound'])
+
     if (!ig.game.playerEntity) return
 
     sc.model.enterRunning()
