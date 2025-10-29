@@ -88,6 +88,8 @@ export class Client extends InstanceUpdateable {
             createClientConnectionInfoLabel(this)
             createClientNetworkPacketTrafficLabel(this)
         }
+
+        removeAddon(this.inst.sc.npcRunner, this.inst.ig.game)
     }
 
     private initInputManager() {
