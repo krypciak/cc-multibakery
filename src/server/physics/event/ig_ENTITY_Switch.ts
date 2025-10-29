@@ -10,7 +10,7 @@ prestart(() => {
             if (!(multi.server instanceof PhysicsServer)) return this.parent(ball)
 
             if ('combatant' in ball && ball.combatant && ball.combatant instanceof ig.Entity)
-                setNextSetBy(ball.combatant)
+                setNextSetBy(ball.getCombatantRoot())
 
             const ret = this.parent(ball)
             unsetNextSetBy()
