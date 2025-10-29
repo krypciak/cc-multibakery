@@ -57,9 +57,9 @@ prestart(() => {
         resolveItemDrops(enemyEntity) {
             if (!ig.ccmap) return this.parent(enemyEntity)
             assert(!ig.game.playerEntity)
-            ig.game.playerEntity = ig.ccmap.clients[0].dummy
-            this.parent(enemyEntity)
-            ig.game.playerEntity = undefined as any
+            const player = enemyEntity.getLastDamagingPlayer() ?? ig.ccmap.clients[0]?.dummy
+            if (!player) return
+            inputBackup(player.inputManager, () => this.parent(enemyEntity))
         },
     })
 
