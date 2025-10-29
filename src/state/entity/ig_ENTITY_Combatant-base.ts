@@ -60,7 +60,7 @@ export function setState(this: ig.ENTITY.Combatant, state: Return) {
 prestart(() => {
     sc.CombatParams.inject({
         setBaseParams(baseParams, noEffect) {
-            if (!(multi.server instanceof RemoteServer)) this.parent(baseParams, noEffect)
+            if (!(multi.server instanceof RemoteServer)) return this.parent(baseParams, noEffect)
         },
     })
 })

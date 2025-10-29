@@ -12,6 +12,8 @@
 - Fix crash when enemy drops item and player quickly leaves map
 - Direct enemy drops to the player that finished it off
 - Fix npc runners spawn rate multiplying with the number of clients on a map
+- Make newly spawned client marker the same as the player that issued the spawn
+- Fix rare remote server crash on ig.ENTITY.Ball despawn
 
 ## [0.5.3] 2025-10-29
 ## [0.5.2] 2025-10-29

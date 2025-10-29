@@ -29,7 +29,8 @@ function getState(this: ig.ENTITY.Ball, player?: StateKey) {
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {
     if (state.pos) Vec3.assign(this.coll.pos, state.pos)
-    this.update()
+
+    ig.ENTITY.Projectile.prototype.update.call(this)
 }
 
 prestart(() => {
@@ -86,19 +87,16 @@ prestart(() => {
         ig.ENTITY.Ball.inject({
             update() {
                 if (!(multi.server instanceof RemoteServer)) return this.parent()
-                if (!ig.settingState) return
-
-                this.parent()
             },
             onBounce(pos, collData) {
-                if (!(multi.server instanceof RemoteServer)) this.parent(pos, collData)
+                if (!(multi.server instanceof RemoteServer)) return this.parent(pos, collData)
             },
         })
     }
     if (PHYSICSNET) {
         ig.ENTITY.Ball.inject({
             setBallInfo(ballInfo, setFactors) {
-                if (!(multi.server instanceof RemoteServer)) this.parent(ballInfo, setFactors)
+                if (!(multi.server instanceof RemoteServer)) return this.parent(ballInfo, setFactors)
 
                 ig.ignoreEffectNetid = true
                 this.parent(ballInfo, setFactors)
