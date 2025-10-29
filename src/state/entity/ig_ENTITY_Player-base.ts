@@ -34,9 +34,13 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
     memory ??= StateMemory.getBy(this, player)
-    const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (u10 | null)[]) : undefined
+
+    const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
     const itemsDiff =
-        !player || this == player.dummy ? memory.diffRecord(this.model.items as Record<u10, u10 | null>) : undefined
+        !player || this == player.dummy
+            ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null>)
+            : undefined
+
     return {
         ...igEntityCombatant.getState.call(this, memory),
 
@@ -52,7 +56,7 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
         items,
         itemsDiff: items ? undefined : itemsDiff,
         skillPoints: !player || this == player.dummy ? memory.diffRecord(this.model.skillPoints as u8[]) : undefined,
-        skills: !player || this == player.dummy ? memory.diffRecord(getSkills.call(this)) : undefined,
+        skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
 
         charge: memory.diff(chargeLevel as u3),
         element: memory.diff(this.model.currentElementMode as u3),
