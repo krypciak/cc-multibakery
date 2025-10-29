@@ -8,6 +8,7 @@ import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 import { NetConnection } from '../net/connection'
+import { linkOptions } from './physics/storage/storage'
 
 export interface ServerSettings {
     tps: number
@@ -92,6 +93,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         })
     }
 
+    private link() {
+        linkOptions(this.inst, this.baseInst)
+    }
+
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
 
@@ -99,9 +104,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         instanceinator.displayFps = true
 
         this.baseInst = instanceinator.instances[0]
-        this.inst = await instanceinator.copy(multi.server.baseInst, 'server', this.isVisible())
+        this.inst = await instanceinator.copy(this.baseInst, 'server', this.isVisible())
         this.inst.apply()
         this.safeguardInst()
+        this.link()
 
         removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
         this.inst.ig.gamepad = new multi.class.SingleGamepadManager()

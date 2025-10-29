@@ -6,6 +6,7 @@ import { assert } from '../../../misc/assert'
 
 import './save-slot-button'
 import './pause-screen-save-button'
+import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 type PlayerGetStateReturn = ReturnType<typeof getState>
 type PlayerState = PlayerGetStateReturn & {
@@ -161,6 +162,10 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         ig.storage.currentLoadFile = data
         ig.storage.checkPointSave = data
     }
+}
+
+export function linkOptions(to: InstanceinatorInstance, from: InstanceinatorInstance) {
+    to.sc.options.values = from.sc.options.values
 }
 
 declare global {

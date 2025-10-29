@@ -8,6 +8,7 @@ import { InstanceUpdateable } from '../instance-updateable'
 
 import './injects'
 import { linkVars } from './var-link'
+import { linkOptions } from '../physics/storage/storage'
 
 declare global {
     namespace ig {
@@ -47,6 +48,11 @@ export class CCMap extends InstanceUpdateable {
         })
     }
 
+    private link() {
+        linkVars(this.inst.ig.vars, multi.server.inst.ig.vars)
+        linkOptions(this.inst, multi.server.inst)
+    }
+
     async init() {
         this.display = new CCMapDisplay(this)
 
@@ -54,7 +60,7 @@ export class CCMap extends InstanceUpdateable {
         this.inst = await instanceinator.copy(multi.server.baseInst, `map-${this.name}`, this.isVisible())
         this.inst.ig.ccmap = this
         forceConditionalLightOnInst(this.inst.id)
-        linkVars(this.inst.ig.vars, multi.server.inst.ig.vars)
+        this.link()
 
         const levelData = await levelDataPromise
         this.rawLevelData = levelData
