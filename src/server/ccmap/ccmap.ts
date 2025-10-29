@@ -9,6 +9,7 @@ import { InstanceUpdateable } from '../instance-updateable'
 import './injects'
 import { linkVars } from './var-link'
 import { linkOptions } from '../physics/storage/storage'
+import { linkMusic } from '../music'
 
 declare global {
     namespace ig {
@@ -49,8 +50,9 @@ export class CCMap extends InstanceUpdateable {
     }
 
     private link() {
-        linkVars(this.inst.ig.vars, multi.server.inst.ig.vars)
+        linkVars(this.inst, multi.server.inst)
         linkOptions(this.inst, multi.server.inst)
+        linkMusic(this.inst, multi.server.inst)
     }
 
     async init() {

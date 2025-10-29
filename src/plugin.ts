@@ -35,6 +35,10 @@ export default class Multibakery implements PluginClass {
     }
 }
 
+/* TODO: ball crash fix */
+/* TODO: remote henry dialog perma crash fix */
+/* TODO: remote visited map state */
+
 poststart(() => {
     if (window.crossnode?.options.test) return
 

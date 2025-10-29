@@ -21,6 +21,7 @@ import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
+import { linkMusic } from '../server/music'
 
 declare global {
     namespace ig {
@@ -234,6 +235,8 @@ export class Client extends InstanceUpdateable {
         cig.light.screenFlashHandles = mig.light.screenFlashHandles
         cig.light.condLights = mig.light.condLights // this may unlink, may cause problems
         cig.light.condLightList = mig.light.condLightList
+
+        linkMusic(this.inst, map.inst)
 
         removeAddon(cig.screenBlur, cig.game)
         cig.screenBlur = mig.screenBlur
