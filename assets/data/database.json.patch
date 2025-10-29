@@ -1,0 +1,31 @@
+{
+    "areas": {
+        "multibakery": {
+            "name": {
+                "en_US": "Multibakery",
+                "langUid": 1
+            },
+            "description": {
+                "en_US": "Area for the Multibakery mod",
+                "langUid": 1
+            },
+            "areaType": "PATH",
+            "order": 210,
+            "track": true,
+            "chests": 0,
+            "position": { "x": 124, "y": 297 },
+            "landmarks": {
+                "dev": {
+                    "name": {
+                        "en_US": "Dev map",
+                        "langUid": 1
+                    },
+                    "description": {
+                        "en_US": "Dev map landmark",
+                        "langUid": 1
+                    }
+                }
+            }
+        }
+    }
+}

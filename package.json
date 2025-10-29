@@ -11,7 +11,7 @@
         "buildRemoteBrowser": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
         "buildPhysics": "bun build/build.ts build minifySyntax=true minifyWhitespace=true remote=false extraTreeShaking=true",
         "buildPhysicsNetless": "bun build/build.ts build minifySyntax=true minifyWhitespace=true remote=false physicsnet=false extraTreeShaking=true",
-        "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 200 --bracket-same-line",
+        "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 400 --bracket-same-line",
         "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"
     },
