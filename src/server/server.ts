@@ -232,7 +232,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     destroy() {
         if (this.destroyed) return
-        this.destroyed = true
         this.postUpdateCallback = undefined
 
         this.inst.apply()
