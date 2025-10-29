@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add character model state for remote server
+
 ## [0.5.4] 2025-10-29
 
 ### Fixed

@@ -42,6 +42,8 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
             : undefined
 
     return {
+        modelName: memory.diff(this.model.name),
+
         ...igEntityCombatant.getState.call(this, memory),
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
@@ -64,6 +66,11 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 }
 
 export function setState(this: ig.ENTITY.Player, state: Return) {
+    if (state.modelName !== undefined) {
+        const config = sc.party.models[state.modelName].config
+        this.model.setConfig(config)
+    }
+
     igEntityCombatant.setState.call(this, state)
 
     if (state.spLevel !== undefined) {
