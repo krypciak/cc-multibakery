@@ -206,6 +206,8 @@ export class Client extends InstanceUpdateable {
 
         await this.linkMapToInstance(map)
 
+        this.inst.ig.game.events.clear()
+
         for (const obj of map.onLinkChange) obj.onClientLink(this)
 
         multi.storage.save()

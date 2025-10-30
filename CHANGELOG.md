@@ -18,6 +18,7 @@
 - Fix current player floor not getting set in map menu
 - Sync ig.ENTITY.Switch position remote state
 - Fix remote crash after teleporting with ig.ENTITY.TeleportField
+- Fix player sometimes being stuck in a cutscene after teleporting
 
 ## [0.5.5] 2025-10-29
 
