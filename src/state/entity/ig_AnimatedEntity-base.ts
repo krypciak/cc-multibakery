@@ -4,6 +4,7 @@ type Return = ReturnType<typeof getState>
 export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
     return {
         pos: memory.diffVec3(this.coll.pos),
+        hidden: memory.diff(this._hidden),
         currentAnim: memory.diff(this.currentAnim as string),
         currentAnimTimer: memory.onlyOnce(this.animState.timer),
         resetAnimTimer: undefinedIfFalsy(this.animState.timer - ig.system.tick == 0),
@@ -21,6 +22,14 @@ export function setState(this: ig.AnimatedEntity, state: Return) {
 
     if (state.currentAnim !== undefined) {
         this.currentAnim = state.currentAnim
+    }
+
+    if (state.hidden !== undefined && this._hidden !== state.hidden) {
+        if (state.hidden) {
+            this.hide()
+        } else {
+            this.show()
+        }
     }
 
     if (state.accelDir) this.coll.accelDir = state.accelDir
