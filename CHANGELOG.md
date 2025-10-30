@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix server crash when remote player unequips armor
+
 ## [0.5.5] 2025-10-29
 
 ### Added

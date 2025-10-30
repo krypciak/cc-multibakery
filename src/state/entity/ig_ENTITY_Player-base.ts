@@ -4,7 +4,7 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
-import { u10, u3, u7, u8 } from 'ts-binarifier/src/type-aliases'
+import { i11, u10, u3, u7, u8 } from 'ts-binarifier/src/type-aliases'
 import { ItemType } from './sc_ItemDropEntity'
 
 declare global {
@@ -29,6 +29,8 @@ function setSkills(this: ig.ENTITY.Player, skills: Record<number, boolean>) {
     }
 }
 
+type ArmorType = i11
+
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: StateMemory) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
@@ -48,11 +50,11 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        head: memory.diff(this.model.equip.head as ItemType),
-        leftArm: memory.diff(this.model.equip.leftArm as ItemType),
-        rightArm: memory.diff(this.model.equip.rightArm as ItemType),
-        torso: memory.diff(this.model.equip.torso as ItemType),
-        feet: memory.diff(this.model.equip.feet as ItemType),
+        head: memory.diff(this.model.equip.head as ArmorType),
+        leftArm: memory.diff(this.model.equip.leftArm as ArmorType),
+        rightArm: memory.diff(this.model.equip.rightArm as ArmorType),
+        torso: memory.diff(this.model.equip.torso as ArmorType),
+        feet: memory.diff(this.model.equip.feet as ArmorType),
 
         level: memory.diff(this.model.level as u7),
         items,
