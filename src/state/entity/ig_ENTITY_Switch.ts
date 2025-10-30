@@ -19,10 +19,16 @@ function getState(this: ig.ENTITY.Switch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
+        pos: memory.diffVec3(this.coll.pos),
         isOn: memory.diff(this.isOn),
     }
 }
 function setState(this: ig.ENTITY.Switch, state: Return) {
+    if (state.pos) {
+        Vec3.assign(this.coll.pos, state.pos)
+        this.coll.baseZPos = this.coll.pos.z
+    }
+
     if (state.isOn !== undefined && this.isOn != state.isOn) {
         this.isOn = state.isOn
         const anim = this.isOn ? 'switchOn' : 'switchOff'
