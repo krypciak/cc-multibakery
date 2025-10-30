@@ -13,6 +13,7 @@
 - Fix server crash when remote player unequips armor
 - Fix player invalid player on map location offset when on different maps
 - Fix player ghosts sometimes remaining on remote clients when a different player switches a map
+- Fix remote crash when an enemy shoots any projectile
 
 ## [0.5.5] 2025-10-29
 

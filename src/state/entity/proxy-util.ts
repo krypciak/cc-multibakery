@@ -28,6 +28,15 @@ prestart(() => {
             }
         },
     })
+
+    sc.EnemyType.inject({
+        onload(data) {
+            this.parent(data)
+            for (const key in this.proxies) {
+                addProxy(`${this.name}_${key}`, this.proxies[key])
+            }
+        },
+    })
 })
 
 export function resolveProxyFromType(key: string): sc.ProxySpawnerBase {
