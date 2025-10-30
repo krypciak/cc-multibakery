@@ -1,5 +1,5 @@
 export type PlayerLocation = {
-    pos: Vec3 | undefined
+    pos: Vec2 | undefined
 }
 
 export type PlayerLocationRecord = Record</* map name */ string, Record</* username */ string, PlayerLocation>>
@@ -17,8 +17,13 @@ export function updatePlayerLocations() {
         for (const entity of map.inst.ig.game.entities) {
             if (!(entity instanceof dummy.DummyPlayer)) continue
 
+            const mapSize: Vec2 = map.inst.ig.game.size
+
             mapRecord[entity.data.username] = {
-                pos: Vec3.create(entity.coll.pos),
+                pos: {
+                    x: entity.coll.pos.x / mapSize.x,
+                    y: (entity.coll.pos.y - entity.coll.pos.z) / mapSize.y,
+                },
             }
         }
     }

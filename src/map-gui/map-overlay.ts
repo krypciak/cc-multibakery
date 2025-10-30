@@ -48,8 +48,8 @@ prestart(() => {
                     const { pos } = mapRecord[username]
                     if (!pos) continue
 
-                    const realX = room.hook.pos.x + room.hook.size.x * (pos.x / ig.game.size.x)
-                    const realY = room.hook.pos.y + room.hook.size.y * ((pos.y - pos.z) / ig.game.size.y)
+                    const realX = room.hook.pos.x + room.hook.size.x * pos.x
+                    const realY = room.hook.pos.y + room.hook.size.y * pos.y
 
                     drawConfigs.push({ pos: { x: realX, y: realY }, username })
                 }

@@ -11,6 +11,7 @@
 ### Fixed
 
 - Fix server crash when remote player unequips armor
+- Fix player invalid player on map location offset when on different maps
 
 ## [0.5.5] 2025-10-29
 
