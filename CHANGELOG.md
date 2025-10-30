@@ -17,6 +17,7 @@
 - Fix remote crash when an enemy shoots any projectile
 - Fix current player floor not getting set in map menu
 - Sync ig.ENTITY.Switch position remote state
+- Fix remote crash after teleporting with ig.ENTITY.TeleportField
 
 ## [0.5.5] 2025-10-29
 
