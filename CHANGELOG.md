@@ -7,6 +7,7 @@
 ### Added 
 
 - Add map, area and landmark remote state
+- Add ig.ENTITY.DynamicPlatform remote state
 
 ### Fixed
 

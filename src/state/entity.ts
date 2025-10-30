@@ -36,6 +36,7 @@ import './entity/ig_ENTITY_BounceBlock'
 import './entity/ig_ENTITY_BounceSwitch'
 import './entity/ig_ENTITY_Destructible'
 import './entity/ig_ENTITY_EnemyCounter'
+import './entity/ig_ENTITY_DynamicPlatform'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 
