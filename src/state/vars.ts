@@ -3,8 +3,9 @@ import { addStateHandler, StateKey } from './states'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
+import { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
 
-type VarObj = Record<string, unknown>
+type VarObj = Record<string, unknown> & RecordSize<u16>
 
 declare global {
     interface StateUpdatePacket {
@@ -44,6 +45,8 @@ prestart(() => {
                 flattenRecursive(ig.vars.storage.map, 'map', packet.vars)
                 flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
                 flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
+
+                for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
             }
         },
         clear() {

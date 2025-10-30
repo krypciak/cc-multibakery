@@ -73,7 +73,7 @@ importers:
         version: 4.0.2
       ts-binarifier:
         specifier: github:krypciak/ts-binarifier
-        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/9d9a1eb69a5e8eac762f2dcc6905203788592497(typescript@5.9.2)
+        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e043d5ae1ffed1d7ed45598d012697000b7f8d15(typescript@5.9.2)
       typescript:
         specifier: ^5.9.2
         version: 5.9.2
@@ -961,8 +961,8 @@ packages:
     resolution: {integrity: sha512-65P7iz6X5yEr1cwcgvQxbbIw7Uk3gOy5dIdtZ4rDveLqhrdJP+Li/Hx6tyK0NEb+2GCyneCMJiGqrADCSNk8sQ==}
     engines: {node: '>=8.0'}
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/9d9a1eb69a5e8eac762f2dcc6905203788592497:
-    resolution: {tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/9d9a1eb69a5e8eac762f2dcc6905203788592497}
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e043d5ae1ffed1d7ed45598d012697000b7f8d15:
+    resolution: {tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e043d5ae1ffed1d7ed45598d012697000b7f8d15}
     version: 1.0.0
     peerDependencies:
       typescript: ^5
@@ -1908,7 +1908,7 @@ snapshots:
     dependencies:
       is-number: 7.0.0
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/9d9a1eb69a5e8eac762f2dcc6905203788592497(typescript@5.9.2):
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/e043d5ae1ffed1d7ed45598d012697000b7f8d15(typescript@5.9.2):
     dependencies:
       typescript: 5.9.2
 

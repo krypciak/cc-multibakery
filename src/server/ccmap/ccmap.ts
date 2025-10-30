@@ -10,6 +10,7 @@ import './injects'
 import { linkVars } from './var-link'
 import { linkOptions } from '../physics/storage/storage'
 import { linkMusic } from '../music'
+import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 declare global {
     namespace ig {
@@ -20,6 +21,15 @@ declare global {
 export interface OnLinkChange {
     onClientLink(this: this, client: Client): void
     onClientDestroy(this: this, client: Client): void
+}
+
+function linkMapModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorInstance) {
+    const to = toInst.sc.map
+    const from = fromInst.sc.map
+
+    to.areas = from.areas
+    to.areasVisited = from.areasVisited
+    to.activeLandmarks = from.activeLandmarks
 }
 
 export class CCMap extends InstanceUpdateable {
@@ -53,6 +63,7 @@ export class CCMap extends InstanceUpdateable {
         linkVars(this.inst, multi.server.inst)
         linkOptions(this.inst, multi.server.inst)
         linkMusic(this.inst, multi.server.inst)
+        linkMapModel(this.inst, multi.server.inst)
     }
 
     async init() {

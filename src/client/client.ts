@@ -260,6 +260,7 @@ export class Client extends InstanceUpdateable {
         csc.pvp = msc.pvp
         csc.options = msc.options
         csc.combat.activeCombatants = msc.combat.activeCombatants
+        csc.map = msc.map
 
         runTask(this.inst, () => {
             sc.model.enterNewGame()

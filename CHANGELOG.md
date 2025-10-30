@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added 
+
+- Add map, area and landmark remote state
+
 ### Fixed
 
 - Fix server crash when remote player unequips armor
