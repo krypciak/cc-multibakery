@@ -6,7 +6,7 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
-import { f64, i5, u16 } from 'ts-binarifier/src/type-aliases'
+import { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {
@@ -42,7 +42,7 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
         align: memory.onlyOnce(undefinedIfFalsy(this.align)),
         angle: memory.onlyOnce(undefinedIfFalsy(this.angle as f64)),
         flipX: memory.onlyOnce(undefinedIfFalsy(this.flipX)),
-        rotateFace: memory.onlyOnce(undefinedIfFalsy(this.rotateFace as i5)),
+        rotateFace: memory.onlyOnce(undefinedIfFalsy(this.rotateFace as i6)),
         flipLeftFace: memory.onlyOnce(undefinedIfFalsy(this.flipLeftFace)),
         duration: memory.onlyOnce(this.duration == this.effect?.loopEndTime ? undefined : this.duration),
         group: memory.onlyOnce(undefinedIfFalsy(this.attachGroup)),
