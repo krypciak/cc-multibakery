@@ -59,7 +59,7 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
         level: memory.diff(this.model.level as u7),
         items,
         itemsDiff: items ? undefined : itemsDiff,
-        skillPoints: !player || this == player.dummy ? memory.diffRecord(this.model.skillPoints as u8[]) : undefined,
+        skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints as u8[]) : undefined,
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
 
         charge: memory.diff(chargeLevel as u3),
