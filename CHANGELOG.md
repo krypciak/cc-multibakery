@@ -21,6 +21,7 @@
 - Fix player sometimes being stuck in a cutscene after teleporting
 - Fix server crash after getting a circuit point
 - Fix server crash when effect has rotateFace: 16
+- Fix server crash on events with ig.Action data
 
 ## [0.5.5] 2025-10-29
 

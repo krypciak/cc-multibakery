@@ -54,7 +54,7 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
-                    } else if (value instanceof multi.class.InputFieldDialog) {
+                    } else if (value instanceof multi.class.InputFieldDialog || value instanceof ig.Action) {
                         data[key] = undefined
                     } else {
                         assert(false)
