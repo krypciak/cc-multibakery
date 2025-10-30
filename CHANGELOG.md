@@ -15,6 +15,7 @@
 - Fix player invalid player on map location offset when on different maps
 - Fix player ghosts sometimes remaining on remote clients when a different player switches a map
 - Fix remote crash when an enemy shoots any projectile
+- Fix current player floor not getting set in map menu
 
 ## [0.5.5] 2025-10-29
 

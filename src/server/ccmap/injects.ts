@@ -252,11 +252,3 @@ prestart(() => {
         },
     })
 })
-
-prestart(() => {
-    sc.MapModel.inject({
-        validateCurrentPlayerFloor() {
-            if (!multi.server) return this.parent()
-        },
-    })
-})
