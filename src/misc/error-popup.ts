@@ -107,7 +107,7 @@ export function showServerErrorPopup(inst: InstanceinatorInstance, err: unknown)
     }
 
     const discordBadgeImg = div.getElementsByTagName('img')[0]
-    discordBadgeImg.onclick = () => openLink(`https://discord.com/invite/3Xw69VjXfW`)
+    discordBadgeImg.onclick = () => openLink(`https://discord.gg/ZuqTeevse8`)
 
     const copy = (str: string) => {
         if ('nw' in window) {
