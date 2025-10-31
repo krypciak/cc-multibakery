@@ -3,7 +3,7 @@ import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
-import { f32, f64, u14, u6 } from 'ts-binarifier/src/type-aliases'
+import { f32, f64, u14, u32, u6 } from 'ts-binarifier/src/type-aliases'
 import { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../misc/combatant-party-api'
 
@@ -17,7 +17,7 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
         hp: memory.diff(this.params?.currentHp),
         baseParams: memory.diffRecord(
             (this.params?.baseParams ?? {}) as {
-                hp: u14
+                hp: u32
                 attack: u14
                 defense: u14
                 focus: u14
