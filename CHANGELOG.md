@@ -30,6 +30,7 @@
 - Fix remote crash on Mjolnir
 - Fix remote crash when sc.CombatProxyEntity gets killed faster on remote client
 - Fix remote quick respawn effect
+- Fix remote sc.NPCRunnerEntity not getting simulated
 
 ## [0.5.5] 2025-10-29
 

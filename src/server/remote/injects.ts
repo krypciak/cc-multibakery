@@ -71,4 +71,6 @@ prestart(() => {
             if (!(multi.server instanceof RemoteServer)) return this.parent(target)
         },
     })
+
+    sc.NPCRunnerEntity.forceRemotePhysics = true
 }, 3)
