@@ -35,9 +35,7 @@ export default class Multibakery implements PluginClass {
     }
 }
 
-/* TODO: ball crash fix */
 /* TODO: remote henry dialog perma crash fix */
-/* TODO: remote visited map state */
 
 poststart(() => {
     if (window.crossnode?.options.test) return
@@ -93,10 +91,17 @@ poststart(() => {
                     // map: 'rookie-harbor/center',
                     // map: 'autumn/path-2',
                     // map: 'rookie-harbor/inner-harbor-pub',
-                    // marker: 'entrance',
-                    marker: 'puzzle',
+                    // map: 'rhombus-dng/room-2',
+                    // map: 'rookie-harbor/inner-info-ug-1',
+                    // map: 'rhombus-dng/room-3-2-post',
+                    // map: 'rhombus-sqr/central-inner',
+                    // map: 'rookie-harbor/south',
+                    // map: 'xpc/bonus/art-testing',
+                    marker: 'entrance',
+                    // marker: 'puzzle',
                     // marker: 'pvp',
                     // marker: 'exit',
+                    // marker: 'door-west1',
                 },
             })
         )
