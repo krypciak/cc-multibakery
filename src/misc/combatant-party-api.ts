@@ -1,16 +1,17 @@
 import { prestart } from '../loading-stages'
 
-/* TODO: fix not being able to hit switches if not in sc.COMBATANT_PARTY.PLAYER */
-
 function isCustomParty(party: sc.COMBATANT_PARTY): boolean {
     return party >= 4
 }
 
-export function addCombatantParty(name: string): sc.COMBATANT_PARTY {
+export function addCombatantParty(name: string, forceId?: number): sc.COMBATANT_PARTY {
     const key = name as keyof typeof sc.COMBATANT_PARTY
 
+    if (forceId !== undefined && Object.values(sc.COMBATANT_PARTY).includes(forceId)) return forceId
+
     if (sc.COMBATANT_PARTY[key]) return sc.COMBATANT_PARTY[key]
-    const id: sc.COMBATANT_PARTY = (Object.values(sc.COMBATANT_PARTY).sort().last() as sc.COMBATANT_PARTY) + 1
+    const id: sc.COMBATANT_PARTY =
+        forceId ?? (Object.values(sc.COMBATANT_PARTY).sort().last() as sc.COMBATANT_PARTY) + 1
     // @ts-expect-error
     sc.COMBATANT_PARTY[key] = id
 

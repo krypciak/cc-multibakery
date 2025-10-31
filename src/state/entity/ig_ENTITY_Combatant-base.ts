@@ -4,6 +4,8 @@ import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { f32, f64, u14, u6 } from 'ts-binarifier/src/type-aliases'
+import { COMBATANT_PARTY } from '../../net/binary/binary-types'
+import { addCombatantParty } from '../../misc/combatant-party-api'
 
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
@@ -11,6 +13,7 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
         ...scActorEntity.getState.call(this, memory),
 
+        party: this.party as COMBATANT_PARTY,
         hp: memory.diff(this.params?.currentHp),
         baseParams: memory.diffRecord(
             (this.params?.baseParams ?? {}) as {
@@ -31,6 +34,11 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
 
 export function setState(this: ig.ENTITY.Combatant, state: Return) {
     scActorEntity.setState.call(this, state)
+
+    if (state.party !== undefined) {
+        this.party = state.party
+        addCombatantParty(`unkonwn_party_${state.party}`, this.party)
+    }
 
     if (this.params) {
         if (state.hp !== undefined) {
