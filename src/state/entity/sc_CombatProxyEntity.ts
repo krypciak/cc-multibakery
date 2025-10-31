@@ -76,6 +76,15 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: sc.CombatProxyEntity, typeId, sendEmpty: true })
+
+    if (REMOTE) {
+        sc.CombatProxyEntity.inject({
+            update() {
+                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (this.netid[2] == 'R') return this.parent()
+            },
+        })
+    }
 }, 2)
 
 declare global {

@@ -27,6 +27,7 @@
 - Fix ig.ENTITY.ConditionalLight
 - Unregister dummy.PlayerModel from ig.Vars#varAccessors on entity kill
 - Fix remote crash on Mjolnir
+- Fix remote crash when sc.CombatProxyEntity gets killed faster on remote client
 
 ## [0.5.5] 2025-10-29
 
