@@ -25,7 +25,7 @@ prestart(() => {
                             : false)
                     if (!isOk) {
                         console.groupCollapsed('local entity spawn!', findClassName(entity))
-                        console.warn(settings)
+                        console.log(settings)
                         console.trace()
                         console.groupEnd()
                     }
@@ -63,6 +63,12 @@ prestart(() => {
     ig.ENTITY.EnemySpawner.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
+        },
+    })
+
+    ig.ACTION_STEP.REMOVE_PROXIES.inject({
+        start(target) {
+            if (!(multi.server instanceof RemoteServer)) return this.parent(target)
         },
     })
 }, 3)

@@ -26,6 +26,7 @@
 - Fix server crash on events with ig.Action data
 - Fix ig.ENTITY.ConditionalLight
 - Unregister dummy.PlayerModel from ig.Vars#varAccessors on entity kill
+- Fix remote crash on Mjolnir
 
 ## [0.5.5] 2025-10-29
 
