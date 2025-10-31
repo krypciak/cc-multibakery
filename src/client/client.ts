@@ -238,8 +238,6 @@ export class Client extends InstanceUpdateable {
         cig.light.lightHandles = mig.light.lightHandles
         cig.light.darknessHandles = mig.light.darknessHandles
         cig.light.screenFlashHandles = mig.light.screenFlashHandles
-        cig.light.condLights = mig.light.condLights // this may unlink, may cause problems
-        cig.light.condLightList = mig.light.condLightList
 
         linkMusic(this.inst, map.inst)
 
@@ -287,6 +285,10 @@ export class Client extends InstanceUpdateable {
             /* fix crash when opening encyclopedia */
             sc.menu.newUnlocks[sc.MENU_SUBMENU.LORE] = []
         })
+
+        /* this has to be linked after ig.GameAddon#onLevelLoadStart is fired since ig.Light clears it */
+        cig.light.condLights = mig.light.condLights
+        cig.light.condLightList = mig.light.condLightList
 
         runTask(map.inst, () => {
             for (const client of multi.server.clients.values()) {

@@ -24,6 +24,7 @@
 - Fix server crash after getting a circuit point
 - Fix server crash when effect has rotateFace: 16
 - Fix server crash on events with ig.Action data
+- Fix ig.ENTITY.ConditionalLight
 
 ## [0.5.5] 2025-10-29
 
