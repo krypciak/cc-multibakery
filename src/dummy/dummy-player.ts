@@ -99,6 +99,7 @@ prestart(() => {
         },
         onKill(_dontRespawn?: boolean) {
             this.parent(true)
+            this.model.destroy()
         },
         showChargeEffect(level) {
             /* prevent crashes */
@@ -145,9 +146,26 @@ prestart(() => {
 })
 
 declare global {
+    namespace ig {
+        interface Vars {
+            unregisterVarAccessor(this: this, accessor: ig.Vars.Accessor): void
+        }
+    }
+}
+prestart(() => {
+    ig.Vars.inject({
+        unregisterVarAccessor(accessor) {
+            this.varAccessors = this.varAccessors.filter(acc => acc.accessor != accessor)
+        },
+    })
+})
+
+declare global {
     namespace dummy {
         interface PlayerModel extends sc.PlayerModel {
             dummy: dummy.DummyPlayer
+
+            destroy(this: this): void
         }
         interface PlayerModelConstructor extends ImpactClass<PlayerModel> {
             new (dummy: dummy.DummyPlayer): PlayerModel
@@ -175,6 +193,9 @@ prestart(() => {
         enterElementalOverload: replace,
         setElementMode: replace,
         onVarAccess: replace,
+        destroy() {
+            ig.vars.unregisterVarAccessor(this)
+        },
     })
 }, 2)
 
