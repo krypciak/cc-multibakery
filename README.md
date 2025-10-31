@@ -1,6 +1,9 @@
 <!-- markdownlint-disable MD013 MD024 MD001 MD045 -->
 
-# CrossCode coop/multiplayer
+# CrossCode coop/multiplayer (BETA)
+
+Join for more info
+[![](https://img.shields.io/discord/382339402338402315?logo=discord&logoColor=white&label=CrossCode%20Modding)](https://discord.gg/ZuqTeevse8)
 
 ## Building
 
