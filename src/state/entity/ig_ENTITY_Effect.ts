@@ -26,7 +26,7 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        pos: memory.diff(!this.target ? this.coll.pos : undefined),
+        pos: memory.diff(!this.target || memory.isFirstTime() ? this.coll.pos : undefined),
 
         effectName: memory.onlyOnce(this.effect!.effectName),
         sheetPath: memory.onlyOnce(this.effect!.sheet.path),

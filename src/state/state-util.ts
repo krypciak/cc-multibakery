@@ -96,6 +96,10 @@ export class StateMemory {
         }
     }
 
+    isFirstTime() {
+        return this.data.length <= this.i
+    }
+
     diffRecord<T extends object>(
         currRecord: T,
         eq: (a: T[keyof T], b: T[keyof T] | undefined) => boolean = (a, b) => a == b
