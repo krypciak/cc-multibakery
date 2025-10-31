@@ -59,4 +59,10 @@ prestart(() => {
             return null
         },
     })
+
+    ig.ENTITY.EnemySpawner.inject({
+        update() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+        },
+    })
 }, 3)

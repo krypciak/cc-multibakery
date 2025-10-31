@@ -9,6 +9,7 @@
 - Add map, area and landmark remote state
 - Add ig.ENTITY.DynamicPlatform remote state
 - Add ig.ENTITY.NPC remote state
+- Implement ig.ENTITY.Enemy.create
 
 ### Fixed
 

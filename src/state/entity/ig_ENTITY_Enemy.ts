@@ -5,6 +5,7 @@ import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace ig.ENTITY {
@@ -21,6 +22,8 @@ function getState(this: ig.ENTITY.Enemy, player?: StateKey) {
 
     return {
         ...igEntityCombatant.getState.call(this, memory),
+
+        enemyType: memory.onlyOnce(this.enemyName),
     }
 }
 
@@ -39,8 +42,18 @@ prestart(() => {
             return createNetidStatic(typeId, x, y, z, settings)
         },
     })
-    ig.ENTITY.Enemy.create = () => {
-        throw new Error('ig.ENTITY.Enemy.create not implemented')
+    ig.ENTITY.Enemy.create = (netid: string, state: Return) => {
+        assert(state.enemyType)
+
+        const settings: ig.ENTITY.Enemy.Settings = {
+            enemyInfo: {
+                type: state.enemyType,
+            },
+            netid,
+        }
+
+        const enemy = ig.game.spawnEntity(ig.ENTITY.Enemy, 0, 0, 0, settings)
+        return enemy
     }
     registerNetEntity({ entityClass: ig.ENTITY.Enemy, typeId, netidStatic: true })
 
