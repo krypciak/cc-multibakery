@@ -82,6 +82,12 @@ prestart(() => {
 
         update() {
             inputBackup(this.inputManager, () => this.parent())
+
+            if (this.data.inCutscene) {
+                if (this.coll.type != ig.COLLTYPE.NONE) this.coll.setType(ig.COLLTYPE.NONE)
+            } else if (this.coll.type == ig.COLLTYPE.NONE) {
+                this.coll.setType(ig.COLLTYPE.VIRTUAL)
+            }
         },
         updateAnimSheet(updateFx) {
             /* disable skins for dummy players */

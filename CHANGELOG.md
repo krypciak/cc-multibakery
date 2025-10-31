@@ -11,6 +11,7 @@
 - Add ig.ENTITY.NPC remote state
 - Implement ig.ENTITY.Enemy.create
 - Add ig.ENTITY.ItemDestruct remote state
+- Set player collision to ig.COLLTYPE.NONE when in cutscene
 
 ### Fixed
 
