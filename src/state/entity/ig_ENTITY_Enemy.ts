@@ -1,7 +1,6 @@
 import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
@@ -35,11 +34,13 @@ function setState(this: ig.ENTITY.Enemy, state: Return) {
 
 prestart(() => {
     const typeId: EntityTypeId = 'en'
+    let counter = 0
     ig.ENTITY.Enemy.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
+        createNetid() {
+            /* overlap can occur in training areas */
+            return `${typeId}${counter++}`
         },
     })
     ig.ENTITY.Enemy.create = (netid: string, state: Return) => {

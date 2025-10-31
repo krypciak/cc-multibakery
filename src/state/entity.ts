@@ -131,7 +131,8 @@ export function createNetidStatic(
     z: number,
     settings: ig.Entity.Settings
 ): string {
-    let netid = typeId + encodeJsonSafeNumber(Number(`${Math.floor(x)}${Math.floor(y)}${Math.floor(z)}`)) + settings.name
+    let netid =
+        typeId + encodeJsonSafeNumber(Number(`${Math.floor(x)}${Math.floor(y)}${Math.floor(z)}`)) + settings.name
     if (settings.name) netid += settings.name
     return netid
 }

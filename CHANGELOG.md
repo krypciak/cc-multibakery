@@ -33,6 +33,7 @@
 - Fix remote quick respawn effect
 - Fix remote sc.NPCRunnerEntity not getting simulated
 - Fix ig.ENTITY.Combatant old hp bars not getting detached when switching to a new map
+- Fix ig.ENTITY.Enemy netid overlaps
 
 ## [0.5.5] 2025-10-29
 
