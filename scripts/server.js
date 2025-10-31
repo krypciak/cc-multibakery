@@ -11,5 +11,5 @@ startCrossnode({
         'cc-ts-template-esbuild',
         'nax-ccuilib',
     ],
-    extensionWhitelist: [],
+    extensionWhitelist: ['post-game'],
 })
