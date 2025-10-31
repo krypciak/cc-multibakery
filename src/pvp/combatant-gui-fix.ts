@@ -87,9 +87,14 @@ prestart(() => {
                 this.createStatusGui()
             })
         },
-        onClientDestroy(client) {
+        onClientUnlink(client) {
             const id = client.inst.id
-            delete this.statusGuis[id]
+            const gui = this.statusGuis[id]
+            if (gui) {
+                runTask(client.inst, () => ig.gui.removeGuiElement(gui))
+                gui.hide()
+                delete this.statusGuis[id]
+            }
         },
     })
 })

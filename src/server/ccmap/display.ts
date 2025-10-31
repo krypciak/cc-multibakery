@@ -77,7 +77,7 @@ export class CCMapDisplay implements OnLinkChange {
         }
     }
 
-    onClientDestroy() {}
+    onClientUnlink() {}
 }
 
 // camera movement and player follow switching

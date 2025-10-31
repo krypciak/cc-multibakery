@@ -177,8 +177,11 @@ export class Client extends InstanceUpdateable {
 
         this.ready = false
         const oldMap = multi.server.maps.get(this.tpInfo.map)
-        if (oldMap && this.dummy) oldMap.leave(this)
-        if (oldMap) oldMap.forceUpdate++
+        if (oldMap) {
+            if (this.dummy) oldMap.leave(this)
+            oldMap.forceUpdate++
+            for (const obj of oldMap.onLinkChange) obj.onClientUnlink(this)
+        }
 
         this.tpInfo = tpInfo
         this.justTeleported = true
@@ -370,10 +373,7 @@ export class Client extends InstanceUpdateable {
         if (this.dummy) multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.tpInfo)
 
         const map = multi.server.maps.get(this.tpInfo.map)
-        if (map) {
-            map.leave(this)
-            for (const obj of map.onLinkChange) obj.onClientDestroy(this)
-        }
+        map?.leave(this)
 
         multi.server.inst.apply()
         super.destroy()

@@ -20,7 +20,7 @@ declare global {
 
 export interface OnLinkChange {
     onClientLink(this: this, client: Client): void
-    onClientDestroy(this: this, client: Client): void
+    onClientUnlink(this: this, client: Client): void
 }
 
 function linkMapModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorInstance) {

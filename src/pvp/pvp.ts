@@ -172,7 +172,7 @@ prestart(() => {
                 })
             }
         },
-        onClientDestroy(client) {
+        onClientUnlink(client) {
             const player = client.dummy
 
             delete this.hpBars[client.inst.id]
