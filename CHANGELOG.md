@@ -10,6 +10,7 @@
 - Add ig.ENTITY.DynamicPlatform remote state
 - Add ig.ENTITY.NPC remote state
 - Implement ig.ENTITY.Enemy.create
+- Add ig.ENTITY.ItemDestruct remote state
 
 ### Fixed
 
