@@ -21,7 +21,8 @@ prestart(() => {
                             ? isParticleClass(entity) ||
                               entity == dummy.DummyPlayer ||
                               entity == ig.ENTITY.Crosshair ||
-                              entity == ig.ENTITY.CrosshairDot
+                              entity == ig.ENTITY.CrosshairDot ||
+                              entity == sc.NPCRunnerEntity
                             : false)
                     if (!isOk) {
                         console.groupCollapsed('local entity spawn!', findClassName(entity))
@@ -30,12 +31,6 @@ prestart(() => {
                         console.groupEnd()
                     }
                 }
-                // if (entity == ig.ENTITY.Effect || entity == 'Effect') {
-                //     const set = settings as ig.ENTITY.Effect.Settings
-                //     console.groupCollapsed(set.effect?.effectName, set.netid)
-                //     console.trace()
-                //     console.groupEnd()
-                // }
             }
             return this.parent(entity, x, y, z, settings, showAppearEffects)
         },
@@ -73,4 +68,11 @@ prestart(() => {
     })
 
     sc.NPCRunnerEntity.forceRemotePhysics = true
+    sc.NPCRunnerEntity.inject({
+        initAction(enter, exit, waypoints, partyIdx) {
+            ig.ignoreEffectNetid = true
+            this.parent(enter, exit, waypoints, partyIdx)
+            ig.ignoreEffectNetid = false
+        },
+    })
 }, 3)
