@@ -144,7 +144,6 @@ prestart(() => {
         },
         populateServers(list, _, sort) {
             const servers = getServerListInfo()
-            // mods = createFuzzyFilteredModList(this.filters, mods)
             this.sortModEntries(servers, sort)
             this.populateListFromServers(servers, list)
         },

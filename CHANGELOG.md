@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add buttons for adding new server entries to the server list menu
+
 ## [0.5.6] 2025-10-31
 
 ### Added 

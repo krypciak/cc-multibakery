@@ -207,12 +207,12 @@ prestart(() => {
         focusGained() {
             this.parent()
             this.highlight.focus = this.focus
-            // sc.Model.notifyObserver(modmanager.gui.menu, modmanager.gui.MENU_MESSAGES.ENTRY_FOCUSED, this)
+            sc.Model.notifyObserver(sc.serverListMenu, modmanager.gui.MENU_MESSAGES.ENTRY_FOCUSED, this)
         },
         focusLost() {
             this.parent()
             this.highlight.focus = this.focus
-            // sc.Model.notifyObserver(modmanager.gui.menu, modmanager.gui.MENU_MESSAGES.ENTRY_UNFOCUSED, this)
+            sc.Model.notifyObserver(sc.serverListMenu, modmanager.gui.MENU_MESSAGES.ENTRY_UNFOCUSED, this)
         },
         updateHighlightWidth() {
             this.highlight.updateWidth(

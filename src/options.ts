@@ -4,6 +4,7 @@ import { RemoteServer } from './server/remote/remote-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { generateRandomUsername, isUsernameValid } from './misc/username-util'
 import Multibakery from './plugin'
+import { serverListDefault } from './client/menu/server-info'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -59,6 +60,10 @@ function registerOpts() {
                                     Opts.showPacketNetworkTraffic || Opts.showPacketNetworkSize
                             }
                         },
+                    },
+                    serverList: {
+                        type: 'JSON_DATA',
+                        init: serverListDefault,
                     },
                 },
                 combat: {
