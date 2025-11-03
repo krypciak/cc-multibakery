@@ -149,7 +149,9 @@ prestart(() => {
                         const inputButton = new InputButton()
                         inputButton.pushConfig(buttons)
 
-                        const dialog = new multi.class.InputFieldDialog(
+                        /* not on the same line since accessing dialog in the text validation function would throw */
+                        let dialog: multi.class.InputFieldDialog
+                        dialog = new multi.class.InputFieldDialog(
                             200,
                             'Enter username',
                             generateRandomUsername(),

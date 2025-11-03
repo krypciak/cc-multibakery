@@ -170,22 +170,26 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         return { client, ackData: { status: 'ok', mapName: client.tpInfo.map } }
     }
 
-    protected joinClient(client: Client): Promise<void> {
-        if (this.netManager?.connections.length == 1 && this.netManager!.connections[0].clients.length == 0) {
-            if (client.settings.remote && this.settings.useAnimationFrameLoop) startGameLoop(false)
-            this.anyRemoteClientsOn = true
-        }
+    private updateAnyRemoteClientsOn() {
+        if (!this.netManager) return (this.anyRemoteClientsOn = false)
 
-        return super.joinClient(client)
+        const anyRemoteClientsOn = [...this.clients.values()].some(c => c.settings.remote)
+        if (this.anyRemoteClientsOn != anyRemoteClientsOn) {
+            this.anyRemoteClientsOn = anyRemoteClientsOn
+            if (this.settings.useAnimationFrameLoop) {
+                startGameLoop(!anyRemoteClientsOn)
+            }
+        }
     }
 
-    leaveClient(client: Client): void {
-        if (this.netManager?.connections.length == 1 && this.netManager!.connections[0].clients.length == 0) {
-            if (client.settings.remote && this.settings.useAnimationFrameLoop) startGameLoop(true)
-            this.anyRemoteClientsOn = false
-        }
+    protected async joinClient(client: Client) {
+        super.joinClient(client)
+        this.updateAnyRemoteClientsOn()
+    }
 
-        return super.leaveClient(client)
+    leaveClient(client: Client) {
+        super.leaveClient(client)
+        this.updateAnyRemoteClientsOn()
     }
 
     onNetReceiveUpdate(conn: NetConnection, data: unknown) {

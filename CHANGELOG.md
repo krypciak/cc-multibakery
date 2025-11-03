@@ -8,6 +8,10 @@
 
 - Add buttons for adding new server entries to the server list menu
 
+### Fixed
+
+- Fix remote state not being collected sometimes (leaving unkilled projectiles)
+
 ## [0.5.6] 2025-10-31
 
 ### Added 
