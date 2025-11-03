@@ -21,7 +21,7 @@ export function startGameLoop(useAnimationFrame = false) {
         return
     }
 
-    ig.system.stopRunLoop()
+    runTasks(Object.values(instanceinator.instances), () => ig.system.stopRunLoop())
 
     function run() {
         ig.system.run()
