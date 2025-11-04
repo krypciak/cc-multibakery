@@ -81,6 +81,10 @@ prestart(() => {
             const map = ig.ccmap
             assert(map)
             map.onLinkChange.erase(this)
+
+            /* memory leak fix, does it work: probably no */
+            this.statusGui = undefined as any
+            this.statusGuis = {}
         },
         onClientLink(client) {
             runTask(client.inst, () => {

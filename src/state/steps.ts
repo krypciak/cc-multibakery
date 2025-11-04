@@ -50,7 +50,7 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
         if (data && typeof data == 'object') {
             for (const key in data) {
                 const value = data[key]
-                if (value && typeof value === 'object' && 'classId' in value) {
+                if (value && typeof value === 'object' && value instanceof ig.Class) {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
