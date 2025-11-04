@@ -23,8 +23,10 @@ export abstract class InstanceUpdateable {
         } catch (e) {
             this.attemptRecovery(e)
         } finally {
-            assert(ig.game.addons.preUpdate.length == 0)
-            ig.game.addons.preUpdate = addonsPreUpdateBackup
+            if (instanceinator.id == this.inst.id) {
+                assert(ig.game.addons.preUpdate.length == 0)
+                ig.game.addons.preUpdate = addonsPreUpdateBackup
+            }
         }
     }
 
