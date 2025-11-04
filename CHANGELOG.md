@@ -13,6 +13,7 @@
 - Fix remote state not being collected sometimes (leaving unkilled projectiles)
 - Fix two setInteval run loops running when using crossnode
 - Fix socket memory leaks after server close
+- Improved compatibility with nax-ccuilib
 
 ## [0.5.6] 2025-10-31
 
