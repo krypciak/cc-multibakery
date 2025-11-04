@@ -8,6 +8,8 @@ import { getCCBundlerHttpModules } from './cc-bundler-http-modules'
 export const DEFAULT_HTTP_PORT = 33405
 
 export class PhysicsHttpServer {
+    private stopFunc = () => this.stop()
+
     httpServer!: Server
 
     constructor(public netInfo: NetServerInfoPhysics) {}
@@ -82,8 +84,8 @@ export class PhysicsHttpServer {
         // @ts-expect-error for some reason http-server typedefs are wrong
         this.httpServer = httpServer.server
 
-        process.on('exit', () => this.stop())
-        window.addEventListener('beforeunload', () => this.stop())
+        process.on('exit', this.stopFunc)
+        window.addEventListener('beforeunload', this.stopFunc)
 
         console.log('http server listening to', this.netInfo.connection.httpPort)
         this.httpServer.listen(this.netInfo.connection.httpPort)
@@ -95,6 +97,8 @@ export class PhysicsHttpServer {
 
     destroy() {
         this.stop()
+        process.off('exit', this.stopFunc)
+        window.removeEventListener('beforeunload', this.stopFunc)
     }
 }
 

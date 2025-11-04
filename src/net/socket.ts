@@ -52,6 +52,8 @@ function setIntervalWorkaround() {
 }
 
 export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
+    private stopFunc = () => this.stop()
+
     connections: SocketNetConnection[] = []
     io!: SocketServer
 
@@ -66,8 +68,8 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         assert(PHYSICS)
         assert(PHYSICSNET)
         if (!PHYSICSNET) return
-        process.on('exit', () => this.stop())
-        window.addEventListener('beforeunload', () => this.stop())
+        process.on('exit', this.stopFunc)
+        window.addEventListener('beforeunload', this.stopFunc)
 
         const { Server } = PHYSICSNET && (await import('socket.io'))
         this.io = new Server(this.httpServer, {
@@ -117,10 +119,14 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
     destroy() {
         this.stop()
+        process.off('exit', this.stopFunc)
+        window.removeEventListener('beforeunload', this.stopFunc)
     }
 }
 
 export class SocketNetManagerRemoteServer {
+    private stopFunc = () => this.stop()
+
     conn?: SocketNetConnection
     timeOffset: number = 0
 
@@ -132,8 +138,8 @@ export class SocketNetManagerRemoteServer {
         assert(REMOTE)
         if (!REMOTE) return
 
-        process.on('exit', () => this.stop())
-        window.addEventListener('beforeunload', () => this.stop())
+        process.on('exit', this.stopFunc)
+        window.addEventListener('beforeunload', this.stopFunc)
 
         const server = multi.server
         assert(server instanceof RemoteServer)
@@ -231,6 +237,8 @@ export class SocketNetManagerRemoteServer {
 
     destroy() {
         this.stop()
+        process.off('exit', this.stopFunc)
+        window.removeEventListener('beforeunload', this.stopFunc)
     }
 }
 
@@ -293,6 +301,7 @@ export class SocketNetConnection implements NetConnection {
         for (const client of this.clients) {
             this.leave(client)
         }
+        this.socket.removeAllListeners()
     }
 
     getConnectionInfo() {
