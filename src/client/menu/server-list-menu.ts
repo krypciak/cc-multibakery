@@ -1,7 +1,6 @@
 import { poststart, prestart } from '../../loading-stages'
 import Multibakery from '../../plugin'
 
-import './title-screen-button'
 import './server-list-list'
 import {
     addServerListEntry,
@@ -11,6 +10,19 @@ import {
     replaceServerEntry,
 } from './server-info'
 import { DEFAULT_HTTP_PORT } from '../../net/web-server'
+import { addTitleScreenButton } from '../../misc/title-screen-button'
+
+prestart(() => {
+    if (!REMOTE) return
+
+    addTitleScreenButton({
+        text: 'Server list',
+        onClick() {
+            sc.menu.setDirectMode(true, sc.MENU_SUBMENU.MULTIBAKERY_LOGIN)
+            sc.model.enterMenu(true)
+        },
+    })
+})
 
 declare global {
     namespace sc {
