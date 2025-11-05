@@ -126,6 +126,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     enter(client: Client) {
+        assert(!this.clients.includes(client))
         this.clients.push(client)
     }
 
@@ -134,7 +135,7 @@ export class CCMap extends InstanceUpdateable {
         this.clients.erase(client)
         if (prevLen == this.clients.length) return
 
-        this.leaveEntity(client.dummy)
+        if (client.dummy) this.leaveEntity(client.dummy)
     }
 
     private leaveEntity(e: ig.Entity) {

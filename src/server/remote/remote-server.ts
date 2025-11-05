@@ -156,6 +156,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 for (const { username, marker } of mapRecord) {
                     const client = multi.server.clients.get(username)
                     assert(client)
+                    if (!client.ready) continue
+
                     client.teleport({ map: mapName, marker })
                 }
             }

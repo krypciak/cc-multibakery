@@ -178,7 +178,7 @@ export class Client extends InstanceUpdateable {
         this.ready = false
         const oldMap = multi.server.maps.get(this.tpInfo.map)
         if (oldMap) {
-            if (this.dummy) oldMap.leave(this)
+            oldMap.leave(this)
             oldMap.forceUpdate++
             for (const obj of oldMap.onLinkChange) obj.onClientUnlink(this)
         }
