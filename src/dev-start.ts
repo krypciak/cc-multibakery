@@ -1,6 +1,6 @@
 import { PhysicsServer } from './server/physics/physics-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
-import { addTitleScreenButton } from './client/menu/title-screen-button'
+import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
 
 function startDevServer() {
@@ -72,12 +72,20 @@ function startDevServer() {
 }
 
 function isInServerDir() {
-    return process.execPath.includes('server')
+    return process.execPath.includes('cc-server')
 }
 function isInClientDir() {
-    return process.execPath.includes('client')
+    return process.execPath.includes('cc-client')
 }
 
+prestart(() => {
+    if (!PHYSICS || !isInServerDir()) return
+
+    addTitleScreenButton({
+        text: 'Start dev server',
+        onClick: startDevServer,
+    })
+})
 
 poststart(() => {
     if (window.crossnode?.options.test) return
