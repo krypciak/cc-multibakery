@@ -15,6 +15,7 @@
 - Fix socket memory leaks after server close
 - Improved compatibility with nax-ccuilib
 - Fix map crash recovery
+- Fix crash loop after getting near ig.ENTITY.XenoDialog on a second map
 
 ## [0.5.6] 2025-10-31
 

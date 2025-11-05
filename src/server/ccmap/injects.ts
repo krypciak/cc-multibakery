@@ -252,3 +252,30 @@ prestart(() => {
         },
     })
 })
+
+declare global {
+    namespace ig {
+        var xenoDialogs: ig.ENTITY.XenoDialog[]
+    }
+}
+
+prestart(() => {
+    ig.ENTITY.XenoDialog.inject({
+        init(x, y, z, settings) {
+            this.parent(x, y, z, settings)
+            ig.xenoDialogs ??= []
+        },
+        startDialog() {
+            if (!multi.server) return this.parent()
+
+            for (const entity of ig.xenoDialogs) entity.cancelDialog()
+            this.running = true
+            ig.xenoDialogs.push(this)
+        },
+        cancelDialog() {
+            this.parent()
+            if (!multi.server) return
+            ig.xenoDialogs.erase(this)
+        },
+    })
+})
