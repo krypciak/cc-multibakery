@@ -17,6 +17,7 @@
 - Improved compatibility with nax-ccuilib
 - Fix map crash recovery
 - Fix crash loop after getting near ig.ENTITY.XenoDialog on a second map
+- Fix triblader and hexacast remote attack circle glow missing
 
 ## [0.5.6] 2025-10-31
 

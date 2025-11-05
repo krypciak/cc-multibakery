@@ -37,12 +37,24 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
     }
 }
 
+const attackAnimationNames = new Set([
+    // lea
+    'attack',
+    'attackRev',
+    'attackFinisher',
+    // triblader
+    'spinShort',
+    'spinShortRev',
+    'spinLong',
+])
+function isAttackStartAnimation(anim: string, player: dummy.DummyPlayer): boolean {
+    return attackAnimationNames.has(anim) || (player.model.config.clazz == 'HEXACAST' && anim == 'attackEnd')
+}
+
 function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.currentAnim !== undefined && this.currentAnim != state.currentAnim) {
         if (
-            (state.currentAnim == 'attack' ||
-                state.currentAnim == 'attackRev' ||
-                state.currentAnim == 'attackFinisher') &&
+            isAttackStartAnimation(state.currentAnim, this) &&
             (this.inputManager.inputType === undefined ||
                 this.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) &&
             this.model.getCore(sc.PLAYER_CORE.THROWING) &&
