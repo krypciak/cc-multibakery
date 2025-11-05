@@ -19,18 +19,7 @@ declare global {
         }
     }
 
-    namespace ig {
-        namespace SaveSlot {
-            interface Data {
-                saveName?: string /* from Named-Saves */
-            }
-        }
-
-        interface System {
-            frame: number
-        }
-    }
-
+    /* personal dev utils, used for debugging stuff only */
     function findClassName(id: any): string
     function fcn(id: any): string
 }
