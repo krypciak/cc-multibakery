@@ -38,6 +38,7 @@ import './entity/ig_ENTITY_Destructible'
 import './entity/ig_ENTITY_EnemyCounter'
 import './entity/ig_ENTITY_DynamicPlatform'
 import './entity/ig_ENTITY_ItemDestruct'
+import './entity/ig_ENTITY_XenoDialog'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 

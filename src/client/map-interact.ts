@@ -3,6 +3,7 @@ import { assert } from '../misc/assert'
 import { runTask, runTasks, scheduleTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
+import { PhysicsServer } from '../server/physics/physics-server'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -64,6 +65,7 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
         sc.mapInteract.removeEntry(entry)
     }
     for (const entry of mapInst.sc.mapInteract.entries) {
+        if (entry.gui.subGui instanceof sc.XenoDialogIcon) continue
         const newEntry = cloneMapInteractEntry(entry)
         if (newEntry) sc.mapInteract.addEntry(newEntry)
     }
@@ -134,13 +136,12 @@ prestart(() => {
     })
     sc.XenoDialogIcon.inject({
         onSkipInteract(msg) {
-            if (!multi.server || ig.ccmap) return this.parent(msg)
+            if (!(multi.server instanceof PhysicsServer) || ig.ccmap) return this.parent(msg)
             assert(ig.client)
-            const map = ig.client.getMap()
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {
                 if (this.textGui.textBlock.isFinished()) {
-                    runTask(map.inst, () => {
+                    runTask(ig.client.getMap().inst, () => {
                         this.xenoDialog._showNextMessage()
                     })
                 } else {

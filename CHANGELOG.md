@@ -7,6 +7,7 @@
 ### Added
 
 - Add buttons for adding new server entries to the server list menu
+- Add ig.ENTITY.XenoDialog state
 
 ### Fixed
 

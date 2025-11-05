@@ -34,7 +34,6 @@ export default class Multibakery implements PluginClass {
     }
 }
 
-/* TODO: remote henry dialog perma crash fix */
 /* TODO: nwjs version warning */
 /* TODO: mod comatibility popup */
 /* TODO: notify client about crash recovery */
