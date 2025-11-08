@@ -9,6 +9,7 @@
 - Add buttons for adding new server entries to the server list menu
 - Add ig.ENTITY.XenoDialog state
 - Add popup about problems when NW.js is outdated
+- Add mod compatibility checks for remote servers
 
 ### Fixed
 

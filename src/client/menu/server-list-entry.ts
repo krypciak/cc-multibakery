@@ -7,6 +7,7 @@ import { tryJoinRemote } from '../../server/remote/try-join-remote'
 import { createClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
 import { NetServerInfoRemote } from './server-info'
 import { runTask } from 'cc-instanceinator/src/inst-util'
+import { isModCompatibilityListSatisfied, showModCompatibilityListPopup } from '../../server/mod-compatibility-list'
 
 interface ServerImageConfig {
     pathOrData: string | HTMLImageElement
@@ -31,7 +32,7 @@ declare global {
             pingText: sc.TextGui
             highlight: modmanager.gui.ListEntryHighlight
             iconGui: ig.ImageGui
-            canJoin: boolean
+            isServerReachable: boolean
 
             updateDetails(this: this): void
             updateIcon(this: this): void
@@ -139,9 +140,10 @@ prestart(() => {
         },
         updateDetails() {
             assert(this.serverInfo.details)
-            const { multibakeryVersion, description } = this.serverInfo.details
+            const { modCompatibility, description } = this.serverInfo.details
+            const { satisfied } = isModCompatibilityListSatisfied(modCompatibility)
             this.updateNameText()
-            this.versionText.setText(`v${multibakeryVersion}`)
+            this.versionText.setText(satisfied ? `compatible` : `incompatible`)
             this.descriptionText.setText(description)
 
             this.updateIcon()
@@ -230,9 +232,16 @@ prestart(() => {
             if (isErrorPopupShown()) return
 
             await this.updateConnectionStatus()
-            if (!this.canJoin) {
+            if (!this.isServerReachable) {
                 return sc.Dialogs.showErrorDialog('Unable to reach the server.')
             }
+            const modCompatibilityList = this.serverInfo.details!.modCompatibility
+            const { satisfied, errors } = isModCompatibilityListSatisfied(modCompatibilityList)
+            if (!satisfied) {
+                showModCompatibilityListPopup(errors)
+                return
+            }
+
             const username = Opts.clientLogin
             const joinData = createClientJoinData({
                 username,
@@ -243,7 +252,7 @@ prestart(() => {
             showTryNetJoinResponseDialog(joinData, resp)
         },
         async updateConnectionStatus() {
-            this.canJoin = false
+            this.isServerReachable = false
             const obj = await getServerDetailsAndPing(this.serverInfo.connection)
             if (!obj) {
                 this.updateNameText(COLOR.RED)
@@ -255,7 +264,7 @@ prestart(() => {
             this.updateDetails()
             this.updateNameText(COLOR.GREEN)
             this.pingText.setText(`${ping}ms`)
-            this.canJoin = true
+            this.isServerReachable = true
         },
     })
 })

@@ -25,6 +25,7 @@ export async function tryJoinRemote(
         tps: serverInfo.details.globalTps,
         forceConsistentTickTimes: serverInfo.details.forceConsistentTickTimes,
         connection: serverInfo.connection,
+        modCompatibility: serverInfo.details.modCompatibility
     })
     multi.setServer(server)
     await server.start()

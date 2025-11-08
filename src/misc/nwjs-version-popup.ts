@@ -9,10 +9,10 @@ const performanceProblemsVersion = '0.60.0'
 
 const nwVer = process.versions.nw
 
-function getNwjsVersionProblems(): Problem[] {
-    // @ts-expect-error
-    const semver: typeof ccmod.semver = window.ccmod.semver ?? window.semver
+// @ts-expect-error
+export const semver: typeof ccmod.semver = window.ccmod.semver ?? window.semver
 
+function getNwjsVersionProblems(): Problem[] {
     const problems: Problem[] = []
     if (process.platform == 'win32') {
         /* tested, it doesnt crash on 0.37.1 */

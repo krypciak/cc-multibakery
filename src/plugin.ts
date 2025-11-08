@@ -34,5 +34,4 @@ export default class Multibakery implements PluginClass {
     }
 }
 
-/* TODO: mod comatibility popup */
 /* TODO: notify client about crash recovery */

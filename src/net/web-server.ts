@@ -1,9 +1,9 @@
 import type { Server, IncomingMessage, ServerResponse } from 'http'
 import { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server-info'
-import Multibakery from '../plugin'
 import { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
 import { getCCBundlerHttpModules } from './cc-bundler-http-modules'
+import { getModCompatibilityList } from '../server/mod-compatibility-list'
 
 export const DEFAULT_HTTP_PORT = 33405
 
@@ -32,9 +32,9 @@ export class PhysicsHttpServer {
             forceJsonCommunication: this.netInfo.details.forceJsonCommunication,
 
             hasIcon: !!icon,
-            multibakeryVersion: Multibakery.mod.version!.toString(),
             globalTps: multi.server.settings.tps,
             forceConsistentTickTimes: multi.server.settings.forceConsistentTickTimes,
+            modCompatibility: getModCompatibilityList(),
         }
         const serverDetailsString: string = JSON.stringify(serverDetails)
 

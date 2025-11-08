@@ -2,6 +2,7 @@ import { RemoteServerConnectionSettings } from '../../server/remote/remote-serve
 import { DEFAULT_HTTP_PORT } from '../../net/web-server'
 import { PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
 import { Opts } from '../../options'
+import { ModCompatibilityList } from '../../server/mod-compatibility-list'
 
 interface ServerDetailsBase {
     title: string
@@ -11,10 +12,10 @@ interface ServerDetailsBase {
     forceJsonCommunication?: boolean
 }
 export interface ServerDetailsRemote extends ServerDetailsBase {
-    multibakeryVersion: string
     hasIcon?: boolean
     globalTps: number
     forceConsistentTickTimes?: boolean
+    modCompatibility: ModCompatibilityList
 }
 
 export interface NetServerInfoRemote {
