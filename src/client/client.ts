@@ -70,7 +70,7 @@ export class Client extends InstanceUpdateable {
 
     private async init(settings: ClientSettings) {
         this.inst = await instanceinator.copy(
-            multi.server.baseInst,
+            multi.server.inst,
             'localclient-' + settings.username,
             this.isVisible(),
             settings.forceDraw,
