@@ -20,7 +20,7 @@ type Return = ReturnType<typeof getState>
 function getState(this: ig.ENTITY.NPC, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
-        config: Object.values(this.configs).indexOf(this.defaultConfig) as i16,
+        config: memory.diff(Object.values(this.configs).indexOf(this.defaultConfig) as i16),
 
         ...scActorEntity.getState.call(this, memory),
     }
