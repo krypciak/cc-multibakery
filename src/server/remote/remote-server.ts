@@ -11,12 +11,11 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { sendRemoteServerPacket } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { applyModCompatibilityList, ModCompatibilityList } from '../mod-compatibility-list'
+import { entityIgnoreDeath, entityNetidStatic, getEntityTypeId } from '../../misc/entity-netid'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import { getEntityTypeId } from '../../state/entity'
-import { entityIgnoreDeath, entityNetidStatic } from '../../misc/entity-netid'
 
 export interface RemoteServerConnectionSettings {
     host: string

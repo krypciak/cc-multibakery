@@ -1,11 +1,11 @@
-import { entityIgnoreDeath } from '../../misc/entity-netid'
+import { entityIgnoreDeath, EntityNetid } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { getEntityTypeId } from '../entity'
+import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, StateKey } from '../states'
 import { u4 } from 'ts-binarifier/src/type-aliases'
 
-type EntityDeathsObj = Record<string, u4>
+type EntityDeathsObj = Record<EntityNetid, u4>
 
 declare global {
     interface StateUpdatePacket {
@@ -44,9 +44,9 @@ prestart(() => {
     if (!PHYSICSNET) return
 
     ig.Entity.inject({
-        setNetid(x, y, z, settings) {
+        setNetid(override) {
             if (ig.entityDeaths) delete ig.entityDeaths[this.netid]
-            this.parent(x, y, z, settings)
+            this.parent(override)
             if (ig.entityDeaths) delete ig.entityDeaths[this.netid]
         },
         kill(levelChange) {

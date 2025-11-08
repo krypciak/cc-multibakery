@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { resolveProxyFromType } from './proxy-util'
@@ -34,26 +34,24 @@ function setState(this: ig.ENTITY.Ball, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'ba'
-    let ballId = 0
     let ignoreNetidCall = false
     ig.ENTITY.Ball.inject({
         getState,
         setState,
         createNetid() {
             if (ignoreNetidCall) return
-            return `${typeId}${ballId++}`
+            return this.parent()
         },
         init(x, y, z, settings) {
             ignoreNetidCall = true
             this.parent(x, y, z, settings)
             ignoreNetidCall = false
             /* ig.ENTITY.Ball creates a new settings object so netid doesnt get set */
-            this.setNetid(x, y, z, settings)
+            this.setNetid(settings.netid)
         },
     })
 
-    ig.ENTITY.Ball.create = (netid: string, state: Return) => {
+    ig.ENTITY.Ball.create = (netid: EntityNetid, state: Return) => {
         assert(!ig.game.entitiesByNetid[netid])
 
         assert(state.proxyType)
@@ -81,7 +79,7 @@ prestart(() => {
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)
         return ball
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Ball, typeId, sendEmpty: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Ball, sendEmpty: true })
 
     if (REMOTE) {
         ig.ENTITY.Ball.inject({

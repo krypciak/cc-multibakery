@@ -1,7 +1,6 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { u4 } from 'ts-binarifier/src/type-aliases'
@@ -44,18 +43,14 @@ function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'mh'
     ig.ENTITY.MultiHitSwitch.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, netidStatic: true })
 
     if (!REMOTE) return
 

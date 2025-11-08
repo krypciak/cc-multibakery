@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { createNetidSpecialBit, EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -77,15 +77,12 @@ function resolveObjects(state: Return) {
 let particles: ig.EntityConstructor[]
 
 prestart(() => {
-    const typeId: EntityTypeId = 'ef'
-    let effectId = 0
     ig.ENTITY.Effect.inject({
         getState,
         setState,
         createNetid() {
-            if (ig.ignoreEffectNetid) return undefined
-
-            return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${effectId++}`
+            if (ig.ignoreEffectNetid) return
+            return createNetidSpecialBit.call(this)
         },
         reset(x, y, z, settings) {
             this.effect = undefined
@@ -94,7 +91,7 @@ prestart(() => {
         },
     })
 
-    ig.ENTITY.Effect.create = (netid: string, state: Return) => {
+    ig.ENTITY.Effect.create = (netid: EntityNetid, state: Return) => {
         const { target, target2, effect } = resolveObjects(state)
         const { x, y, z } = state.pos ?? { x: 0, y: 0, z: 0 }
         const settings: ig.ENTITY.Effect.Settings = Object.assign({}, state, {
@@ -111,7 +108,6 @@ prestart(() => {
     }
     registerNetEntity({
         entityClass: ig.ENTITY.Effect,
-        typeId,
         applyPriority: 2000,
         sendEmpty: true,
         ignoreDeath: true,
@@ -156,10 +152,10 @@ prestart(() => {
 
 declare global {
     interface StateUpdatePacket {
-        clearEffects?: [string, string | undefined][]
+        clearEffects?: [EntityNetid, string | undefined][]
     }
     namespace ig {
-        var clearEffects: [string, string | undefined][] | undefined
+        var clearEffects: [EntityNetid, string | undefined][] | undefined
     }
 }
 prestart(() => {
@@ -202,10 +198,10 @@ prestart(() => {
 
 declare global {
     interface StateUpdatePacket {
-        stopEffects?: string[]
+        stopEffects?: EntityNetid[]
     }
     namespace ig {
-        var stopEffects: string[] | undefined
+        var stopEffects: EntityNetid[] | undefined
     }
 }
 prestart(() => {

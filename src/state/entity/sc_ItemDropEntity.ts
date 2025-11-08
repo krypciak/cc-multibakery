@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { createFakeEffectSheet } from '.././entity'
@@ -39,14 +39,9 @@ function setState(this: sc.ItemDropEntity, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'it'
-    let counter = 0
     sc.ItemDropEntity.inject({
         getState,
         setState,
-        createNetid() {
-            return `${typeId}${counter++}`
-        },
     })
     sc.ItemDropEntity.create = (netid, state: Return) => {
         assert(state.dropType !== undefined)
@@ -67,7 +62,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.ItemDropEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.ItemDropEntity, typeId, ignoreDeath: true })
+    registerNetEntity({ entityClass: sc.ItemDropEntity, ignoreDeath: true })
 
     sc.ItemDropEntity.forceRemotePhysics = true
 

@@ -12,17 +12,16 @@ import {
 import { RemoteServer } from '../server/remote/remote-server'
 import { isUsernameValid } from '../misc/username-util'
 import { addCombatantParty } from '../misc/combatant-party-api'
-
-import './injects'
 import { applyStateUpdatePacket } from '../state/states'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
-import { createDummyNetid } from '../state/entity/dummy_DummyPlayer'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
 import { linkMusic } from '../server/music'
 import { MapTpInfo } from '../server/server'
+
+import './injects'
 
 declare global {
     namespace ig {
@@ -55,6 +54,7 @@ export class Client extends InstanceUpdateable {
     tpInfo: MapTpInfo = { map: '' }
     ready: boolean = false
     justTeleported: boolean = false
+    playerAttachResolve?: (player: dummy.DummyPlayer) => void
 
     static async create(settings: ClientSettings): Promise<Client> {
         const client = new Client(settings)
@@ -195,9 +195,7 @@ export class Client extends InstanceUpdateable {
 
         if (oldMap) oldMap.forceUpdate--
         map.forceUpdate++
-        runTask(map.inst, () => {
-            this.createPlayer(Vec3.create())
-        })
+        await runTask(map.inst, () => this.createPlayer())
         map.forceUpdate--
         map.enter(this)
         runTask(map.inst, () => {
@@ -228,6 +226,7 @@ export class Client extends InstanceUpdateable {
         cig.game.freeEntityIds = mig.game.freeEntityIds
         cig.game.namedEntities = mig.game.namedEntities
         cig.game.conditionalEntities = mig.game.conditionalEntities
+        cig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
 
         runTask(this.inst, () => {
             ig.light.shadowProviders = []
@@ -285,6 +284,8 @@ export class Client extends InstanceUpdateable {
             sc.model.enterGame()
             ig.game.playerEntity.onPlayerPlaced()
 
+            sc.Model.notifyObserver(sc.model.player.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
+
             /* fix crash when opening encyclopedia */
             sc.menu.newUnlocks[sc.MENU_SUBMENU.LORE] = []
         })
@@ -295,10 +296,8 @@ export class Client extends InstanceUpdateable {
 
         runTask(map.inst, () => {
             for (const client of multi.server.clients.values()) {
-                if (client instanceof Client) {
-                    client.dummy.model.updateStats()
-                    sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
-                }
+                client.dummy.model.updateStats()
+                sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
             }
             this.dummy.party = addCombatantParty(`player${this.inst.id}`)
         })
@@ -315,40 +314,40 @@ export class Client extends InstanceUpdateable {
         }
     }
 
-    createPlayer(pos: Vec3) {
-        if (this.dummy && !this.dummy._killed) {
-            runTask(instanceinator.instances[this.dummy._instanceId], () => {
-                this.dummy.gui.crosshair.kill(true)
-                this.dummy.kill(true)
-            })
-        }
-        if (multi.server instanceof PhysicsServer && this.dummy) assert(this.dummy._killed)
+    private async createPlayer() {
+        if (multi.server instanceof PhysicsServer) {
+            if (this.dummy && !this.dummy._killed) {
+                runTask(instanceinator.instances[this.dummy._instanceId], () => {
+                    this.dummy.gui.crosshair.kill(true)
+                    this.dummy.kill(true)
+                })
+            }
 
-        this.inputManager?.destroy()
+            this.inputManager?.destroy()
 
-        const dummySettings: dummy.DummyPlayer.Settings = {
-            inputManager: this.inputManager,
-            data: { username: this.username },
-        }
+            const dummySettings: dummy.DummyPlayer.Settings = {
+                inputManager: this.inputManager,
+                data: { username: this.username },
+            }
+            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
 
-        const netid = createDummyNetid(this.username)
-        if (multi.server instanceof RemoteServer && ig.game.entitiesByNetid[netid]) {
-            const entity = ig.game.entitiesByNetid[netid]
-            assert(entity instanceof dummy.DummyPlayer)
-            this.dummy = entity
+            if (multi.server.settings.godmode) {
+                ig.godmode(this.dummy.model)
+                runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: true }))
+            }
+
+            this.loadState()
         } else {
-            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, pos.x, pos.y, pos.z, dummySettings)
-        }
-        // if (username.includes('luke')) {
-        //     this.dummy.model.setConfig(sc.party.models['Luke'].config)
-        // }
+            const player =
+                (this.getMap().inst.ig.game.entities.find(
+                    e => e instanceof dummy.DummyPlayer && !e._killed && e.data.username == this.username
+                ) as dummy.DummyPlayer | undefined) ??
+                (await new Promise<dummy.DummyPlayer>(resolve => (this.playerAttachResolve = resolve)))
+            this.playerAttachResolve = undefined
 
-        if (multi.server instanceof PhysicsServer && multi.server.settings.godmode) {
-            ig.godmode(this.dummy.model)
-            runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: true }))
+            this.dummy = this.inputManager.player = player
+            player.inputManager = this.inputManager
         }
-
-        this.loadState()
     }
 
     getClient(noAssert: true): Client | undefined

@@ -5,11 +5,12 @@ import { PvpTeam } from '../pvp/pvp'
 import { assert } from '../misc/assert'
 import { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
 import { COMBATANT_PARTY } from '../net/binary/binary-types'
+import { EntityNetid } from '../misc/entity-netid'
 
 export interface PvpTeamSerialized {
     name: string
     party: COMBATANT_PARTY
-    players: string[]
+    players: EntityNetid[]
 }
 
 interface PvpObj {

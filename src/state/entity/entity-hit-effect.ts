@@ -3,9 +3,10 @@ import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
 import { u16 } from 'ts-binarifier/src/type-aliases'
+import { EntityNetid } from '../../misc/entity-netid'
 
 interface HitConfig {
-    entity: string
+    entity: EntityNetid
     hitPos: Vec3
     hitDegree: sc.ATTACK_TYPE
     hitElement: sc.ELEMENT

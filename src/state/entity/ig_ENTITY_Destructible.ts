@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
@@ -28,16 +27,12 @@ function setState(this: ig.ENTITY.Destructible, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'de'
     ig.ENTITY.Destructible.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.Destructible.create = () => {
         throw new Error('ig.ENTITY.Destructible.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Destructible, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Destructible, netidStatic: true })
 }, 2)

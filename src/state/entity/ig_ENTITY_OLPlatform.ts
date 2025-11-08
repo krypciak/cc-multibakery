@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { i5 } from 'ts-binarifier/src/type-aliases'
@@ -48,16 +47,12 @@ function setState(this: ig.ENTITY.OLPlatform, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'ol'
     ig.ENTITY.OLPlatform.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.OLPlatform.create = () => {
         throw new Error('ig.ENTITY.OLPlatform.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.OLPlatform, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.OLPlatform, netidStatic: true })
 }, 2)

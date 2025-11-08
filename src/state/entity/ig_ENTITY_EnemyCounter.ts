@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { u8 } from 'ts-binarifier/src/type-aliases'
@@ -41,16 +40,12 @@ function setState(this: ig.ENTITY.EnemyCounter, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'ec'
     ig.ENTITY.EnemyCounter.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.EnemyCounter.create = () => {
         throw new Error('ig.ENTITY.EnemyCounter.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.EnemyCounter, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.EnemyCounter, netidStatic: true })
 }, 2)

@@ -1,7 +1,6 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { PhysicsServer } from '../../server/physics/physics-server'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
@@ -37,17 +36,13 @@ function setState(this: sc.CombatProxyEntity, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'cp'
-    let proxyId = 0
     sc.CombatProxyEntity.inject({
         getState,
         setState,
-        createNetid() {
-            return `${typeId}${multi.server instanceof PhysicsServer ? 'P' : 'R'}${proxyId++}`
-        },
+        /* TODO: P and R special bits */
     })
 
-    sc.CombatProxyEntity.create = (netid: string, state: Return) => {
+    sc.CombatProxyEntity.create = (netid: EntityNetid, state: Return) => {
         assert(state.pos)
         assert(state.combatant)
         assert(state.proxyType)
@@ -75,13 +70,14 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity({ entityClass: sc.CombatProxyEntity, typeId, sendEmpty: true })
+    registerNetEntity({ entityClass: sc.CombatProxyEntity, sendEmpty: true })
 
     if (REMOTE) {
         sc.CombatProxyEntity.inject({
             update() {
                 if (!(multi.server instanceof RemoteServer)) return this.parent()
-                if (this.netid[2] == 'R') return this.parent()
+                /* TODO: r special bit */
+                // if (this.netid[2] == 'R') return this.parent()
             },
         })
     }
@@ -89,10 +85,10 @@ prestart(() => {
 
 declare global {
     interface StateUpdatePacket {
-        destroyCombatProxies?: string[]
+        destroyCombatProxies?: EntityNetid[]
     }
     namespace ig {
-        var destroyCombatProxies: string[] | undefined
+        var destroyCombatProxies: EntityNetid[] | undefined
     }
 }
 prestart(() => {

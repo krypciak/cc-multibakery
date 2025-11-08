@@ -1,33 +1,70 @@
+import { u16, u6 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { assert } from './assert'
+import { RemoteServer } from '../server/remote/remote-server'
 
 interface EntityClass extends ImpactClass<any> {
     new (x: number, y: number, z: number, settings: any): any
 }
 
-export type EntityTypeId = string
+export type EntityTypeId = u6
 
 declare global {
     namespace ig {
         namespace Entity {
             interface Settings {
-                netid?: string
+                netid?: EntityNetid
             }
         }
         interface Entity {
-            netid: string
+            netid: EntityNetid
 
-            createNetid(this: this, x: number, y: number, z: number, settings: ig.Entity.Settings): string | void
-            setNetid(this: this, x: number, y: number, z: number, settings: ig.Entity.Settings): void
+            changeNetid(this: this, netid: EntityNetid): void
+            createNetid(this: this): EntityNetid | void
+            setNetid(this: this, override?: EntityNetid): void
         }
 
         interface Game {
-            entitiesByNetid: Record<string, ig.Entity>
+            entitiesByNetid: Record<EntityNetid | string, ig.Entity>
+            entityTypeIdCounterMap: Record<number, number>
         }
     }
 }
 
-export const entityTypeIdToClass: Record<EntityTypeId, EntityClass> = {}
+export type EntityNetid = u16
+// u1 for special bit
+const typeidSizeBits = 6
+const typeidSize = 64 // u6
+const counterSize = 512 // 9
+const typeidShift = 16 - typeidSizeBits + 1
+const specialBit = 1 << (typeidShift - 1)
+
+let netidTypeCounter = 1
+function nextNetidType(): number {
+    assert(netidTypeCounter < typeidSize)
+    return netidTypeCounter++
+}
+
+export function getEntityTypeId(netid: EntityNetid): EntityTypeId {
+    return netid >> typeidShift
+}
+
+function baseNetidFromTypeId(typeid: EntityTypeId): EntityNetid {
+    return typeid << typeidShift
+}
+
+function setEntityNetidSpecialBit(netid: EntityNetid): EntityNetid {
+    return netid | specialBit
+}
+
+export function createNetidSpecialBit(this: ig.Class & { parent(): EntityNetid | void }): EntityNetid {
+    let netid = this.parent()!
+    if (multi.server instanceof RemoteServer) netid = setEntityNetidSpecialBit(netid)
+    return netid
+}
+
+const classIdToTypeid: Record<number, EntityTypeId> = {}
+export const entityTypeidToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
 export const entitySendEmpty: Set<EntityTypeId> = new Set()
 export const entityIgnoreDeath: Set<EntityTypeId> = new Set()
@@ -35,7 +72,6 @@ export const entityNetidStatic: Set<EntityTypeId> = new Set()
 
 interface RegisterNetEntitySettings {
     entityClass: EntityClass
-    typeId: EntityTypeId
     applyPriority?: number
     sendEmpty?: boolean
     ignoreDeath?: boolean
@@ -44,19 +80,20 @@ interface RegisterNetEntitySettings {
 
 export function registerNetEntity({
     entityClass,
-    typeId,
     applyPriority,
     sendEmpty,
     ignoreDeath,
     netidStatic,
 }: RegisterNetEntitySettings) {
-    assert(!entityTypeIdToClass[typeId], `entity typeId duplicate! ${typeId}`)
-    entityTypeIdToClass[typeId] = entityClass
-    entityApplyPriority[typeId] = applyPriority ?? 1000
+    const typeid = nextNetidType()
+    assert(!entityTypeidToClass[typeid], `entity typeid duplicate! ${typeid}`)
+    entityTypeidToClass[typeid] = entityClass
+    classIdToTypeid[entityClass.classId] = typeid
+    entityApplyPriority[typeid] = applyPriority ?? 1000
 
-    if (sendEmpty) entitySendEmpty.add(typeId)
-    if (ignoreDeath) entityIgnoreDeath.add(typeId)
-    if (netidStatic) entityNetidStatic.add(typeId)
+    if (sendEmpty) entitySendEmpty.add(typeid)
+    if (ignoreDeath) entityIgnoreDeath.add(typeid)
+    if (netidStatic) entityNetidStatic.add(typeid)
 }
 
 prestart(() => {
@@ -64,21 +101,38 @@ prestart(() => {
         init() {
             this.parent()
             this.entitiesByNetid = {}
+            this.entityTypeIdCounterMap = {}
         },
     })
 
     ig.Entity.inject({
         init(x, y, z, settings) {
             this.parent(x, y, z, settings)
-            this.setNetid(x, y, z, settings)
+            this.setNetid(settings.netid)
         },
         reset(x, y, z, settings) {
+            assert(this._killed)
             this.parent(x, y, z, settings)
-            this.setNetid(x, y, z, settings)
+            this.setNetid(settings.netid)
         },
-        createNetid() {},
-        setNetid(x, y, z, settings) {
-            const netid = settings.netid ?? this.createNetid(x, y, z, settings)
+        createNetid() {
+            const typeid = classIdToTypeid[this.classId]
+            ig.game.entityTypeIdCounterMap[typeid] ??= 0
+            let netid: EntityNetid = 0
+            do {
+                let add = ++ig.game.entityTypeIdCounterMap[typeid]
+                if (add >= counterSize) {
+                    add = 1
+                    ig.game.entityTypeIdCounterMap[typeid] = 0
+                }
+                netid = baseNetidFromTypeId(typeid) + add
+            } while (ig.game.entitiesByNetid[netid])
+            return netid
+        },
+        setNetid(override) {
+            if (!classIdToTypeid[this.classId]) return
+
+            const netid = override ?? this.createNetid()
             if (!netid) {
                 this.netid = undefined as any
                 return
@@ -87,6 +141,10 @@ prestart(() => {
             assert(!ig.game.entitiesByNetid[netid], 'Entity netid overlap')
             this.netid = netid
             ig.game.entitiesByNetid[this.netid] = this
+        },
+        changeNetid(netid) {
+            if (this.netid) delete ig.game.entitiesByNetid[this.netid]
+            this.setNetid(netid)
         },
         onKill() {
             this.parent()

@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -60,18 +59,14 @@ function setState(this: ig.ENTITY.XenoDialog, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'xd'
     ig.ENTITY.XenoDialog.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.XenoDialog.create = () => {
         throw new Error('ig.ENTITY.XenoDialog.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, typeId, netidStatic: true, sendEmpty: true })
+    registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, netidStatic: true, sendEmpty: true })
 
     if (REMOTE) {
         ig.ENTITY.XenoDialog.inject({

@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as scActorEntity from './sc_ActorEntity-base'
@@ -36,18 +35,14 @@ function setState(this: ig.ENTITY.NPC, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'np'
     ig.ENTITY.NPC.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.NPC.create = () => {
         throw new Error('ig.ENTITY.NPC.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.NPC, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.NPC, netidStatic: true })
 
     if (REMOTE) {
         ig.ENTITY.NPC.inject({

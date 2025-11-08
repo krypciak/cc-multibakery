@@ -35,3 +35,8 @@ export default class Multibakery implements PluginClass {
 }
 
 /* TODO: notify client about crash recovery */
+/* TODO: fix cutscene skip */
+/* TODO: entity netid should be static */
+/* TODO: npc stuff fix */
+/* TODO: create from current not taking in vars */
+/* TODO: stats clone for new players */

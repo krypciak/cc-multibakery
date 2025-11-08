@@ -1,4 +1,4 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
@@ -28,16 +28,11 @@ function setState(this: ig.ENTITY.CombatantMarble, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'cm'
-    let counter = 0
     ig.ENTITY.CombatantMarble.inject({
         getState,
         setState,
-        createNetid() {
-            return `${typeId}${counter++}`
-        },
     })
-    ig.ENTITY.CombatantMarble.create = (netid, state: Return) => {
+    ig.ENTITY.CombatantMarble.create = (netid: EntityNetid, state: Return) => {
         const settings: ig.ENTITY.CombatantMarble.Settings = {
             target: { coll: { pos: { z: 0 } }, getCenter: () => Vec3.create() } as any,
             netid,
@@ -46,7 +41,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(ig.ENTITY.CombatantMarble, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: ig.ENTITY.CombatantMarble, typeId })
+    registerNetEntity({ entityClass: ig.ENTITY.CombatantMarble })
 
     if (!REMOTE) return
 

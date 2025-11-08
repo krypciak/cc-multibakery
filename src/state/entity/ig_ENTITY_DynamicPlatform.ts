@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { RemoteServer } from '../../server/remote/remote-server'
@@ -32,18 +31,14 @@ function setState(this: ig.ENTITY.DynamicPlatform, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'dp'
     ig.ENTITY.DynamicPlatform.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.DynamicPlatform.create = () => {
         throw new Error('ig.ENTITY.DynamicPlatform.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.DynamicPlatform, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.DynamicPlatform, netidStatic: true })
 
     if (REMOTE) {
         ig.ENTITY.DynamicPlatform.inject({

@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { u2 } from 'ts-binarifier/src/type-aliases'
@@ -45,17 +44,13 @@ function setState(this: ig.ENTITY.BounceBlock, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'bb'
     ig.ENTITY.BounceBlock.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.BounceBlock.create = () => {
         throw new Error('ig.ENTITY.BounceBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.BounceBlock, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.BounceBlock, netidStatic: true })
     ig.ENTITY.BounceBlock.forceRemotePhysics = true
 }, 2)

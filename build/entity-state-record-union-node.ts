@@ -1,45 +1,33 @@
 import ts from 'typescript'
 import { Node } from 'ts-binarifier/src/nodes/node'
-import { gray, green, yellow } from 'ts-binarifier/src/colors'
+import { gray, yellow } from 'ts-binarifier/src/colors'
 import { getRecordKeyType, getRecordValueType, TypeParser } from 'ts-binarifier/src/type-parser'
-import { findVariableDeclaration } from 'ts-binarifier/src/type-extractor'
 import { assert } from 'ts-binarifier/src/assert'
-import { StringNode } from 'ts-binarifier/src/nodes/string'
-import { StringEnumNode } from 'ts-binarifier/src/nodes/string-enum'
 import { NumberNode, NumberType } from 'ts-binarifier/src/nodes/number'
 
 class EntityStateRecordUnionNode extends Node {
     private recordSizeNode = new NumberNode(false, 10, NumberType.Unsigned)
-    private netidNode = new StringNode(false, 63)
-    private entityTypeNode: StringEnumNode
 
     constructor(
         optional: boolean | undefined,
-        public values: Node[],
-        private stringIds: string[]
+        private netidNode: NumberNode,
+        public values: Node[]
     ) {
         super(optional)
-        this.entityTypeNode = new StringEnumNode(false, stringIds, true)
     }
 
     print(noColor?: boolean, indent: number = 0, ignoreOptional?: boolean) {
         return (
             'EntityStateRecordUnion<' +
-            yellow('XX') +
-            green('rest') +
+            this.netidNode.print() +
             ', \n' +
             this.values
                 .map(
                     (v, i) =>
                         Node.indent(indent + 1) +
                         gray(`/* id: `, noColor) +
-                        yellow(`${i}`, noColor) +
-                        gray(` (`, noColor) +
-                        this.entityTypeNode.unionIdNode.print(noColor) +
-                        gray(`)`, noColor) +
-                        gray(` typeId: `, noColor) +
-                        green(`'${this.stringIds[i]}' `, noColor) +
-                        gray(`*/ `, noColor) +
+                        yellow(`${i+1}`, noColor) +
+                        gray(` */ `, noColor) +
                         v.print(noColor, indent + 1)
                 )
                 .join(' | \n') +
@@ -53,6 +41,7 @@ class EntityStateRecordUnionNode extends Node {
         const valueVar = `v${data.varCounter.v++}`
         const idVar = `id${data.varCounter.v++}`
         const entriesVar = `entries${data.varCounter.v++}`
+        data.imports.push(`import { getEntityTypeId } from '../../misc/entity-netid'`)
 
         return this.genEncodeWrapOptional(
             data,
@@ -67,15 +56,7 @@ class EntityStateRecordUnionNode extends Node {
                 this.netidNode.genEncode({ ...data, varName: netidVar, indent: data.indent + 1 }) +
                 '\n' +
                 Node.indent(data.indent + 1) +
-                `const ${idVar} = ` +
-                this.entityTypeNode.genEncodeAccess({
-                    ...data,
-                    varName: `${netidVar}.substring(0, 2)`,
-                    indent: data.indent + 1,
-                }) +
-                '\n' +
-                Node.indent(data.indent + 1) +
-                this.entityTypeNode.unionIdNode.genEncode({ ...data, varName: idVar, indent: data.indent + 1 }) +
+                `const ${idVar} = getEntityTypeId(${netidVar})` +
                 '\n' +
                 Node.indent(data.indent + 1) +
                 `switch (${idVar}) { \n` +
@@ -83,7 +64,7 @@ class EntityStateRecordUnionNode extends Node {
                     .map(
                         (t, i) =>
                             Node.indent(data.indent + 2) +
-                            `case ${i}: {\n` +
+                            `case ${i+1}: {\n` +
                             Node.indent(data.indent + 3) +
                             t.genEncode({ ...data, varName: valueVar, indent: data.indent + 3 }) +
                             '\n' +
@@ -113,8 +94,7 @@ class EntityStateRecordUnionNode extends Node {
                 this.netidNode.genDecode(data) +
                 '\n' +
                 Node.indent(data.indent + 1) +
-                `const ${idVar} = ` +
-                this.entityTypeNode.unionIdNode.genDecode(data) +
+                `const ${idVar} = getEntityTypeId(${netidVar})` +
                 '\n' +
                 Node.indent(data.indent + 1) +
                 `let ${valueVar}: any\n` +
@@ -124,7 +104,7 @@ class EntityStateRecordUnionNode extends Node {
                     .map(
                         (t, i) =>
                             Node.indent(data.indent + 2) +
-                            `case ${i}: {\n` +
+                            `case ${i+1}: {\n` +
                             Node.indent(data.indent + 3) +
                             `${valueVar} = ` +
                             t.genDecode({ ...data, indent: data.indent + 3 }) +
@@ -145,6 +125,15 @@ class EntityStateRecordUnionNode extends Node {
     }
 }
 
+import * as fs from 'fs'
+import * as path from 'path'
+const entityImportOrder = (await fs.promises.readFile('src/state/entity.ts', 'utf8'))
+    .split('\n')
+    .filter(line => line.startsWith("import './entity/"))
+    .map(line => line.slice("import './entity/".length, -1))
+    .filter(line => line.startsWith('sc') || line.startsWith('ig') || line.startsWith('dummy'))
+// console.log(entityImportOrder)
+
 export function createEntityStateRecordUnionNode(
     optional: boolean | undefined,
     types: ts.Type[],
@@ -155,20 +144,23 @@ export function createEntityStateRecordUnionNode(
     const recordType = types[0]
     const keyType = getRecordKeyType(recordType)
     assert(keyType)
-    assert(keyType.flags & ts.TypeFlags.String)
+    const keyNode = parser.parseToNode(keyType, indent + 1)
+    assert(keyNode instanceof NumberNode)
 
     const valueType = getRecordValueType(recordType)
     assert(valueType)
     assert(valueType.isUnion())
-    const valueNodes = valueType.types.map(t => parser.parseToNode(t, indent + 1))
+    const valueNodesUnsorted = valueType.types.map(t => parser.parseToNode(t, indent + 1))
+    const valueNodesUnsortedTypeNames = valueType.types.map(t =>
+        path.basename(t.symbol.getDeclarations()?.[0]?.getSourceFile().fileName!).slice(0, -3)
+    )
+    assert(entityImportOrder.length == valueNodesUnsortedTypeNames.length)
+    // console.log(valueNodesUnsortedTypeNames)
+    const valueNodes: Node[] = entityImportOrder.map(
+        typeName => valueNodesUnsorted[valueNodesUnsortedTypeNames.findIndex(typeName1 => typeName == typeName1)]
+    )
+    // console.log(valueNodes)
+    // process.exit()
 
-    const stringIds = valueType.types
-        .map(t => findVariableDeclaration(t.symbol.valueDeclaration!.getSourceFile(), 'typeId', 6))
-        .map(n => {
-            assert(n.initializer)
-            assert(ts.isStringLiteral(n.initializer))
-            return n.initializer.text
-        })
-
-    return new EntityStateRecordUnionNode(optional, valueNodes, stringIds)
+    return new EntityStateRecordUnionNode(optional, keyNode, valueNodes)
 }

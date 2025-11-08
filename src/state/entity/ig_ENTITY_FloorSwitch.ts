@@ -1,8 +1,7 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 
@@ -35,18 +34,14 @@ function setState(this: ig.ENTITY.FloorSwitch, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'fs'
     ig.ENTITY.FloorSwitch.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.FloorSwitch.create = () => {
         throw new Error('ig.ENTITY.FloorSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.FloorSwitch, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.FloorSwitch, netidStatic: true })
 
     if (REMOTE) {
         ig.ENTITY.FloorSwitch.inject({

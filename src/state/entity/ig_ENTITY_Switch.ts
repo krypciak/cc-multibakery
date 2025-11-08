@@ -1,7 +1,6 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 
@@ -45,18 +44,14 @@ function setState(this: ig.ENTITY.Switch, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'sw'
     ig.ENTITY.Switch.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.Switch.create = () => {
         throw new Error('ig.ENTITY.Switch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Switch, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Switch, netidStatic: true })
 
     if (!REMOTE) return
 

@@ -2,11 +2,12 @@ import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
+import { EntityNetid } from '../misc/entity-netid'
 
 interface HitNumberConfig {
     isHealing?: boolean
     pos: Vec3
-    combatant: string
+    combatant: EntityNetid
     damage: number
     size?: number
     strength?: number
@@ -119,10 +120,10 @@ prestart(() => {
 
 declare global {
     interface StateUpdatePacket {
-        hitNumberClear?: string[]
+        hitNumberClear?: EntityNetid[]
     }
     namespace ig {
-        var hitNumberClear: string[] | undefined
+        var hitNumberClear: EntityNetid[] | undefined
     }
 }
 

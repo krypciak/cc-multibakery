@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 
@@ -36,18 +35,14 @@ function setState(this: ig.ENTITY.BounceSwitch, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'bs'
     ig.ENTITY.BounceSwitch.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.BounceSwitch.create = () => {
         throw new Error('ig.ENTITY.BounceSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.BounceSwitch, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.BounceSwitch, netidStatic: true })
     ig.ENTITY.BounceSwitch.forceRemotePhysics = true
 
     if (!REMOTE) return

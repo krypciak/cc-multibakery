@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 
@@ -34,17 +33,13 @@ function setState(this: ig.ENTITY.Chest, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'ch'
     ig.ENTITY.Chest.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.Chest.create = () => {
         throw new Error('ig.ENTITY.Chest.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Chest, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Chest })
     ig.ENTITY.Chest.forceRemotePhysics = true
 }, 2)

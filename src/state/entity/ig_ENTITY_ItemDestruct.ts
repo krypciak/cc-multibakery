@@ -1,6 +1,5 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 
@@ -31,16 +30,12 @@ function setState(this: ig.ENTITY.ItemDestruct, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'id'
     ig.ENTITY.ItemDestruct.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.ItemDestruct.create = () => {
         throw new Error('ig.ENTITY.ItemDestruct.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.ItemDestruct, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.ItemDestruct, netidStatic: true })
 }, 2)

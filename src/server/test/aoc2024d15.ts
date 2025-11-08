@@ -6,6 +6,7 @@ import { PhysicsServer } from '../physics/physics-server'
 import { InputData } from '../../dummy/dummy-input-puppet'
 import { Client } from '../../client/client'
 import { CCMap } from '../ccmap/ccmap'
+import { EntityNetid } from '../../misc/entity-netid'
 
 declare global {
     namespace ig.ENTITY {
@@ -72,7 +73,7 @@ function recursiveMoveCheck(
     vx: number,
     vy: number,
     isPulling: boolean,
-    previous: Set<string>,
+    previous: Set<EntityNetid>,
     depth: number,
     checkLinked: boolean
 ): sc.AocPushPullable[] {

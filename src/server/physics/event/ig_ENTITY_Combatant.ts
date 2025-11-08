@@ -1,13 +1,14 @@
 import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
+import { EntityNetid } from '../../../misc/entity-netid'
 import { PhysicsServer } from '../physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 declare global {
     namespace ig.ENTITY {
         interface Combatant {
-            lastDamagedNetid?: string
-            lastDamagedNetidPlayer?: string
+            lastDamagedNetid?: EntityNetid
+            lastDamagedNetidPlayer?: EntityNetid
 
             getLastDamagingEntity(this: this): ig.Entity | undefined
             getLastDamagingPlayer(this: this): dummy.DummyPlayer | undefined

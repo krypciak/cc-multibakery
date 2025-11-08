@@ -46,6 +46,9 @@
             "bun",
             "esbuild",
             "node"
-        ]
+        ],
+        "overrides": {
+            "ts-binarifier": "link:../../../../../../../../.local/share/pnpm/global/5/node_modules/ts-binarifier"
+        }
     }
 }

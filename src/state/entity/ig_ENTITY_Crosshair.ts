@@ -1,21 +1,14 @@
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { inputBackup } from '../../dummy/dummy-input'
+import { RemoteServer } from '../../server/remote/remote-server'
 
 declare global {
     namespace ig.ENTITY {
         interface Crosshair extends StateMemory.MapHolder<StateKey> {
-            createNetid(
-                this: this,
-                x: number,
-                y: number,
-                z: number,
-                settings: ig.ENTITY.Crosshair.Settings
-            ): string | undefined
-
             justThrown?: boolean
         }
     }
@@ -39,6 +32,7 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
     this.justThrown = false
 
     return {
+        owner: memory.onlyOnce(this.thrower.netid),
         pos: memory.diffVec3(this.coll.pos),
         active: memory.diff(this.active),
         special: memory.diff(this.special),
@@ -67,16 +61,27 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'cr'
     ig.ENTITY.Crosshair.inject({
         getState,
         setState,
-        createNetid(_x, _y, _z, settings) {
-            if (!(settings.thrower instanceof dummy.DummyPlayer)) return
-            return `${typeId}${settings.thrower.data.username}`
+        createNetid() {
+            if (multi.server instanceof RemoteServer) return
+            return this.parent()
         },
     })
-    registerNetEntity({ entityClass: ig.ENTITY.Crosshair, typeId, applyPriority: 3000 })
+    ig.ENTITY.Crosshair.create = (netid: EntityNetid, state: Return) => {
+        assert(state.owner)
+        const player = ig.game.entitiesByNetid[state.owner]
+        assert(player)
+        assert(player instanceof dummy.DummyPlayer)
+
+        const crosshair = player.gui.crosshair
+        assert(crosshair)
+        crosshair.changeNetid(netid)
+
+        return crosshair
+    }
+    registerNetEntity({ entityClass: ig.ENTITY.Crosshair, applyPriority: 3000 })
 
     ig.ENTITY.Crosshair.forceRemotePhysics = true
     ig.ENTITY.CrosshairDot.forceRemotePhysics = true

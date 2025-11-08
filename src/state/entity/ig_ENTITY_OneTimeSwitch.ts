@@ -1,7 +1,6 @@
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { createNetidStatic } from '../entity'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 
@@ -38,18 +37,14 @@ function setState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
 }
 
 prestart(() => {
-    const typeId: EntityTypeId = 'ot'
     ig.ENTITY.OneTimeSwitch.inject({
         getState,
         setState,
-        createNetid(x, y, z, settings) {
-            return createNetidStatic(typeId, x, y, z, settings)
-        },
     })
     ig.ENTITY.OneTimeSwitch.create = () => {
         throw new Error('ig.ENTITY.OneTimeSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch, typeId, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch, netidStatic: true })
 
     if (!REMOTE) return
 

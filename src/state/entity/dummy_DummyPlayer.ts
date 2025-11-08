@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { EntityTypeId, registerNetEntity } from '../../misc/entity-netid'
+import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateKey } from '../states'
@@ -8,11 +8,6 @@ import * as igEntityPlayer from './ig_ENTITY_Player-base'
 import { f32, u32 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
-    namespace dummy {
-        interface DummyPlayer {
-            createNetid(this: this, x: number, y: number, z: number, settings: dummy.DummyPlayer.Settings): string
-        }
-    }
     interface EntityStates {
         'dummy.DummyPlayer': Return
     }
@@ -24,6 +19,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
     return {
         ...igEntityPlayer.getState.call(this, player, memory),
 
+        username: memory.diff(this.data.username),
         isControlBlocked: memory.diff(this.data.isControlBlocked),
         inCutscene: memory.diff(this.data.inCutscene),
         currentMenu: memory.diff(this.data.currentMenu as u32),
@@ -83,40 +79,31 @@ function setState(this: dummy.DummyPlayer, state: Return) {
     if (state.showNoSpLabel !== undefined) this.showNoSpLabel = state.showNoSpLabel
 }
 
-const typeId: EntityTypeId = 'du'
-export function createDummyNetid(username: string) {
-    return `${typeId}${username}`
-}
-
 prestart(() => {
     dummy.DummyPlayer.inject({
         getState,
         setState,
-        createNetid(_x, _y, _z, settings) {
-            return createDummyNetid(settings.data.username)
+        createNetid() {
+            if (multi.server instanceof RemoteServer) return
+            return this.parent()
         },
     })
-    dummy.DummyPlayer.create = (netid: string, state: Return) => {
-        const username = netid.substring(2)
-        const client = multi.server.clients.get(username)
-        let player: dummy.DummyPlayer
-        const { pos } = state
+    dummy.DummyPlayer.create = (netid: EntityNetid, state: Return) => {
+        const username = state.username
+        assert(username)
 
-        if (client) {
-            assert(pos)
-            client.createPlayer(pos)
-            player = client.dummy
-        } else {
-            player = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
-                netid,
-                data: { username },
-                inputManager: new dummy.input.Puppet.InputManager(),
-            })
-        }
+        const player = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
+            netid,
+            data: { username },
+            inputManager: new dummy.input.Puppet.InputManager(),
+        })
+
+        const client = multi.server.clients.get(username)
+        client?.playerAttachResolve?.(player)
 
         return player
     }
-    registerNetEntity({ entityClass: dummy.DummyPlayer, typeId })
+    registerNetEntity({ entityClass: dummy.DummyPlayer })
 
     if (REMOTE) {
         dummy.DummyPlayer.inject({
