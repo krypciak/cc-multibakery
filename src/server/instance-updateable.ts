@@ -5,7 +5,7 @@ import { copyTickInfo } from '../game-loop'
 export abstract class InstanceUpdateable {
     inst!: InstanceinatorInstance
 
-    protected destroyed: boolean = false
+    destroyed: boolean = false
 
     abstract isActive(): boolean
     abstract isVisible(): boolean

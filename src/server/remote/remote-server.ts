@@ -15,6 +15,8 @@ import { applyModCompatibilityList, ModCompatibilityList } from '../mod-compatib
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
+import { getEntityTypeId } from '../../state/entity'
+import { entityIgnoreDeath, entityNetidStatic } from '../../misc/entity-netid'
 
 export interface RemoteServerConnectionSettings {
     host: string
@@ -142,6 +144,30 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             const map = multi.server.maps.get(mapName)
             if (!map?.ready) continue
+
+            if (stateUpdatePacket.crash) {
+                if (stateUpdatePacket.crash.tryReconnect) {
+                    map.clients.map(async client => {
+                        const joinData: ClientJoinData = {
+                            username: client.username,
+                            initialInputType: client.inputManager.inputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE,
+                        }
+                        const ack = await this.netManager.sendJoin(joinData)
+                        console.log(ack)
+                    })
+
+                    runTask(map.inst, () => {
+                        for (const entity of map.inst.ig.game.entities) {
+                            if (!entity.netid) continue
+                            const type = getEntityTypeId(entity.netid)
+                            if (!entityNetidStatic.has(type) && !entityIgnoreDeath.has(type)) {
+                                entity.kill()
+                            }
+                        }
+                    })
+                }
+                continue
+            }
 
             runTask(map.inst, () => {
                 try {

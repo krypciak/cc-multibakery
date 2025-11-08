@@ -9,6 +9,14 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import { f64 } from 'ts-binarifier/src/type-aliases'
 import { MapTpInfo } from '../server'
 
+declare global {
+    interface StateUpdatePacket {
+        crash?: {
+            tryReconnect: boolean
+        }
+    }
+}
+
 export function sendPhysicsServerPacket() {
     assert(multi.server instanceof PhysicsServer)
     if (!multi.server.netManager) return
@@ -22,7 +30,6 @@ export function sendPhysicsServerPacket() {
         for (const client of conn.clients) {
             const mapName = client.tpInfo.map
             const map = multi.server.maps.get(mapName)
-            if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
 
             packets[mapName] ??= new Map()
             const cachePacket = packets[mapName].values().next()?.value
@@ -32,6 +39,13 @@ export function sendPhysicsServerPacket() {
                 packets[mapName].set(conn, dest)
             }
 
+            if (!map && client.destroyed) {
+                dest.crash = { tryReconnect: true }
+                conn.leave(client)
+                continue
+            }
+
+            if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
             getMapUpdatePacket(map, dest, client, cachePacket)
         }
 
