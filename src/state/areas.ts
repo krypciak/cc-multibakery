@@ -14,7 +14,7 @@ declare global {
 }
 
 function fromCamel(str: string) {
-    return str.replace(/[A-Z]/g, a => '-' + a.toLowerCase());
+    return str.replace(/[A-Z]/g, a => '-' + a.toLowerCase())
 }
 
 prestart(() => {
@@ -26,14 +26,16 @@ prestart(() => {
             const memory = StateMemory.getBy(ig.areasStatePlayerMemory, player)
 
             const obj: AreasObj = Object.fromEntries(
-                Object.keys(sc.map.areasVisited).map(fromCamel).map(areaName => [
-                    areaName,
-                    Object.fromEntries(
-                        Object.entries(sc.map.activeLandmarks[areaName] ?? {})
-                            .filter(([_, v]) => v.active)
-                            .map(([k]) => [k, true])
-                    ),
-                ])
+                Object.keys(sc.map.areasVisited)
+                    .map(fromCamel)
+                    .map(areaName => [
+                        areaName,
+                        Object.fromEntries(
+                            Object.entries(sc.map.activeLandmarks[areaName] ?? {})
+                                .filter(([_, v]) => v.active)
+                                .map(([k]) => [k, true])
+                        ),
+                    ])
             )
             packet.areas = memory.diffRecord2Deep(obj)
         },

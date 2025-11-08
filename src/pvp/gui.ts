@@ -4,6 +4,7 @@ import { PvpTeam } from './pvp'
 import { Opts } from '../options'
 
 import './combatant-gui-fix'
+import { COLOR, wrapColor } from '../client/menu/server-list-entry'
 
 prestart(() => {
     sc.CombatUpperHud.inject({
@@ -160,9 +161,13 @@ prestart(() => {
                 this.upperColor = '#7aff7a'
             }
 
-            this.usernameText = new ig.TextBlock(sc.fontsystem.tinyFont, `\\c[3]${player.data.username}\\c[0]`, {
-                maxWidth: undefined,
-            })
+            this.usernameText = new ig.TextBlock(
+                sc.fontsystem.tinyFont,
+                wrapColor(player.data.username, COLOR.YELLOW),
+                {
+                    maxWidth: undefined,
+                }
+            )
         },
         remove(immediately) {
             this.parent(immediately)

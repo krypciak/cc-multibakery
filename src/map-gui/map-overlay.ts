@@ -1,3 +1,4 @@
+import { COLOR, wrapColor } from '../client/menu/server-list-entry'
 import { prestart } from '../loading-stages'
 import { getPlayerLocations } from './player-locations'
 
@@ -61,7 +62,7 @@ prestart(() => {
                 renderer.addGfx(this.gfx, x, y, iconSize.x, iconSize.y, iconSize.w, iconSize.h)
             }
             for (const { pos, username } of drawConfigs) {
-                const textBlock = new ig.TextBlock(sc.fontsystem.tinyFont, `\\c[3]${username}\\c[0]`, {})
+                const textBlock = new ig.TextBlock(sc.fontsystem.tinyFont, wrapColor(username, COLOR.YELLOW), {})
                 const x = pos.x - textBlock.size.x / 2
                 const y = pos.y - textBlock.size.y - iconSize.h / 2
                 renderer.addText(textBlock, x, y)

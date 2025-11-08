@@ -11,6 +11,7 @@ import {
 } from './server-info'
 import { DEFAULT_HTTP_PORT } from '../../net/web-server'
 import { addTitleScreenButton } from '../../misc/title-screen-button'
+import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../misc/nwjs-version-popup'
 
 prestart(() => {
     if (!REMOTE) return
@@ -18,8 +19,7 @@ prestart(() => {
     addTitleScreenButton({
         text: 'Server list',
         onClick() {
-            sc.menu.setDirectMode(true, sc.MENU_SUBMENU.MULTIBAKERY_LOGIN)
-            sc.model.enterMenu(true)
+            openServerListMenu()
         },
     })
 })
@@ -114,6 +114,15 @@ async function addServerDialog(entry?: NetServerInfoRemote): Promise<NetServerIn
         )
         dialog.openMenu()
     })
+}
+
+async function openServerListMenu() {
+    const problems = await checkNwjsVerionAndCreatePopupIfProblemsFound(['win_remote_crash'])
+
+    if (problems.includes('win_remote_crash')) return
+
+    sc.menu.setDirectMode(true, sc.MENU_SUBMENU.MULTIBAKERY_LOGIN)
+    sc.model.enterMenu(true)
 }
 
 const menuId = 'multibakery_login'

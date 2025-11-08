@@ -50,13 +50,17 @@ declare global {
     }
 }
 
-const COLOR = {
+export const COLOR = {
     WHITE: 0,
     RED: 1,
     GREEN: 2,
     YELLOW: 3,
 } as const
 type COLOR = (typeof COLOR)[keyof typeof COLOR]
+
+export function wrapColor(text: string, color: COLOR): string {
+    return `\\c[${color}]${text}\\c[0]`
+}
 
 prestart(() => {
     if (!REMOTE) return
@@ -194,7 +198,7 @@ prestart(() => {
 
             this.nameText.setFont(sc.fontsystem.font)
             this.textColor = color
-            this.nameText.setText(`\\c[${color}]${text}\\c[0]`)
+            this.nameText.setText(wrapColor(text, color))
             this.nameText.setPos(4 + this.iconOffset + this.nameIconPrefixesText.hook.size.x, 0)
 
             this.updateHighlightWidth()

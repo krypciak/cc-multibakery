@@ -8,14 +8,19 @@ import {
 import { PhysicsServer } from '../../../server/physics/physics-server'
 import { createClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
+import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../../misc/nwjs-version-popup'
 
 declare global {
     namespace ig {
         var multibakeryManageServerPopup: multi.class.ManageServerPopup | undefined
     }
 }
-export function openManagerServerPopup(immediately?: boolean) {
-    ig.multibakeryManageServerPopup?.closeMenu()
+export async function openManagerServerPopup(immediately?: boolean) {
+    if (ig.multibakeryManageServerPopup) {
+        ig.multibakeryManageServerPopup.closeMenu()
+    } else {
+        if (!multi.server) await checkNwjsVerionAndCreatePopupIfProblemsFound()
+    }
     ig.multibakeryManageServerPopup = new multi.class.ManageServerPopup()
     ig.multibakeryManageServerPopup.openMenu()
     if (immediately) {
@@ -28,7 +33,9 @@ function getIconFromInputType(inputType: ig.INPUT_DEVICES | undefined): string {
     return inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE ? 'controls' : 'gamepad'
 }
 
-type MultiPageButtonGuiButtons = NonNullable<ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2]>
+export type MultiPageButtonGuiButtons = NonNullable<
+    ConstructorParameters<modmanager.gui.MultiPageButtonBoxGuiConstructor>[2]
+>
 
 declare global {
     namespace multi.class {

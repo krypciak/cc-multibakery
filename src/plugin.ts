@@ -34,6 +34,5 @@ export default class Multibakery implements PluginClass {
     }
 }
 
-/* TODO: nwjs version warning */
 /* TODO: mod comatibility popup */
 /* TODO: notify client about crash recovery */

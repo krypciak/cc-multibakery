@@ -61,6 +61,12 @@ function registerOpts() {
                             }
                         },
                     },
+                    showNwjsVersionProblemsPopup: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Check NW.js version',
+                        description: 'Check for problems related to outdated NW.js version',
+                    },
                     serverList: {
                         type: 'JSON_DATA',
                         init: serverListDefault,
