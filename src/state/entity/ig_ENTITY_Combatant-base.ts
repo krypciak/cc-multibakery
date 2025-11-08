@@ -13,7 +13,7 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
         ...scActorEntity.getState.call(this, memory),
 
-        party: this.party as COMBATANT_PARTY,
+        party: memory.diff(this.party as COMBATANT_PARTY),
         hp: memory.diff(this.params?.currentHp),
         baseParams: memory.diffRecord(
             (this.params?.baseParams ?? {}) as {
