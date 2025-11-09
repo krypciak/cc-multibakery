@@ -42,13 +42,6 @@
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
     },
     "pnpm": {
-        "onlyBuiltDependencies": [
-            "bun",
-            "esbuild",
-            "node"
-        ],
-        "overrides": {
-            "ts-binarifier": "link:../../../../../../../../.local/share/pnpm/global/5/node_modules/ts-binarifier"
-        }
+        "onlyBuiltDependencies": ["bun", "esbuild", "node"]
     }
 }
