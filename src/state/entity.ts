@@ -2,6 +2,7 @@ import { prestart } from '../loading-stages'
 import { addStateHandler, StateKey } from './states'
 import { assert } from '../misc/assert'
 import {
+    entityNetidCounterSize,
     entityApplyPriority,
     entityIgnoreDeath,
     EntityNetid,
@@ -62,6 +63,10 @@ function isStateEntity(e: ig.Entity): e is StateEntityBase & ig.Entity {
 declare global {
     namespace ig {
         interface Entity extends Partial<StateEntityBase> {}
+
+        interface Game {
+            entitiesSpawnedBefore: TemporarySet<number>
+        }
     }
     interface ImpactClass<Instance> {
         create?(netid: EntityNetid, state: unknown): ig.Entity | undefined
@@ -69,7 +74,13 @@ declare global {
 }
 
 prestart(() => {
-    const entitiesSpawnedBefore = new TemporarySet<number>(1000)
+    ig.Game.inject({
+        init() {
+            this.parent()
+            this.entitiesSpawnedBefore = new TemporarySet(entityNetidCounterSize)
+        },
+    })
+
     addStateHandler({
         get(packet, player, cache) {
             for (const entity of ig.game.entities) {
@@ -111,8 +122,8 @@ prestart(() => {
                     if (!clazz.create) continue
 
                     if (entityIgnoreDeath.has(typeId)) {
-                        if (entitiesSpawnedBefore.has(netid)) continue
-                        entitiesSpawnedBefore.push(netid)
+                        if (ig.game.entitiesSpawnedBefore.has(netid)) continue
+                        ig.game.entitiesSpawnedBefore.push(netid)
                     }
 
                     entity = clazz.create(netid, data)

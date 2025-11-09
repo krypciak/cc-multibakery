@@ -16,6 +16,7 @@ import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/ent
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
+import { CCMap } from '../ccmap/ccmap'
 
 export interface RemoteServerConnectionSettings {
     host: string
@@ -130,6 +131,29 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         }
     }
 
+    private async resetMapState(map: CCMap) {
+        runTask(map.inst, () => {
+            for (const entity of map.inst.ig.game.entities) {
+                if (!entity.netid) continue
+                const type = getEntityTypeId(entity.netid)
+                if (!entityStatic.has(type) && !entityIgnoreDeath.has(type)) {
+                    entity.kill()
+                }
+            }
+            ig.game.entitiesSpawnedBefore.clear()
+        })
+
+        await Promise.all(
+            map.clients.map(async client => {
+                const joinData: ClientJoinData = {
+                    username: client.username,
+                    initialInputType: client.inputManager.inputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE,
+                }
+                await this.netManager.sendJoin(joinData)
+            })
+        )
+    }
+
     private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
         const msPing = this.netManager.calculatePing(data.sendAt)
         for (const client of this.clients.values()) {
@@ -145,24 +169,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             if (stateUpdatePacket.crash) {
                 if (stateUpdatePacket.crash.tryReconnect) {
-                    map.clients.map(async client => {
-                        const joinData: ClientJoinData = {
-                            username: client.username,
-                            initialInputType: client.inputManager.inputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE,
-                        }
-                        const ack = await this.netManager.sendJoin(joinData)
-                        console.log(ack)
-                    })
-
-                    runTask(map.inst, () => {
-                        for (const entity of map.inst.ig.game.entities) {
-                            if (!entity.netid) continue
-                            const type = getEntityTypeId(entity.netid)
-                            if (!entityStatic.has(type) && !entityIgnoreDeath.has(type)) {
-                                entity.kill()
-                            }
-                        }
-                    })
+                    this.resetMapState(map)
                 }
                 continue
             }

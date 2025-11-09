@@ -27,7 +27,7 @@ export function sendPhysicsServerPacket() {
     for (const conn of connections) {
         const readyMaps = multi.server.connectionReadyMaps.get(conn)
 
-        for (const client of conn.clients) {
+        for (const client of [...conn.clients]) {
             const mapName = client.tpInfo.map
             const map = multi.server.maps.get(mapName)
 

@@ -79,6 +79,7 @@ export class Client extends InstanceUpdateable {
                 inst.ig.client = this
             }
         )
+        assert(this.inst.ig.game)
 
         this.inputManager = this.initInputManager()
 
@@ -326,6 +327,7 @@ export class Client extends InstanceUpdateable {
 
         runTask(map.inst, () => {
             for (const client of multi.server.clients.values()) {
+                if (!client.dummy) continue
                 client.dummy.model.updateStats()
                 sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
             }

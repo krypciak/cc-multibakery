@@ -16,7 +16,7 @@ function startDevServer() {
             displayClientInstances: true,
             displayRemoteClientInstances: true,
             forceConsistentTickTimes: false,
-            attemptCrashRecovery: false,
+            attemptCrashRecovery: true,
             mapSwitchDelay: Opts.serverMapSwitchDelay,
             godmode: true,
             disablePlayerIdlePose: true,

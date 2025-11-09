@@ -76,7 +76,7 @@ prestart(() => {
 
 function draw() {
     runTasks(Object.values(instanceinator.instances), () => {
-        if (!ig.system.hasFocusLost() && !ig.game.fullyStopped && ig.perf.draw) {
+        if (!ig.system.hasFocusLost() && ig.game && !ig.game.fullyStopped && ig.perf.draw) {
             ig.game.draw()
             ig.game.finalDraw()
         }

@@ -17,7 +17,7 @@ prestart(() => {
 
 function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const isCCL3 = Multibakery.mod.isCCL3
-    const version = ig.game.getVersion()
+    const version = ig.game?.getVersion()
     const platform = ig.getPlatformName(ig.platform)
     const os = ig.OS
     const nwjsVersion = ig.nwjsVersion && ig.nwjsVersion[0]
