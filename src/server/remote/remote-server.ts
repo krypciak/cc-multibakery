@@ -38,7 +38,6 @@ export function isClientLeaveData(data: unknown): data is ClientLeaveData {
 }
 
 export class RemoteServer extends Server<RemoteServerSettings> {
-    remote = true
     netManager!: SocketNetManagerRemoteServer
     notifyReadyMaps?: string[]
 
@@ -142,7 +141,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const stateUpdatePacket = data.mapPackets[mapName]
 
             const map = multi.server.maps.get(mapName)
-            if (!map?.ready) continue
+            assert(map?.ready)
 
             if (stateUpdatePacket.crash) {
                 if (stateUpdatePacket.crash.tryReconnect) {
@@ -194,8 +193,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     async loadMap(name: string) {
-        await super.loadMap(name)
+        const map = await super.loadMap(name)
         ;(this.notifyReadyMaps ??= []).push(name)
+        return map
     }
 
     async leaveClient(client: Client) {

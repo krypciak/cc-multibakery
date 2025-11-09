@@ -29,6 +29,7 @@ export async function createPhysicsServerFromCurrentState() {
         displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
         forceConsistentTickTimes: Opts.serverForceConsistentTickTimes,
         attemptCrashRecovery: Opts.serverAttemptCrashRecovery,
+        mapSwitchDelay: Opts.serverMapSwitchDelay,
         netInfo: Opts.serverEnableNet
             ? {
                   connection: {

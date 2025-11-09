@@ -16,6 +16,7 @@ export interface ServerDetailsRemote extends ServerDetailsBase {
     globalTps: number
     forceConsistentTickTimes?: boolean
     modCompatibility: ModCompatibilityList
+    mapSwitchDelay?: number
 }
 
 export interface NetServerInfoRemote {

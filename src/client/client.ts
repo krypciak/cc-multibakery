@@ -52,6 +52,7 @@ export class Client extends InstanceUpdateable {
     inputManager!: dummy.InputManager
     dummy!: dummy.DummyPlayer
     tpInfo: MapTpInfo = { map: '' }
+    nextTpInfo: MapTpInfo = { map: '' }
     ready: boolean = false
     justTeleported: boolean = false
     playerAttachResolve?: (player: dummy.DummyPlayer) => void
@@ -169,52 +170,81 @@ export class Client extends InstanceUpdateable {
         await this.teleport(tpInfo)
     }
 
+    private startTeleportOverlay() {
+        runTask(this.inst, () => {
+            const { r, g, b, timeIn, lighter } = ig.game.teleportColor
+            ig.overlay.setColor(r, g, b, 1, timeIn, lighter)
+            ig.game.currentTeleportColor.r = r
+            ig.game.currentTeleportColor.g = g
+            ig.game.currentTeleportColor.b = b
+            ig.game.teleportColor.r = ig.game.teleportColor.g = ig.game.teleportColor.b = 0
+            ig.game.teleportColor.lighter = false
+        })
+    }
+
+    private stopTeleportOverlay() {
+        runTask(this.inst, () => {
+            ig.overlay.setAlpha(0, ig.game.teleportColor.timeOut)
+            ig.game.teleportColor.timeOut = 0.3
+            ig.game.teleportColor.timeIn = 0.3
+        })
+    }
+
     async teleport(tpInfo: MapTpInfo) {
+        this.startTeleportOverlay()
+
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
             multi.storage.savePlayerState(this.dummy.data.username, this.dummy, tpInfo)
         }
 
+        this.nextTpInfo = tpInfo
+        this.justTeleported = true
+
         this.ready = false
+
+        let map: CCMap | undefined
+        await Promise.all([
+            (async () => {
+                map = multi.server.maps.get(tpInfo.map)
+                map ??= await multi.server.loadMap(tpInfo.map)
+                await map.readyPromise
+            })(),
+            new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
+        ])
+        assert(map)
+
         const oldMap = multi.server.maps.get(this.tpInfo.map)
+
         if (oldMap) {
             oldMap.leave(this)
-            oldMap.forceUpdate++
             for (const obj of oldMap.onLinkChange) obj.onClientUnlink(this)
         }
 
         this.tpInfo = tpInfo
-        this.justTeleported = true
 
-        let map = multi.server.maps.get(this.tpInfo.map)
-        if (!map) {
-            await multi.server.loadMap(this.tpInfo.map)
-            map = this.getMap()
-        }
-        await map.readyPromise
-
-        if (oldMap) oldMap.forceUpdate--
-        map.forceUpdate++
         await runTask(map.inst, () => this.createPlayer())
-        map.forceUpdate--
         map.enter(this)
+
         runTask(map.inst, () => {
             if (multi.server instanceof PhysicsServer) {
                 teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker, undefined, true)
             }
-            this.ready = true
         })
+        this.ready = true
 
-        await this.linkMapToInstance(map)
+        this.linkMapToInstance(map)
 
         this.inst.ig.game.events.clear()
 
         for (const obj of map.onLinkChange) obj.onClientLink(this)
 
         multi.storage.save()
+
+        this.stopTeleportOverlay()
     }
 
-    private async linkMapToInstance(map: CCMap) {
+    private linkMapToInstance(map: CCMap) {
         const cig = this.inst.ig
         const mig = map.inst.ig
 

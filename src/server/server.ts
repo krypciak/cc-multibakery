@@ -28,6 +28,7 @@ export interface ServerSettings {
     displayRemoteClientInstances?: boolean
     defaultMap?: MapTpInfo
     attemptCrashRecovery?: boolean
+    mapSwitchDelay?: number
 }
 
 export interface ClientJoinData {
@@ -55,8 +56,6 @@ export interface ClientJoinAckData {
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
-    protected abstract remote: boolean
-
     baseInst!: InstanceinatorInstance
 
     maps: Map<string, CCMap> = new Map()
@@ -178,11 +177,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return [...this.maps.values()].filter(map => map.ready && map.isActive())
     }
 
-    async loadMap(name: string) {
+    async loadMap(name: string): Promise<CCMap> {
         this.maps.get(name)?.destroy()
-        const map = new CCMap(name, this.remote)
+        const map = new CCMap(name)
         this.maps.set(name, map)
         await map.init()
+        return map
     }
 
     unloadMap(map: CCMap) {

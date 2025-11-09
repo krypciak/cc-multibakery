@@ -98,7 +98,8 @@ function getRemoteServerUpdatePacket(
     const maps = conn.clients.reduce((acc, client) => {
         if (client.justTeleported) {
             client.justTeleported = false
-            ;(acc[client.tpInfo.map] ??= []).push({ username: client.username, marker: client.tpInfo.marker })
+            const { map, marker } = client.nextTpInfo
+            ;(acc[map] ??= []).push({ username: client.username, marker })
         }
         return acc
     }, {} as PlayerMapChangeRecord)

@@ -73,6 +73,7 @@ prestart(() => {
     addStateHandler({
         get(packet, player, cache) {
             for (const entity of ig.game.entities) {
+                if (entity._killed) continue
                 if (isStateEntity(entity)) {
                     const typeId = getEntityTypeId(entity.netid)
 

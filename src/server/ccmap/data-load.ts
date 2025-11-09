@@ -145,7 +145,10 @@ prestart(() => {
         handleLoadingComplete() {
             if (!multi.server) return this.parent()
             if (!ig.game.playerEntity) return
-            return this.parent()
+            const backup = ig.overlay
+            ig.overlay = { setAlpha() {} } as any
+            this.parent()
+            ig.overlay = backup
         },
     })
 })

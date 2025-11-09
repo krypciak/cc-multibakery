@@ -35,6 +35,7 @@ export class PhysicsHttpServer {
             globalTps: multi.server.settings.tps,
             forceConsistentTickTimes: multi.server.settings.forceConsistentTickTimes,
             modCompatibility: getModCompatibilityList(),
+            mapSwitchDelay: multi.server.settings.mapSwitchDelay,
         }
         const serverDetailsString: string = JSON.stringify(serverDetails)
 

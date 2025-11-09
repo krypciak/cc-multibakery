@@ -31,6 +31,7 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
     const justThrown = this.justThrown
     this.justThrown = false
 
+    assert(this.thrower.netid)
     return {
         owner: memory.onlyOnce(this.thrower.netid),
         pos: memory.diffVec3(this.coll.pos),

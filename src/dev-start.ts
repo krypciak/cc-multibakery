@@ -2,6 +2,7 @@ import { PhysicsServer } from './server/physics/physics-server'
 import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
+import { Opts } from './options'
 
 function startDevServer() {
     multi.setServer(
@@ -16,6 +17,7 @@ function startDevServer() {
             displayRemoteClientInstances: true,
             forceConsistentTickTimes: false,
             attemptCrashRecovery: false,
+            mapSwitchDelay: Opts.serverMapSwitchDelay,
             godmode: true,
             disablePlayerIdlePose: true,
             // save: {
@@ -60,10 +62,10 @@ function startDevServer() {
                 // map: 'rhombus-sqr/central-inner',
                 // map: 'rookie-harbor/south',
                 // map: 'xpc/bonus/art-testing',
-                marker: 'entrance',
+                // marker: 'entrance',
                 // marker: 'puzzle',
                 // marker: 'pvp',
-                // marker: 'exit',
+                marker: 'exit',
                 // marker: 'door-west1',
             },
         })

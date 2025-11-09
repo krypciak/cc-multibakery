@@ -133,6 +133,7 @@ prestart(() => {
             if (!classIdToTypeid[this.classId]) return
 
             const netid = override ?? this.createNetid()
+            // console.log(ig.game.mapName, fcn(this), netid)
             if (!netid) {
                 this.netid = undefined as any
                 return
@@ -148,7 +149,10 @@ prestart(() => {
         },
         onKill() {
             this.parent()
-            if (this.netid) delete ig.game.entitiesByNetid[this.netid]
+            if (this.netid) {
+                // console.log(ig.game.mapName, fcn(this), this.netid, 'deleting')
+                delete ig.game.entitiesByNetid[this.netid]
+            }
         },
     })
 }, 1)

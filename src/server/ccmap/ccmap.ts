@@ -44,12 +44,9 @@ export class CCMap extends InstanceUpdateable {
     private readyResolve!: () => void
     noStateAppliedYet: boolean = true
     onLinkChange: OnLinkChange[] = []
-    forceUpdate: number = 0
+    forceUpdateForFrames: number = 0
 
-    constructor(
-        public name: string,
-        private remote: boolean
-    ) {
+    constructor(public name: string) {
         super()
         this.readyPromise = new Promise<void>(resolve => {
             this.readyResolve = () => {
@@ -100,7 +97,12 @@ export class CCMap extends InstanceUpdateable {
     }
 
     isActive() {
-        return multi.server.settings.forceMapsActive || !this.ready || this.forceUpdate != 0 || this.clients.length > 0
+        return (
+            multi.server.settings.forceMapsActive ||
+            !this.ready ||
+            this.forceUpdateForFrames != 0 ||
+            this.clients.length > 0
+        )
     }
 
     isVisible() {
@@ -135,12 +137,12 @@ export class CCMap extends InstanceUpdateable {
         this.clients.erase(client)
         if (prevLen == this.clients.length) return
 
+        this.forceUpdateForFrames = multi.server.settings.tps
+
         if (client.dummy) this.leaveEntity(client.dummy)
     }
 
     private leaveEntity(e: ig.Entity) {
-        if (this.remote) return
-
         if (e.isPlayer && e instanceof ig.ENTITY.Player) {
             this.leaveEntity(e.gui.crosshair)
         }
@@ -149,6 +151,11 @@ export class CCMap extends InstanceUpdateable {
         runTask(this.inst, () => {
             e.kill()
         })
+    }
+
+    update() {
+        super.update()
+        if (this.forceUpdateForFrames > 0) this.forceUpdateForFrames--
     }
 
     getAllInstances(includeMapInst?: boolean) {
