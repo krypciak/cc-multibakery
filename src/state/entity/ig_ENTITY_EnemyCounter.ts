@@ -47,5 +47,5 @@ prestart(() => {
     ig.ENTITY.EnemyCounter.create = () => {
         throw new Error('ig.ENTITY.EnemyCounter.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.EnemyCounter, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.EnemyCounter, isStatic: true })
 }, 2)

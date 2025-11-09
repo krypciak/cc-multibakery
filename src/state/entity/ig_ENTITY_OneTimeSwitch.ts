@@ -44,7 +44,7 @@ prestart(() => {
     ig.ENTITY.OneTimeSwitch.create = () => {
         throw new Error('ig.ENTITY.OneTimeSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch, isStatic: true })
 
     if (!REMOTE) return
 

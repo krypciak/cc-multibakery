@@ -66,7 +66,7 @@ prestart(() => {
     ig.ENTITY.XenoDialog.create = () => {
         throw new Error('ig.ENTITY.XenoDialog.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, netidStatic: true, sendEmpty: true })
+    registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, isStatic: true, sendEmpty: true })
 
     if (REMOTE) {
         ig.ENTITY.XenoDialog.inject({

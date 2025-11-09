@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.Destructible.create = () => {
         throw new Error('ig.ENTITY.Destructible.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Destructible, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Destructible, isStatic: true })
 }, 2)

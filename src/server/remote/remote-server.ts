@@ -11,7 +11,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { sendRemoteServerPacket } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { applyModCompatibilityList, ModCompatibilityList } from '../mod-compatibility-list'
-import { entityIgnoreDeath, entityNetidStatic, getEntityTypeId } from '../../misc/entity-netid'
+import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -158,7 +158,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                         for (const entity of map.inst.ig.game.entities) {
                             if (!entity.netid) continue
                             const type = getEntityTypeId(entity.netid)
-                            if (!entityNetidStatic.has(type) && !entityIgnoreDeath.has(type)) {
+                            if (!entityStatic.has(type) && !entityIgnoreDeath.has(type)) {
                                 entity.kill()
                             }
                         }

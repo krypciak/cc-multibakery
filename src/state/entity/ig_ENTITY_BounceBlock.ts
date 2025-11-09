@@ -51,6 +51,6 @@ prestart(() => {
     ig.ENTITY.BounceBlock.create = () => {
         throw new Error('ig.ENTITY.BounceBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.BounceBlock, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.BounceBlock, isStatic: true })
     ig.ENTITY.BounceBlock.forceRemotePhysics = true
 }, 2)

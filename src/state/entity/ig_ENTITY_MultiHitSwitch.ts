@@ -50,7 +50,7 @@ prestart(() => {
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch, isStatic: true })
 
     if (!REMOTE) return
 

@@ -43,7 +43,7 @@ prestart(() => {
     ig.ENTITY.WallBase.create = () => {
         throw new Error('ig.ENTITY.WallBase.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.WallBase, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.WallBase, isStatic: true })
 
     ig.ENTITY.WallBlocker.inject({
         setActive(isBaseActive, isActive) {

@@ -41,7 +41,7 @@ prestart(() => {
     ig.ENTITY.FloorSwitch.create = () => {
         throw new Error('ig.ENTITY.FloorSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.FloorSwitch, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.FloorSwitch, isStatic: true })
 
     if (REMOTE) {
         ig.ENTITY.FloorSwitch.inject({

@@ -50,7 +50,7 @@ prestart(() => {
         const enemy = ig.game.spawnEntity(ig.ENTITY.Enemy, 0, 0, 0, settings)
         return enemy
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Enemy, netidStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Enemy, isStatic: true })
 
     if (!REMOTE) return
 

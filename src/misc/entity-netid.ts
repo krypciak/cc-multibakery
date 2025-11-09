@@ -35,7 +35,7 @@ export type EntityNetid = u16
 // u1 for special bit
 const typeidSizeBits = 6
 const typeidSize = 64 // u6
-const counterSize = 512 // 9
+export const entityNetidCounterSize = 512 // 9
 const typeidShift = 16 - typeidSizeBits + 1
 const specialBit = 1 << (typeidShift - 1)
 
@@ -68,14 +68,14 @@ export const entityTypeidToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
 export const entitySendEmpty: Set<EntityTypeId> = new Set()
 export const entityIgnoreDeath: Set<EntityTypeId> = new Set()
-export const entityNetidStatic: Set<EntityTypeId> = new Set()
+export const entityStatic: Set<EntityTypeId> = new Set()
 
 interface RegisterNetEntitySettings {
     entityClass: EntityClass
     applyPriority?: number
     sendEmpty?: boolean
     ignoreDeath?: boolean
-    netidStatic?: boolean
+    isStatic?: boolean
 }
 
 export function registerNetEntity({
@@ -83,7 +83,7 @@ export function registerNetEntity({
     applyPriority,
     sendEmpty,
     ignoreDeath,
-    netidStatic,
+    isStatic,
 }: RegisterNetEntitySettings) {
     const typeid = nextNetidType()
     assert(!entityTypeidToClass[typeid], `entity typeid duplicate! ${typeid}`)
@@ -93,7 +93,7 @@ export function registerNetEntity({
 
     if (sendEmpty) entitySendEmpty.add(typeid)
     if (ignoreDeath) entityIgnoreDeath.add(typeid)
-    if (netidStatic) entityNetidStatic.add(typeid)
+    if (isStatic) entityStatic.add(typeid)
 }
 
 prestart(() => {
@@ -121,7 +121,7 @@ prestart(() => {
             let netid: EntityNetid = 0
             do {
                 let add = ++ig.game.entityTypeIdCounterMap[typeid]
-                if (add >= counterSize) {
+                if (add >= entityNetidCounterSize) {
                     add = 1
                     ig.game.entityTypeIdCounterMap[typeid] = 0
                 }
