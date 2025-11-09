@@ -20,6 +20,7 @@
 - Fix map crash recovery
 - Fix crash loop after getting near ig.ENTITY.XenoDialog on a second map
 - Fix triblader and hexacast remote attack circle glow missing
+- Fix combatant party api not creating new parties after reaching party value 10
 
 ## [0.5.6] 2025-10-31
 

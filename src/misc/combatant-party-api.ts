@@ -11,7 +11,7 @@ export function addCombatantParty(name: string, forceId?: number): sc.COMBATANT_
 
     if (sc.COMBATANT_PARTY[key]) return sc.COMBATANT_PARTY[key]
     const id: sc.COMBATANT_PARTY =
-        forceId ?? (Object.values(sc.COMBATANT_PARTY).sort().last() as sc.COMBATANT_PARTY) + 1
+        forceId ?? (Object.values(sc.COMBATANT_PARTY) as number[]).sort((a, b) => a - b).last() + 1
     // @ts-expect-error
     sc.COMBATANT_PARTY[key] = id
 
