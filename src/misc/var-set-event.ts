@@ -11,8 +11,9 @@ function inject(this: ig.Vars & { parent(path: string, value: unknown): void }, 
     if (!path) return this.parent(path, value)
     const oldValue = this.get(path)
     this.parent(path, value)
-    if (oldValue !== value) {
-        for (const listener of listeners) listener(path, oldValue, value as ig.VarValue)
+    const currentValue = this.get(path)
+    if (oldValue !== currentValue) {
+        for (const listener of listeners) listener(path, oldValue, currentValue as ig.VarValue)
     }
 }
 

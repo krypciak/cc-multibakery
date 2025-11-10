@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix entity event to var causal chain sometimes not working on var increments
+
 ## [0.5.7] 2025-11-10
 
 ### Added
