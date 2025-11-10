@@ -26,7 +26,7 @@ class EntityStateRecordUnionNode extends Node {
                     (v, i) =>
                         Node.indent(indent + 1) +
                         gray(`/* id: `, noColor) +
-                        yellow(`${i+1}`, noColor) +
+                        yellow(`${i + 1}`, noColor) +
                         gray(` */ `, noColor) +
                         v.print(noColor, indent + 1)
                 )
@@ -64,7 +64,7 @@ class EntityStateRecordUnionNode extends Node {
                     .map(
                         (t, i) =>
                             Node.indent(data.indent + 2) +
-                            `case ${i+1}: {\n` +
+                            `case ${i + 1}: {\n` +
                             Node.indent(data.indent + 3) +
                             t.genEncode({ ...data, varName: valueVar, indent: data.indent + 3 }) +
                             '\n' +
@@ -104,7 +104,7 @@ class EntityStateRecordUnionNode extends Node {
                     .map(
                         (t, i) =>
                             Node.indent(data.indent + 2) +
-                            `case ${i+1}: {\n` +
+                            `case ${i + 1}: {\n` +
                             Node.indent(data.indent + 3) +
                             `${valueVar} = ` +
                             t.genDecode({ ...data, indent: data.indent + 3 }) +
@@ -126,13 +126,12 @@ class EntityStateRecordUnionNode extends Node {
 }
 
 import * as fs from 'fs'
-import * as path from 'path'
 const entityImportOrder = (await fs.promises.readFile('src/state/entity.ts', 'utf8'))
     .split('\n')
     .filter(line => line.startsWith("import './entity/"))
     .map(line => line.slice("import './entity/".length, -1))
     .filter(line => line.startsWith('sc') || line.startsWith('ig') || line.startsWith('dummy'))
-// console.log(entityImportOrder)
+    .map(line => line.replace(/_/g, '.'))
 
 export function createEntityStateRecordUnionNode(
     optional: boolean | undefined,
@@ -147,20 +146,24 @@ export function createEntityStateRecordUnionNode(
     const keyNode = parser.parseToNode(keyType, indent + 1)
     assert(keyNode instanceof NumberNode)
 
-    const valueType = getRecordValueType(recordType)
-    assert(valueType)
-    assert(valueType.isUnion())
-    const valueNodesUnsorted = valueType.types.map(t => parser.parseToNode(t, indent + 1))
-    const valueNodesUnsortedTypeNames = valueType.types.map(t =>
-        path.basename(t.symbol.getDeclarations()?.[0]?.getSourceFile().fileName!).slice(0, -3)
-    )
+    const node = recordType.symbol.declarations?.[0]
+    assert(node)
+    const sourceFile = node.getSourceFile()
+    assert(sourceFile)
+    const globalSymbols = parser.checker.getSymbolsInScope(sourceFile, ts.SymbolFlags.Interface)
+    const entityStatesSymbol = globalSymbols.find(m => m.name == 'EntityStates')
+    assert(entityStatesSymbol)
+    const membersTable = entityStatesSymbol?.members
+    assert(membersTable)
+    const members = [...membersTable.values()]
+    const valueNodesUnsorted = members.map(m => parser.checker.getTypeOfSymbol(m)).map(t => parser.parseToNode(t))
+    const valueNodesUnsortedTypeNames = members.map(m => m.name)
+
     assert(entityImportOrder.length == valueNodesUnsortedTypeNames.length)
     // console.log(valueNodesUnsortedTypeNames)
     const valueNodes: Node[] = entityImportOrder.map(
         typeName => valueNodesUnsorted[valueNodesUnsortedTypeNames.findIndex(typeName1 => typeName == typeName1)]
     )
-    // console.log(valueNodes)
-    // process.exit()
 
     return new EntityStateRecordUnionNode(optional, keyNode, valueNodes)
 }

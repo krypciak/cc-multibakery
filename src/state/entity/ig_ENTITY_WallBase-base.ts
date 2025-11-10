@@ -1,4 +1,3 @@
-import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateMemory } from '../state-util'
@@ -7,9 +6,6 @@ import { StateKey } from '../states'
 declare global {
     namespace ig.ENTITY {
         interface WallBase extends StateMemory.MapHolder<StateKey> {}
-    }
-    interface EntityStates {
-        'ig.ENTITY.WallBase': Return
     }
 }
 
@@ -35,24 +31,17 @@ function setState(this: ig.ENTITY.WallBase, state: Return) {
     }
 }
 
+export type WallBaseReturn = Return
+
 prestart(() => {
     ig.ENTITY.WallBase.inject({
         getState,
         setState,
     })
-    ig.ENTITY.WallBase.create = () => {
-        throw new Error('ig.ENTITY.WallBase.create not implemented')
-    }
-    registerNetEntity({ entityClass: ig.ENTITY.WallBase, isStatic: true })
 
     ig.ENTITY.WallBlocker.inject({
-        setActive(isBaseActive, isActive) {
-            if (!ig.settingStateImmediately) return this.parent(isBaseActive, isActive)
-
-            const soundsBackup = this.sounds
-            this.sounds = undefined
-            this.parent(isBaseActive, isActive)
-            this.sounds = soundsBackup
+        setActive(active, noEffects) {
+            return this.parent(active, noEffects || ig.settingStateImmediately)
         },
     })
 
@@ -62,6 +51,12 @@ prestart(() => {
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
             /* prevent this.timer from ticking */
+        },
+    })
+
+    ig.ENTITY.WallBase.inject({
+        varsChanged() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent!()
         },
     })
 }, 2)

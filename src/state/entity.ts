@@ -22,7 +22,8 @@ import './entity/ig_ENTITY_PushPullBlock'
 import './entity/ig_ENTITY_Switch'
 import './entity/ig_ENTITY_OneTimeSwitch'
 import './entity/ig_ENTITY_MultiHitSwitch'
-import './entity/ig_ENTITY_WallBase'
+import './entity/ig_ENTITY_WallHorizontal'
+import './entity/ig_ENTITY_WallVertical'
 import './entity/ig_ENTITY_OLPlatform'
 import './entity/ig_ENTITY_Ball'
 import './entity/sc_CombatProxyEntity'
@@ -86,12 +87,11 @@ prestart(() => {
             for (const entity of ig.game.entities) {
                 if (entity._killed) continue
                 if (isStateEntity(entity)) {
-                    const typeId = getEntityTypeId(entity.netid)
-
                     let state = entity.getState(player, cache?.states?.[entity.netid])
                     if (!state) continue
                     state = cleanRecord(state)
                     if (!state) {
+                        const typeId = getEntityTypeId(entity.netid)
                         if (entitySendEmpty.has(typeId)) {
                             state = {}
                         } else {
