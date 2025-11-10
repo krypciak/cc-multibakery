@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix entity event to var causal chain sometimes not working on var increments
+- Fix most crashes on remote cutscene skip (there are still some rare ones)
 
 ## [0.5.7] 2025-11-10
 

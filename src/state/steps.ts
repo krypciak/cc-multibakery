@@ -113,6 +113,7 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
                 eventCall.blocked = true
                 ig.game.events.blockedEventCallQueue.push(eventCall)
             }
+            ig.game.events.update()
         }
     })
 }
@@ -128,7 +129,8 @@ prestart(() => {
             }
 
             if (player) {
-                const clientSteps = player.getClient().inst.ig.stepsFired
+                const client = player.getClient()
+                const clientSteps = client.inst.ig.stepsFired
                 if (clientSteps && clientSteps.size > 0) {
                     packet.steps ??= {}
                     packet.steps.clients ??= {}
@@ -158,7 +160,7 @@ prestart(() => {
             }
         },
     })
-})
+}, 99) /* this needs to run before game-model-state, otherwise it will crash on dialog cutscene skip */
 
 export function onStepHistoryAdd({ step, data, call }: StepHistoryEntry) {
     ig.stepsFired ??= new Map()
