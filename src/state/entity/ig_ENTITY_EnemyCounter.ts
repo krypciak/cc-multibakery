@@ -22,7 +22,7 @@ function getState(this: ig.ENTITY.EnemyCounter, player?: StateKey) {
     }
 }
 function setState(this: ig.ENTITY.EnemyCounter, state: Return) {
-    if (state.postCount !== undefined) {
+    if (state.postCount !== undefined && this.postCount != state.postCount) {
         this.postCount = state.postCount
         this.timer = this.MAX_FLASH_TIME
 
