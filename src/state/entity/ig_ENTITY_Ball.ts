@@ -29,8 +29,6 @@ function getState(this: ig.ENTITY.Ball, player?: StateKey) {
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {
     if (state.pos) Vec3.assign(this.coll.pos, state.pos)
-
-    ig.ENTITY.Projectile.prototype.update.call(this)
 }
 
 prestart(() => {
@@ -79,12 +77,14 @@ prestart(() => {
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)
         return ball
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Ball, sendEmpty: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Ball })
 
     if (REMOTE) {
         ig.ENTITY.Ball.inject({
             update() {
                 if (!(multi.server instanceof RemoteServer)) return this.parent()
+
+                ig.ENTITY.Projectile.prototype.update.call(this)
             },
             onBounce(pos, collData) {
                 if (!(multi.server instanceof RemoteServer)) return this.parent(pos, collData)

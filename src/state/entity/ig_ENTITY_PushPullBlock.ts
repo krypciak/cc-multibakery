@@ -33,7 +33,7 @@ function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
                 this.pushPullable.soundHandle = sc.PushPullSounds.Loop.play(true)
             }
         }
-    } else this.pushPullable.stopSound()
+    }
 }
 
 prestart(() => {
@@ -44,13 +44,14 @@ prestart(() => {
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, sendEmpty: true, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, isStatic: true })
 
     if (!REMOTE) return
 
     ig.ENTITY.PushPullBlock.inject({
         update() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!ig.lastStatePacket?.states?.[this.netid]) this.pushPullable.stopSound()
         },
         deferredUpdate() {
             if (!(multi.server instanceof RemoteServer)) return this.parent()

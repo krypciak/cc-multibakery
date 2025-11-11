@@ -1,13 +1,7 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler, StateKey } from './states'
 import { assert } from '../misc/assert'
-import {
-    entityApplyPriority,
-    EntityNetid,
-    entitySendEmpty,
-    entityTypeidToClass,
-    getEntityTypeId,
-} from '../misc/entity-netid'
+import { entityApplyPriority, EntityNetid, entityTypeidToClass, getEntityTypeId } from '../misc/entity-netid'
 import { cleanRecord } from './state-util'
 
 import './entity/entity-death'
@@ -76,14 +70,7 @@ prestart(() => {
                     let state = entity.getState(player, cache?.states?.[entity.netid])
                     if (!state) continue
                     state = cleanRecord(state)
-                    if (!state) {
-                        const typeId = getEntityTypeId(entity.netid)
-                        if (entitySendEmpty.has(typeId)) {
-                            state = {}
-                        } else {
-                            continue
-                        }
-                    }
+                    if (!state) continue
 
                     packet.states ??= {}
                     packet.states[entity.netid] ??= {} as any

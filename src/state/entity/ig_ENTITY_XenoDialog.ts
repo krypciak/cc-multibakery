@@ -54,8 +54,6 @@ function setState(this: ig.ENTITY.XenoDialog, state: Return) {
             this._showNextMessage()
         }
     }
-
-    // this.update()
 }
 
 prestart(() => {
@@ -66,7 +64,7 @@ prestart(() => {
     ig.ENTITY.XenoDialog.create = () => {
         throw new Error('ig.ENTITY.XenoDialog.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, isStatic: true, sendEmpty: true })
+    registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, isStatic: true })
 
     if (REMOTE) {
         ig.ENTITY.XenoDialog.inject({

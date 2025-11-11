@@ -20,7 +20,6 @@ type Return = ReturnType<typeof getState>
 function getState(this: sc.CombatProxyEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
-    /* TODO: uhhhhhhh pos is probably set in update call */
     return {
         proxyType: memory.onlyOnce(this.proxyType),
         combatant: memory.onlyOnce(this.combatant.netid),
@@ -31,8 +30,6 @@ function getState(this: sc.CombatProxyEntity, player?: StateKey) {
 function setState(this: sc.CombatProxyEntity, state: Return) {
     if (state.pos) Vec3.assign(this.coll.pos, state.pos)
     if (state.dir) Vec2.assign(this.face, state.dir)
-
-    this.update()
 }
 
 prestart(() => {
@@ -70,7 +67,7 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity({ entityClass: sc.CombatProxyEntity, sendEmpty: true })
+    registerNetEntity({ entityClass: sc.CombatProxyEntity })
 
     if (REMOTE) {
         sc.CombatProxyEntity.inject({

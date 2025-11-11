@@ -2,7 +2,6 @@ import { assert } from '../../misc/assert'
 import { createNetidSpecialBit, EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { PhysicsServer } from '../../server/physics/physics-server'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
@@ -50,9 +49,6 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
 }
 function setState(this: ig.ENTITY.Effect, state: Return) {
     if (!this.target && state.pos) Vec3.assign(this.coll.pos, state.pos)
-
-    this.update()
-    this.deferredUpdate()
 }
 
 function resolveObjects(state: Return) {
@@ -111,7 +107,6 @@ prestart(() => {
     registerNetEntity({
         entityClass: ig.ENTITY.Effect,
         applyPriority: 2000,
-        sendEmpty: true,
         ignoreDeath: true,
     })
 
@@ -133,23 +128,6 @@ prestart(() => {
     for (const clazz of particles) {
         clazz.forceRemotePhysics = true
     }
-
-    if (!REMOTE) return
-
-    ig.ENTITY.Effect.inject({
-        update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && ig.lastStatePacket?.states?.[this.netid]) return
-
-            this.parent()
-        },
-        deferredUpdate() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
-            if (!ig.settingState && ig.lastStatePacket?.states?.[this.netid]) return
-
-            this.parent()
-        },
-    })
 }, 2)
 
 declare global {
