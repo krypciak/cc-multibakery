@@ -279,3 +279,11 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.MapModel.inject({
+        validateCurrentPlayerFloor() {
+            if (ig.game.playerEntity) return this.parent()
+        },
+    })
+})

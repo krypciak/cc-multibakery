@@ -11,6 +11,7 @@
 - Fix ig.ENTITY.WallVertical & ig.ENTITY.WallHorizontal initial remote state
 - Fix ig.ENTITY.EnemyCounter ding on remote on second remote client creation
 - Fix ig.ENTITY.Effect not spawning on remote after a while
+- Fix crash when loading maps in areas with more than one floor
 
 ## [0.5.7] 2025-11-10
 
