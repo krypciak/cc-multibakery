@@ -10,6 +10,7 @@
 - Fix most crashes on remote cutscene skip (there are still some rare ones)
 - Fix ig.ENTITY.WallVertical & ig.ENTITY.WallHorizontal initial remote state
 - Fix ig.ENTITY.EnemyCounter ding on remote on second remote client creation
+- Fix ig.ENTITY.Effect not spawning on remote after a while
 
 ## [0.5.7] 2025-11-10
 

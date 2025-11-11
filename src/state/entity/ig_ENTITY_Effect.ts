@@ -92,6 +92,8 @@ prestart(() => {
     })
 
     ig.ENTITY.Effect.create = (netid: EntityNetid, state: Return) => {
+        if (!state.sheetPath) return
+
         const { target, target2, effect } = resolveObjects(state)
         const { x, y, z } = state.pos ?? { x: 0, y: 0, z: 0 }
         const settings: ig.ENTITY.Effect.Settings = Object.assign({}, state, {

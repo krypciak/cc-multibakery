@@ -140,7 +140,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                     entity.kill()
                 }
             }
-            ig.game.entitiesSpawnedBefore.clear()
         })
 
         await Promise.all(
