@@ -246,57 +246,59 @@ export class Client extends InstanceUpdateable {
     }
 
     private linkMapToInstance(map: CCMap) {
-        const cig = this.inst.ig
-        const mig = map.inst.ig
-
-        cig.game.mapName = mig.game.mapName
-        cig.game.entities = mig.game.entities
-        cig.game.entitiesByNetid = mig.game.entitiesByNetid
-        cig.game.mapEntities = mig.game.mapEntities
-        cig.game.shownEntities = mig.game.shownEntities
-        cig.game.freeEntityIds = mig.game.freeEntityIds
-        cig.game.namedEntities = mig.game.namedEntities
-        cig.game.conditionalEntities = mig.game.conditionalEntities
-        cig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
-
         runTask(this.inst, () => {
+            const mig = map.inst.ig
+
+            ig.game.mapName = mig.game.mapName
+            ig.game.entities = mig.game.entities
+            ig.game.entitiesByNetid = mig.game.entitiesByNetid
+            ig.game.mapEntities = mig.game.mapEntities
+            ig.game.shownEntities = mig.game.shownEntities
+            ig.game.freeEntityIds = mig.game.freeEntityIds
+            ig.game.namedEntities = mig.game.namedEntities
+            ig.game.conditionalEntities = mig.game.conditionalEntities
+            ig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
+
             ig.light.shadowProviders = []
-            initMapsAndLevels.call(cig.game, map.rawLevelData)
-        })
+            initMapsAndLevels.call(ig.game, map.rawLevelData)
 
-        cig.game.physics = mig.game.physics
+            ig.game.physics = mig.game.physics
 
-        cig.vars = mig.vars
+            ig.vars = mig.vars
 
-        cig.light.lightHandles = mig.light.lightHandles
-        cig.light.darknessHandles = mig.light.darknessHandles
-        cig.light.screenFlashHandles = mig.light.screenFlashHandles
+            ig.light.lightHandles = mig.light.lightHandles
+            ig.light.darknessHandles = mig.light.darknessHandles
+            ig.light.screenFlashHandles = mig.light.screenFlashHandles
 
-        linkMusic(this.inst, map.inst)
-        linkTimersModel(this.inst, map.inst)
+            linkMusic(this.inst, map.inst)
+            linkTimersModel(this.inst, map.inst)
 
-        removeAddon(cig.screenBlur, cig.game)
-        cig.screenBlur = mig.screenBlur
-        addAddon(cig.screenBlur, cig.game)
+            removeAddon(ig.screenBlur, ig.game)
+            ig.screenBlur = mig.screenBlur
+            addAddon(ig.screenBlur, ig.game)
 
-        removeAddon(cig.rumble, cig.game)
-        cig.rumble = mig.rumble
-        addAddon(cig.rumble, cig.game)
+            removeAddon(ig.rumble, ig.game)
+            ig.rumble = mig.rumble
+            addAddon(ig.rumble, ig.game)
 
-        cig.game.playerEntity = this.dummy
+            ig.game.playerEntity = this.dummy
 
-        const csc = this.inst.sc
-        const msc = map.inst.sc
+            const msc = map.inst.sc
 
-        rehookObservers(csc.model.player.params, this.dummy.model.params)
-        rehookObservers(csc.model.player, this.dummy.model)
-        csc.model.player = this.dummy.model
-        csc.pvp = msc.pvp
-        csc.options = msc.options
-        csc.combat.activeCombatants = msc.combat.activeCombatants
-        csc.map = msc.map
+            rehookObservers(this.dummy.model.params, sc.model.player.params)
+            rehookObservers(this.dummy.model, sc.model.player)
+            sc.model.player = this.dummy.model
+            sc.pvp = msc.pvp
+            sc.options = msc.options
+            sc.combat.activeCombatants = msc.combat.activeCombatants
 
-        runTask(this.inst, () => {
+            /* TODO: do these observers get removed? */
+            rehookObservers(msc.map, sc.map)
+            removeAddon(sc.map, ig.game)
+            ig.storage.listeners.erase(sc.map)
+            sc.map = msc.map
+            addAddon(sc.map, ig.game)
+
             sc.model.enterNewGame()
             sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
@@ -320,11 +322,11 @@ export class Client extends InstanceUpdateable {
 
             /* fix crash when opening encyclopedia */
             sc.menu.newUnlocks[sc.MENU_SUBMENU.LORE] = []
-        })
 
-        /* this has to be linked after ig.GameAddon#onLevelLoadStart is fired since ig.Light clears it */
-        cig.light.condLights = mig.light.condLights
-        cig.light.condLightList = mig.light.condLightList
+            /* this has to be linked after ig.GameAddon#onLevelLoadStart is fired since ig.Light clears it */
+            ig.light.condLights = mig.light.condLights
+            ig.light.condLightList = mig.light.condLightList
+        })
 
         runTask(map.inst, () => {
             for (const client of multi.server.clients.values()) {
@@ -412,7 +414,7 @@ export class Client extends InstanceUpdateable {
     }
 }
 
-function rehookObservers(from: sc.Model, to: sc.Model) {
+function rehookObservers(to: sc.Model, from: sc.Model) {
     const toObservers = new Set(to.observers)
     for (const fromObserver of from.observers) {
         toObservers.add(fromObserver)

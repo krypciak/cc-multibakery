@@ -51,9 +51,20 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
     wrapFilterListeners<T>(func: () => T): T {
         const listenersBackup = ig.storage.listeners
-        const relevantListeners = ig.storage.listeners.filter(
-            listener => !('_instanceId' in listener) || listener._instanceId == instanceinator.id
+
+        const instId = ig.client?.getMap().inst.id ?? instanceinator.id
+        let relevantListeners = ig.storage.listeners.filter(
+            listener => !('_instanceId' in listener) || listener._instanceId == instId
         )
+
+        if (ig.client) {
+            const clientListeners = [sc.map, sc.party, sc.message, sc.menu, sc.model]
+            relevantListeners = relevantListeners.filter(
+                l => !('classId' in l) || clientListeners.every(cl => l.classId != cl.classId)
+            )
+            relevantListeners.push(...clientListeners)
+        }
+
         ig.storage.listeners = relevantListeners
 
         const ret = func()
@@ -214,11 +225,13 @@ prestart(() => {
             multi.storage.save(slot)
         },
         onLevelLoadStart(data) {
+            if (ig.ccmap || ig.client) return
             multi.storage.wrapFilterListeners(() => {
                 this.parent!(data)
             })
         },
         onLevelLoaded(data) {
+            if (ig.ccmap || ig.client) return
             multi.storage.wrapFilterListeners(() => {
                 this.parent!(data)
             })
@@ -236,26 +249,3 @@ prestart(() => {
         })
     }
 })
-
-// prestart(() => {
-//     ig.Vars.inject({
-//         restoreFromJson(json) {
-//             this.currentLevelName = json.levelName
-//             /* data is linked from multi.server.inst */
-//             // this.storage = ig.copy(json.storage)
-//             this.storage.map = this.storage.maps[this.currentLevelName]
-//             this.storage.session = {
-//                 map: {},
-//                 maps: {},
-//             }
-//         },
-//     })
-// })
-//
-// prestart(() => {
-//     ig.Storage.inject({
-//         onLevelLoadStart(data) {
-//             if (!ig.ccmap) return this.parent!(data)
-//         },
-//     })
-// })
