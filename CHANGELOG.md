@@ -14,6 +14,7 @@
 - Fix crash when loading maps in areas with more than one floor
 - Fix creating server from current state resetting stuff like vars, active landmarks etc.
 - Fix saving server state not saving stuff like vars, active landmarks etc.
+- Fix ig.ENTITY.NPC#postActionUpdate getting overriden when server is off
 
 ## [0.5.7] 2025-11-10
 

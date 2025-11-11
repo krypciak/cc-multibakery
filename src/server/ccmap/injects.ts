@@ -186,7 +186,7 @@ prestart(() => {
 prestart(() => {
     ig.ENTITY.NPC.inject({
         postActionUpdate() {
-            if (!multi.server) return
+            if (!multi.server) return this.parent()
             const map = ig.ccmap
             assert(map)
 
