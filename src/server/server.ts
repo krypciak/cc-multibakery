@@ -191,14 +191,14 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         map.destroy()
     }
 
-    protected async joinClient(client: Client) {
+    protected joinClient(client: Client) {
         assert(!this.clients.has(client.username))
         this.clients.set(client.username, client)
     }
 
     async createAndJoinClient(settings: ClientSettings) {
         const client = await Client.create(settings)
-        await this.joinClient(client)
+        this.joinClient(client)
         await client.teleportInitial(settings.tpInfo)
 
         return client

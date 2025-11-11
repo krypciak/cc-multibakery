@@ -152,6 +152,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         joinData: ClientJoinData,
         connection: NetConnection
     ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        assert(instanceinator.id == this.inst.id)
         const username = joinData.username
 
         if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
@@ -182,7 +183,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    protected async joinClient(client: Client) {
+    protected joinClient(client: Client) {
         super.joinClient(client)
         this.updateAnyRemoteClientsOn()
     }

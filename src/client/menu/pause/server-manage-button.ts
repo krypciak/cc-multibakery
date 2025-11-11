@@ -9,6 +9,7 @@ import { PhysicsServer } from '../../../server/physics/physics-server'
 import { createClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../../misc/nwjs-version-popup'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace ig {
@@ -139,7 +140,9 @@ prestart(() => {
                                     prefferedTpInfo: ig.client?.tpInfo,
                                 })
                                 const igBackup = ig
-                                const { ackData } = await multi.server.tryJoinClient(joinData)
+                                const { ackData } = await runTask(multi.server.inst, () =>
+                                    multi.server.tryJoinClient(joinData)
+                                )
                                 igBackup.game.scheduledTasks.push(() => {
                                     showTryNetJoinResponseDialog(joinData, ackData)
                                 })
