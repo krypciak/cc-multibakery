@@ -6,7 +6,7 @@ import { PhysicsServer } from './physics-server'
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
     multi.storage.savePlayerState(username, ig.game.playerEntity, {
-        map: ig.game.mapName,
+        map: ig.game.mapName.toPath('', ''),
         marker: ig.game.marker,
     })
 
