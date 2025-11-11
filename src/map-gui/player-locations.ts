@@ -31,7 +31,10 @@ export function updatePlayerLocations() {
 export function invalidateOldPlayerLocations() {
     for (const mapName in locations) {
         const map = multi.server.maps.get(mapName)
-        if (!map) continue
+        if (!map) {
+            delete locations[mapName]
+            continue
+        }
 
         const players = Object.fromEntries(
             (map.inst.ig.game.entities.filter(e => e instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]).map(e => [

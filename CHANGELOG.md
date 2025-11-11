@@ -16,6 +16,7 @@
 - Fix saving server state not saving stuff like vars, active landmarks etc.
 - Fix ig.ENTITY.NPC#postActionUpdate getting overriden when server is off
 - Fix map menu player markers not getting drawn on some maps
+- Fix map menu player markers persisting after restarting the server
 
 ## [0.5.7] 2025-11-10
 
