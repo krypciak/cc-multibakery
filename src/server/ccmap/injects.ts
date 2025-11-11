@@ -287,3 +287,12 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    /* actually a server instance fix not ccmap fix but whatever */
+    sc.TimerEntry.inject({
+        tick() {
+            if (sc.map.currentArea) return this.parent()
+        },
+    })
+})

@@ -23,15 +23,6 @@ export interface OnLinkChange {
     onClientUnlink(this: this, client: Client): void
 }
 
-function linkMapModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorInstance) {
-    const to = toInst.sc.map
-    const from = fromInst.sc.map
-
-    to.areas = from.areas
-    to.areasVisited = from.areasVisited
-    to.activeLandmarks = from.activeLandmarks
-}
-
 export class CCMap extends InstanceUpdateable {
     rawLevelData!: sc.MapModel.Map
 
@@ -57,10 +48,8 @@ export class CCMap extends InstanceUpdateable {
     }
 
     private link() {
-        linkVars(this.inst, multi.server.inst)
-        linkOptions(this.inst, multi.server.inst)
-        linkMusic(this.inst, multi.server.inst)
-        linkMapModel(this.inst, multi.server.inst)
+        const toLink = [linkVars, linkOptions, linkMusic, linkMapModel, linkTimersModel]
+        for (const link of toLink) link(this.inst, multi.server.inst)
     }
 
     async init() {
@@ -175,4 +164,20 @@ export class CCMap extends InstanceUpdateable {
         multi.server.inst.apply()
         super.destroy()
     }
+}
+
+function linkMapModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorInstance) {
+    const to = toInst.sc.map
+    const from = fromInst.sc.map
+
+    to.areas = from.areas
+    to.areasVisited = from.areasVisited
+    to.activeLandmarks = from.activeLandmarks
+}
+
+export function linkTimersModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorInstance) {
+    const to = toInst.sc.timers
+    const from = fromInst.sc.timers
+
+    to.timers = from.timers
 }

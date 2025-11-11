@@ -35,6 +35,7 @@ export interface PhysicsServerSettings extends ServerSettings {
     save?: {
         manualSaving?: boolean
         loadFromSlot?: number
+        loadSaveData?: ig.SaveSlot.Data
         automaticlySave?: boolean
     }
     disablePlayerIdlePose?: boolean

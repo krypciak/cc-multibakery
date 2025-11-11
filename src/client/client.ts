@@ -1,5 +1,5 @@
 import { assert } from '../misc/assert'
-import { CCMap } from '../server/ccmap/ccmap'
+import { CCMap, linkTimersModel } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../dummy/box/box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
@@ -273,6 +273,7 @@ export class Client extends InstanceUpdateable {
         cig.light.screenFlashHandles = mig.light.screenFlashHandles
 
         linkMusic(this.inst, map.inst)
+        linkTimersModel(this.inst, map.inst)
 
         removeAddon(cig.screenBlur, cig.game)
         cig.screenBlur = mig.screenBlur

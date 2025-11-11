@@ -88,7 +88,11 @@ export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.Ma
 
                 ig.ready = true
 
-                ig.game.loadingComplete()
+                /* dont run ig.Game#loadingCompete since it runs onLevelLoaded addons */
+                // ig.game.loadingComplete()
+                // for (const addon of ig.game.addons.levelLoaded) addon.onLevelLoaded(ig.game)
+
+                ig.game.handleLoadingComplete()
 
                 this._loadCallbackBound = null
                 ig.loading = false

@@ -49,31 +49,35 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         }
     }
 
-    wrapFilterListeners(func: () => void) {
+    wrapFilterListeners<T>(func: () => T): T {
         const listenersBackup = ig.storage.listeners
         const relevantListeners = ig.storage.listeners.filter(
             listener => !('_instanceId' in listener) || listener._instanceId == instanceinator.id
         )
         ig.storage.listeners = relevantListeners
 
-        func()
+        const ret = func()
 
         ig.storage.listeners = listenersBackup
+
+        return ret
     }
 
-    private getSaveData() {
+    getSaveSlotData(): ig.SaveSlot.Data {
+        const partialSave: Partial<ig.SaveSlot.Data> = {}
+        this.saving = true
+        ig.storage._saveState(partialSave, ig.game.mapName ?? 'multibakery/dev')
+        this.saving = false
+        return partialSave as ig.SaveSlot.Data
+    }
+
+    private getMultiSaveSlotData() {
         const masterInstance = multi.server.getMasterClient()?.inst ?? multi.server.inst
         assert(masterInstance)
 
-        const partialSave: Partial<ig.SaveSlot.Data> = {}
-        runTask(masterInstance, () => {
-            this.saving = true
-            this.wrapFilterListeners(() => {
-                ig.storage._saveState(partialSave, ig.game.mapName ?? 'multibakery/dev')
-            })
-            this.saving = false
+        return runTask(masterInstance, () => {
+            return this.wrapFilterListeners(() => this.getSaveSlotData())
         })
-        return partialSave as ig.SaveSlot.Data
     }
 
     private commitSave(save: ig.SaveSlot.Data, slotId?: number) {
@@ -110,7 +114,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     save(slotId?: number) {
-        const save = this.getSaveData()
+        const save = this.getMultiSaveSlotData()
         this.addPrettyTextToSave(save)
         this.commitSave(save, slotId)
     }
@@ -145,18 +149,41 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         return this.currentData?.players?.[username]
     }
 
-    load() {
-        assert(multi.server instanceof PhysicsServer)
-        const slotId = multi.server.settings.save?.loadFromSlot
-        if (slotId === undefined) return
-
-        ig.storage.lastUsedSlot = slotId
-        const slot = ig.storage.getSlot(slotId)
-        if (!slot) throw new Error(`Slot: ${slotId} not found!`)
-
-        const data = slot.getData()
+    private loadSlotData(data: ig.SaveSlot.Data) {
         ig.storage.currentLoadFile = data
         ig.storage.checkPointSave = data
+        ig.vars.restoreFromJson(data.vars)
+        sc.map.onStoragePreLoad(data)
+        // @ts-expect-error
+        sc.lore.onStoragePreLoad(data)
+        sc.trade.onStoragePreLoad(data)
+        sc.menu.onStoragePreLoad(data)
+        sc.newgame.onStoragePreLoad(data)
+        sc.timers.onStoragePreLoad(data)
+    }
+
+    load() {
+        assert(multi.server instanceof PhysicsServer)
+        const settings = multi.server.settings.save
+        if (!settings) return
+
+        let data: ig.SaveSlot.Data | undefined
+
+        if (settings.loadSaveData) {
+            data = settings.loadSaveData
+        } else if (settings.loadFromSlot !== undefined) {
+            const slotId = settings.loadFromSlot
+
+            ig.storage.lastUsedSlot = slotId
+            const slot = ig.storage.getSlot(slotId)
+            if (!slot) throw new Error(`Slot: ${slotId} not found!`)
+
+            data = slot.getData()
+        }
+
+        if (data) {
+            this.loadSlotData(data)
+        }
     }
 }
 
@@ -209,3 +236,26 @@ prestart(() => {
         })
     }
 })
+
+// prestart(() => {
+//     ig.Vars.inject({
+//         restoreFromJson(json) {
+//             this.currentLevelName = json.levelName
+//             /* data is linked from multi.server.inst */
+//             // this.storage = ig.copy(json.storage)
+//             this.storage.map = this.storage.maps[this.currentLevelName]
+//             this.storage.session = {
+//                 map: {},
+//                 maps: {},
+//             }
+//         },
+//     })
+// })
+//
+// prestart(() => {
+//     ig.Storage.inject({
+//         onLevelLoadStart(data) {
+//             if (!ig.ccmap) return this.parent!(data)
+//         },
+//     })
+// })
