@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix remote sc.CombatProxyEntity not sharing animation state
+
 ## [0.5.8] 2025-11-13
 
 ### Added

@@ -6,6 +6,7 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import { resolveProxyFromType } from './proxy-util'
+import * as scActorEntity from './sc_ActorEntity-base'
 
 declare global {
     namespace sc {
@@ -21,29 +22,27 @@ function getState(this: sc.CombatProxyEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
+        ...scActorEntity.getState.call(this, memory),
         proxyType: memory.onlyOnce(this.proxyType),
         combatant: memory.onlyOnce(this.combatant.netid),
-        pos: memory.diffVec3(this.coll.pos),
-        dir: memory.diffVec2(this.face),
     }
 }
 function setState(this: sc.CombatProxyEntity, state: Return) {
-    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
-    if (state.dir) Vec2.assign(this.face, state.dir)
+    scActorEntity.setState.call(this, state)
 }
 
 prestart(() => {
     sc.CombatProxyEntity.inject({
         getState,
         setState,
-        /* TODO: P and R special bits */
+        /* TODO: P and R special bits (seems to work fine without this, is this needed?) */
     })
 
     sc.CombatProxyEntity.create = (netid: EntityNetid, state: Return) => {
         assert(state.pos)
         assert(state.combatant)
         assert(state.proxyType)
-        assert(state.dir)
+        assert(state.face)
 
         const { x, y, z } = state.pos
 
@@ -57,7 +56,7 @@ prestart(() => {
 
         const settings: sc.CombatProxyEntity.Settings = {
             netid,
-            dir: state.dir,
+            dir: state.face,
             combatant,
             data,
         }
