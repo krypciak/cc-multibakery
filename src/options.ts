@@ -5,6 +5,7 @@ import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { generateRandomUsername, isUsernameValid } from './misc/username-util'
 import Multibakery from './plugin'
 import { serverListDefault } from './client/menu/server-info'
+import { PhysicsServer } from './server/physics/physics-server'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -260,6 +261,17 @@ function registerOpts() {
                         init: false,
                         name: 'Godmode',
                         description: 'Set all player stats to max',
+                    },
+                    serverCopyNewPlayerStats: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Copy stats for new players',
+                        description: 'Gives new players cloned stats of the first player on the same map',
+                        changeEvent() {
+                            if (multi.server instanceof PhysicsServer) {
+                                multi.server.settings.copyNewPlayerStats = Opts.serverCopyNewPlayerStats
+                            }
+                        },
                     },
                     serverEnableSave: {
                         type: 'CHECKBOX',

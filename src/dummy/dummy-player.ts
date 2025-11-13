@@ -180,10 +180,9 @@ declare global {
     }
 }
 prestart(() => {
-    function replace(this: dummy.PlayerModel, ...args: unknown[]) {
+    function replace<T>(this: dummy.PlayerModel & { parent(...args: unknown[]): T }, ...args: unknown[]): T {
         const backup = ig.game.playerEntity
         ig.game.playerEntity = this.dummy
-        // @ts-expect-error
         const ret = this.parent(...args)
         ig.game.playerEntity = backup
         return ret
@@ -217,9 +216,8 @@ declare global {
     }
 }
 prestart(() => {
-    function replace(this: dummy.ItemConsumption, ...args: unknown[]) {
+    function replace<T>(this: dummy.ItemConsumption & { parent(...args: unknown[]): T }, ...args: unknown[]): T {
         return inputBackup(this.player.inputManager, () => {
-            // @ts-expect-error
             return this.parent(...args)
         })
     }

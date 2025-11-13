@@ -22,6 +22,7 @@ import { linkMusic } from '../server/music'
 import { MapTpInfo } from '../server/server'
 
 import './injects'
+import { isInputData } from '../dummy/dummy-input-puppet'
 
 declare global {
     namespace ig {
@@ -339,10 +340,25 @@ export class Client extends InstanceUpdateable {
     }
 
     getSaveState() {
-        return multi.storage.getPlayerState(this.username)
+        if (!(multi.server instanceof PhysicsServer)) return
+
+        let state = multi.storage.getPlayerState(this.username)
+        if (!state && multi.server.settings.copyNewPlayerStats) {
+            assert(ig.ccmap)
+            const referenceClient = ig.ccmap.clients[0]
+            if (referenceClient?.dummy) {
+                state = multi.storage.savePlayerState(
+                    referenceClient.username,
+                    referenceClient.dummy,
+                    referenceClient.tpInfo
+                )
+            }
+        }
+        return state
     }
 
     private loadState() {
+        assert(multi.server instanceof PhysicsServer)
         const state = this.getSaveState()
         if (state) {
             applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
@@ -368,7 +384,7 @@ export class Client extends InstanceUpdateable {
 
             if (multi.server.settings.godmode) {
                 ig.godmode(this.dummy.model)
-                runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: true }))
+                runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: false }))
             }
 
             this.loadState()

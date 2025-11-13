@@ -39,6 +39,7 @@ export interface PhysicsServerSettings extends ServerSettings {
         automaticlySave?: boolean
     }
     disablePlayerIdlePose?: boolean
+    copyNewPlayerStats?: boolean
 
     /* when this is true, forceConsistentTickTimes is forced off */
     useAnimationFrameLoop?: boolean

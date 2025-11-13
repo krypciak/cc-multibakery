@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add option (on by default) to give new players cloned stats of the first player found on the map
+
 ### Fixed
 
 - Fix entity event to var causal chain sometimes not working on var increments

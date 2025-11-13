@@ -21,6 +21,7 @@ export async function createPhysicsServerFromCurrentState() {
         tps: Opts.serverGlobalTps,
         useAnimationFrameLoop: Opts.serverUseAnimationFrameLoop,
         godmode: Opts.serverGodmode,
+        copyNewPlayerStats: Opts.serverCopyNewPlayerStats,
         displayServerInstance: Opts.serverDisplayServerInstance,
         displayMaps: Opts.serverDisplayMaps,
         forceMapsActive: Opts.serverForceMapsActive,

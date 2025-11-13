@@ -130,14 +130,14 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.commitSave(save, slotId)
     }
 
-    savePlayerState(username: string, player: ig.ENTITY.Player, tpInfo: MapTpInfo) {
+    savePlayerState(username: string, player: ig.ENTITY.Player, tpInfo: MapTpInfo): PlayerState {
         this.currentData ??= {}
         this.currentData.players ??= {}
-        this.currentData.players[username] = {
+        return (this.currentData.players[username] = {
             ...(player.getState!() as PlayerGetStateReturn),
             animAlpha: 1,
             ...tpInfo,
-        }
+        })
     }
 
     private savePlayerStates() {
