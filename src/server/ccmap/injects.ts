@@ -296,3 +296,14 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.Inventory.inject({
+        updateScaledEquipment(newLevel) {
+            if (!multi.server) return this.parent(newLevel)
+            const players = ig.game.entities.filter(e => e instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]
+            const maxDummyLevel = Math.max(newLevel, ...players.map(e => e.model.level))
+            return this.parent(maxDummyLevel)
+        },
+    })
+})
