@@ -41,7 +41,7 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
         align: memory.onlyOnce(undefinedIfFalsy(this.align)),
         angle: memory.onlyOnce(undefinedIfFalsy(this.angle as f64)),
         flipX: memory.onlyOnce(undefinedIfFalsy(this.flipX)),
-        rotateFace: memory.onlyOnce(undefinedIfFalsy(this.rotateFace as i6)),
+        rotateFace: memory.diff(undefinedIfFalsy(this.rotateFace as i6)),
         flipLeftFace: memory.onlyOnce(undefinedIfFalsy(this.flipLeftFace)),
         duration: memory.onlyOnce(this.duration == this.effect?.loopEndTime ? undefined : this.duration),
         group: memory.onlyOnce(undefinedIfFalsy(this.attachGroup)),
@@ -49,6 +49,10 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
 }
 function setState(this: ig.ENTITY.Effect, state: Return) {
     if (!this.target && state.pos) Vec3.assign(this.coll.pos, state.pos)
+
+    if (state.rotateFace !== undefined) {
+        this.rotateFace = state.rotateFace
+    }
 }
 
 function resolveObjects(state: Return) {

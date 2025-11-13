@@ -23,12 +23,13 @@ function getState(this: ig.ENTITY.Ball, player?: StateKey) {
     return {
         combatant: memory.onlyOnce(combatant.netid),
         proxyType: memory.onlyOnce(this.proxyType),
-        dir: memory.onlyOnce(this.coll.vel),
+        vel: memory.diffVec3(this.coll.vel),
         pos: memory.diffVec3(this.coll.pos),
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {
     if (state.pos) Vec3.assign(this.coll.pos, state.pos)
+    if (state.vel) Vec3.assign(this.coll.vel, state.vel)
 }
 
 prestart(() => {
@@ -63,10 +64,10 @@ prestart(() => {
         assert(combatant instanceof ig.ENTITY.Combatant)
         assert(combatant.params)
 
-        assert(state.dir)
+        assert(state.vel)
 
         const settings: ig.ENTITY.Ball.Settings = {
-            dir: state.dir,
+            dir: state.vel,
             ballInfo,
             params: combatant.params,
             party: combatant.party,
