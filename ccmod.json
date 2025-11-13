@@ -11,7 +11,7 @@
     },
     "dependencies": {
         "crosscode": ">=1.4.0",
-        "cc-instanceinator": ">=1.0.1",
+        "cc-instanceinator": ">=1.0.3",
         "nax-ccuilib": ">=1.5.5",
         "ccmodmanager": ">=1.1.2"
     },
