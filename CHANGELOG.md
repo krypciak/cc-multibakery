@@ -19,6 +19,7 @@
 - Fix map menu player markers persisting after restarting the server
 - Fix not all vars getting linked to map/client instance
 - Fix ig.ENTITY.Ball remote state not including velocity causing misrotated projectiles
+- Fix sc.PlayerConfig inter-instance coupling
 
 ## [0.5.7] 2025-11-10
 
