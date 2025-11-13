@@ -36,6 +36,8 @@ prestart(() => {
             ig.EVENT_STEP.SHOW_MSG,
             ig.EVENT_STEP.CLEAR_MSG,
             ig.EVENT_STEP.SHOW_SIDE_MSG,
+            ig.EVENT_STEP.SHOW_BOARD_MSG,
+            ig.EVENT_STEP.SHOW_CHOICE,
 
             ig.EVENT_STEP.START_NPC_TRADE_MENU,
 

@@ -62,6 +62,11 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
                 }
             }
         }
+
+        /* remove branch step settings */
+        for (let i = 0; step.settings[i]; i++) {
+            delete step.settings[i]
+        }
     }
     return group as StepGroupSerialized
 }

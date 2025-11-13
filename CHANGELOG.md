@@ -25,6 +25,7 @@
 - Fix ig.ENTITY.Ball remote state not including velocity causing misrotated projectiles
 - Fix sc.PlayerConfig inter-instance coupling
 - Fix ascended equipment level scaling being inconsistent (now it picks the highest level on the server)
+- Fix remote ig.EVENT_STEP.SHOW_BOARD_MSG and ig.EVENT_STEP.SHOW_CHOICE
 
 ## [0.5.7] 2025-11-10
 
