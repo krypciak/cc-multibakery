@@ -93,7 +93,7 @@ export class PhysicsHttpServer {
     }
 
     stop() {
-        this.httpServer.close()
+        this.httpServer?.close()
     }
 
     destroy() {

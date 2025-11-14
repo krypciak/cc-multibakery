@@ -2,6 +2,7 @@ import { prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { Client } from './client'
+import { assert } from '../misc/assert'
 
 prestart(() => {
     ig.Physics.inject({
@@ -38,6 +39,7 @@ prestart(() => {
         update() {
             const client = this.getClient(true)
             if (!client) return this.parent()
+            assert(ig.ccmap)
 
             const cameraBackup = ig.camera
             // const combatBackup = sc.combat
