@@ -10,6 +10,8 @@ startCrossnode({
         'ccmodmanager',
         'cc-ts-template-esbuild',
         'nax-ccuilib',
+        'cc-alybox',
+        'cc-multibakery-additions'
     ],
     extensionWhitelist: ['post-game'],
 })
