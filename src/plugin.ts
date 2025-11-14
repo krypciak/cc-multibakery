@@ -35,4 +35,3 @@ export default class Multibakery implements PluginClass {
 }
 
 /* TODO: npc stuff fix */
-/* TODO: stats clone for new players */

@@ -383,7 +383,7 @@ export class Client extends InstanceUpdateable {
 
             if (multi.server.settings.godmode) {
                 ig.godmode(this.dummy.model)
-                runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: false }))
+                runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: true }))
             }
 
             this.loadState()

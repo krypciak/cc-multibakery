@@ -59,6 +59,7 @@ export class CCMap extends InstanceUpdateable {
         this.inst = await instanceinator.copy(multi.server.inst, {
             name: `map-${this.name}`,
             display: this.isVisible(),
+            soundPlayCondition: () => this.clients.some(c => c.inst.display),
         })
         this.inst.ig.ccmap = this
         forceConditionalLightOnInst(this.inst.id)
