@@ -28,7 +28,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/2b2896ec3a749a196b72eb465746dc9b0c5ee191
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0a91fadeac9f9f45963d4590c32f9c9cb87d3c16
       ccmoddb:
         specifier: github:CCDirectLink/CCModDB
         version: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1
@@ -427,9 +427,9 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0}
     version: 1.0.0
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/2b2896ec3a749a196b72eb465746dc9b0c5ee191:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/2b2896ec3a749a196b72eb465746dc9b0c5ee191}
-    version: 1.0.2
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0a91fadeac9f9f45963d4590c32f9c9cb87d3c16:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0a91fadeac9f9f45963d4590c32f9c9cb87d3c16}
+    version: 1.0.3
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
     resolution: {tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1}
@@ -1300,7 +1300,7 @@ snapshots:
 
   cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/2b2896ec3a749a196b72eb465746dc9b0c5ee191: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/0a91fadeac9f9f45963d4590c32f9c9cb87d3c16: {}
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
     dependencies:

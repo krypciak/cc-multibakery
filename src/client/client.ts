@@ -22,7 +22,6 @@ import { linkMusic } from '../server/music'
 import { MapTpInfo } from '../server/server'
 
 import './injects'
-import { isInputData } from '../dummy/dummy-input-puppet'
 
 declare global {
     namespace ig {
@@ -73,11 +72,11 @@ export class Client extends InstanceUpdateable {
     private async init(settings: ClientSettings) {
         this.inst = await instanceinator.copy(
             multi.server.inst,
-            'localclient-' + settings.username,
-            this.isVisible(),
-            settings.forceDraw,
-            inst => {
-                inst.ig.client = this
+            { name: 'localclient-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
+            {
+                preLoad: inst => {
+                    inst.ig.client = this
+                },
             }
         )
         assert(this.inst.ig.game)

@@ -105,7 +105,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         instanceinator.displayFps = true
 
         this.baseInst = instanceinator.instances[0]
-        this.inst = await instanceinator.copy(this.baseInst, 'server', this.isVisible())
+        this.inst = await instanceinator.copy(this.baseInst, { name: 'server', display: this.isVisible() })
         this.inst.apply()
         this.safeguardInst()
         this.link()

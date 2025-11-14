@@ -56,7 +56,10 @@ export class CCMap extends InstanceUpdateable {
         this.display = new CCMapDisplay(this)
 
         const levelDataPromise = this.readLevelData()
-        this.inst = await instanceinator.copy(multi.server.inst, `map-${this.name}`, this.isVisible())
+        this.inst = await instanceinator.copy(multi.server.inst, {
+            name: `map-${this.name}`,
+            display: this.isVisible(),
+        })
         this.inst.ig.ccmap = this
         forceConditionalLightOnInst(this.inst.id)
         this.link()
