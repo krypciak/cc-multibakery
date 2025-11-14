@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix remote sc.CombatProxyEntity not sharing animation state
+- Fix ig.ENTITY.ObjectLayerView being invisible
 
 ## [0.5.8] 2025-11-13
 
