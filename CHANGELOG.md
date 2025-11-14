@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add ig.ACTION_STEP remote state (fixes missing combat sounds, zooms, blurs)
+
 ### Fixed
 
 - Fix remote sc.CombatProxyEntity not sharing animation state

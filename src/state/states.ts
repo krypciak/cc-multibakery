@@ -8,7 +8,7 @@ export type StateKey = Client
 
 import './entity'
 import './vars'
-import './steps'
+import './event-steps'
 import './game-model-state'
 import './pvp'
 import './hit-number'

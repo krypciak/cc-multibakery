@@ -1,6 +1,5 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
-import { StepHistoryEntry } from '../steps/event-call-history'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { getStepSettings } from '../steps/step-id'
@@ -32,10 +31,10 @@ interface StepArray {
 type StepsFiredMap = Map<ig.EventCall, StepGroupDeserialized>
 declare global {
     interface StateUpdatePacket {
-        steps?: StepArray
+        eventSteps?: StepArray
     }
     namespace ig {
-        var stepsFired: StepsFiredMap | undefined
+        var eventStepsFired: StepsFiredMap | undefined
     }
 }
 
@@ -126,53 +125,91 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
 prestart(() => {
     addStateHandler({
         get(packet, player) {
-            const mapSteps = ig.stepsFired
+            const mapSteps = ig.eventStepsFired
             if (mapSteps && mapSteps.size > 0) {
                 //     packet.steps ??= {}
                 //     packet.steps.map = [...mapSteps.values()].map(serializeStepGroup)
-                ig.stepsFired?.clear()
+                ig.eventStepsFired?.clear()
             }
 
             if (player) {
                 const client = player.getClient()
-                const clientSteps = client.inst.ig.stepsFired
+                const clientSteps = client.inst.ig.eventStepsFired
                 if (clientSteps && clientSteps.size > 0) {
-                    packet.steps ??= {}
-                    packet.steps.clients ??= {}
-                    packet.steps.clients[player.username] = [...clientSteps.values()].map(serializeStepGroup)
+                    packet.eventSteps ??= {}
+                    packet.eventSteps.clients ??= {}
+                    packet.eventSteps.clients[player.username] = [...clientSteps.values()].map(serializeStepGroup)
                     clientSteps.clear()
                 }
             }
         },
         set(packet) {
-            if (!packet.steps) return
+            if (!packet.eventSteps) return
 
             // if (packet.steps.map) {
             //     assert(ig.ccmap)
             //     runSteps(packet.steps.map, ig.ccmap.inst)
             // }
 
-            if (packet.steps.clients) {
-                for (const username in packet.steps.clients) {
+            if (packet.eventSteps.clients) {
+                for (const username in packet.eventSteps.clients) {
                     const client = multi.server.clients.get(username)
                     if (!client) {
                         console.warn(`steps.ts client not found!: "${username}"`)
                         continue
                     }
 
-                    runSteps(packet.steps.clients[username], client.inst)
+                    runSteps(packet.eventSteps.clients[username], client.inst)
                 }
             }
         },
     })
 }, 99) /* this needs to run before game-model-state, otherwise it will crash on dialog cutscene skip */
 
-export function onStepHistoryAdd({ step, data, call }: StepHistoryEntry) {
-    ig.stepsFired ??= new Map()
-    let group = ig.stepsFired.get(call)
+let eventStepWhitelist: Set<number>
+prestart(() => {
+    eventStepWhitelist = new Set(
+        [
+            ig.EVENT_STEP.ADD_MSG_PERSON,
+            ig.EVENT_STEP.SHOW_MSG,
+            ig.EVENT_STEP.CLEAR_MSG,
+            ig.EVENT_STEP.SHOW_SIDE_MSG,
+            ig.EVENT_STEP.SHOW_BOARD_MSG,
+            ig.EVENT_STEP.SHOW_CHOICE,
+
+            ig.EVENT_STEP.START_NPC_TRADE_MENU,
+
+            ig.EVENT_STEP.SHOW_INPUT_DIALOG,
+        ].map(clazz => clazz.classId)
+    )
+}, 2000)
+
+interface EventStepHistoryEntry {
+    step: ig.EventStepBase
+    data: Record<string, unknown>
+    call: ig.EventCall
+}
+
+declare global {
+    namespace ig {
+        interface EventCall {
+            whitelistStepHistory?: EventStepHistoryEntry[]
+        }
+    }
+}
+
+export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, data: Record<string, unknown>) {
+    if (!eventStepWhitelist.has(step.classId)) return
+
+    call.whitelistStepHistory ??= []
+    const entry: EventStepHistoryEntry = { step, data, call }
+    call.whitelistStepHistory.push(entry)
+
+    ig.eventStepsFired ??= new Map()
+    let group = ig.eventStepsFired.get(call)
     if (!group) {
         group = { steps: [], type: call.runType, callEntity: call.callEntity }
-        ig.stepsFired.set(call, group)
+        ig.eventStepsFired.set(call, group)
     }
     group.steps.push({
         settings: getStepSettings(step) as ig.EventStepBase.Settings,
