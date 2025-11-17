@@ -7,7 +7,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { shouldCollectStateData } from './state-util'
 
 interface StepObj {
-    settings: ig.ActionStepBase.Settings
+    settings: any //ig.ActionStepBase.Settings
 }
 
 declare global {

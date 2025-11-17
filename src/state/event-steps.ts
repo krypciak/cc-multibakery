@@ -7,7 +7,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { shouldCollectStateData } from './state-util'
 
 interface StepObj {
-    settings: ig.EventStepBase.Settings
+    settings: any // ig.EventStepBase.Settings
     data?: Record<string, unknown>
 }
 
@@ -64,9 +64,7 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
         }
 
         /* remove branch step settings */
-        // @ts-expect-error
         for (let i = 0; step.settings[i]; i++) {
-            // @ts-expect-error
             delete step.settings[i]
         }
     }
