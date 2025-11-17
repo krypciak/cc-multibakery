@@ -3,13 +3,13 @@ import { prestart } from '../../loading-stages'
 import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, StateKey } from '../states'
-import { u4 } from 'ts-binarifier/src/type-aliases'
+import { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
 
 type EntityDeathsObj = Record<EntityNetid, u4>
 
 declare global {
     interface StateUpdatePacket {
-        entityDeaths?: EntityDeathsObj
+        entityDeaths?: EntityDeathsObj & RecordSize<u16>
     }
     namespace ig {
         var entityDeaths: EntityDeathsObj | undefined
