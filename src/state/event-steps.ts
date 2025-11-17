@@ -63,7 +63,9 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
         }
 
         /* remove branch step settings */
+        // @ts-expect-error
         for (let i = 0; step.settings[i]; i++) {
+            // @ts-expect-error
             delete step.settings[i]
         }
     }

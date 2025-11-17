@@ -48,6 +48,7 @@ function injectSteps() {
             if (branchNames) {
                 step.branches ??= {}
                 for (const branchName of branchNames) {
+                    // @ts-expect-error
                     const branchSettings = stepSettings[branchName] ?? []
                     step.branches![branchName] = constructStepsRecursive(
                         branchSettings,
