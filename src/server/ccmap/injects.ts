@@ -166,7 +166,8 @@ prestart(() => {
         _removeTargetedBy(combatant) {
             if (!multi.server || !ig.ccmap) return this.parent(combatant)
 
-            runTask(this.getClient().inst, () => this.parent(combatant))
+            const client = this.getClient(false)
+            if (client) runTask(client.getClient().inst, () => this.parent(combatant))
         },
     })
 })
