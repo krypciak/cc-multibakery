@@ -128,15 +128,20 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
     }
     if (state.items) this.model.items = state.items
     if (state.itemsDiff) {
-        StateMemory.applyChangeRecord(this.model.items, state.itemsDiff)
         for (const id of Object.keysT(state.itemsDiff)) {
             const amount = state.itemsDiff[id]
-            notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
-                id,
-                amount,
-                skip: false,
-                cutscene: undefined,
-            })
+            const oldAmount = this.model.items[id]
+
+            this.model.items[id] = amount
+
+            if ((amount ?? 0) > (oldAmount ?? 0)) {
+                notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
+                    id,
+                    amount,
+                    skip: false,
+                    cutscene: undefined,
+                })
+            }
         }
     }
 
