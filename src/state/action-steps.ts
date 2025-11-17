@@ -4,6 +4,7 @@ import { getStepSettings } from '../steps/step-id'
 import { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
+import { PhysicsServer } from '../server/physics/physics-server'
 
 interface StepObj {
     settings: ig.ActionStepBase.Settings
@@ -37,7 +38,7 @@ prestart(() => {
 
             for (const netidStr in packet.actionSteps) {
                 const netid = netidStr as unknown as EntityNetid
-                const actor = ig.game.entitiesByNetid[netid]
+                const actor = ig.game.entitiesByNetid[netid] ?? ig.ccmap?.clients[0]?.dummy
                 assert(actor)
                 assert(actor instanceof ig.ActorEntity)
                 const run = () => {
@@ -80,6 +81,12 @@ prestart(() => {
     )
 }, 2000)
 
+function pushActionhStep(actor: ig.ActorEntity, settings: ig.ActionStepBase.Settings) {
+    ig.actionStepsFired ??= {}
+    ;(ig.actionStepsFired[actor.netid] ??= []).push({
+        settings,
+    })
+}
 export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity) {
     if (!actionStepWhitelist.has(step.classId)) return
 
@@ -88,8 +95,17 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
         return
     }
 
-    ig.actionStepsFired ??= {}
-    ;(ig.actionStepsFired[actor.netid] ??= []).push({
-        settings: getStepSettings(step) as ig.ActionStepBase.Settings,
-    })
+    pushActionhStep(actor, getStepSettings(step) as ig.ActionStepBase.Settings)
 }
+
+prestart(() => {
+    if (!PHYSICSNET) return
+
+    ig.Camera.TargetHandle.inject({
+        onActionEndDetach(entity) {
+            this.parent(entity)
+            if (!(multi.server instanceof PhysicsServer)) return
+            pushActionhStep(entity, { type: 'RESET_CAMERA', speed: 'FAST' })
+        },
+    })
+})
