@@ -4,6 +4,7 @@ import type {} from 'ccmodmanager/types/plugin'
 import type {} from 'ccmodmanager/types/gui/menu'
 import type {} from 'nax-ccuilib/src/ui/pause-screen/pause-screen-api'
 import type {} from 'nax-ccuilib/src/ui/quick-menu/quick-menu-extension'
+import type {} from 'cc-variable-charge-time/src/plugin'
 import 'ts-binarifier/src/type-aliases'
 
 declare global {

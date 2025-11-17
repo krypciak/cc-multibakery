@@ -8,6 +8,7 @@
 ### Added
 
 - Add ig.ACTION_STEP remote state (fixes missing combat sounds, zooms, blurs)
+- Add cc-variable-charge-time support
 
 ### Fixed
 

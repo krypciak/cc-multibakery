@@ -8,7 +8,7 @@ import { PhysicsHttpServer } from '../../net/web-server'
 import { Client } from '../../client/client'
 import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { CCBundlerModuleOptions } from '../../net/cc-bundler-http-modules'
 import { ClientLeaveData } from '../remote/remote-server'
 import { startGameLoop } from '../../game-loop'
@@ -74,6 +74,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.baseInst.display = false
 
         multi.storage.load()
+        this.registerVariableChargeTime()
 
         if (!window.crossnode?.options.test && process.execPath.includes('server')) {
             this.setMasterClient(
@@ -125,7 +126,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         //     stagePvp()
         // }
     }
-
     update() {
         super.update()
 
@@ -279,5 +279,18 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         super.destroy()
         this.netManager?.destroy()
         this.httpServer?.destroy()
+    }
+
+    private registerVariableChargeTime() {
+        /* cc-variable-charge-time */
+        ig.onChargeTimingsOptionChange?.push(() => {
+            const timings = ig.chargeTimings
+            runTasks(
+                [...this.maps.values()].map(map => map.inst),
+                () => {
+                    ig.setChargeTimings([...timings])
+                }
+            )
+        })
     }
 }

@@ -281,6 +281,9 @@ export class Client extends InstanceUpdateable {
             ig.rumble = mig.rumble
             addAddon(ig.rumble, ig.game)
 
+            /* cc-variable-charge-time */
+            ig.chargeTimings = mig.chargeTimings
+
             ig.game.playerEntity = this.dummy
 
             const msc = map.inst.sc
