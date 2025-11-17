@@ -4,7 +4,7 @@ import { getStepSettings } from '../steps/step-id'
 import { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { PhysicsServer } from '../server/physics/physics-server'
+import { shouldCollectStateData } from './state-util'
 
 interface StepObj {
     settings: ig.ActionStepBase.Settings
@@ -95,7 +95,9 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
         return
     }
 
-    pushActionhStep(actor, getStepSettings(step) as ig.ActionStepBase.Settings)
+    if (shouldCollectStateData()) {
+        pushActionhStep(actor, getStepSettings(step) as ig.ActionStepBase.Settings)
+    }
 }
 
 prestart(() => {
@@ -104,8 +106,10 @@ prestart(() => {
     ig.Camera.TargetHandle.inject({
         onActionEndDetach(entity) {
             this.parent(entity)
-            if (!(multi.server instanceof PhysicsServer)) return
-            pushActionhStep(entity, { type: 'RESET_CAMERA', speed: 'FAST' })
+
+            if (shouldCollectStateData()) {
+                pushActionhStep(entity, { type: 'RESET_CAMERA', speed: 'FAST' })
+            }
         },
     })
 })

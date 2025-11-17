@@ -4,6 +4,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { getStepSettings } from '../steps/step-id'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { shouldCollectStateData } from './state-util'
 
 interface StepObj {
     settings: ig.EventStepBase.Settings
@@ -201,7 +202,7 @@ declare global {
 }
 
 export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, data: Record<string, unknown>) {
-    if (!eventStepWhitelist.has(step.classId)) return
+    if (!eventStepWhitelist.has(step.classId) || !shouldCollectStateData()) return
 
     call.whitelistStepHistory ??= []
     const entry: EventStepHistoryEntry = { step, data, call }
