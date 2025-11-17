@@ -3,11 +3,9 @@
 # Change Log
 
 ## [Unreleased]
-## [0.5.9] 2025-11-14
 
 ### Added
 
-- Add ig.ACTION_STEP remote state (fixes missing combat sounds, zooms, blurs)
 - Add cc-variable-charge-time support
 
 ### Fixed
@@ -19,6 +17,18 @@
 - Fix zoom on remote not resetting after using Amber Breaker
 - Fix remote item gained popup appearing when losing items (for example eating)
 - Fix remote gamepad aim not working
+
+## [0.5.9] 2025-11-14
+
+### Added
+
+- Add ig.ACTION_STEP remote state (fixes missing combat sounds, zooms, blurs)
+
+### Fixed
+
+- Fix remote sc.CombatProxyEntity not sharing animation state
+- Fix ig.ENTITY.ObjectLayerView being invisible
+- Fix no sound playing on client when the map instance is hidden
 
 ## [0.5.8] 2025-11-13
 
