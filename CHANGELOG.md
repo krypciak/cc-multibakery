@@ -14,6 +14,7 @@
 - Fix remote sc.CombatProxyEntity not sharing animation state
 - Fix ig.ENTITY.ObjectLayerView being invisible
 - Fix no sound playing on client when the map instance is hidden
+- Fix error when creating a client in the "Manage server" menu and copyNewPlayerStats is on
 
 ## [0.5.8] 2025-11-13
 

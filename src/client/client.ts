@@ -162,7 +162,7 @@ export class Client extends InstanceUpdateable {
     }
 
     async teleportInitial(tpInfoOverride?: MapTpInfo) {
-        const state = this.getSaveState()
+        const state = this.getSaveState(false)
 
         const tpInfo: MapTpInfo = {
             map: tpInfoOverride?.map ?? state?.map ?? multi.server.settings.defaultMap?.map ?? 'multibakery/dev',
@@ -338,11 +338,11 @@ export class Client extends InstanceUpdateable {
         })
     }
 
-    getSaveState() {
+    getSaveState(allowCopy: boolean) {
         if (!(multi.server instanceof PhysicsServer)) return
 
         let state = multi.storage.getPlayerState(this.username)
-        if (!state && multi.server.settings.copyNewPlayerStats) {
+        if (allowCopy && !state && multi.server.settings.copyNewPlayerStats) {
             assert(ig.ccmap)
             const referenceClient = ig.ccmap.clients[0]
             if (referenceClient?.dummy) {
@@ -358,7 +358,7 @@ export class Client extends InstanceUpdateable {
 
     private loadState() {
         assert(multi.server instanceof PhysicsServer)
-        const state = this.getSaveState()
+        const state = this.getSaveState(true)
         if (state) {
             applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
         }
