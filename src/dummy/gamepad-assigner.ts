@@ -50,7 +50,7 @@ class GamepadAssigner {
     }
 
     async requestGamepad(instanceId: number, onDisconnect: () => void): Promise<ig.Gamepad> {
-        console.log('request number for', instanceId, 'free gamepads:', this.freeGamepads.length)
+        // console.log('request number for', instanceId, 'free gamepads:', this.freeGamepads.length)
         if (this.freeGamepads.length > 0) {
             const id = this.freeGamepads[0]
             this.freeGamepads.shift()

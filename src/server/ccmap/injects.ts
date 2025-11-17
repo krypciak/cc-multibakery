@@ -245,8 +245,10 @@ prestart(() => {
             if (this.destroyedBy instanceof dummy.DummyPlayer) {
                 player = this.destroyedBy
             } else {
-                console.warn('ig.ENTITY.ItemDestruct not destroyed by player, picking first player on map')
-                player = ig.ccmap.clients[0].dummy
+                // console.warn('ig.ENTITY.ItemDestruct not destroyed by player, picking first player on map')
+                player = ig.ccmap.clients[0]?.dummy
+                /* haven't encountered a situation where player is undefined, but just to be safe */
+                if (!player) return
             }
             inputBackup(player.inputManager, () => this.parent())
         },
