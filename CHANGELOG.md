@@ -18,6 +18,7 @@
 - Fix error when creating a client in the "Manage server" menu and copyNewPlayerStats is on
 - Fix zoom on remote not resetting after using Amber Breaker
 - Fix remote item gained popup appearing when losing items (for example eating)
+- Fix remote gamepad aim not working
 
 ## [0.5.8] 2025-11-13
 

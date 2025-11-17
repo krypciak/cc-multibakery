@@ -46,7 +46,11 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
     if (state.pos) Vec3.assign(this.coll.pos, state.pos)
 
     if (state.active !== undefined) {
-        this.setActive(state.active)
+        if (this.thrower instanceof dummy.DummyPlayer) {
+            inputBackup(this.thrower.inputManager, () => this.setActive(state.active!))
+        } else {
+            this.setActive(state.active)
+        }
     }
 
     if (state.special !== undefined) this.special = state.special
