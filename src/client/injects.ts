@@ -194,3 +194,14 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.ZoomBlurHandle.inject({
+        draw(...args) {
+            if (!multi.server) return this.parent(...args)
+            if (ig.game.pausedVirtual) return
+
+            return this.parent(...args)
+        },
+    })
+})

@@ -16,6 +16,7 @@
 - Fix remote double effects on sc.CombatProxyEntity death
 - Fix waiting for gamepad poping up every time a map is switched
 - Fix combat art branch linking on lea character configs
+- Don't apply blur and zoom effects in menus
 
 ## [0.6.0] 2025-11-17
 
