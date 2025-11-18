@@ -194,7 +194,7 @@ prestart(() => {
         init(dummy) {
             this.parent()
             this.dummy = dummy
-            this.setConfig(sc.model.leaConfig)
+            this.setConfig(new sc.PlayerConfig('Lea'))
         },
         updateLoop: replace,
         enterElementalOverload: replace,

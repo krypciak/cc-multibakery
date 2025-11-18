@@ -15,6 +15,7 @@
 - Fix remote crash when hit effect occurs on the same frame that the entity gets killed (for example triblader Deploy Shields and lea Flare Burn!)
 - Fix remote double effects on sc.CombatProxyEntity death
 - Fix waiting for gamepad poping up every time a map is switched
+- Fix combat art branch linking on lea character configs
 
 ## [0.6.0] 2025-11-17
 
