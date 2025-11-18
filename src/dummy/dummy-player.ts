@@ -30,6 +30,7 @@ declare global {
             itemConsumer: dummy.ItemConsumption
             model: dummy.PlayerModel
 
+            setInputManager(this: this, inputManager: InputManager): void
             getHeadIdx(this: this): number
             getClient(this: this, noAssert: true): Client | undefined
             getClient(this: this, noAssert?: false): Client
@@ -49,11 +50,8 @@ prestart(() => {
             settings.name = settings.data.username
             sc.PlayerBaseEntity.prototype.init.call(this, 0, 0, 0, settings)
 
-            assert(settings.inputManager)
-            this.inputManager = settings.inputManager
-            this.inputManager.player = this
-
             this.data = settings.data
+            this.setInputManager(settings.inputManager)
 
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
             this.itemConsumer = new dummy.ItemConsumption(this)
@@ -66,6 +64,10 @@ prestart(() => {
             sc.Model.addObserver(sc.playerSkins, this)
             this.charging.fx = new sc.CombatCharge(this, true)
             sc.combat.addActiveCombatant(this)
+        },
+        setInputManager(inputManager) {
+            this.inputManager = inputManager
+            this.inputManager.player = this
         },
         getHeadIdx() {
             const playerName = this.model.config.name

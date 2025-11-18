@@ -155,7 +155,9 @@ export class Client extends InstanceUpdateable {
         if (this.inputManager instanceof dummy.input.Puppet.InputManager) return
 
         if (this.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD) {
-            forceGamepad(this)
+            if (this.inputManager.gamepadManager.activeGamepads.length == 0) {
+                forceGamepad(this)
+            }
         } else {
             clearForceGamepad(this)
         }
@@ -376,13 +378,10 @@ export class Client extends InstanceUpdateable {
                 })
             }
 
-            this.inputManager?.destroy()
-
-            const dummySettings: dummy.DummyPlayer.Settings = {
+            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, {
                 inputManager: this.inputManager,
                 data: { username: this.username },
-            }
-            this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, dummySettings)
+            })
 
             if (multi.server.settings.godmode) {
                 ig.godmode(this.dummy.model)
@@ -391,16 +390,15 @@ export class Client extends InstanceUpdateable {
 
             this.loadState()
         } else {
-            const player =
+            this.dummy =
                 (this.getMap().inst.ig.game.entities.find(
                     e => e instanceof dummy.DummyPlayer && !e._killed && e.data.username == this.username
                 ) as dummy.DummyPlayer | undefined) ??
                 (await new Promise<dummy.DummyPlayer>(resolve => (this.playerAttachResolve = resolve)))
             this.playerAttachResolve = undefined
-
-            this.dummy = this.inputManager.player = player
-            player.inputManager = this.inputManager
         }
+
+        this.dummy.setInputManager(this.inputManager)
     }
 
     getClient(noAssert: true): Client | undefined

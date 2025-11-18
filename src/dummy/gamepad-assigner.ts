@@ -114,10 +114,13 @@ prestart(() => {
             }
         },
         setSingleGamepad(gamepad) {
-            this.activeGamepads = [gamepad]
+            /* dont invalidate reference */
+            this.activeGamepads.length = 1
+            this.activeGamepads[0] = gamepad
         },
         clearSingleGamepad() {
-            this.activeGamepads = []
+            /* dont invalidate reference */
+            this.activeGamepads.length = 0
         },
         isSupported() {
             return true
