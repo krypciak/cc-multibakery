@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix triblader triggering melee attack circle glow when dashing
+- Fix remote client sometimes desyncing when using ig.ENTITY.TeleportField
 
 ## [0.6.0] 2025-11-17
 

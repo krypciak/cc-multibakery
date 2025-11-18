@@ -75,4 +75,10 @@ prestart(() => {
             ig.ignoreEffectNetid = false
         },
     })
+
+    ig.ENTITY.TeleportField.inject({
+        onInteraction() {
+            if (!(multi.server instanceof RemoteServer)) return this.parent()
+        },
+    })
 }, 3)
