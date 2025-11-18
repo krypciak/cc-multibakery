@@ -18,11 +18,11 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
+        get(packet, client) {
             if (!ig.entityDeaths) return
 
             ig.entityDeathsStateMemory ??= {}
-            const memory = StateMemory.getBy(ig.entityDeathsStateMemory, player)
+            const memory = StateMemory.getBy(ig.entityDeathsStateMemory, client)
 
             packet.entityDeaths = memory.diffRecord(ig.entityDeaths)
         },

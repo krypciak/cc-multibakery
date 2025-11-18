@@ -52,11 +52,11 @@ function deserializeTeam(team: PvpTeamSerialized): PvpTeam {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
+        get(packet, client) {
             if (packet.pvp) return
 
             ig.pvpStatePlayerMemory ??= {}
-            const memory = StateMemory.getBy(ig.pvpStatePlayerMemory, player)
+            const memory = StateMemory.getBy(ig.pvpStatePlayerMemory, client)
 
             const serializedTeams = sc.pvp.teams?.map(serializeTeam)
 

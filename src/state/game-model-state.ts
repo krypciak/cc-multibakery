@@ -20,7 +20,7 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
+        get(packet, client) {
             const mapMemory = StateMemory.get(ig.gameModelStateMemory)
             ig.gameModelStateMemory ??= mapMemory
 
@@ -30,14 +30,14 @@ prestart(() => {
                 packet.gameModelState.map = mapState
             }
 
-            if (player) {
+            if (client) {
                 ig.gameModelStatePlayerMemory ??= {}
-                const playerMemory = StateMemory.getBy(ig.gameModelStatePlayerMemory, player)
-                const playerState = playerMemory.diff(player.getClient().inst.sc.model.currentState)
+                const playerMemory = StateMemory.getBy(ig.gameModelStatePlayerMemory, client)
+                const playerState = playerMemory.diff(client.inst.sc.model.currentState)
                 if (playerState !== undefined) {
                     packet.gameModelState ??= {}
                     packet.gameModelState.clients ??= {}
-                    packet.gameModelState.clients[player.username] = playerState
+                    packet.gameModelState.clients[client.username] = playerState
                 }
             }
         },

@@ -19,15 +19,15 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
-            if (packet.playerLocations || player?.dummy.data.currentMenu != sc.MENU_SUBMENU.MAP) return
+        get(packet, client) {
+            if (packet.playerLocations || client?.dummy.data.currentMenu != sc.MENU_SUBMENU.MAP) return
 
             ig.playerLocationsMemory ??= {}
-            const memory = StateMemory.getBy(ig.playerLocationsMemory, player)
+            const memory = StateMemory.getBy(ig.playerLocationsMemory, client)
 
             const locations = getPlayerLocations()
-            if (player) {
-                delete locations[player.tpInfo.map]
+            if (client) {
+                delete locations[client.tpInfo.map]
             }
             packet.playerLocations = memory.diffRecord2Deep(
                 locations,

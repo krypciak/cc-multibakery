@@ -19,11 +19,11 @@ function fromCamel(str: string) {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
+        get(packet, client) {
             if (packet.areas) return
 
             ig.areasStatePlayerMemory ??= {}
-            const memory = StateMemory.getBy(ig.areasStatePlayerMemory, player)
+            const memory = StateMemory.getBy(ig.areasStatePlayerMemory, client)
 
             const obj: AreasObj = Object.fromEntries(
                 Object.keys(sc.map.areasVisited)

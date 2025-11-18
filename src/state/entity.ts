@@ -63,11 +63,11 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player, cache) {
+        get(packet, client, cache) {
             for (const entity of ig.game.entities) {
                 if (entity._killed) continue
                 if (isStateEntity(entity)) {
-                    let state = entity.getState(player, cache?.states?.[entity.netid])
+                    let state = entity.getState(client, cache?.states?.[entity.netid])
                     if (!state) continue
                     state = cleanRecord(state)
                     if (!state) continue

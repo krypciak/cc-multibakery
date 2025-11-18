@@ -23,8 +23,8 @@ declare global {
     }
 }
 
-export function getStateUpdatePacket(dest: StateUpdatePacket = {}, player?: StateKey, cache?: StateUpdatePacket) {
-    for (const { get } of handlers) get(dest, player, cache)
+export function getStateUpdatePacket(dest: StateUpdatePacket = {}, client?: StateKey, cache?: StateUpdatePacket) {
+    for (const { get } of handlers) get(dest, client, cache)
 
     return dest
 }
@@ -34,7 +34,7 @@ export function clearCollectedState() {
 }
 
 interface Handler {
-    get: (packet: StateUpdatePacket, player?: StateKey, cache?: StateUpdatePacket) => void
+    get: (packet: StateUpdatePacket, client?: StateKey, cache?: StateUpdatePacket) => void
     clear?: () => void
     set: (packet: StateUpdatePacket) => void
 }

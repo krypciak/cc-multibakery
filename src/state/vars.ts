@@ -33,13 +33,13 @@ function flattenRecursive(obj: Record<string, unknown>, path: string, into: Reco
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
+        get(packet, client) {
             ig.vars.everSent ??= new WeakSet()
 
             packet.vars = ig.vars.varsChanged
 
-            if (!player || !ig.vars.everSent.has(player)) {
-                if (player) ig.vars.everSent.add(player)
+            if (!client || !ig.vars.everSent.has(client)) {
+                if (client) ig.vars.everSent.add(client)
 
                 packet.vars ??= {}
                 flattenRecursive(ig.vars.storage.map, 'map', packet.vars)
