@@ -47,7 +47,10 @@ prestart(() => {
                 spriteFilter,
             } of packet.entityHitPackets) {
                 const entity = ig.game.entitiesByNetid[entityNetid]
-                assert(entity)
+                /* entity can be undefined when it triggers a hit effect and dies on the same frame.
+                 * one could fix this, but I don't think it's worth the effort */
+                if (!entity) continue
+
                 sc.combat.showHitEffect(
                     entity,
                     hitPos,
