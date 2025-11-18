@@ -10,6 +10,7 @@ declare global {
     namespace ig.ENTITY {
         interface Crosshair extends StateMemory.MapHolder<StateKey> {
             justThrown?: boolean
+            justSetCircleGlow?: boolean
         }
     }
     interface EntityStates {
@@ -31,6 +32,9 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
     const justThrown = this.justThrown
     this.justThrown = false
 
+    const justSetCircleGlow = this.justSetCircleGlow
+    this.justSetCircleGlow = false
+
     assert(this.thrower.netid)
     return {
         owner: memory.onlyOnce(this.thrower.netid),
@@ -40,6 +44,7 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
         isAiming: memory.diff(isAiming),
         currentCharge: memory.diff(this.currentCharge),
         justThrown: memory.diff(justThrown),
+        circleGlow: memory.diff(justSetCircleGlow),
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {
@@ -62,6 +67,16 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
 
     if (state.justThrown) {
         this.doBlink = true
+    }
+
+    if (
+        state.circleGlow &&
+        (!(this.thrower instanceof dummy.DummyPlayer) ||
+            this.thrower.inputManager.inputType === undefined ||
+            this.thrower.inputManager.inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) &&
+        sc.options.get('close-circle')
+    ) {
+        this.setCircleGlow()
     }
 }
 
@@ -95,6 +110,10 @@ prestart(() => {
         ig.ENTITY.Crosshair.inject({
             setThrown() {
                 this.justThrown = true
+                return this.parent()
+            },
+            setCircleGlow() {
+                this.justSetCircleGlow = true
                 return this.parent()
             },
         })

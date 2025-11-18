@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix triblader triggering melee attack circle glow when dashing
+
 ## [0.6.0] 2025-11-17
 
 ### Added
