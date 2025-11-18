@@ -54,15 +54,6 @@ class CloneInputManager {
 
     setInputType(inputType: ig.INPUT_DEVICES | undefined) {
         this.inputType = inputType
-
-        const id = 'forceInputType'
-        if (inputType == ig.INPUT_DEVICES.GAMEPAD) {
-            this.block.blockKeyboard(id)
-            this.block.unblockGamepad(id)
-        } else if (inputType == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) {
-            this.block.unblockKeyboard(id)
-            this.block.blockGamepad(id)
-        }
     }
 
     destroy() {

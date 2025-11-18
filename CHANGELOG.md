@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Allow k&m input even when in gamepad input mode
+
 ### Fixed
 
 - Fix triblader triggering melee attack circle glow when dashing

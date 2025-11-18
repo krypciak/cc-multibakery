@@ -3,7 +3,7 @@ import { cleanRecord, StateMemory } from '../state/state-util'
 import { InputManagerBlock } from './dummy-input-clone'
 import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'
 
-export type InputData = ReturnType<typeof getInputWhenNotUsingGamepad>
+export type InputData = ReturnType<typeof getInput>
 
 export type GamepadManagerData = ReturnType<typeof getGamepadInput>
 
@@ -82,8 +82,10 @@ declare global {
     }
 }
 
-function getInputWhenNotUsingGamepad(this: ig.Input, memory: StateMemory) {
-    return {
+function getInput(this: ig.Input) {
+    const memory = (this.memory = StateMemory.get(this.memory))
+
+    return cleanRecord({
         currentDevice: memory.diff(this.currentDevice),
         presses: memory.diffRecord(this.presses),
 
@@ -97,23 +99,9 @@ function getInputWhenNotUsingGamepad(this: ig.Input, memory: StateMemory) {
         locks: memory.diffRecord(this.locks),
         delayedKeyup: memory.diffArray(this.delayedKeyup),
         actions: memory.diffRecord(this.actions),
-    }
+    })
 }
 
-function getInputActual(this: ig.Input, isUsingGamepad: boolean) {
-    const memory = (this.memory = StateMemory.get(this.memory))
-
-    if (isUsingGamepad) {
-        return {
-            currentDevice: memory.diff(ig.INPUT_DEVICES.GAMEPAD),
-            presses: memory.diff(this.presses['pause'] ? ({ pause: true } as ig.Input['presses']) : undefined),
-        }
-    } else return getInputWhenNotUsingGamepad.call(this, memory)
-}
-
-function getInput(this: ig.Input, isUsingGamepad: boolean): InputData {
-    return cleanRecord(getInputActual.call(this, isUsingGamepad)) as InputData
-}
 prestart(() => {
     ig.Input.inject({ getInput })
 })
@@ -189,9 +177,7 @@ function getGamepadInput(this: ig.GamepadManager) {
     return packet
 }
 prestart(() => {
-    ig.GamepadManager.inject({
-        getInput: getGamepadInput,
-    })
+    ig.GamepadManager.inject({ getInput: getGamepadInput })
 })
 
 export function isGamepadManagerData(_data: unknown): _data is GamepadManagerData {
