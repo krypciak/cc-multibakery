@@ -44,7 +44,7 @@ prestart(() => {
         setState,
     })
     sc.ItemDropEntity.create = (netid, state: Return) => {
-        assert(state.dropType !== undefined)
+        if (state.dropType === undefined) return
         assert(state.item !== undefined)
         assert(state.amount !== undefined)
         assert(state.target)
@@ -62,7 +62,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.ItemDropEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.ItemDropEntity, ignoreDeath: true })
+    registerNetEntity({ entityClass: sc.ItemDropEntity })
 
     sc.ItemDropEntity.forceRemotePhysics = true
 

@@ -108,11 +108,7 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity({
-        entityClass: ig.ENTITY.Effect,
-        applyPriority: 2000,
-        ignoreDeath: true,
-    })
+    registerNetEntity({ entityClass: ig.ENTITY.Effect, applyPriority: 2000 })
 
     ig.ENTITY.Effect.forceRemotePhysics = true
 

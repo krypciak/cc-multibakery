@@ -66,24 +66,21 @@ export function createNetidSpecialBit(this: ig.Class & { parent(): EntityNetid |
 const classIdToTypeid: Record<number, EntityTypeId> = {}
 export const entityTypeidToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
-export const entityIgnoreDeath: Set<EntityTypeId> = new Set()
 export const entityStatic: Set<EntityTypeId> = new Set()
 
 interface RegisterNetEntitySettings {
     entityClass: EntityClass
     applyPriority?: number
-    ignoreDeath?: boolean
     isStatic?: boolean
 }
 
-export function registerNetEntity({ entityClass, applyPriority, ignoreDeath, isStatic }: RegisterNetEntitySettings) {
+export function registerNetEntity({ entityClass, applyPriority, isStatic }: RegisterNetEntitySettings) {
     const typeid = nextNetidType()
     assert(!entityTypeidToClass[typeid], `entity typeid duplicate! ${typeid}`)
     entityTypeidToClass[typeid] = entityClass
     classIdToTypeid[entityClass.classId] = typeid
     entityApplyPriority[typeid] = applyPriority ?? 1000
 
-    if (ignoreDeath) entityIgnoreDeath.add(typeid)
     if (isStatic) entityStatic.add(typeid)
 }
 
