@@ -114,7 +114,9 @@ prestart(() => {
                     ig.destroyCombatProxies ??= []
                     ig.destroyCombatProxies.push(this.netid)
                 }
+                ig.ignoreEffectNetid = true
                 this.parent(type)
+                ig.ignoreEffectNetid = false
             },
         })
     }

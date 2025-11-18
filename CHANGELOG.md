@@ -9,6 +9,7 @@
 - Fix triblader triggering melee attack circle glow when dashing
 - Fix remote client sometimes desyncing when using ig.ENTITY.TeleportField
 - Fix remote crash when hit effect occurs on the same frame that the entity gets killed (for example triblader Deploy Shields and lea Flare Burn!)
+- Fix remote double effects on sc.CombatProxyEntity death
 
 ## [0.6.0] 2025-11-17
 
