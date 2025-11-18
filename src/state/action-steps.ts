@@ -21,14 +21,14 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet) {
-            if (!ig.actionStepsFired) return
+        get(packet, player) {
+            if (!player) return
+            const netid = player.dummy.netid
+            const entry = ig.actionStepsFired?.[netid]
+            if (!entry) return
 
             packet.actionSteps ??= {}
-            for (const netidStr in ig.actionStepsFired) {
-                const netid = netidStr as unknown as EntityNetid
-                ;(packet.actionSteps[netid] ??= []).push(...ig.actionStepsFired[netid])
-            }
+            packet.actionSteps[netid] = entry
         },
         clear() {
             ig.actionStepsFired = undefined
@@ -38,7 +38,7 @@ prestart(() => {
 
             for (const netidStr in packet.actionSteps) {
                 const netid = netidStr as unknown as EntityNetid
-                const actor = ig.game.entitiesByNetid[netid] ?? ig.ccmap?.clients[0]?.dummy
+                const actor = ig.game.entitiesByNetid[netid]
                 assert(actor)
                 assert(actor instanceof ig.ActorEntity)
                 const run = () => {
@@ -82,6 +82,7 @@ prestart(() => {
 }, 2000)
 
 function pushActionhStep(actor: ig.ActorEntity, settings: ig.ActionStepBase.Settings) {
+    assert(ig.ccmap)
     ig.actionStepsFired ??= {}
     ;(ig.actionStepsFired[actor.netid] ??= []).push({
         settings,

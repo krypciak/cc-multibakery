@@ -17,6 +17,7 @@
 - Fix waiting for gamepad poping up every time a map is switched
 - Fix combat art branch linking on lea character configs
 - Don't apply blur and zoom effects in menus
+- Don't send remote clients other player action step data (fixes crashes on Gatling Arctillery for example)
 
 ## [0.6.0] 2025-11-17
 
