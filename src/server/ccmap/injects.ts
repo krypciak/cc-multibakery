@@ -167,7 +167,7 @@ prestart(() => {
             if (!multi.server || !ig.ccmap) return this.parent(combatant)
 
             const client = this.getClient(false)
-            if (client) runTask(client.getClient().inst, () => this.parent(combatant))
+            if (client) runTask(client.inst, () => this.parent(combatant))
         },
     })
 })

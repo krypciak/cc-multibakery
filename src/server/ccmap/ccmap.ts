@@ -152,7 +152,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     getAllInstances(includeMapInst?: boolean) {
-        const insts = this.clients.map(player => player.getClient().inst)
+        const insts = this.clients.map(client => client.inst)
         if (includeMapInst) insts.push(this.inst)
         return insts
     }
@@ -160,8 +160,7 @@ export class CCMap extends InstanceUpdateable {
     destroy() {
         if (this.destroyed) return
 
-        for (const player of this.clients) {
-            const client = player.getClient()
+        for (const client of this.clients) {
             multi.server.leaveClient(client)
         }
 

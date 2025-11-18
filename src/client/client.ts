@@ -401,12 +401,6 @@ export class Client extends InstanceUpdateable {
         this.dummy.setInputManager(this.inputManager)
     }
 
-    getClient(noAssert: true): Client | undefined
-    getClient(noAssert?: false): Client
-    getClient(noAssert?: any): Client | undefined {
-        return this.dummy.getClient(noAssert)
-    }
-
     getMap(noAssert: true): CCMap | undefined
     getMap(noAssert?: false): CCMap
     getMap(noAssert?: any): CCMap | undefined {
