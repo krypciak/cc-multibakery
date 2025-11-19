@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added var access namespace: `multi.`
+
 ### Changed
 
 - Allow k&m input even when in gamepad input mode
