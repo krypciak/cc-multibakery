@@ -21,9 +21,9 @@ declare global {
 
 prestart(() => {
     addStateHandler({
-        get(packet, player) {
-            if (!player) return
-            const netid = player.dummy.netid
+        get(packet, client) {
+            if (!client) return
+            const netid = client.dummy.netid
             const entry = ig.actionStepsFired?.[netid]
             if (!entry) return
 
@@ -38,35 +38,26 @@ prestart(() => {
 
             for (const netidStr in packet.actionSteps) {
                 const netid = netidStr as unknown as EntityNetid
-                const actor = ig.game.entitiesByNetid[netid]
-                assert(actor)
-                assert(actor instanceof ig.ActorEntity)
-                const run = () => {
+                const player = ig.game.entitiesByNetid[netid]
+                assert(player instanceof dummy.DummyPlayer)
+                const client = player.getClient()
+                runTask(client.inst, () => {
                     const steps: ig.ActionStepBase.Settings[] = packet.actionSteps![netid].map(
                         ({ settings }) => settings
                     )
                     const action = new ig.Action(`multibakery-remote-action`, steps)
 
-                    actor.currentAction = action
+                    player.currentAction = action
 
-                    action.run(actor)
+                    action.run(player)
 
-                    actor.currentAction = null
-                    actor.currentActionStep = null
-                }
-
-                if (actor instanceof dummy.DummyPlayer) {
-                    const client = actor.getClient(true)
-                    if (client) {
-                        runTask(client.inst, run)
-                        continue
-                    }
-                }
-                run()
+                    player.currentAction = null
+                    player.currentActionStep = null
+                })
             }
         },
     })
-})
+}, 200)
 
 let actionStepWhitelist: Set<number>
 prestart(() => {
@@ -77,14 +68,20 @@ prestart(() => {
             ig.ACTION_STEP.SET_ZOOM_BLUR,
             ig.ACTION_STEP.SET_CAMERA_ZOOM,
             ig.ACTION_STEP.RESET_CAMERA,
+
+            /* this.clearActionAttached() callers */
+            ig.ACTION_STEP.CLEAR_STUN_LOCKED,
+            ig.ACTION_STEP.STOP_SOUNDS,
+            // ig.ACTION_STEP.CLEAR_EFFECTS,
+            ig.ACTION_STEP.CLEAR_TEMP_INFLUENCE,
         ].map(clazz => clazz.classId)
     )
 }, 2000)
 
-function pushActionhStep(actor: ig.ActorEntity, settings: ig.ActionStepBase.Settings) {
-    assert(ig.ccmap)
-    ig.actionStepsFired ??= {}
-    ;(ig.actionStepsFired[actor.netid] ??= []).push({
+function pushActionStep(actor: ig.ActorEntity, settings: ig.ActionStepBase.Settings) {
+    const ig1 = ig.ccmap ? ig : ig.client!.getMap().inst.ig
+    ig1.actionStepsFired ??= {}
+    ;(ig1.actionStepsFired[actor.netid] ??= []).push({
         settings,
     })
 }
@@ -97,20 +94,63 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
     }
 
     if (shouldCollectStateData()) {
-        pushActionhStep(actor, getStepSettings(step) as ig.ActionStepBase.Settings)
+        pushActionStep(actor, getStepSettings(step) as ig.ActionStepBase.Settings)
+    }
+}
+
+declare global {
+    interface StateUpdatePacket {
+        clearActionAttached?: Record<EntityNetid, true>
+    }
+    namespace ig {
+        var clearActionAttached: Record<EntityNetid, true> | undefined
     }
 }
 
 prestart(() => {
-    if (!PHYSICSNET) return
+    addStateHandler({
+        get(packet, client) {
+            if (!client || !ig.clearActionAttached) return
+            const netid = client.dummy.netid
+            if (!ig.clearActionAttached[netid]) return
 
-    ig.Camera.TargetHandle.inject({
-        onActionEndDetach(entity) {
-            this.parent(entity)
+            packet.clearActionAttached ??= {}
+            packet.clearActionAttached[netid] = ig.clearActionAttached[netid]
+        },
+        clear() {
+            ig.clearActionAttached = undefined
+        },
+        set(packet) {
+            if (!packet.clearActionAttached) return
 
-            if (shouldCollectStateData()) {
-                pushActionhStep(entity, { type: 'RESET_CAMERA', speed: 'FAST' })
+            for (const netidStr in packet.clearActionAttached) {
+                const netid = netidStr as unknown as EntityNetid
+                const player = ig.game.entitiesByNetid[netid]
+                assert(player instanceof dummy.DummyPlayer)
+                const client = player.getClient()
+                runTask(client.inst, () => {
+                    player.clearActionAttached()
+                })
             }
+        },
+    })
+})
+
+prestart(() => {
+    dummy.DummyPlayer.inject({
+        clearActionAttached(condition, secondConditionArg) {
+            if (!multi.server) return this.parent(condition, secondConditionArg)
+
+            if (!condition && this.actionAttached.length > 0 && shouldCollectStateData()) {
+                // console.log('clearActionAttached', this.actionAttached.map(fcn), condition, secondConditionArg)
+                assert(!secondConditionArg)
+                const ig1 = ig.ccmap ? ig : ig.client!.getMap().inst.ig
+                ig1.clearActionAttached ??= {}
+                assert(!ig1.clearActionAttached[this.netid])
+                ig1.clearActionAttached[this.netid] = true
+            }
+
+            this.parent(condition)
         },
     })
 })

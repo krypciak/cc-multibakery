@@ -35,13 +35,12 @@ prestart(() => {
     sc.CombatProxyEntity.inject({
         getState,
         setState,
-        /* TODO: P and R special bits (seems to work fine without this, is this needed?) */
     })
 
     sc.CombatProxyEntity.create = (netid: EntityNetid, state: Return) => {
+        if (!state.proxyType) return
         assert(state.pos)
         assert(state.combatant)
-        assert(state.proxyType)
         assert(state.face)
 
         const { x, y, z } = state.pos
@@ -72,8 +71,7 @@ prestart(() => {
         sc.CombatProxyEntity.inject({
             update() {
                 if (!(multi.server instanceof RemoteServer)) return this.parent()
-                /* TODO: r special bit */
-                // if (this.netid[2] == 'R') return this.parent()
+                ig.AnimatedEntity.prototype.update.call(this)
             },
         })
     }

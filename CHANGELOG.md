@@ -18,6 +18,7 @@
 - Fix combat art branch linking on lea character configs
 - Don't apply blur and zoom effects in menus
 - Don't send remote clients other player action step data (fixes crashes on Gatling Arctillery for example)
+- Fix remote zoom/blur effects not clearing after certain combat arts
 
 ## [0.6.0] 2025-11-17
 
