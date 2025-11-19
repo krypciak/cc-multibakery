@@ -4,6 +4,7 @@ import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, StateKey } from '../states'
 import { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
+import { runTaskInMapInst } from '../../client/client'
 
 type EntityDeathsObj = Record<EntityNetid, u4>
 
@@ -56,8 +57,10 @@ prestart(() => {
             if (entityIgnoreDeath.has(typeId)) return
 
             if (shouldCollectStateData()) {
-                ig.entityDeaths ??= {}
-                ig.entityDeaths[this.netid] = ((ig.entityDeaths[this.netid] ?? 0) + 1) % 16
+                runTaskInMapInst(() => {
+                    ig.entityDeaths ??= {}
+                    ig.entityDeaths[this.netid] = ((ig.entityDeaths[this.netid] ?? 0) + 1) % 16
+                })
             }
         },
     })

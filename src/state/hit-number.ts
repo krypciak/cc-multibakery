@@ -3,6 +3,7 @@ import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import { EntityNetid } from '../misc/entity-netid'
+import { runTaskInMapInst } from '../client/client'
 
 interface HitNumberConfig {
     isHealing?: boolean
@@ -82,18 +83,20 @@ prestart(() => {
             appenix
         ) {
             if (shouldCollectStateData()) {
-                ig.hitNumberSpawned ??= []
-                const netid = combatant.netid
-                assert(netid)
-                ig.hitNumberSpawned.push({
-                    pos,
-                    combatant: netid,
-                    damage,
-                    size,
-                    strength,
-                    shieldResult,
-                    isCrit,
-                    appenix: appenix ? appenix : undefined,
+                runTaskInMapInst(() => {
+                    ig.hitNumberSpawned ??= []
+                    const netid = combatant.netid
+                    assert(netid)
+                    ig.hitNumberSpawned.push({
+                        pos,
+                        combatant: netid,
+                        damage,
+                        size,
+                        strength,
+                        shieldResult,
+                        isCrit,
+                        appenix: appenix ? appenix : undefined,
+                    })
                 })
             }
 
@@ -102,14 +105,16 @@ prestart(() => {
 
         ig.ENTITY.HitNumber.spawnHealingNumber = function (pos, combatant, healAmount) {
             if (shouldCollectStateData()) {
-                ig.hitNumberSpawned ??= []
-                const netid = combatant.netid
-                assert(netid)
-                ig.hitNumberSpawned.push({
-                    isHealing: true,
-                    pos,
-                    combatant: netid,
-                    damage: healAmount,
+                runTaskInMapInst(() => {
+                    ig.hitNumberSpawned ??= []
+                    const netid = combatant.netid
+                    assert(netid)
+                    ig.hitNumberSpawned.push({
+                        isHealing: true,
+                        pos,
+                        combatant: netid,
+                        damage: healAmount,
+                    })
                 })
             }
 
@@ -153,9 +158,11 @@ prestart(() => {
             clearDamageSum() {
                 this.parent()
                 if (shouldCollectStateData()) {
-                    ig.hitNumberClear ??= []
-                    assert(this.netid)
-                    ig.hitNumberClear.push(this.netid)
+                    runTaskInMapInst(() => {
+                        ig.hitNumberClear ??= []
+                        assert(this.netid)
+                        ig.hitNumberClear.push(this.netid)
+                    })
                 }
             },
         })

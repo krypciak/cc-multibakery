@@ -148,8 +148,7 @@ export function notifyMapAndPlayerInsts(model: sc.Model, msg: number, data?: unk
     notify()
 
     if (ig.ccmap) {
-        const map = ig.ccmap
-        runTasks(map.getAllInstances(), notify)
+        runTasks(ig.ccmap.getAllInstances(), notify)
     }
 }
 

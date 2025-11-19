@@ -177,8 +177,10 @@ prestart(() => {
         orig(entity, withTheSameGroup)
         if (!entity.netid || !shouldCollectStateData()) return
         if (withTheSameGroup == 'modeAura') return
-        ig.clearEffects ??= []
-        ig.clearEffects.push([entity.netid, withTheSameGroup])
+        runTaskInMapInst(() => {
+            ig.clearEffects ??= []
+            ig.clearEffects.push([entity.netid, withTheSameGroup])
+        })
     }
 }, 0)
 
@@ -218,8 +220,10 @@ prestart(() => {
         stop() {
             this.parent()
             if (!shouldCollectStateData() || !this.netid) return
-            ig.stopEffects ??= []
-            ig.stopEffects.push(this.netid)
+            runTaskInMapInst(() => {
+                ig.stopEffects ??= []
+                ig.stopEffects.push(this.netid)
+            })
         },
     })
 }, 0)

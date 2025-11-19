@@ -4,6 +4,7 @@ import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
+import { runTaskInMapInst } from '../client/client'
 
 type VarObj = Record<string, unknown> & RecordSize<u16>
 
@@ -70,8 +71,10 @@ prestart(() => {
         addVarModifyListener((path, _oldPath, newValue) => {
             if (!shouldCollectStateData()) return
             if (!path.startsWith('map.') && !path.startsWith('tmp.') && !path.startsWith('menu.')) return
-            ig.vars.varsChanged ??= {}
-            ig.vars.varsChanged[path] = newValue
+            runTaskInMapInst(() => {
+                ig.vars.varsChanged ??= {}
+                ig.vars.varsChanged[path] = newValue
+            })
         })
     }
 

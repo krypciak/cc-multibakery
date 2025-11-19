@@ -4,6 +4,7 @@ import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
 import { u16 } from 'ts-binarifier/src/type-aliases'
 import { EntityNetid } from '../../misc/entity-netid'
+import { runTaskInMapInst } from '../../client/client'
 
 interface HitConfig {
     entity: EntityNetid
@@ -95,16 +96,18 @@ prestart(() => {
             ig.ignoreEffectNetid = false
 
             assert(entity.netid)
-            ig.entityHitPackets ??= []
-            ig.entityHitPackets.push({
-                entity: entity.netid,
-                hitPos,
-                hitDegree,
-                hitElement,
-                shielded,
-                critical,
-                ignoreSounds,
-                spriteFilter,
+            runTaskInMapInst(() => {
+                ig.entityHitPackets ??= []
+                ig.entityHitPackets.push({
+                    entity: entity.netid,
+                    hitPos,
+                    hitDegree,
+                    hitElement,
+                    shielded,
+                    critical,
+                    ignoreSounds,
+                    spriteFilter,
+                })
             })
 
             return handle

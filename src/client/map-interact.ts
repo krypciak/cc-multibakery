@@ -115,9 +115,9 @@ prestart(() => {
         _isInRange(range, noIgnoreZ) {
             if (!multi.server) return this.parent(range, noIgnoreZ)
             assert(ig.ccmap)
-            return ig.ccmap.clients.some(player => {
+            return ig.ccmap.clients.some(client => {
                 assert(!ig.game.playerEntity)
-                ig.game.playerEntity = player.dummy
+                ig.game.playerEntity = client.dummy
                 const ret = this.parent(range, noIgnoreZ)
                 ig.game.playerEntity = undefined as any
                 return ret
