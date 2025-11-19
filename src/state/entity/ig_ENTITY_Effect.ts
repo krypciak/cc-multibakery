@@ -6,6 +6,8 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
 import { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
+import { RemoteServer } from '../../server/remote/remote-server'
+import { runTaskInMapInst } from '../../client/client'
 
 declare global {
     namespace ig.ENTITY {
@@ -108,7 +110,11 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Effect, applyPriority: 2000 })
+    registerNetEntity({
+        entityClass: ig.ENTITY.Effect,
+        applyPriority: 2000,
+        ignoreDeath: true,
+    })
 
     ig.ENTITY.Effect.forceRemotePhysics = true
 

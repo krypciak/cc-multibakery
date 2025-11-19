@@ -1,5 +1,6 @@
-import { EntityNetid } from '../../misc/entity-netid'
+import { entityIgnoreDeath, EntityNetid } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
+import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, StateKey } from '../states'
 import { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
@@ -51,6 +52,8 @@ prestart(() => {
         kill(levelChange) {
             this.parent(levelChange)
             if (!this.netid) return
+            const typeId = getEntityTypeId(this.netid)
+            if (entityIgnoreDeath.has(typeId)) return
 
             if (shouldCollectStateData()) {
                 ig.entityDeaths ??= {}
