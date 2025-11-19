@@ -4,6 +4,7 @@ import { RemoteServer } from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace NodeJS {
@@ -83,7 +84,13 @@ prestart(() => {
         },
 
         update() {
-            inputBackup(this.inputManager, () => this.parent())
+            /* client only null when client after client is destroyed */
+            const client = this.getClient(true)
+            if (client?.ready) {
+                runTask(client.inst, () => inputBackup(this.inputManager, () => this.parent()))
+            } else {
+                inputBackup(this.inputManager, () => this.parent())
+            }
 
             if (this.data.inCutscene) {
                 if (this.coll.type != ig.COLLTYPE.NONE) this.coll.setType(ig.COLLTYPE.NONE)

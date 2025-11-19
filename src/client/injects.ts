@@ -1,8 +1,7 @@
-import { prestart } from '../loading-stages'
+import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { Client } from './client'
-import { assert } from '../misc/assert'
 
 prestart(() => {
     ig.Physics.inject({
@@ -34,29 +33,13 @@ prestart(() => {
             if (inp) Vec2.assign(inp.screen, ig.game.screen)
         },
     })
-
+})
+poststart(() => {
     dummy.DummyPlayer.inject({
-        update() {
+        clearActionAttached(...args) {
             const client = this.getClient(true)
-            if (!client) return this.parent()
-            assert(ig.ccmap)
-
-            const cameraBackup = ig.camera
-            // const combatBackup = sc.combat
-            const modelBackup = sc.model
-            const isControlBlockedBackup = ig.game.isControlBlocked
-            const interactBackup = ig.interact
-            ig.camera = client.inst.ig.camera
-            // sc.combat = client.inst.sc.combat
-            sc.model = client.inst.sc.model
-            ig.game.isControlBlocked = () => runTask(client.inst, () => ig.game.isControlBlocked())
-            ig.interact = client.inst.ig.interact
-            this.parent()
-            ig.camera = cameraBackup
-            // sc.combat = combatBackup
-            sc.model = modelBackup
-            ig.game.isControlBlocked = isControlBlockedBackup
-            ig.interact = interactBackup
+            if (client) return runTask(client.inst, () => this.parent(...args))
+            return this.parent(...args)
         },
     })
 })

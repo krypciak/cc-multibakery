@@ -79,16 +79,9 @@ prestart(() => {
     )
 }, 2000)
 
-function pushActionStep(actor: ig.ActorEntity, settings: ig.ActionStepBase.Settings) {
-    runTaskInMapInst(() => {
-        ig.actionStepsFired ??= {}
-        ;(ig.actionStepsFired[actor.netid] ??= []).push({
-            settings,
-        })
-    })
-}
 export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity) {
     if (!actionStepWhitelist.has(step.classId)) return
+    if (actor instanceof dummy.DummyPlayer) assert(ig.client)
 
     if (!actor.netid) {
         console.warn('action started on actor', window.fcn?.(actor), 'that doesnt have netid!')
@@ -96,7 +89,12 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
     }
 
     if (shouldCollectStateData()) {
-        pushActionStep(actor, getStepSettings(step) as ig.ActionStepBase.Settings)
+        runTaskInMapInst(() => {
+            ig.actionStepsFired ??= {}
+            ;(ig.actionStepsFired[actor.netid] ??= []).push({
+                settings: getStepSettings(step) as ig.ActionStepBase.Settings,
+            })
+        })
     }
 }
 
@@ -146,9 +144,9 @@ prestart(() => {
             if (!condition && this.actionAttached.length > 0 && shouldCollectStateData()) {
                 // console.log('clearActionAttached', this.actionAttached.map(fcn), condition, secondConditionArg)
                 assert(!secondConditionArg)
+                assert(ig.client)
                 runTaskInMapInst(() => {
                     ig.clearActionAttached ??= {}
-                    assert(!ig.clearActionAttached[this.netid])
                     ig.clearActionAttached[this.netid] = true
                 })
             }
