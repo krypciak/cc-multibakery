@@ -16,14 +16,14 @@ prestart(() => {
             if (ASSERT) {
                 if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
                     const isOk =
-                        ig.ignoreEffectNetid ||
-                        (typeof entity === 'function'
+                        typeof entity === 'function'
                             ? isParticleClass(entity) ||
+                              (entity == ig.ENTITY.Effect && ig.ignoreEffectNetid) ||
                               entity == dummy.DummyPlayer ||
                               entity == ig.ENTITY.Crosshair ||
                               entity == ig.ENTITY.CrosshairDot ||
                               entity == sc.NPCRunnerEntity
-                            : false)
+                            : false
                     if (!isOk) {
                         console.groupCollapsed('local entity spawn!', findClassName(entity))
                         console.log(settings)
