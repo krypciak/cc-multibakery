@@ -5,6 +5,8 @@ import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 
 function startDevServer() {
+    if (!PHYSICS) return
+
     multi.setServer(
         new PhysicsServer({
             tps: 60,

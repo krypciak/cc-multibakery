@@ -289,6 +289,8 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
 }
 
 function genTest(name: string, moves: string, map: string, expected: number, part2: boolean = false) {
+    if (!PHYSICS) return
+
     window.crossnode.registerTest<{
         moveI: number
         moveDone: boolean
