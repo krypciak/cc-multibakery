@@ -20,6 +20,7 @@ import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
 import { linkMusic } from '../server/music'
 import { MapTpInfo } from '../server/server'
+import { linkClientVars } from './client-var-link'
 
 import './injects'
 
@@ -266,12 +267,11 @@ export class Client extends InstanceUpdateable {
 
             ig.game.physics = mig.game.physics
 
-            ig.vars = mig.vars
-
             ig.light.lightHandles = mig.light.lightHandles
             ig.light.darknessHandles = mig.light.darknessHandles
             ig.light.screenFlashHandles = mig.light.screenFlashHandles
 
+            linkClientVars(this, map.inst)
             linkMusic(this.inst, map.inst)
             linkTimersModel(this.inst, map.inst)
 

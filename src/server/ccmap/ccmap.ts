@@ -5,12 +5,12 @@ import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import { Client } from '../../client/client'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { InstanceUpdateable } from '../instance-updateable'
-
-import './injects'
-import { linkVars } from './var-link'
+import { linkMapVars } from './map-var-link'
 import { linkOptions } from '../physics/storage/storage'
 import { linkMusic } from '../music'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+
+import './injects'
 
 declare global {
     namespace ig {
@@ -48,7 +48,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     private link() {
-        const toLink = [linkVars, linkOptions, linkMusic, linkMapModel, linkTimersModel]
+        const toLink = [linkMapVars, linkOptions, linkMusic, linkMapModel, linkTimersModel]
         for (const link of toLink) link(this.inst, multi.server.inst)
     }
 

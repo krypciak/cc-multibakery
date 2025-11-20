@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add client specific `map.client.` and `tmp.client.` variable namespaces
+
 ### Fixed
 
 - Fix variables like `player.element` referring to a wrong player when access in the client context
