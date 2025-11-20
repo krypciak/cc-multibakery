@@ -1,6 +1,7 @@
 import { assert } from '../../../misc/assert'
 import { addVarModifyListener } from '../../../misc/var-set-event'
 import { prestart } from '../../../loading-stages'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace ig {
@@ -39,3 +40,14 @@ export function unsetNextSetBy() {
 export function findSetByEntityByVars(vars: string[]): ig.Entity | undefined {
     return ig.vars.varsSetBy[vars.find(varName => ig.vars.varsSetBy[varName]) ?? -1]
 }
+
+prestart(() => {
+    ig.Vars.inject({
+        _getAccessObject(...args) {
+            if (!(ig.vars.nextSetBy instanceof dummy.DummyPlayer)) return this.parent(...args)
+            const client = ig.vars.nextSetBy.getClient(true)
+            if (!client) return this.parent(...args)
+            return runTask(client.inst, () => ig.vars._getVariable(...args))
+        },
+    })
+})
