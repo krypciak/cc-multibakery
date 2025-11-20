@@ -213,8 +213,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
         assert(this.inst.id != id && this.baseInst.id != id)
-        this.clients.delete(client.username)
         client.destroy()
+        this.clients.delete(client.username)
 
         if (this.destroyOnLastClientLeave) {
             if (this.clients.size == 0) {

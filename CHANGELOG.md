@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix variables like `player.element` referring to a wrong player when access in the client context
+
 ## [0.6.1] 2025-11-19
 
 ### Added

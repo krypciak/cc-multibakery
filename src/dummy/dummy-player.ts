@@ -5,6 +5,7 @@ import { Client } from '../client/client'
 import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
+import { PhysicsServer } from '../server/physics/physics-server'
 
 declare global {
     namespace NodeJS {
@@ -202,6 +203,17 @@ prestart(() => {
             this.parent()
             this.dummy = dummy
             this.setConfig(new sc.PlayerConfig('Lea'))
+
+            const client = this.dummy.getClient(true)
+            if (multi.server instanceof PhysicsServer) assert(client)
+            if (client) {
+                runTask(client.inst, () => {
+                    ig.vars.registerVarAccessor('item', this, 'VarItemEditor')
+                    ig.vars.registerVarAccessor('equip', this, 'VarEquipEditor')
+                    ig.vars.registerVarAccessor('player', this, 'VarPlayerEditor')
+                    ig.vars.registerVarAccessor('chapter', this, 'VarChapterEditor')
+                })
+            }
         },
         updateLoop: replace,
         enterElementalOverload: replace,
@@ -209,6 +221,14 @@ prestart(() => {
         onVarAccess: replace,
         destroy() {
             ig.vars.unregisterVarAccessor(this)
+
+            const client = this.dummy.getClient(true)
+            if (multi.server instanceof PhysicsServer) assert(client)
+            if (client) {
+                runTask(client.inst, () => {
+                    ig.vars.unregisterVarAccessor(this)
+                })
+            }
         },
     })
 }, 2)
