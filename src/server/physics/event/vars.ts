@@ -26,8 +26,6 @@ addVarModifyListener(path => {
         ig.vars.varsSetBy[path] = ig.vars.nextSetBy
         ig.vars.nextSetBy = undefined
     }
-    const varInst = instanceinator.instances[ig.vars._instanceId]
-    if (varInst) varInst.ig.game._deferredVarChanged = ig.game._deferredVarChanged
 })
 export function setNextSetBy(entity: ig.Entity) {
     assert(!ig.vars.nextSetBy)
@@ -48,6 +46,28 @@ prestart(() => {
             const client = ig.vars.nextSetBy.getClient(true)
             if (!client) return this.parent(...args)
             return runTask(client.inst, () => ig.vars._getVariable(...args))
+        },
+    })
+})
+
+prestart(() => {
+    ig.Game.inject({
+        varsChangedDeferred() {
+            this.parent()
+            if (!ig.ccmap) return
+            for (const inst of ig.ccmap.getAllInstances()) inst.ig.game._deferredVarChanged = true
+        },
+    })
+})
+
+prestart(() => {
+    ig.Game.inject({
+        varsChangedDeferred() {
+            this.parent()
+            if (!ig.client) return
+            const map = ig.client.getMap(true)
+            if (!map) return
+            for (const inst of map.getAllInstances(true)) inst.ig.game._deferredVarChanged = true
         },
     })
 })
