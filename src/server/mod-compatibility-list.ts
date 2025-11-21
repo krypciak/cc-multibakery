@@ -8,10 +8,20 @@ export interface ModVersionEntry {
     id: string
     version: string
 }
+type AddonId =
+    | 'fish-gear'
+    | 'flying-hedgehag'
+    | 'snowman-tank'
+    | 'scorpion-robo'
+    | 'post-game'
+    | 'ninja-skin'
+    | 'manlea'
+
 export interface ModCompatibilityList {
     required: ModVersionEntry[]
     incompatible: ModVersionEntry[]
     ccuilibWidgets: string[]
+    requiredAddons: AddonId[]
 }
 
 const knownClientModsWithJson = ['menu-ui-replacer', 'extendable-severed-heads', 'bobrank', 'NamedSaves', 'xpc-litter']
@@ -49,10 +59,15 @@ export function getModCompatibilityList(): ModCompatibilityList {
 
     const widgets = Object.keys(nax.ccuilib.QuickRingMenuWidgets.widgets).filter(k => !k.startsWith('dummy'))
 
+    const addons: AddonId[] = (
+        ['fish-gear', 'flying-hedgehag', 'scorpion-robo', 'snowman-tank', 'post-game'] as const
+    ).filter(addonName => ig.extensions.enabled[addonName])
+
     return {
         required,
         incompatible: [],
         ccuilibWidgets: widgets,
+        requiredAddons: addons,
     }
 }
 
@@ -64,6 +79,7 @@ type ModCompatibilityErrorList = {
         actual: string
     }[]
     incompatible?: { modId: string }[]
+    missingAddons?: { addonId: string }[]
 }
 
 export function isModCompatibilityListSatisfied(list: ModCompatibilityList): {
@@ -92,6 +108,12 @@ export function isModCompatibilityListSatisfied(list: ModCompatibilityList): {
         const localMod = allMods.find(m => m.id == mod.id)
         if (localMod) {
             ;(errors.incompatible ??= []).push({ modId: mod.id })
+        }
+    }
+
+    for (const addonId of list.requiredAddons) {
+        if (!ig.extensions.enabled[addonId]) {
+            ;(errors.missingAddons ??= []).push({ addonId: addonId })
         }
     }
 
@@ -130,6 +152,10 @@ export function showModCompatibilityListPopup(errors: ModCompatibilityErrorList)
                     `local ${wrapColor('v' + actual, COLOR.YELLOW)}`
             )
             .join('\n')
+    }
+    if (errors.missingAddons) {
+        text += 'Missing game addons:\n'
+        text += errors.missingAddons.map(({ addonId }) => `- ${wrapColor(addonId, COLOR.YELLOW)}`)
     }
 
     const popup = new modmanager.gui.MultiPageButtonBoxGui(448, 290, buttons)
