@@ -6,7 +6,6 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { StateKey } from '../states'
 import { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { runTaskInMapInst } from '../../client/client'
 
 declare global {
@@ -72,8 +71,9 @@ function resolveObjects(state: Return) {
     const sheet = new ig.EffectSheet(state.sheetPath)
     assert(sheet.effects)
     const effect = sheet.effects[state.effectName!]
+    if (sheet.loaded) assert(effect)
 
-    return { target, target2, effect }
+    return { target, target2, effect, sheetLoaded: sheet.loaded }
 }
 
 let particles: ig.EntityConstructor[]
@@ -96,7 +96,9 @@ prestart(() => {
     ig.ENTITY.Effect.create = (netid: EntityNetid, state: Return) => {
         if (!state.sheetPath) return
 
-        const { target, target2, effect } = resolveObjects(state)
+        const { target, target2, effect, sheetLoaded } = resolveObjects(state)
+        if (!sheetLoaded) return
+
         const { x, y, z } = state.pos ?? { x: 0, y: 0, z: 0 }
         const settings: ig.ENTITY.Effect.Settings = Object.assign({}, state, {
             effect,
