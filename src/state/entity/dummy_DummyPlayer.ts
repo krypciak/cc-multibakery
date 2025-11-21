@@ -20,6 +20,7 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
         ...igEntityPlayer.getState.call(this, player, memory),
 
         username: memory.diff(this.data.username),
+        skin: memory.diff(this.currentSkinName ?? ''),
         isControlBlocked: memory.diff(this.data.isControlBlocked),
         inCutscene: memory.diff(this.data.inCutscene),
         currentMenu: memory.diff(this.data.currentMenu as u32),
@@ -35,6 +36,10 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
 
 function setState(this: dummy.DummyPlayer, state: Return) {
     igEntityPlayer.setState.call(this, state)
+
+    if (state.skin !== undefined) {
+        this.setSkin(state.skin, true)
+    }
 
     if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
     if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene

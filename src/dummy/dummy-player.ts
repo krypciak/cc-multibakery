@@ -6,6 +6,7 @@ import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
+import './dummy-skins'
 
 declare global {
     namespace NodeJS {
@@ -50,6 +51,7 @@ prestart(() => {
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
             settings.name = settings.data.username
+
             sc.PlayerBaseEntity.prototype.init.call(this, 0, 0, 0, settings)
 
             this.data = settings.data
@@ -98,20 +100,6 @@ prestart(() => {
             } else if (this.coll.type == ig.COLLTYPE.NONE) {
                 this.coll.setType(ig.COLLTYPE.VIRTUAL)
             }
-        },
-        updateAnimSheet(updateFx) {
-            /* disable skins for dummy players */
-            const backup = sc.playerSkins
-            sc.playerSkins = {
-                // @ts-expect-error
-                getCurrentSkin() {
-                    return null
-                },
-            }
-
-            this.parent(updateFx)
-
-            sc.playerSkins = backup
         },
         onKill(_dontRespawn?: boolean) {
             this.parent(true)
