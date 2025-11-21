@@ -83,6 +83,7 @@ prestart(() => {
         dummy.DummyPlayer.inject({
             update() {
                 if (!(multi.server instanceof RemoteServer)) return this.parent()
+                ig.AnimatedEntity.prototype.update.call(this)
             },
         })
     }

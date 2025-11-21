@@ -13,6 +13,7 @@
 
 - Fix variables like `player.element` referring to a wrong player when access in the client context
 - Fix remote crashed when trying to spawn an effect whose sheet is not yet loaded
+- Fix player entities on remote not updating visuals every frame
 
 ## [0.6.1] 2025-11-19
 
