@@ -32,7 +32,7 @@ export function sendRemoteServerPacket() {
         let packet: RemoteServerClientPacket | undefined
 
         if (!inPauseScreen) {
-            const input = inst.ig.input.getInput(client.inputManager.inputType == ig.INPUT_DEVICES.GAMEPAD)
+            const input = inst.ig.input.getInput()
             if (input) {
                 for (const action of disallowedInputActions) {
                     delete input.presses?.[action]

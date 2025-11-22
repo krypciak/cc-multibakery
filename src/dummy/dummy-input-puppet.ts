@@ -77,7 +77,7 @@ declare global {
         interface Input {
             memory?: StateMemory
 
-            getInput(this: this, isUsingGamepad: boolean): InputData
+            getInput(this: this): InputData
         }
     }
 }
@@ -87,24 +87,34 @@ function getInput(this: ig.Input) {
 
     return cleanRecord({
         currentDevice: memory.diff(this.currentDevice),
-        presses: memory.diffRecord(this.presses),
 
         isUsingMouse: memory.diff(this.isUsingMouse),
         isUsingKeyboard: memory.diff(this.isUsingKeyboard),
         ignoreKeyboard: memory.diff(this.ignoreKeyboard),
         mouseGuiActive: memory.diff(this.mouseGuiActive),
         mouse: memory.diffVec2(this.mouse),
-        accel: memory.diffVec3(this.accel),
         keyups: memory.diffRecord(this.keyups),
+        presses: memory.diffRecord(this.presses),
         locks: memory.diffRecord(this.locks),
-        delayedKeyup: memory.diffArray(this.delayedKeyup),
         actions: memory.diffRecord(this.actions),
     })
 }
 
 prestart(() => {
-    ig.Input.inject({ getInput })
-})
+    ig.Input.inject({
+        getInput,
+        clearPressed() {
+            const pressesBackup = this.presses
+            const keyupsBackup = this.keyups
+            this.parent()
+
+            this.presses = pressesBackup
+            for (const key in this.presses) this.presses[key as ig.Input.KnownAction] = false
+            this.keyups = keyupsBackup
+            for (const key in this.keyups) this.keyups[key as ig.Input.KnownAction] = false
+        },
+    })
+}, 1)
 
 declare global {
     namespace dummy.input.Puppet {
@@ -136,20 +146,20 @@ prestart(() => {
             if (input.ignoreKeyboard !== undefined) this.ignoreKeyboard = input.ignoreKeyboard
             if (input.mouseGuiActive !== undefined) this.mouseGuiActive = input.mouseGuiActive
             if (input.mouse !== undefined) Vec2.assign(this.mouse, input.mouse)
-            if (input.accel !== undefined) Vec3.assign(this.accel, input.accel)
 
             StateMemory.applyChangeRecord(this.presses, input.presses)
             StateMemory.applyChangeRecord(this.keyups, input.keyups)
             StateMemory.applyChangeRecord(this.locks, input.locks)
             StateMemory.applyChangeRecord(this.actions, input.actions)
-            if (input.delayedKeyup !== undefined) this.delayedKeyup = input.delayedKeyup
         },
         pushInput(input) {
             this.inputQueue.push(input)
         },
         popInput() {
-            this.setInput(this.inputQueue.shift())
+            const input = this.inputQueue.shift()
+            this.setInput(input)
         },
+        clearPressed() {},
     })
 }, 5)
 

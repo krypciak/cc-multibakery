@@ -106,7 +106,7 @@ export class StateMemory {
     ): T | undefined {
         const i = this.i++
         if (this.data.length <= i) {
-            this.data.push(currRecord)
+            this.data.push({ ...currRecord })
             return currRecord
         } else {
             const lastRecord = this.data[i] as T
