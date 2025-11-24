@@ -6,6 +6,7 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { f32, f64, u14, u32, u6 } from 'ts-binarifier/src/type-aliases'
 import { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../misc/combatant-party-api'
+import { addCombatantParty } from '../../party/combatant-party-api'
 
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {

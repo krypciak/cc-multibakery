@@ -1,5 +1,5 @@
 import { assert } from '../misc/assert'
-import { addCombatantParty } from '../misc/combatant-party-api'
+import { addCombatantParty } from '../party/combatant-party-api'
 import { prestart } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'

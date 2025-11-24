@@ -11,7 +11,7 @@ import {
 } from './client-label-draw'
 import { RemoteServer } from '../server/remote/remote-server'
 import { isUsernameValid } from '../misc/username-util'
-import { addCombatantParty } from '../misc/combatant-party-api'
+import { addCombatantParty } from '../party/combatant-party-api'
 import { applyStateUpdatePacket } from '../state/states'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'

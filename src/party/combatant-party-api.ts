@@ -10,8 +10,7 @@ export function addCombatantParty(name: string, forceId?: number): sc.COMBATANT_
     if (forceId !== undefined && Object.values(sc.COMBATANT_PARTY).includes(forceId)) return forceId
 
     if (sc.COMBATANT_PARTY[key]) return sc.COMBATANT_PARTY[key]
-    const id: sc.COMBATANT_PARTY =
-        forceId ?? (Object.values(sc.COMBATANT_PARTY) as number[]).sort((a, b) => a - b).last() + 1
+    const id: sc.COMBATANT_PARTY = forceId ?? Math.max(...(Object.values(sc.COMBATANT_PARTY) as number[])) + 1
     // @ts-expect-error
     sc.COMBATANT_PARTY[key] = id
 
