@@ -3,33 +3,55 @@ import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
-import { f32, f64, u14, u32, u6 } from 'ts-binarifier/src/type-aliases'
-import { COMBATANT_PARTY } from '../../net/binary/binary-types'
-import { addCombatantParty } from '../../misc/combatant-party-api'
+import { f64 } from 'ts-binarifier/src/type-aliases'
+import {
+    AttackType,
+    COMBATANT_PARTY,
+    DefenceType,
+    FocusType,
+    HpType,
+    SpLevelType,
+    SpType,
+} from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 
-type Return = ReturnType<typeof getState>
-export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
-    const sp = this.params?.currentSp
-    return {
-        ...scActorEntity.getState.call(this, memory),
-
-        party: memory.diff(this.party as COMBATANT_PARTY),
-        hp: memory.diff(this.params?.currentHp),
-        baseParams: memory.diffRecord(
-            (this.params?.baseParams ?? {}) as {
-                hp: u32
-                attack: u14
-                defense: u14
-                focus: u14
+declare global {
+    namespace sc {
+        namespace CombatParams {
+            interface Params {
+                hp: HpType
+                attack: AttackType
+                defense: DefenceType
+                focus: FocusType
 
                 elemFactor?: f64[]
                 statusInflict?: f64[]
                 statusEffect?: f64[]
             }
-        ),
-        spLevel: memory.diff(this.params?.maxSp as u6),
-        sp: memory.diff(sp === undefined ? undefined : (sp as f32)),
+        }
+        interface CombatParams {
+            currentHp: HpType
+            maxSp: SpLevelType
+            currentSp: SpType
+        }
+    }
+    namespace ig.ENTITY {
+        interface Combatant {
+            // party: COMBATANT_PARTY
+        }
+    }
+}
+
+type Return = ReturnType<typeof getState>
+export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
+    return {
+        ...scActorEntity.getState.call(this, memory),
+
+        party: memory.diff(this.party as COMBATANT_PARTY),
+        hp: memory.diff(this.params?.currentHp),
+        baseParams: memory.diffRecord(this.params?.baseParams ?? ({} as sc.CombatParams.BaseParams)),
+        spLevel: memory.diff(this.params?.maxSp),
+        sp: memory.diff(this.params?.currentSp),
     }
 }
 

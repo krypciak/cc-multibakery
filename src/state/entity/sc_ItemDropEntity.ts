@@ -5,7 +5,8 @@ import { RemoteServer } from '../../server/remote/remote-server'
 import { createFakeEffectSheet } from '.././entity'
 import { StateMemory } from '.././state-util'
 import { StateKey } from '.././states'
-import { u10, u8 } from 'ts-binarifier/src/type-aliases'
+import { u8 } from 'ts-binarifier/src/type-aliases'
+import { ItemType } from '../../net/binary/binary-types'
 
 declare global {
     namespace sc {
@@ -15,8 +16,6 @@ declare global {
         'sc.ItemDropEntity': Return
     }
 }
-
-export type ItemType = u10
 
 type Return = ReturnType<typeof getState>
 function getState(this: sc.ItemDropEntity, player?: StateKey) {
@@ -28,7 +27,7 @@ function getState(this: sc.ItemDropEntity, player?: StateKey) {
         pos: memory.diffVec3(this.coll.pos),
 
         dropType: memory.onlyOnce(dropType),
-        item: memory.onlyOnce(this.item) as ItemType,
+        item: memory.onlyOnce(this.item as ItemType),
         target: memory.onlyOnce(this.target.netid),
         amount: memory.onlyOnce(this.amount) as u8,
     }

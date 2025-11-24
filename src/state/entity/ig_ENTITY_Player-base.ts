@@ -4,12 +4,30 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
-import { i11, u10, u3, u7, u8 } from 'ts-binarifier/src/type-aliases'
-import { ItemType } from './sc_ItemDropEntity'
+import { u10, u3, u8 } from 'ts-binarifier/src/type-aliases'
+import { ArmorType, ExpType, ItemType, LevelType } from '../../net/binary/binary-types'
 
 declare global {
     namespace ig.ENTITY {
         interface Player extends StateMemory.MapHolder<StateKey> {}
+    }
+
+    namespace sc {
+        namespace PlayerModel {
+            interface Equip {
+                head: ArmorType
+                leftArm: ArmorType
+                rightArm: ArmorType
+                torso: ArmorType
+                feet: ArmorType
+            }
+        }
+        interface PlayerModel {
+            level: LevelType
+            items: Record<ItemType, u10 | null>
+            skillPoints: u8[]
+            exp: ExpType
+        }
     }
 }
 
@@ -29,19 +47,11 @@ function setSkills(this: ig.ENTITY.Player, skills: Record<number, boolean>) {
     }
 }
 
-type ArmorType = i11
-
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: StateMemory) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
     memory ??= StateMemory.getBy(this, player)
-
-    const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
-    const itemsDiff =
-        !player || this == player.dummy
-            ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null>)
-            : undefined
 
     return {
         modelName: memory.diff(this.model.name),
@@ -50,20 +60,19 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        head: memory.diff(this.model.equip.head as ArmorType),
-        leftArm: memory.diff(this.model.equip.leftArm as ArmorType),
-        rightArm: memory.diff(this.model.equip.rightArm as ArmorType),
-        torso: memory.diff(this.model.equip.torso as ArmorType),
-        feet: memory.diff(this.model.equip.feet as ArmorType),
+        head: memory.diff(this.model.equip.head),
+        leftArm: memory.diff(this.model.equip.leftArm),
+        rightArm: memory.diff(this.model.equip.rightArm),
+        torso: memory.diff(this.model.equip.torso),
+        feet: memory.diff(this.model.equip.feet),
 
-        level: memory.diff(this.model.level as u7),
-        items,
-        itemsDiff: items ? undefined : itemsDiff,
-        skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints as u8[]) : undefined,
+        level: memory.diff(this.model.level),
+        items: memory.diffRecord(this.model.items),
+        skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints) : undefined,
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
 
         charge: memory.diff(chargeLevel as u3),
-        element: memory.diff(this.model.currentElementMode as u3),
+        element: memory.diff(this.model.currentElementMode),
     }
 }
 
@@ -126,21 +135,25 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         sc.inventory.updateScaledEquipment(state.level)
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
-    if (state.items) this.model.items = state.items
-    if (state.itemsDiff) {
-        for (const id of Object.keysT(state.itemsDiff)) {
-            const amount = state.itemsDiff[id]
-            const oldAmount = this.model.items[id]
+    if (state.items) {
+        if (ig.settingStateImmediately) {
+            this.model.items = state.items
+        } else {
+            for (const idStr in state.items) {
+                const id = idStr as unknown as ItemType
+                const amount = state.items[id]
+                const oldAmount = this.model.items[id]
 
-            this.model.items[id] = amount
+                this.model.items[id] = amount
 
-            if ((amount ?? 0) > (oldAmount ?? 0)) {
-                notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
-                    id,
-                    amount,
-                    skip: false,
-                    cutscene: undefined,
-                })
+                if ((amount ?? 0) > (oldAmount ?? 0)) {
+                    notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
+                        id,
+                        amount,
+                        skip: false,
+                        cutscene: undefined,
+                    })
+                }
             }
         }
     }
