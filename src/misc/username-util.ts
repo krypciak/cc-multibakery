@@ -1,7 +1,7 @@
 import { Username } from '../net/binary/binary-types'
 
 export function isUsernameValid(username: Username): boolean {
-    return username.length <= 20 && /^[a-zA-Z0-9-_ ]+$/.test(username)
+    return username.length >= 3 && username.length <= 12 && /^[a-zA-Z0-9-_ ]+$/.test(username)
 }
 
 export function generateRandomUsername(): Username {
