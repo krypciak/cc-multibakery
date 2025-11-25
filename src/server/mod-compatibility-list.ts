@@ -1,6 +1,6 @@
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { MultiPageButtonGuiButtons } from '../client/menu/pause/server-manage-button'
-import { COLOR, wrapColor } from '../client/menu/server-list-entry'
+import { COLOR, wrapColor } from '../misc/wrap-color'
 import { semver } from '../misc/nwjs-version-popup'
 import Multibakery from '../plugin'
 

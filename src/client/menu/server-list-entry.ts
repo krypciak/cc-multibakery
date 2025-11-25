@@ -8,6 +8,7 @@ import { createClientJoinData, showTryNetJoinResponseDialog } from '../../server
 import { NetServerInfoRemote } from './server-info'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { isModCompatibilityListSatisfied, showModCompatibilityListPopup } from '../../server/mod-compatibility-list'
+import { wrapColor, COLOR } from '../../misc/wrap-color'
 
 interface ServerImageConfig {
     pathOrData: string | HTMLImageElement
@@ -49,18 +50,6 @@ declare global {
         }
         var ListEntry: ListEntryConstructor
     }
-}
-
-export const COLOR = {
-    WHITE: 0,
-    RED: 1,
-    GREEN: 2,
-    YELLOW: 3,
-} as const
-type COLOR = (typeof COLOR)[keyof typeof COLOR]
-
-export function wrapColor(text: string, color: COLOR): string {
-    return `\\c[${color}]${text}\\c[0]`
 }
 
 prestart(() => {

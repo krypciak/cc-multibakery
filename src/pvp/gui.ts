@@ -2,9 +2,9 @@ import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import { PvpTeam } from './pvp'
 import { Opts } from '../options'
+import { COLOR, wrapColor } from '../misc/wrap-color'
 
 import './combatant-gui-fix'
-import { COLOR, wrapColor } from '../client/menu/server-list-entry'
 
 prestart(() => {
     sc.CombatUpperHud.inject({

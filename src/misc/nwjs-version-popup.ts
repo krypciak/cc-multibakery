@@ -1,5 +1,5 @@
 import { MultiPageButtonGuiButtons } from '../client/menu/pause/server-manage-button'
-import { COLOR, wrapColor } from '../client/menu/server-list-entry'
+import { COLOR, wrapColor } from '../misc/wrap-color'
 import { Opts } from '../options'
 
 type Problem = 'win_remote_crash' | 'performance'

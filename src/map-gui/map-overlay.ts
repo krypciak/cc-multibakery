@@ -1,4 +1,4 @@
-import { COLOR, wrapColor } from '../client/menu/server-list-entry'
+import { COLOR, wrapColor } from '../misc/wrap-color'
 import { prestart } from '../loading-stages'
 import { Username } from '../net/binary/binary-types'
 import { getPlayerLocations } from './player-locations'
