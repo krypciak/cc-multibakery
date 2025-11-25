@@ -67,6 +67,7 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
         feet: memory.diff(this.model.equip.feet),
 
         level: memory.diff(this.model.level),
+        exp: memory.diff(this.model.exp),
         items: memory.diffRecord(this.model.items),
         skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints) : undefined,
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
@@ -135,6 +136,11 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         sc.inventory.updateScaledEquipment(state.level)
         notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
+    if (state.exp !== undefined) {
+        this.model.exp = state.exp
+        notifyMapAndPlayerInsts(this.model, sc.PARTY_MEMBER_MSG.EXP_CHANGE)
+    }
+
     if (state.items) {
         if (ig.settingStateImmediately) {
             this.model.items = state.items

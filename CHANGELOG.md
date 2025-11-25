@@ -9,6 +9,7 @@
 - Add client specific `map.client.` and `tmp.client.` variable namespaces
 - Add game addon remote client compatibility check (to check if client has the DLC if the server has it)
 - Add player skin support
+- Add player exp info to save file and remote syncing
 
 ### Fixed
 
