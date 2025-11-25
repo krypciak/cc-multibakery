@@ -7,6 +7,7 @@ import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
 import './dummy-skins'
+import { Username } from '../net/binary/binary-types'
 
 declare global {
     namespace NodeJS {
@@ -22,7 +23,7 @@ declare global {
                 data: dummy.DummyPlayer.Data
             }
             interface Data {
-                username: string
+                username: Username
                 isControlBlocked?: boolean
                 inCutscene?: boolean
             }

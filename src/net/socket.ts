@@ -16,6 +16,7 @@ import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
 import { NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
+import { Username } from './binary/binary-types'
 
 type SocketData = never
 
@@ -130,7 +131,7 @@ export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
     timeOffset: number = 0
 
-    private joinActCallbacks: Record<string, (data: ClientJoinAckData) => void> = {}
+    private joinActCallbacks: Record<Username, (data: ClientJoinAckData) => void> = {}
 
     constructor(public connectionSettings: RemoteServerConnectionSettings) {}
 

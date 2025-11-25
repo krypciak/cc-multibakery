@@ -3,10 +3,11 @@ import { addStateHandler, StateKey } from './states'
 import { StateMemory } from './state-util'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
+import { Username } from '../net/binary/binary-types'
 
 interface GameModelState {
     map?: sc.GAME_MODEL_STATE
-    clients?: Record<string, sc.GAME_MODEL_STATE>
+    clients?: Record<Username, sc.GAME_MODEL_STATE>
 }
 declare global {
     interface StateUpdatePacket {

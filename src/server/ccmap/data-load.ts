@@ -1,5 +1,6 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../loading-stages'
+import { MapName } from '../../net/binary/binary-types'
 
 type Layer = keyof typeof ig.MAP
 export function initMapsAndLevels(this: ig.Game, data: sc.MapModel.Map) {
@@ -54,7 +55,7 @@ export function initMapsAndLevels(this: ig.Game, data: sc.MapModel.Map) {
     this.size.y = sizeY
 }
 
-export function setDataFromLevelData(this: ig.Game, mapName: string, data: sc.MapModel.Map): Promise<void> {
+export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.MapModel.Map): Promise<void> {
     /* mostly stolen from ig.Game#loadLevel */
 
     ig.game.mapName = mapName

@@ -5,6 +5,8 @@ import { assert } from '../misc/assert'
 import { getStepSettings } from '../steps/step-id'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { shouldCollectStateData } from './state-util'
+import { EntityNetid } from '../misc/entity-netid'
+import { Username } from '../net/binary/binary-types'
 
 interface StepObj {
     settings: any // ig.EventStepBase.Settings
@@ -21,12 +23,12 @@ interface StepGroupDeserialized extends StepGroupBase {
 }
 
 interface StepGroupSerialized extends StepGroupBase {
-    callEntity?: string
+    callEntity?: EntityNetid
 }
 
 interface StepArray {
     map?: StepGroupSerialized[]
-    clients?: Record<string, StepGroupSerialized[]>
+    clients?: Record<Username, StepGroupSerialized[]>
 }
 
 type StepsFiredMap = Map<ig.EventCall, StepGroupDeserialized>
@@ -73,7 +75,7 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
 
 function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized {
     if (group.callEntity) {
-        const netid = group.callEntity as unknown as string
+        const netid = group.callEntity as unknown as EntityNetid
         const entity = ig.game.entitiesByNetid[netid]
         assert(entity)
         group.callEntity = entity as any
@@ -85,7 +87,7 @@ function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized
             for (const key in data) {
                 const value = data[key]
                 if (value && typeof value === 'object' && 'netid' in value) {
-                    const netid = value.netid as string
+                    const netid = value.netid as EntityNetid
                     const entity = ig.game.entitiesByNetid[netid]
                     assert(entity)
                     data[key] = entity

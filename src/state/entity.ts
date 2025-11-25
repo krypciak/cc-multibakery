@@ -82,7 +82,7 @@ prestart(() => {
             if (!packet.states) return
 
             const states = Object.entriesT(packet.states).map(([k, v]) => {
-                const netid = parseInt(k as string)
+                const netid: EntityNetid = parseInt(k as string)
 
                 return [getEntityTypeId(netid), netid, v] as const
             })

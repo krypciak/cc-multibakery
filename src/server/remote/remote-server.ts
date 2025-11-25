@@ -12,11 +12,12 @@ import { sendRemoteServerPacket } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { applyModCompatibilityList, ModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
+import { CCMap } from '../ccmap/ccmap'
+import { MapName } from '../../net/binary/binary-types'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import { CCMap } from '../ccmap/ccmap'
 
 export interface RemoteServerConnectionSettings {
     host: string
@@ -40,7 +41,7 @@ export function isClientLeaveData(data: unknown): data is ClientLeaveData {
 
 export class RemoteServer extends Server<RemoteServerSettings> {
     netManager!: SocketNetManagerRemoteServer
-    notifyReadyMaps?: string[]
+    notifyReadyMaps?: MapName[]
 
     constructor(settings: RemoteServerSettings) {
         console.info('ROLE: RemoteServer')

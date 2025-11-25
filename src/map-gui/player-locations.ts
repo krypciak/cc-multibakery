@@ -1,8 +1,10 @@
+import { MapName, Username } from '../net/binary/binary-types'
+
 export type PlayerLocation = {
     pos: Vec2 | undefined
 }
 
-export type PlayerLocationRecord = Record</* map name */ string, Record</* username */ string, PlayerLocation>>
+export type PlayerLocationRecord = Record<MapName, Record<Username, PlayerLocation>>
 
 let locations: PlayerLocationRecord = {}
 

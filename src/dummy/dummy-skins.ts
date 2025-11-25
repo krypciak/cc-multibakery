@@ -8,9 +8,9 @@ export type PlayerSkin = string
 declare global {
     namespace dummy {
         interface DummyPlayer {
-            currentSkinName?: string
+            currentSkinName?: PlayerSkin
 
-            setSkin(this: this, skinName: string | undefined, noSpawnFx: boolean): void
+            setSkin(this: this, skinName: PlayerSkin | undefined, noSpawnFx: boolean): void
         }
     }
 }

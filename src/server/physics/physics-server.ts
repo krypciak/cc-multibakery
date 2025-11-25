@@ -14,6 +14,7 @@ import { ClientLeaveData } from '../remote/remote-server'
 import { startGameLoop } from '../../game-loop'
 import { sendPhysicsServerPacket } from './physics-server-sender'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
+import { MapName } from '../../net/binary/binary-types'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -51,7 +52,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     httpServer?: PhysicsHttpServer
     anyRemoteClientsOn: boolean = false
 
-    connectionReadyMaps: WeakMap<NetConnection, Set<string>> = new WeakMap()
+    connectionReadyMaps: WeakMap<NetConnection, Set<MapName>> = new WeakMap()
 
     constructor(settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')

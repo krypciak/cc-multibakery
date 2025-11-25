@@ -6,7 +6,7 @@ import { OnLinkChange } from '../server/ccmap/ccmap'
 declare global {
     namespace ig.ENTITY {
         interface Combatant extends OnLinkChange {
-            statusGuis: Record<string, ig.GUI.StatusBar>
+            statusGuis: Record<number, ig.GUI.StatusBar>
 
             createStatusGui(this: this): void
         }

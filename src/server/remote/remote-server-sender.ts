@@ -6,6 +6,7 @@ import {
     isInputData,
 } from '../../dummy/dummy-input-puppet'
 import { assert } from '../../misc/assert'
+import { MapName, Username } from '../../net/binary/binary-types'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { RemoteServer } from './remote-server'
@@ -77,11 +78,11 @@ export function sendRemoteServerPacket() {
 
 export interface RemoteServerUpdatePacket {
     clients?: RemoteServerClientPackets
-    readyMaps?: string[]
+    readyMaps?: MapName[]
 }
 export type GenerateType = RemoteServerUpdatePacket
 
-type RemoteServerClientPackets = Record</* username */ string, RemoteServerClientPacket>
+type RemoteServerClientPackets = Record<Username, RemoteServerClientPacket>
 
 export interface RemoteServerClientPacket {
     input?: InputData

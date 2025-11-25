@@ -1,5 +1,6 @@
 import { COLOR, wrapColor } from '../client/menu/server-list-entry'
 import { prestart } from '../loading-stages'
+import { Username } from '../net/binary/binary-types'
 import { getPlayerLocations } from './player-locations'
 
 declare global {
@@ -35,7 +36,7 @@ prestart(() => {
 
             const drawConfigs: {
                 pos: Vec2
-                username: string
+                username: Username
             }[] = []
 
             const locations = getPlayerLocations()

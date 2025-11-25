@@ -9,6 +9,7 @@ import { linkMapVars } from './map-var-link'
 import { linkOptions } from '../physics/storage/storage'
 import { linkMusic } from '../music'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { MapName } from '../../net/binary/binary-types'
 
 import './injects'
 
@@ -37,7 +38,7 @@ export class CCMap extends InstanceUpdateable {
     onLinkChange: OnLinkChange[] = []
     forceUpdateForFrames: number = 0
 
-    constructor(public name: string) {
+    constructor(public name: MapName) {
         super()
         this.readyPromise = new Promise<void>(resolve => {
             this.readyResolve = () => {

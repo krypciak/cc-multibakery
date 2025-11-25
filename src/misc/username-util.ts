@@ -1,8 +1,10 @@
-export function isUsernameValid(username: string): boolean {
+import { Username } from '../net/binary/binary-types'
+
+export function isUsernameValid(username: Username): boolean {
     return username.length <= 20 && /^[a-zA-Z0-9-_ ]+$/.test(username)
 }
 
-export function generateRandomUsername(): string {
+export function generateRandomUsername(): Username {
     const numberSuffix = (10 + 90 * Math.random()).floor()
 
     let randomPrefix: string

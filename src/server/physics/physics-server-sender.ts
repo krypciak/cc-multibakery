@@ -8,6 +8,7 @@ import { cleanRecord } from '../../state/state-util'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { f64 } from 'ts-binarifier/src/type-aliases'
 import { MapTpInfo } from '../server'
+import { MapName, Username } from '../../net/binary/binary-types'
 
 declare global {
     interface StateUpdatePacket {
@@ -23,7 +24,7 @@ export function sendPhysicsServerPacket() {
 
     const connections = multi.server.netManager.connections
 
-    const packets: Record</* mapName */ string, Map<NetConnection, StateUpdatePacket>> = {}
+    const packets: Record<MapName, Map<NetConnection, StateUpdatePacket>> = {}
     for (const conn of connections) {
         const readyMaps = multi.server.connectionReadyMaps.get(conn)
 
@@ -49,7 +50,7 @@ export function sendPhysicsServerPacket() {
             getMapUpdatePacket(map, dest, client, cachePacket)
         }
 
-        const connPackets: Record</* mapName */ string, StateUpdatePacket> = {}
+        const connPackets: Record<MapName, StateUpdatePacket> = {}
         for (const mapName in packets) {
             const map = packets[mapName]
             const packet = map.get(conn)
@@ -78,21 +79,18 @@ function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey
     runTask(map.inst, () => getStateUpdatePacket(dest, key, cache))
 }
 
-type PlayerMapChangeRecord = Record<
-    /* mapName*/ string,
-    /* username */ { username: string; marker: MapTpInfo['marker'] }[]
->
+type PlayerMapChangeRecord = Record<MapName, { username: Username; marker: MapTpInfo['marker'] }[]>
 export interface PhysicsServerUpdatePacket {
     /* sentAt has to be first! my custom socket-io-parser extracts this timestamp from the binary data */
     sendAt: f64
     // tick: f64
-    mapPackets?: Record</* mapName */ string, StateUpdatePacket>
+    mapPackets?: Record<MapName, StateUpdatePacket>
     playerMaps?: PlayerMapChangeRecord
 }
 export type GenerateType = PhysicsServerUpdatePacket
 
 function getRemoteServerUpdatePacket(
-    mapPackets: Record<string, StateUpdatePacket>,
+    mapPackets: Record<MapName, StateUpdatePacket>,
     conn: NetConnection
 ): PhysicsServerUpdatePacket {
     const maps = conn.clients.reduce((acc, client) => {

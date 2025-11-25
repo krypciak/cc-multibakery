@@ -13,6 +13,10 @@ declare global {
     }
 }
 
+export type Username = string
+export type MapName = string
+export type AreaName = string
+
 export type COMBATANT_PARTY = u16
 
 export type ItemType = u10

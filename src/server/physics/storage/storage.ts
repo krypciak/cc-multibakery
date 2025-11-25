@@ -3,17 +3,18 @@ import { poststart, prestart } from '../../../loading-stages'
 import type { getState } from '../../../state/entity/ig_ENTITY_Player-base'
 import { PhysicsServer } from '../physics-server'
 import { assert } from '../../../misc/assert'
+import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { MapTpInfo } from '../../server'
+import { Username } from '../../../net/binary/binary-types'
 
 import './save-slot-button'
 import './pause-screen-save-button'
-import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { MapTpInfo } from '../../server'
 
 type PlayerGetStateReturn = ReturnType<typeof getState>
 type PlayerState = PlayerGetStateReturn & MapTpInfo
 
 export interface MultibakerySaveData {
-    players?: Record<string, PlayerState>
+    players?: Record<Username, PlayerState>
 }
 
 declare global {
@@ -130,7 +131,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.commitSave(save, slotId)
     }
 
-    savePlayerState(username: string, player: ig.ENTITY.Player, tpInfo: MapTpInfo): PlayerState {
+    savePlayerState(username: Username, player: ig.ENTITY.Player, tpInfo: MapTpInfo): PlayerState {
         this.currentData ??= {}
         this.currentData.players ??= {}
         return (this.currentData.players[username] = {
@@ -156,7 +157,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.savePlayerStates()
     }
 
-    getPlayerState(username: string): PlayerState | undefined {
+    getPlayerState(username: Username): PlayerState | undefined {
         return this.currentData?.players?.[username]
     }
 

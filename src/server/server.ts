@@ -9,9 +9,10 @@ import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 import { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
+import { MapName, Username } from '../net/binary/binary-types'
 
 export interface MapTpInfo {
-    map: string
+    map: MapName
     marker?: Nullable<string>
 }
 
@@ -32,7 +33,7 @@ export interface ServerSettings {
 }
 
 export interface ClientJoinData {
-    username: string
+    username: Username
     initialInputType: ig.INPUT_DEVICES
     prefferedTpInfo?: MapTpInfo
 }
@@ -52,16 +53,16 @@ export function isClientJoinData(_data: unknown): _data is ClientJoinData {
 }
 export interface ClientJoinAckData {
     status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
-    mapName?: string
+    mapName?: MapName
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
     baseInst!: InstanceinatorInstance
 
-    maps: Map<string, CCMap> = new Map()
-    clients: Map<string, Client> = new Map()
+    maps: Map<MapName, CCMap> = new Map()
+    clients: Map<Username, Client> = new Map()
 
-    private masterUsername?: string
+    private masterUsername?: Username
 
     measureTraffic: boolean = false
     destroyed: boolean = false // or destroying
@@ -177,7 +178,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return [...this.maps.values()].filter(map => map.ready && map.isActive())
     }
 
-    async loadMap(name: string): Promise<CCMap> {
+    async loadMap(name: MapName): Promise<CCMap> {
         this.maps.get(name)?.destroy()
         const map = new CCMap(name)
         this.maps.set(name, map)

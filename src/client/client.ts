@@ -21,6 +21,7 @@ import { initMapsAndLevels } from '../server/ccmap/data-load'
 import { linkMusic } from '../server/music'
 import { MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
+import { Username } from '../net/binary/binary-types'
 
 import './injects'
 
@@ -31,7 +32,7 @@ declare global {
 }
 
 export type ClientSettings = {
-    username: string
+    username: Username
     remote: boolean
     noShowInstance?: boolean
     forceDraw?: boolean
@@ -49,7 +50,7 @@ export type ClientSettings = {
 export class Client extends InstanceUpdateable {
     lastPingMs: number = 0
 
-    username: string
+    username: Username
     inputManager!: dummy.InputManager
     dummy!: dummy.DummyPlayer
     tpInfo: MapTpInfo = { map: '' }
