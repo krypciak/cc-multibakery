@@ -1,5 +1,6 @@
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
 import { prestart } from '../loading-stages'
+import { assert } from '../misc/assert'
 
 declare global {
     namespace ig.EVENT_STEP {
@@ -8,8 +9,11 @@ declare global {
                 width?: number
                 title: ig.Event.StringExpression
                 initialValue?: ig.Event.StringExpression
-                saveToVar: ig.Event.StringExpression
+                saveToVar?: ig.Event.StringExpression
                 validRegex?: ig.Event.StringExpression
+
+                validFunction?: (str: string) => boolean
+                onAcceptFunction?: (str: string) => void
             }
             interface Data {
                 dialog: multi.class.InputFieldDialog
@@ -19,8 +23,11 @@ declare global {
             width: number
             title: ig.Event.StringExpression
             initialValue?: ig.Event.StringExpression
-            saveToVar: ig.Event.StringExpression
+            saveToVar?: ig.Event.StringExpression
             validRegex?: ig.Event.StringExpression
+
+            validFunction?: (str: string) => boolean
+            onAcceptFunction?: (str: string) => void
 
             start(this: this, data: ig.EVENT_STEP.SHOW_INPUT_DIALOG.Data, eventCall?: ig.EventCall): void
             run(this: this, data: ig.EVENT_STEP.SHOW_INPUT_DIALOG.Data): boolean
@@ -40,6 +47,8 @@ prestart(() => {
             this.initialValue = settings.initialValue ?? ''
             this.saveToVar = settings.saveToVar
             this.validRegex = settings.validRegex
+            this.validFunction = settings.validFunction
+            this.onAcceptFunction = settings.onAcceptFunction
         },
         start(data, _eventCall) {
             const title = ig.Event.getExpressionValue(this.title)
@@ -55,6 +64,12 @@ prestart(() => {
                     return isValid
                 }
             }
+            if (this.validFunction) {
+                assert(!this.validRegex)
+                isValid = this.validFunction
+            }
+
+            const self = this
 
             let dialog: multi.class.InputFieldDialog
             dialog = new multi.class.InputFieldDialog(
@@ -65,9 +80,12 @@ prestart(() => {
                     {
                         name: 'Ok',
                         onPress() {
-                            ig.vars.set(saveToVar, dialog.getText())
+                            const text = dialog.getText()
+                            if (saveToVar) ig.vars.set(saveToVar, text)
                             ig.vars.set('tmp.dialogAccepted', true)
                             dialog.closeMenu()
+
+                            self.onAcceptFunction?.(text)
                         },
                     },
                     {

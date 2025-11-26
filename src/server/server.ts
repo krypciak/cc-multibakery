@@ -9,6 +9,7 @@ import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 import { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
+import { MultiPartyManager } from '../party/party'
 import { MapName, Username } from '../net/binary/binary-types'
 
 export interface MapTpInfo {
@@ -63,6 +64,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     clients: Map<Username, Client> = new Map()
 
     private masterUsername?: Username
+
+    party: MultiPartyManager = new MultiPartyManager()
 
     measureTraffic: boolean = false
     destroyed: boolean = false // or destroying
@@ -272,6 +275,7 @@ export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: Cli
     let msg!: string
     assert(resp.status != 'invalid_join_data', 'invalid_join_data??')
     if (resp.status == 'username_taken') msg = `Error: username "${joinData.username}" is taken.`
+    else if (resp.status == 'invalid_username') msg = `Error: username "${joinData.username} is invalid.`
     assert(msg)
     sc.Dialogs.showErrorDialog(msg)
 }

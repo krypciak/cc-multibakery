@@ -11,7 +11,6 @@ import {
 } from './client-label-draw'
 import { RemoteServer } from '../server/remote/remote-server'
 import { isUsernameValid } from '../misc/username-util'
-import { addCombatantParty } from '../party/combatant-party-api'
 import { applyStateUpdatePacket } from '../state/states'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
@@ -200,7 +199,7 @@ export class Client extends InstanceUpdateable {
 
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
-            multi.storage.savePlayerState(this.dummy.data.username, this.dummy, tpInfo)
+            multi.storage.savePlayerState(this.username, this.dummy, tpInfo)
         }
 
         this.nextTpInfo = tpInfo
@@ -340,7 +339,7 @@ export class Client extends InstanceUpdateable {
                 client.dummy.model.updateStats()
                 sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
             }
-            this.dummy.party = addCombatantParty(`player${this.inst.id}`)
+            multi.server.party.createPersonalParty(this.username)
         })
     }
 
@@ -415,7 +414,7 @@ export class Client extends InstanceUpdateable {
 
         this.inputManager?.destroy()
 
-        if (this.dummy) multi.storage.savePlayerState(this.dummy.data.username, this.dummy, this.tpInfo)
+        if (this.dummy) multi.storage.savePlayerState(this.username, this.dummy, this.tpInfo)
 
         const map = multi.server.maps.get(this.tpInfo.map)
         map?.leave(this)

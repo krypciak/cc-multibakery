@@ -52,11 +52,16 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
         if (data && typeof data == 'object') {
             for (const key in data) {
                 const value = data[key]
-                if (value && typeof value === 'object' && value instanceof ig.Class) {
+                if (!value) continue
+                if (typeof value === 'object' && value instanceof ig.Class) {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
-                    } else if (value instanceof multi.class.InputFieldDialog || value instanceof ig.Action) {
+                    } else if (
+                        value instanceof multi.class.InputFieldDialog ||
+                        value instanceof ig.Action ||
+                        typeof value == 'function'
+                    ) {
                         data[key] = undefined
                     } else {
                         assert(false)
@@ -98,29 +103,38 @@ function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized
     return group as StepGroupDeserialized
 }
 
+export function runEventSteps(
+    stepsSettings: ig.EventStepBase.Settings[],
+    type: ig.EventRunType,
+    callEntity?: ig.Entity,
+    allData: Record<string, unknown> = {}
+) {
+    const event = new ig.Event({ steps: stepsSettings })
+
+    const eventCall = new ig.EventCall(event, allData, type)
+    eventCall.callEntity = callEntity
+    eventCall.stack[0].stepData = allData
+    // console.log( 'pushing event call to:', instanceinator.id, ', steps:', stepsSettings.map(({ type }) => type), 'call:', eventCall)
+
+    if (!ig.game.events.blockingEventCall || type != ig.EventRunType.BLOCKING) {
+        ig.game.events._startEventCall(eventCall)
+    } else {
+        eventCall.blocked = true
+        ig.game.events.blockedEventCallQueue.push(eventCall)
+    }
+    ig.game.events.update()
+}
+
 function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
     const stepGroups = steps.map(deserializeStepGroup)
     runTask(inst, () => {
         for (const { steps, type, callEntity } of stepGroups) {
-            const allData = {}
+            const allData: Record<string, unknown> = {}
             const stepsSettings = steps.map(({ settings }) => settings)
 
             for (const { data } of steps) Object.assign(allData, data)
 
-            const event = new ig.Event({ steps: stepsSettings })
-
-            const eventCall = new ig.EventCall(event, allData, type)
-            eventCall.callEntity = callEntity
-            eventCall.stack[0].stepData = allData
-            // console.log( 'pushing event call to:', instanceinator.id, ', steps:', stepsSettings.map(({ type }) => type), 'call:', eventCall)
-
-            if (!ig.game.events.blockingEventCall || type != ig.EventRunType.BLOCKING) {
-                ig.game.events._startEventCall(eventCall)
-            } else {
-                eventCall.blocked = true
-                ig.game.events.blockedEventCallQueue.push(eventCall)
-            }
-            ig.game.events.update()
+            runEventSteps(stepsSettings, type, callEntity, allData)
         }
     })
 }
