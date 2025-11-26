@@ -20,8 +20,8 @@ declare global {
 }
 
 export interface OnLinkChange {
-    onClientLink(this: this, client: Client): void
-    onClientUnlink(this: this, client: Client): void
+    onClientLink?(this: this, client: Client): void
+    onClientUnlink?(this: this, client: Client): void
 }
 
 export class CCMap extends InstanceUpdateable {

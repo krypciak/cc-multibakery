@@ -107,10 +107,10 @@ prestart(() => {
             sc.BUTTON_SOUND.submit.play()
             return { skipSounds: true }
         },
-        onContentCreation(index, settings) {
+        onContentCreation() {
             this.currentList && this.currentList.clear()
             this.currentGroup && this.currentGroup.clear()
-            return this.parent(index, settings)
+            return this.parent()
         },
         onCreateListEntries(list, buttonGroup) {
             list.clear()

@@ -222,7 +222,7 @@ export class Client extends InstanceUpdateable {
 
         if (oldMap) {
             oldMap.leave(this)
-            for (const obj of oldMap.onLinkChange) obj.onClientUnlink(this)
+            for (const obj of oldMap.onLinkChange) obj.onClientUnlink?.(this)
         }
 
         this.tpInfo = tpInfo
@@ -241,7 +241,7 @@ export class Client extends InstanceUpdateable {
 
         this.inst.ig.game.events.clear()
 
-        for (const obj of map.onLinkChange) obj.onClientLink(this)
+        for (const obj of map.onLinkChange) obj.onClientLink?.(this)
 
         multi.storage.save()
 

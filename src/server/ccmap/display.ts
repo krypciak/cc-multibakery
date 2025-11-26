@@ -76,8 +76,6 @@ export class CCMapDisplay implements OnLinkChange {
             this.setPlayerCameraHandle(this.map.clients[0])
         }
     }
-
-    onClientUnlink() {}
 }
 
 // camera movement and player follow switching
