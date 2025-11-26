@@ -95,7 +95,7 @@ prestart(() => {
         init(settings) {
             this.entities = settings.entities
             this.selectionName = settings.selectionName
-            assert(this.entities, 'ig.EVENT_STEP.SELECT_ENTITIES entities missing!')
+            assert(this.entities, 'ig.EVENT_STEP.SELECT_ENTITIES "entities" missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)
@@ -132,7 +132,7 @@ prestart(() => {
         init(settings) {
             this.entities = settings.entities
             this.selectionName = settings.selectionName
-            assert(this.entities, 'ig.EVENT_STEP.UNSELECT_ENTITIES entities missing!')
+            assert(this.entities, 'ig.EVENT_STEP.UNSELECT_ENTITIES "entities" missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)
@@ -180,7 +180,7 @@ prestart(() => {
         init(settings) {
             this.entityNamePrefix = settings.entityNamePrefix
             this.selectionName = settings.selectionName
-            assert(this.entityNamePrefix, 'ig.EVENT_STEP.SELECT_ENTITIES_STANDING_ON entityNamePrefix missing!')
+            assert(this.entityNamePrefix, 'ig.EVENT_STEP.SELECT_ENTITIES_STANDING_ON "entityNamePrefix" missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)

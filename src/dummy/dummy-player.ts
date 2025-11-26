@@ -135,7 +135,7 @@ prestart(() => {
             let inp = this.thrower.inputManager
             let backup: sc.PlayerCrossHairController['updatePos'] | undefined
             if (multi.server instanceof RemoteServer) {
-                const clientInp = multi.server.clients.get(this.thrower.data.username)?.inputManager
+                const clientInp = this.thrower.getClient(true)?.inputManager
                 if (clientInp?.player) {
                     inp = clientInp
                 } else {

@@ -1,6 +1,8 @@
 import './step-id'
-import './input-field-dialog'
 import './event-call-history'
 import './action-history'
+
+import './input-field-dialog'
 import './entity-selection/entity-selection'
 import './entity-selection/teleport'
+import './entity-selection/for-each-player-in-selection'

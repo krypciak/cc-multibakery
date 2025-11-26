@@ -26,7 +26,7 @@ prestart(() => {
         init(settings) {
             this.marker = settings.marker
             this.selectionName = settings.selectionName
-            assert(this.marker, 'ig.EVENT_STEP.TELEPORT_SELECTED_ENTITIES marker missing!')
+            assert(this.marker, 'ig.EVENT_STEP.TELEPORT_SELECTED_ENTITIES "marker" missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)

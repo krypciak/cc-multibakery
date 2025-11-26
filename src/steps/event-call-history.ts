@@ -2,8 +2,20 @@ import { prestart } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { onEventStepStart } from '../state/event-steps'
 
+declare global {
+    namespace ig {
+        interface EventCall {
+            event: ig.Event
+        }
+    }
+}
+
 prestart(() => {
     ig.EventCall.inject({
+        init(event, input, runType, onStart, onEnd, callEntity, data) {
+            this.parent(event, input, runType, onStart, onEnd, callEntity, data)
+            this.event = event
+        },
         performStep(stackEntry) {
             if (!(multi.server instanceof PhysicsServer)) return this.parent(stackEntry)
 
