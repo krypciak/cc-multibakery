@@ -8,6 +8,7 @@ declare global {
             entitySelections: Record<string, Set<ig.Entity>>
 
             selectEntities(this: this, entities: Iterable<ig.Entity>, selectionName?: string): void
+            unselectEntities(this: this, entities: Iterable<ig.Entity>, selectionName?: string): void
             clearEntitySelection(this: this, selectionName?: string): void
             getSelectedEntities(this: this, selectionName?: string): ig.Entity[]
         }
@@ -21,6 +22,13 @@ prestart(() => {
             this.entitySelections ??= {}
             const set = (this.entitySelections[selectionName] ??= new Set())
             for (const entity of entities) set.add(entity)
+        },
+        unselectEntities(entities, selectionName = defaultSelectionName) {
+            this.entitySelections ??= {}
+            const set = this.entitySelections[selectionName]
+            if (!set) return
+
+            for (const entity of entities) set.delete(entity)
         },
         clearEntitySelection(selectionName = defaultSelectionName) {
             this.entitySelections ??= {}
@@ -93,6 +101,43 @@ prestart(() => {
             assert(eventCall)
 
             eventCall.selectEntities(
+                this.entities.map(config => ig.Event.getEntity(config)).filter(Boolean) as ig.Entity[],
+                this.selectionName
+            )
+        },
+    })
+})
+
+declare global {
+    namespace ig.EVENT_STEP {
+        namespace UNSELECT_ENTITIES {
+            interface Settings {
+                entities: ig.Event.GetEntity[]
+                selectionName?: string
+            }
+        }
+        interface UNSELECT_ENTITIES extends ig.EventStepBase {
+            entities: ig.Event.GetEntity[]
+            selectionName?: string
+        }
+        interface UNSELECT_ENTITIES_CONSTRUCTOR extends ImpactClass<SELECT_ENTITIES> {
+            new (settings: ig.EVENT_STEP.UNSELECT_ENTITIES.Settings): SELECT_ENTITIES
+        }
+        var UNSELECT_ENTITIES: SELECT_ENTITIES_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.UNSELECT_ENTITIES = ig.EventStepBase.extend({
+        init(settings) {
+            this.entities = settings.entities
+            this.selectionName = settings.selectionName
+            assert(this.entities, 'ig.EVENT_STEP.UNSELECT_ENTITIES entities missing!')
+        },
+        start(_data, eventCall) {
+            assert(eventCall)
+
+            eventCall.unselectEntities(
                 this.entities.map(config => ig.Event.getEntity(config)).filter(Boolean) as ig.Entity[],
                 this.selectionName
             )
