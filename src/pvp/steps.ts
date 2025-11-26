@@ -1,5 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
+import { MultiParty } from '../party/party'
 
 declare global {
     namespace ig.EVENT_STEP {
@@ -10,8 +11,6 @@ declare global {
         }
         interface START_MULTIPLAYER_PVP_BATTLE extends ig.EventStepBase {
             winPoints: ig.Event.NumberExpression
-            // entity: unknown
-            // enemies: ig.Event.GetEntity[]
         }
         interface START_MULTIPLAYER_PVP_BATTLE_CONSTRUCTOR extends ImpactClass<START_MULTIPLAYER_PVP_BATTLE> {
             new (settings: ig.EVENT_STEP.START_MULTIPLAYER_PVP_BATTLE.Settings): START_MULTIPLAYER_PVP_BATTLE
@@ -36,93 +35,63 @@ prestart(() => {
 
 declare global {
     namespace ig.EVENT_STEP {
-        namespace CLEAR_MULTIPLAYER_PVP_TEAMS {
+        namespace CLEAR_MULTIPLAYER_PVP_PARTIES {
             interface Settings {}
         }
-        interface CLEAR_MULTIPLAYER_PVP_TEAMS extends ig.EventStepBase {}
-        interface CLEAR_MULTIPLAYER_PVP_TEAMS_CONSTRUCTOR extends ImpactClass<CLEAR_MULTIPLAYER_PVP_TEAMS> {
-            new (settings: ig.EVENT_STEP.CLEAR_MULTIPLAYER_PVP_TEAMS.Settings): CLEAR_MULTIPLAYER_PVP_TEAMS
+        interface CLEAR_MULTIPLAYER_PVP_PARTIES extends ig.EventStepBase {}
+        interface CLEAR_MULTIPLAYER_PVP_PARTIES_CONSTRUCTOR extends ImpactClass<CLEAR_MULTIPLAYER_PVP_PARTIES> {
+            new (settings: ig.EVENT_STEP.CLEAR_MULTIPLAYER_PVP_PARTIES.Settings): CLEAR_MULTIPLAYER_PVP_PARTIES
         }
-        var CLEAR_MULTIPLAYER_PVP_TEAMS: CLEAR_MULTIPLAYER_PVP_TEAMS_CONSTRUCTOR
+        var CLEAR_MULTIPLAYER_PVP_PARTIES: CLEAR_MULTIPLAYER_PVP_PARTIES_CONSTRUCTOR
     }
 }
 
 prestart(() => {
-    ig.EVENT_STEP.CLEAR_MULTIPLAYER_PVP_TEAMS = ig.EventStepBase.extend({
+    ig.EVENT_STEP.CLEAR_MULTIPLAYER_PVP_PARTIES = ig.EventStepBase.extend({
         start(_data, _eventCall) {
             assert(multi.server)
 
-            sc.pvp.clearPvpTeams()
+            sc.pvp.clearParties()
         },
     })
 })
 
 declare global {
     namespace ig.EVENT_STEP {
-        namespace CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS {
+        namespace ADD_SELECTED_PARTIES_TO_PVP_PARTIES {
             interface Settings {
-                selectionPrefix: string
+                selectionName?: string
             }
         }
-        interface CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS extends ig.EventStepBase {
-            selectionPrefix: string
+        interface ADD_SELECTED_PARTIES_TO_PVP_PARTIES extends ig.EventStepBase {
+            selectionName?: string
         }
-        interface CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS_CONSTRUCTOR
-            extends ImpactClass<CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS> {
+        interface ADD_SELECTED_PARTIES_TO_PVP_PARTIES_CONSTRUCTOR
+            extends ImpactClass<ADD_SELECTED_PARTIES_TO_PVP_PARTIES> {
             new (
-                settings: ig.EVENT_STEP.CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS.Settings
-            ): CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS
+                settings: ig.EVENT_STEP.ADD_SELECTED_PARTIES_TO_PVP_PARTIES.Settings
+            ): ADD_SELECTED_PARTIES_TO_PVP_PARTIES
         }
-        var CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS: CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS_CONSTRUCTOR
+        var ADD_SELECTED_PARTIES_TO_PVP_PARTIES: ADD_SELECTED_PARTIES_TO_PVP_PARTIES_CONSTRUCTOR
     }
 }
 
 prestart(() => {
-    ig.EVENT_STEP.CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS = ig.EventStepBase.extend({
+    ig.EVENT_STEP.ADD_SELECTED_PARTIES_TO_PVP_PARTIES = ig.EventStepBase.extend({
         init(settings) {
-            this.selectionPrefix = settings.selectionPrefix
-            assert(this.selectionPrefix)
+            this.selectionName = settings.selectionName
         },
         start(_data, eventCall) {
             assert(multi.server)
             assert(eventCall)
 
-            eventCall.runForSelection(this.selectionPrefix, true, name => {
-                const entities = eventCall.getSelectedEntities(name)
-                const players = entities.filter(entity => entity instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]
-                if (players.length == 0) return
-                sc.pvp.addPvpTeam(name, players)
-            })
-        },
-    })
-})
-
-declare global {
-    namespace ig.EVENT_STEP {
-        namespace CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS {
-            interface Settings {}
-        }
-        interface CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS extends ig.EventStepBase {}
-        interface CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS_CONSTRUCTOR
-            extends ImpactClass<CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS> {
-            new (
-                settings: ig.EVENT_STEP.CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS.Settings
-            ): CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS
-        }
-        var CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS: CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS_CONSTRUCTOR
-    }
-}
-
-prestart(() => {
-    ig.EVENT_STEP.CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS = ig.EventStepBase.extend({
-        start(_data, eventCall) {
-            assert(multi.server)
-            assert(eventCall)
-
-            for (const team of sc.pvp.teams) {
-                const selectionName = team.name
-
-                eventCall.selectEntities(team.players, selectionName)
+            const parties = new Set<MultiParty>()
+            const entities = eventCall.getSelectedEntities(this.selectionName)
+            for (const party of entities.map(entity => multi.server.party.getPartyOfEntity(entity))) {
+                if (party) parties.add(party)
+            }
+            for (const party of parties) {
+                sc.pvp.addParty(party)
             }
         },
     })

@@ -1,40 +1,34 @@
 import { assert } from '../misc/assert'
-import { addCombatantParty } from '../party/combatant-party-api'
 import { prestart } from '../loading-stages'
-import { PhysicsServer } from '../server/physics/physics-server'
 import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
 import { CCMap, OnLinkChange } from '../server/ccmap/ccmap'
+import { MULTI_PARTY_EVENT, MultiParty } from '../party/party'
+import { runTaskInMapInst } from '../client/client'
+import { Username } from '../net/binary/binary-types'
+import { COMBATANT_PARTY as COMBATANT_PARTY1 } from '../net/binary/binary-types'
 
 import './gui'
 import './steps'
 
-export interface PvpTeam {
-    name: string
-    party: sc.COMBATANT_PARTY
-    players: dummy.DummyPlayer[]
-}
-
 declare global {
     namespace sc {
-        interface PvpModel extends OnLinkChange {
+        interface PvpModel extends OnLinkChange, sc.Model.Observer {
             multiplayerPvp?: boolean
-            teams: PvpTeam[]
+            parties: MultiParty[]
             roundGuis: Record<number, sc.PvpRoundGui>
             map: CCMap
             hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
+            points: PartialRecord<COMBATANT_PARTY1, number>
 
-            clearPvpTeams(this: this): void
-            addPvpTeam(this: this, name: string, players: dummy.DummyPlayer[]): void
+            clearParties(this: this): void
+            addParty(this: this, party: MultiParty): void
             startMultiplayerPvp(this: this, winPoints: number): void
             removeRoundGuis(this: this): void
             getPlayerInstanceRelation(this: this, player: dummy.DummyPlayer): 'same' | 'ally' | 'enemy'
-            getOnlyTeamAlive(this: this): PvpTeam | undefined
-            getAllPlayers(this: this): dummy.DummyPlayer[]
+            getOnlyPartyAlive(this: this): MultiParty | undefined
             pushHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
             eraseHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
             rearrangeHpBars(this: this): void
-            removeLink(this: this): void
-            getPlayerTeam(this: this, player: dummy.DummyPlayer): PvpTeam | undefined
             resetMultiState(this: this): void
             removePvpGuis(this: this): void
             showKOGuis(this: this): void
@@ -49,27 +43,25 @@ declare global {
 
 prestart(() => {
     sc.PvpModel.inject({
-        clearPvpTeams() {
-            assert(multi.server)
-            this.teams = []
+        init() {
+            this.parent()
+            this.parties = []
         },
-        addPvpTeam(name, players) {
+        clearParties() {
             assert(multi.server)
-            assert(players.length > 0)
-
-            const party = addCombatantParty(`pvpTeam_${name}`)
-            const team: PvpTeam = {
-                name,
-                party,
-                players,
-            }
-
-            assert(this.teams)
-            this.teams.push(team)
+            this.parties = []
+        },
+        addParty(party) {
+            assert(multi.server)
+            assert(multi.server.party.sizeOf(party) > 0)
+            assert(!this.parties.includes(party))
+            this.parties.push(party)
         },
         startMultiplayerPvp(winPoints) {
-            assert(this.teams?.length > 1)
+            assert(this.parties?.length > 1)
             assert(multi.server)
+
+            sc.Model.addObserver(multi.server.party, this)
 
             this.multiplayerPvp = true
             this.roundGuis = {}
@@ -81,18 +73,15 @@ prestart(() => {
             this.points[sc.COMBATANT_PARTY.PLAYER] = 0
             this.points[sc.COMBATANT_PARTY.ENEMY] = 0
 
-            for (const team of this.teams) {
-                this.points[team.party] = 0
-
-                for (const player of team.players) {
-                    player.oldParty = player.party
-                    player.party = team.party
-                }
+            for (const party of this.parties) {
+                this.points[party.combatantParty] = 0
             }
 
             this.enemies = []
 
-            this.map = ig.ccmap ?? this.teams[0].players[0].getMap()
+            runTaskInMapInst(() => {
+                this.map = ig.ccmap!
+            })
 
             runTasks(this.map.getAllInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
@@ -108,15 +97,13 @@ prestart(() => {
             })
             this.roundGuis = {}
         },
-        getOnlyTeamAlive() {
-            const teamsAlive = this.teams.map(team => team.players.some(player => !player.isDefeated()))
-            const aliveTeamCount = teamsAlive.reduce((acc, v) => acc + Number(v), 0)
+        getOnlyPartyAlive() {
+            const partiesAlive = this.parties.filter(party =>
+                multi.server.party.getPartyCombatants(party).some(combatant => !combatant.isDefeated())
+            )
 
-            if (aliveTeamCount == 1) {
-                const winningTeam: PvpTeam = this.teams[teamsAlive.findIndex(alive => alive)]
-                assert(winningTeam)
-
-                return winningTeam
+            if (partiesAlive.length == 1) {
+                return partiesAlive[0]
             }
         },
         getPlayerInstanceRelation(player) {
@@ -127,9 +114,6 @@ prestart(() => {
             if (ig.game.playerEntity == player) return 'same'
 
             return instancePlayer.party == player.party ? 'ally' : 'enemy'
-        },
-        getAllPlayers() {
-            return this.teams.flatMap(team => team.players)
         },
         pushHpBar(bar) {
             bar.order = ig.pvpHpBarOrder++
@@ -165,6 +149,27 @@ prestart(() => {
                 }
             )
         },
+        modelChanged(model, message, data) {
+            if (!this.multiplayerPvp) return
+
+            if (model == multi.server.party) {
+                if (message == MULTI_PARTY_EVENT.LEAVE) {
+                    const { party } = data as { party: MultiParty; username: Username }
+
+                    if (multi.server.party.sizeOf(party) == 0) {
+                        this.parties.erase(party)
+
+                        const onlyPartyAlive = this.getOnlyPartyAlive()
+                        if (onlyPartyAlive) {
+                            if (this.parties.length == 1) {
+                                this.points[onlyPartyAlive.combatantParty] = this.winPoints
+                            }
+                            this.onPostKO(onlyPartyAlive.combatantParty)
+                        }
+                    }
+                }
+            }
+        },
         onClientLink(client) {
             if (this.multiplayerPvp) {
                 runTask(client.inst, () => {
@@ -180,38 +185,10 @@ prestart(() => {
                 this.hpBars[key] = this.hpBars[key].filter(bar => bar.target != (player as any))
             }
             this.rearrangeHpBars()
-
-            const team = this.getPlayerTeam(player)
-            if (team) {
-                team.players.erase(player)
-                if (team.players.length == 0) this.teams.erase(team)
-            }
-
-            if (!this.multiplayerPvp) return
-
-            const onlyTeamAlive = this.getOnlyTeamAlive()
-            if (onlyTeamAlive) {
-                if (this.teams.length == 1) {
-                    this.points[onlyTeamAlive.party] = this.winPoints
-                }
-                this.onPostKO(onlyTeamAlive.party)
-            }
-        },
-        getPlayerTeam(player) {
-            for (const team of this.teams) {
-                if (team.players.includes(player)) return team
-            }
         },
         resetMultiState() {
-            for (const team of this.teams) {
-                for (const player of team.players) {
-                    assert(player.oldParty !== undefined)
-                    player.party = player.oldParty
-                }
-            }
-
             this.multiplayerPvp = false
-            this.teams = []
+            this.parties = []
             this.points = {}
             this.map = undefined as any
         },
@@ -254,8 +231,8 @@ prestart(() => {
 
             if (!this.isActive() || !(combatant instanceof dummy.DummyPlayer)) return false
 
-            for (const team of this.teams) {
-                if (team.players.includes(combatant)) return true
+            for (const party of this.parties) {
+                if (multi.server.party.getPartyCombatants(party).includes(combatant)) return true
             }
             return false
         },
@@ -266,14 +243,14 @@ prestart(() => {
 
             this.rearrangeHpBars()
 
-            const onlyTeamAlive = this.getOnlyTeamAlive()
-            if (onlyTeamAlive) return this.showKO(onlyTeamAlive.party)
+            const onlyTeamAlive = this.getOnlyPartyAlive()
+            if (onlyTeamAlive) return this.showKO(onlyTeamAlive.combatantParty)
         },
-        showKO(party) {
-            if (!this.multiplayerPvp) return this.parent(party)
+        showKO(combatantParty) {
+            if (!this.multiplayerPvp) return this.parent(combatantParty)
 
-            const points = ++this.points[party]!
-            this.lastWinParty = party
+            const points = ++this.points[combatantParty]!
+            this.lastWinParty = combatantParty
 
             assert(!sc.arena.active)
 
@@ -284,11 +261,14 @@ prestart(() => {
 
             return sc.DRAMATIC_EFFECT[points == this.winPoints ? 'PVP_FINAL_KO' : 'PVP_KO']
         },
-        onPostKO(party) {
-            if (!this.multiplayerPvp) return this.parent(party)
+        onPostKO(combatantParty) {
+            if (!this.multiplayerPvp) return this.parent(combatantParty)
 
-            for (const player of this.getAllPlayers()) {
-                player.regenPvp(1)
+            for (const party of this.parties) {
+                const regenAmount = party.combatantParty == combatantParty ? 0.5 : 1
+                for (const combatant of multi.server.party.getPartyCombatants(party)) {
+                    combatant.regenPvp(regenAmount)
+                }
             }
             this.state = this.isOver() ? 5 : 4
             ig.game.varsChangedDeferred()
@@ -326,7 +306,7 @@ prestart(() => {
         onVarAccess(path, keys) {
             if (!multi.server) return this.parent(path, keys)
             if (keys[0] == 'pvp') {
-                if (keys[1] == 'teamCount') return this.teams.length
+                if (keys[1] == 'partyCount') return this.parties.length
             }
             return this.parent(path, keys)
         },
@@ -334,12 +314,14 @@ prestart(() => {
             if (!this.multiplayerPvp) return this.parent()
 
             if (this.state == 3) {
-                const onlyTeamAlive = this.getOnlyTeamAlive()
-                if (onlyTeamAlive) this.onPostKO(onlyTeamAlive.party)
+                const onlyPartyAlive = this.getOnlyPartyAlive()
+                if (onlyPartyAlive) this.onPostKO(onlyPartyAlive.combatantParty)
             }
         },
         stop() {
             if (!this.multiplayerPvp) return this.parent()
+
+            sc.Model.removeObserver(multi.server.party, this)
 
             this.state = 0
 
@@ -367,46 +349,3 @@ prestart(() => {
         },
     })
 })
-
-export async function stagePvp() {
-    assert(multi.server instanceof PhysicsServer)
-    const teamConfigs: { name: string; count: number }[] = [
-        { name: '1', count: 2 },
-        { name: '2', count: 1 },
-    ]
-    const winningPoints = 1
-    let masterPlayer!: dummy.DummyPlayer
-
-    const teams = await Promise.all(
-        teamConfigs.map(async ({ name, count }, _teamI) => {
-            const players = await Promise.all(
-                new Array(count).fill(null).map(async (_, i) => {
-                    const isMaster = _teamI == 0 && i == 0
-                    const client = await multi.server.createAndJoinClient({
-                        username: `${name}_${i}`,
-                        inputType: 'clone',
-                        remote: false,
-                        noShowInstance: !isMaster,
-                    })
-                    if (isMaster) masterPlayer = client.dummy
-
-                    assert(client.dummy)
-                    return client.dummy
-                })
-            )
-            return { name, players }
-        })
-    )
-
-    multi.server.setMasterClient(masterPlayer.getClient())
-
-    const map = masterPlayer.getMap()
-
-    runTask(map.inst, () => {
-        sc.pvp.clearPvpTeams()
-        for (const { name, players } of teams) {
-            sc.pvp.addPvpTeam(name, players)
-        }
-        sc.pvp.startMultiplayerPvp(winningPoints)
-    })
-}

@@ -1,3 +1,4 @@
+import { Client } from '../client/client'
 import { assert } from '../misc/assert'
 import { COMBATANT_PARTY } from '../net/binary/binary-types'
 import type {
@@ -12,6 +13,7 @@ import type {
     LevelType,
     Username,
 } from '../net/binary/binary-types'
+import { OnLinkChange } from '../server/ccmap/ccmap'
 import { PhysicsServer } from '../server/physics/physics-server'
 import { RemoteServer } from '../server/remote/remote-server'
 import { addCombatantParty } from './combatant-party-api'
@@ -58,27 +60,60 @@ export interface PlayerInfoEntry {
     }
 }
 
-export class MultiPartyManager implements sc.Model {
+export const MULTI_PARTY_EVENT = {
+    JOIN: 1,
+    LEAVE: 2,
+    PARTY_ADDED: 3,
+    PARTY_TITLE_CHANGED: 4,
+} as const
+export type MULTI_PARTY_EVENT = (typeof MULTI_PARTY_EVENT)[keyof typeof MULTI_PARTY_EVENT]
+
+declare global {
+    namespace sc {
+        interface PlayerBaseEntity {
+            multiParty?: MultiParty
+        }
+    }
+}
+
+export class MultiPartyManager implements OnLinkChange, sc.Model {
     observers: sc.Model.Observer<this>[] = []
+
+    listeners: MULTI_PARTY_EVENT[] = []
     parties: Record<MultiPartyId, MultiParty> = {}
 
     /* not enforced by anything */
-    static maxPartySize: number = 9
+    maxPartySize: number = 9
 
-    static isPartyTitleValid(title: string) {
+    isPartyTitleValid(title: string) {
         /* all ascii pritable characters */
         return title.length >= 3 && title.length <= 16 && /^[\x20-\x7E]+$/.test(title)
     }
 
-    static sizeOf(party: MultiParty) {
+    sizeOf(party: MultiParty) {
         return party.players.length
+    }
+
+    getPartyCombatants(party: MultiParty): dummy.DummyPlayer[] {
+        const combatants: dummy.DummyPlayer[] = []
+        for (const username of party.players) {
+            const client = multi.server.clients.get(username)
+            assert(client?.dummy)
+            combatants.push(client.dummy)
+        }
+        return combatants
+    }
+
+    getPartiesWithCombatantParty(combatantParty: COMBATANT_PARTY): MultiParty[] {
+        return Object.values(this.parties).filter(party => party.combatantParty == combatantParty)
     }
 
     addParty(party: MultiParty) {
         assert(!this.parties[party.id])
-        assert(MultiPartyManager.isPartyTitleValid(party.title))
+        assert(this.isPartyTitleValid(party.title))
         this.parties[party.id] = party
-        this.onChanged()
+
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.PARTY_ADDED, { party })
     }
 
     createPersonalParty(username: Username) {
@@ -97,12 +132,18 @@ export class MultiPartyManager implements sc.Model {
         return party
     }
 
-    getPartyOf(username: Username): MultiParty {
+    getPartyOfUsername(username: Username): MultiParty {
         for (const partyName in this.parties) {
             const party = this.parties[partyName]
             if (party.players.includes(username)) return party
         }
         assert(false, `party of ${username} not found!`)
+    }
+
+    getPartyOfEntity(entity: dummy.DummyPlayer): MultiParty
+    getPartyOfEntity(entity: ig.Entity): MultiParty | undefined
+    getPartyOfEntity(entity: ig.Entity): MultiParty | undefined {
+        if (entity instanceof sc.PlayerBaseEntity) return entity.multiParty
     }
 
     private getOwnerPartyOf(username: Username): MultiParty {
@@ -114,9 +155,11 @@ export class MultiPartyManager implements sc.Model {
     }
 
     private leaveParty(username: Username) {
-        const party = this.getPartyOf(username)
+        const party = this.getPartyOfUsername(username)
         assert(party.players.includes(username))
         party.players.erase(username)
+
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.LEAVE, { username, party })
     }
 
     leaveCurrentParty(username: Username) {
@@ -124,7 +167,6 @@ export class MultiPartyManager implements sc.Model {
 
         const ownerParty = this.getOwnerPartyOf(username)
         this.joinParty(username, ownerParty)
-        this.onChanged()
     }
 
     joinParty(username: Username, party: MultiParty) {
@@ -135,9 +177,10 @@ export class MultiPartyManager implements sc.Model {
             const client = multi.server.clients.get(username)
             assert(client)
             client.dummy.party = party.combatantParty
+            client.dummy.multiParty = party
         }
 
-        this.onChanged()
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.JOIN, { username, party })
     }
 
     invitePlayerTo(username: Username, party: MultiParty) {
@@ -145,13 +188,17 @@ export class MultiPartyManager implements sc.Model {
         this.joinParty(username, party)
     }
 
-    clickedParty(party: MultiParty, newTitle: string) {
+    changePartyTitle(party: MultiParty, newTitle: string) {
         party.title = newTitle
-        this.onChanged()
+
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.PARTY_TITLE_CHANGED, { party })
     }
 
-    private onChanged() {
-        sc.Model.notifyObserver(this, 0)
+    onClientUnlink(this: this, client: Client) {
+        if (multi.server instanceof RemoteServer) return
+        if (!client.dummy) return
+
+        this.leaveCurrentParty(client.username)
     }
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {

@@ -12,6 +12,12 @@
 - Add player exp info to save file and remote syncing
 - Added the party system
 
+### Changed
+
+- Simply the entity selection system by removing bulk selection functionality
+- Pvp party rework (now uses the new party system)
+- Custom pvp steps rework
+
 ### Fixed
 
 - Fix variables like `player.element` referring to a wrong player when access in the client context

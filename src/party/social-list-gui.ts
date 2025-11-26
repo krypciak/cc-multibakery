@@ -1,7 +1,7 @@
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { poststart, prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { MultiParty, MultiPartyManager, PlayerInfoEntry } from './party'
+import { MULTI_PARTY_EVENT, MultiParty, PlayerInfoEntry } from './party'
 import { runEventSteps } from '../state/event-steps'
 import { Username } from '../net/binary/binary-types'
 
@@ -69,9 +69,9 @@ const popupConfigs: {
                         type: 'SHOW_INPUT_DIALOG',
                         title: 'Party name',
                         initialValue: clickedParty.title,
-                        validFunction: MultiPartyManager.isPartyTitleValid,
+                        validFunction: multi.server.party.isPartyTitleValid,
                         onAcceptFunction(newTitle) {
-                            multi.server.party.clickedParty(clickedParty, newTitle)
+                            multi.server.party.changePartyTitle(clickedParty, newTitle)
                         },
                     },
                 ],
@@ -209,9 +209,11 @@ prestart(() => {
                     this.optionsMultiPlayers?.hideSortMenu()
                 }
             } else if (model == multi.server.party) {
-                this.list.tabContent[0] = this.list.onContentCreation()
-                this.optionsMultiPlayers?.hideSortMenu()
-                this.party.updatePartyMembers()
+                if (message != MULTI_PARTY_EVENT.LEAVE) {
+                    this.list.tabContent[0] = this.list.onContentCreation()
+                    this.optionsMultiPlayers?.hideSortMenu()
+                    this.party.updatePartyMembers()
+                }
             }
         },
         exitMenu() {
@@ -223,11 +225,11 @@ prestart(() => {
 
             assert(button instanceof multi.class.SocialEntryButton)
             const clickedPlayerInfo = button.playerInfo
-            const clickedParty = multi.server.party.getPartyOf(clickedPlayerInfo.username)
+            const clickedParty = multi.server.party.getPartyOfUsername(clickedPlayerInfo.username)
 
             assert(ig.client)
             const ownPlayerInfo = multi.server.party.getPlayerInfoOf(ig.client.username)
-            const ownParty = multi.server.party.getPartyOf(ig.client.username)
+            const ownParty = multi.server.party.getPartyOfUsername(ig.client.username)
 
             const filteredConfigs = popupConfigs.filter(config =>
                 config.condition(clickedPlayerInfo, ownPlayerInfo, clickedParty, ownParty)
@@ -318,7 +320,7 @@ prestart(() => {
             this.setSize(buttonWidth + lineWidth, sc.BUTTON_TYPE.ITEM.height)
             this.button.setWidth(buttonWidth)
 
-            const party = multi.server.party.getPartyOf(playerInfo.username)
+            const party = multi.server.party.getPartyOfUsername(playerInfo.username)
             this.partyText = new sc.TextGui(wrapColor(party.title, COLOR.YELLOW), { font: sc.fontsystem.smallFont })
             this.partyText.setPos(this.hook.size.x - this.button.hook.size.x + 8, 2)
             this.partyText.setAlign(ig.GUI_ALIGN_X.RIGHT, ig.GUI_ALIGN_Y.TOP)
@@ -463,7 +465,7 @@ prestart(() => {
             let y = 0
 
             assert(ig.client)
-            const party = multi.server.party.getPartyOf(ig.client.username)
+            const party = multi.server.party.getPartyOfEntity(ig.client.dummy)
             const players = party.players
 
             for (let i = 0; i < this.members.length; i++) {
@@ -487,7 +489,7 @@ prestart(() => {
                     y = this.createEntry(username, y, false)
                 }
             }
-            this.members[0]?.currentValue?.setNumber(MultiPartyManager.sizeOf(party), true)
+            this.members[0]?.currentValue?.setNumber(multi.server.party.sizeOf(party), true)
 
             this.updateScroll(y)
         },
@@ -496,7 +498,7 @@ prestart(() => {
             this.scrollContainer?.doStateTransition('DEFAULT', skipTransition)
 
             assert(ig.client)
-            const party = multi.server.party.getPartyOf(ig.client.username)
+            const party = multi.server.party.getPartyOfEntity(ig.client.dummy)
             const players = party.players
 
             for (let i = 0; i < this.members.length; i++) {
@@ -541,10 +543,10 @@ prestart(() => {
             const model = sc.party.models[playerInfo.character]
             this.parent(isFirst, model, playerInfo.username)
 
-            const party = multi.server.party.getPartyOf(playerInfo.username)
-            this.maxValue?.setMaxNumber(MultiPartyManager.maxPartySize)
-            this.maxValue?.setNumber(MultiPartyManager.maxPartySize)
-            this.currentValue?.setNumber(MultiPartyManager.sizeOf(party))
+            const party = multi.server.party.getPartyOfUsername(playerInfo.username)
+            this.maxValue?.setMaxNumber(multi.server.party.maxPartySize)
+            this.maxValue?.setNumber(multi.server.party.maxPartySize)
+            this.currentValue?.setNumber(multi.server.party.sizeOf(party))
 
             this.info.show(playerInfo, model)
         },

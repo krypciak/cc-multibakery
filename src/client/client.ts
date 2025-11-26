@@ -293,7 +293,11 @@ export class Client extends InstanceUpdateable {
             rehookObservers(this.dummy.model.params, sc.model.player.params)
             rehookObservers(this.dummy.model, sc.model.player)
             sc.model.player = this.dummy.model
+
+            ig.vars.unregisterVarAccessor(sc.pvp)
             sc.pvp = msc.pvp
+            ig.vars.registerVarAccessor('pvp', sc.pvp)
+
             sc.options = msc.options
             sc.combat.activeCombatants = msc.combat.activeCombatants
 
