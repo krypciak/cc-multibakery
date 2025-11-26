@@ -151,3 +151,42 @@ prestart(() => {
         },
     })
 })
+
+declare global {
+    namespace ig.EVENT_STEP {
+        namespace SELECT_ALL_PLAYERS {
+            interface Settings {
+                selectionName?: string
+            }
+        }
+        interface SELECT_ALL_PLAYERS extends ig.EventStepBase {
+            selectionName?: string
+        }
+        interface SELECT_ALL_PLAYERS_CONSTRUCTOR extends ImpactClass<SELECT_ALL_PLAYERS> {
+            new (settings: ig.EVENT_STEP.SELECT_ALL_PLAYERS.Settings): SELECT_ALL_PLAYERS
+        }
+        var SELECT_ALL_PLAYERS: SELECT_ALL_PLAYERS_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.SELECT_ALL_PLAYERS = ig.EventStepBase.extend({
+        init(settings) {
+            this.selectionName = settings.selectionName
+        },
+        start(_data, eventCall) {
+            assert(eventCall)
+
+            const players: ig.ENTITY.Player[] = []
+            if (multi.server) {
+                runTaskInMapInst(() => {
+                    players.push(...ig.ccmap!.clients.map(client => client.dummy).filter(Boolean))
+                })
+            } else {
+                players.push(ig.game.playerEntity)
+            }
+
+            eventCall.selectEntities(players, this.selectionName)
+        },
+    })
+})
