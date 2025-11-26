@@ -1,5 +1,4 @@
 import { prestart } from '../../loading-stages'
-import { defaultSelectionName } from './entity-selection'
 import { MarkerLike } from '../../server/ccmap/teleport-fix'
 import { assert } from '../../misc/assert'
 
@@ -9,13 +8,11 @@ declare global {
             interface Settings {
                 marker: string
                 selectionName?: string
-                bulk?: boolean
             }
         }
         interface TELEPORT_SELECTED_ENTITIES extends ig.EventStepBase {
             marker: string
-            selectionName: string
-            bulk?: boolean
+            selectionName?: string
         }
         interface TELEPORT_SELECTED_ENTITIES_CONSTRUCTOR extends ImpactClass<TELEPORT_SELECTED_ENTITIES> {
             new (settings: ig.EVENT_STEP.TELEPORT_SELECTED_ENTITIES.Settings): TELEPORT_SELECTED_ENTITIES
@@ -28,24 +25,21 @@ prestart(() => {
     ig.EVENT_STEP.TELEPORT_SELECTED_ENTITIES = ig.EventStepBase.extend({
         init(settings) {
             this.marker = settings.marker
-            this.selectionName = settings.selectionName ?? defaultSelectionName
-            this.bulk = settings.bulk
-            assert(this.marker)
+            this.selectionName = settings.selectionName
+            assert(this.marker, 'ig.EVENT_STEP.TELEPORT_SELECTED_ENTITIES marker missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)
 
-            eventCall.runForSelection(this.selectionName, this.bulk, (name, suffix) => {
-                const markerName = `${this.marker}${suffix}`
-                const marker = ig.game.namedEntities[markerName] as MarkerLike
-                assert(marker)
-                assert(marker.applyMarkerPosition)
-                const entities = eventCall.getSelectedEntities(name)
+            const marker = ig.game.namedEntities[this.marker] as MarkerLike
+            assert(marker)
+            assert(marker.applyMarkerPosition)
+            const entities = eventCall.getSelectedEntities(this.selectionName)
 
-                for (const entity of entities) {
-                    marker.applyMarkerPosition(entity)
-                }
-            })
+            for (const entity of entities) {
+                if (!(entity instanceof ig.ActorEntity)) continue
+                marker.applyMarkerPosition(entity)
+            }
         },
     })
 })

@@ -1,52 +1,34 @@
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
+import { runTaskInMapInst } from '../../client/client'
 
 declare global {
     namespace ig {
         interface EventCall {
-            entitySelections: Record<string, ig.Entity[]>
+            entitySelections: Record<string, Set<ig.Entity>>
 
-            selectEntities(this: this, entities: ig.Entity[], selectionName?: string): void
+            selectEntities(this: this, entities: Iterable<ig.Entity>, selectionName?: string): void
             clearEntitySelection(this: this, selectionName?: string): void
             getSelectedEntities(this: this, selectionName?: string): ig.Entity[]
-            getSelectionNamesStartingWith(this: this, prefix: string): string[]
-            runForSelection(
-                this: this,
-                selectionName: string,
-                bulk: boolean | undefined,
-                task: (selName: string, suffix: string) => void
-            ): void
         }
     }
 }
-export const defaultSelectionName = 'default'
+const defaultSelectionName = 'default'
 
 prestart(() => {
     ig.EventCall.inject({
         selectEntities(entities, selectionName = defaultSelectionName) {
             this.entitySelections ??= {}
-            ;(this.entitySelections[selectionName] ??= []).push(...entities)
+            const set = (this.entitySelections[selectionName] ??= new Set())
+            for (const entity of entities) set.add(entity)
         },
         clearEntitySelection(selectionName = defaultSelectionName) {
             this.entitySelections ??= {}
-            this.entitySelections[selectionName] = []
+            this.entitySelections[selectionName] = new Set()
         },
         getSelectedEntities(selectionName = defaultSelectionName) {
             this.entitySelections ??= {}
-            return this.entitySelections[selectionName] ?? []
-        },
-        getSelectionNamesStartingWith(prefix) {
-            return Object.keys(this.entitySelections ?? {}).filter(name => name.startsWith(prefix))
-        },
-        runForSelection(selectionName, bulk, task) {
-            if (bulk) {
-                for (const selName of this.getSelectionNamesStartingWith(selectionName)) {
-                    const suffix = selName.substring(selectionName.length)
-                    task(selName, suffix)
-                }
-            } else {
-                task(selectionName, '')
-            }
+            return [...(this.entitySelections[selectionName] ?? [])]
         },
     })
 })
@@ -56,12 +38,10 @@ declare global {
         namespace CLEAR_ENTITY_SELECTION {
             interface Settings {
                 selectionName?: string
-                bulk?: boolean
             }
         }
         interface CLEAR_ENTITY_SELECTION extends ig.EventStepBase {
-            selectionName: string
-            bulk?: boolean
+            selectionName?: string
         }
         interface CLEAR_ENTITY_SELECTION_CONSTRUCTOR extends ImpactClass<CLEAR_ENTITY_SELECTION> {
             new (settings: ig.EVENT_STEP.CLEAR_ENTITY_SELECTION.Settings): CLEAR_ENTITY_SELECTION
@@ -73,15 +53,12 @@ declare global {
 prestart(() => {
     ig.EVENT_STEP.CLEAR_ENTITY_SELECTION = ig.EventStepBase.extend({
         init(settings) {
-            this.selectionName = settings.selectionName ?? defaultSelectionName
-            this.bulk = settings.bulk
+            this.selectionName = settings.selectionName
         },
         start(_data, eventCall) {
             assert(eventCall)
 
-            eventCall.runForSelection(this.selectionName, this.bulk, name => {
-                eventCall.clearEntitySelection(name)
-            })
+            eventCall.clearEntitySelection(this.selectionName)
         },
     })
 })
@@ -109,8 +86,8 @@ prestart(() => {
     ig.EVENT_STEP.SELECT_ENTITIES = ig.EventStepBase.extend({
         init(settings) {
             this.entities = settings.entities
-            this.selectionName = settings.selectionName ?? defaultSelectionName
-            assert(this.entities)
+            this.selectionName = settings.selectionName
+            assert(this.entities, 'ig.EVENT_STEP.SELECT_ENTITIES entities missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)
@@ -138,15 +115,13 @@ declare global {
     namespace ig.EVENT_STEP {
         namespace SELECT_ENTITIES_STANDING_ON {
             interface Settings {
-                markerPrefix: string
+                entityNamePrefix: string
                 selectionName?: string
-                bulk?: boolean
             }
         }
         interface SELECT_ENTITIES_STANDING_ON extends ig.EventStepBase {
-            markerPrefix: string
-            selectionName: string
-            bulk?: boolean
+            entityNamePrefix: string
+            selectionName?: string
         }
         interface SELECT_ENTITIES_STANDING_ON_CONSTRUCTOR extends ImpactClass<SELECT_ENTITIES_STANDING_ON> {
             new (settings: ig.EVENT_STEP.SELECT_ENTITIES_STANDING_ON.Settings): SELECT_ENTITIES_STANDING_ON
@@ -158,26 +133,21 @@ declare global {
 prestart(() => {
     ig.EVENT_STEP.SELECT_ENTITIES_STANDING_ON = ig.EventStepBase.extend({
         init(settings) {
-            this.markerPrefix = settings.markerPrefix
-            this.selectionName = settings.selectionName ?? defaultSelectionName
-            this.bulk = settings.bulk
-            assert(this.markerPrefix)
-            assert(this.selectionName)
+            this.entityNamePrefix = settings.entityNamePrefix
+            this.selectionName = settings.selectionName
+            assert(this.entityNamePrefix, 'ig.EVENT_STEP.SELECT_ENTITIES_STANDING_ON entityNamePrefix missing!')
         },
         start(_data, eventCall) {
             assert(eventCall)
 
-            for (const box of findEntitiesWithNamePrefix(this.markerPrefix)) {
-                const suffix = box.name!.substring(this.markerPrefix.length)
-                const groupId = !this.bulk
-                    ? ''
-                    : suffix.indexOf('_') == -1
-                      ? suffix
-                      : suffix.substring(suffix.indexOf('_') - 1)
-
-                const on = findEntitiesOn(box)
-                eventCall.selectEntities(on, this.selectionName + groupId)
+            const allEntities = new Set<ig.Entity>()
+            for (const box of findEntitiesWithNamePrefix(this.entityNamePrefix)) {
+                const entities = findEntitiesOn(box)
+                for (const entity of entities) {
+                    allEntities.add(entity)
+                }
             }
+            eventCall.selectEntities(allEntities, this.selectionName)
         },
     })
 })
