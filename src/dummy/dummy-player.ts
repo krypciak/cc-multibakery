@@ -6,8 +6,10 @@ import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
-import './dummy-skins'
 import { Username } from '../net/binary/binary-types'
+
+import './dummy-skins'
+import './dummy-var-access'
 
 declare global {
     namespace NodeJS {
@@ -146,21 +148,6 @@ prestart(() => {
             inputBackup(inp, () => this.parent())
 
             if (backup) this.controller.updatePos = backup
-        },
-    })
-})
-
-declare global {
-    namespace ig {
-        interface Vars {
-            unregisterVarAccessor(this: this, accessor: ig.Vars.Accessor): void
-        }
-    }
-}
-prestart(() => {
-    ig.Vars.inject({
-        unregisterVarAccessor(accessor) {
-            this.varAccessors = this.varAccessors.filter(acc => acc.accessor != accessor)
         },
     })
 })
