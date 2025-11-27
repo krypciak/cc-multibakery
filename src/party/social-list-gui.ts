@@ -160,7 +160,14 @@ prestart(() => {
 
             list.clear()
             buttonGroup.clear()
-            const playerList = multi.server.party.getPlayerInfoList()
+            const playerList = multi.server.party
+                .getPlayerInfoList()
+                .map(info => ({ info, party: multi.server.party.getPartyOfUsername(info.username) }))
+                .sort(({ party: p1, info: i1 }, { party: p2, info: i2 }) =>
+                    p1 == p2 ? i1.username.localeCompare(i2.username) : p1.id.localeCompare(p2.id)
+                )
+                .map(a => a.info)
+
             for (const playerInfo of playerList) {
                 const button = new multi.class.SocialEntryButton(playerInfo)
                 list.addButton(button)
