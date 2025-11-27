@@ -6,6 +6,7 @@ export function linkClientVars(client: Client, mapInst: InstanceinatorInstance) 
     const to = client.inst.ig.vars
 
     to.currentLevelName = from.currentLevelName
+    to.varsSetBy = from.varsSetBy
 
     const mapProxy = new Proxy((from.storage.map ??= {}), {
         get(target, p, receiver) {

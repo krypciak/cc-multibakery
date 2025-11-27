@@ -24,6 +24,7 @@
 - Fix remote crashed when trying to spawn an effect whose sheet is not yet loaded
 - Fix player entities on remote not updating visuals every frame
 - Fix remote menu scroll desyncing
+- Fix some some actions sometimes not preserving the event chain and running on the wrong instance
 
 ## [0.6.1] 2025-11-19
 
