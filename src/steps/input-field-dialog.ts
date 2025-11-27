@@ -12,11 +12,14 @@ declare global {
                 saveToVar?: ig.Event.StringExpression
                 validRegex?: ig.Event.StringExpression
 
+                accepted?: ig.EventStepBase.Settings[]
+                declined?: ig.EventStepBase.Settings[]
+
                 validFunction?: (str: string) => boolean
-                onAcceptFunction?: (str: string) => void
             }
             interface Data {
                 dialog: multi.class.InputFieldDialog
+                accepted: boolean
             }
         }
         interface SHOW_INPUT_DIALOG extends ig.EventStepBase {
@@ -25,12 +28,13 @@ declare global {
             initialValue?: ig.Event.StringExpression
             saveToVar?: ig.Event.StringExpression
             validRegex?: ig.Event.StringExpression
+            branchList: string[]
 
             validFunction?: (str: string) => boolean
-            onAcceptFunction?: (str: string) => void
 
             start(this: this, data: ig.EVENT_STEP.SHOW_INPUT_DIALOG.Data, eventCall?: ig.EventCall): void
             run(this: this, data: ig.EVENT_STEP.SHOW_INPUT_DIALOG.Data): boolean
+            getNext(this: this, data: ig.EVENT_STEP.SHOW_INPUT_DIALOG.Data): Nullable<ig.EventStepBase>
         }
         interface SHOW_INPUT_DIALOG_CONSTRUCTOR extends ImpactClass<SHOW_INPUT_DIALOG> {
             new (settings: ig.EVENT_STEP.SHOW_INPUT_DIALOG.Settings): SHOW_INPUT_DIALOG
@@ -48,7 +52,10 @@ prestart(() => {
             this.saveToVar = settings.saveToVar
             this.validRegex = settings.validRegex
             this.validFunction = settings.validFunction
-            this.onAcceptFunction = settings.onAcceptFunction
+
+            this.branchList = []
+            if (settings.accepted) this.branchList.push('accepted')
+            if (settings.declined) this.branchList.push('declined')
         },
         start(data, _eventCall) {
             const title = ig.Event.getExpressionValue(this.title)
@@ -69,8 +76,6 @@ prestart(() => {
                 isValid = this.validFunction
             }
 
-            const self = this
-
             let dialog: multi.class.InputFieldDialog
             dialog = new multi.class.InputFieldDialog(
                 this.width,
@@ -82,17 +87,15 @@ prestart(() => {
                         onPress() {
                             const text = dialog.getText()
                             if (saveToVar) ig.vars.set(saveToVar, text)
-                            ig.vars.set('tmp.dialogAccepted', true)
                             dialog.closeMenu()
-
-                            self.onAcceptFunction?.(text)
+                            data.accepted = true
                         },
                     },
                     {
                         name: 'Cancel',
                         onPress() {
-                            ig.vars.set('tmp.dialogAccepted', false)
                             dialog.closeMenu()
+                            data.accepted = false
                         },
                     },
                 ],
@@ -103,6 +106,14 @@ prestart(() => {
         },
         run({ dialog }) {
             return dialog.hook.currentStateName != 'DEFAULT'
+        },
+        getBranchNames() {
+            return this.branchList
+        },
+        getNext(data) {
+            const step = this.branches![data.accepted ? 'accepted' : 'declined']
+            if (step) return step
+            return this.parent(data)
         },
     })
 })

@@ -120,10 +120,10 @@ declare global {
             entities: ig.Event.GetEntity[]
             selectionName?: string
         }
-        interface UNSELECT_ENTITIES_CONSTRUCTOR extends ImpactClass<SELECT_ENTITIES> {
-            new (settings: ig.EVENT_STEP.UNSELECT_ENTITIES.Settings): SELECT_ENTITIES
+        interface UNSELECT_ENTITIES_CONSTRUCTOR extends ImpactClass<UNSELECT_ENTITIES> {
+            new (settings: ig.EVENT_STEP.UNSELECT_ENTITIES.Settings): UNSELECT_ENTITIES
         }
-        var UNSELECT_ENTITIES: SELECT_ENTITIES_CONSTRUCTOR
+        var UNSELECT_ENTITIES: UNSELECT_ENTITIES_CONSTRUCTOR
     }
 }
 

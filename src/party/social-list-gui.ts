@@ -70,10 +70,18 @@ const popupConfigs: {
                             type: 'SHOW_INPUT_DIALOG',
                             title: 'Party name',
                             initialValue: clickedParty.title,
+                            saveToVar: 'tmp.newPartyName',
                             validFunction: multi.server.party.isPartyTitleValid,
-                            onAcceptFunction(newTitle) {
-                                multi.server.party.changePartyTitle(clickedParty, newTitle)
-                            },
+                            accepted: [
+                                {
+                                    type: 'RUN_FUNCTION',
+                                    func() {
+                                        const newTitle = ig.vars.get('tmp.newPartyName')
+                                        assert(typeof newTitle === 'string')
+                                        multi.server.party.changePartyTitle(clickedParty, newTitle)
+                                    },
+                                },
+                            ],
                         },
                     ],
                 }),
