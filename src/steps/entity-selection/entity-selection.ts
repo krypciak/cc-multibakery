@@ -175,6 +175,54 @@ prestart(() => {
     })
 })
 
+declare global {
+    namespace ig.EVENT_STEP {
+        namespace FILTER_SELECTION_BY_ENTITY_TYPE {
+            interface Settings {
+                entityTypes: (keyof typeof ig.ENTITY | keyof typeof sc)[]
+                selectionName?: string
+            }
+        }
+        interface FILTER_SELECTION_BY_ENTITY_TYPE extends ig.EventStepBase {
+            entityClasses: (new (x: number, y: number, z: number, settings: any) => ig.Entity)[]
+            selectionName?: string
+        }
+        interface FILTER_SELECTION_BY_ENTITY_TYPE_CONSTRUCTOR extends ImpactClass<FILTER_SELECTION_BY_ENTITY_TYPE> {
+            new (settings: ig.EVENT_STEP.FILTER_SELECTION_BY_ENTITY_TYPE.Settings): FILTER_SELECTION_BY_ENTITY_TYPE
+        }
+        var FILTER_SELECTION_BY_ENTITY_TYPE: FILTER_SELECTION_BY_ENTITY_TYPE_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.FILTER_SELECTION_BY_ENTITY_TYPE = ig.EventStepBase.extend({
+        init(settings) {
+            assert(settings.entityTypes, 'ig.EVENT_STEP.FILTER_SELECTION_BY_ENTITY_TYPE "type" missing!')
+            this.entityClasses = settings.entityTypes.map(typeName => {
+                // @ts-expect-error
+                const clazz = ig.ENTITY[typeName] ?? sc[typeName]
+
+                assert(
+                    clazz,
+                    `ig.EVENT_STEP.FILTER_SELECTION_BY_ENTITY_TYPE entity type: "${typeName}" does not exist!`
+                )
+                return clazz
+            })
+            this.selectionName = settings.selectionName
+        },
+        start(_data, eventCall) {
+            assert(eventCall)
+
+            const entities = eventCall.getSelectedEntities(this.selectionName)
+            eventCall.clearEntitySelection(this.selectionName)
+            const filteredEntities = entities.filter(entity =>
+                this.entityClasses.some(clazz => entity instanceof clazz)
+            )
+            eventCall.selectEntities(filteredEntities, this.selectionName)
+        },
+    })
+})
+
 function findEntitiesOn(box: ig.Entity): ig.Entity[] {
     const { x, y, z } = box.coll.pos
     let { x: width, y: height, z: zHeight } = box.coll.size
