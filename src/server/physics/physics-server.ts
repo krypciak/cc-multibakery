@@ -20,7 +20,7 @@ import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
-import './server-vars'
+import './server-var-access'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
