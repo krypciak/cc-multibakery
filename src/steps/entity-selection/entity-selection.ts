@@ -110,6 +110,41 @@ prestart(() => {
 
 declare global {
     namespace ig.EVENT_STEP {
+        namespace CLONE_ENTITY_SELECTION {
+            interface Settings {
+                selectionName?: string
+                newSelectionName: string
+            }
+        }
+        interface CLONE_ENTITY_SELECTION extends ig.EventStepBase {
+            selectionName?: string
+            newSelectionName: string
+        }
+        interface CLONE_ENTITY_SELECTION_CONSTRUCTOR extends ImpactClass<CLONE_ENTITY_SELECTION> {
+            new (settings: ig.EVENT_STEP.CLONE_ENTITY_SELECTION.Settings): CLONE_ENTITY_SELECTION
+        }
+        var CLONE_ENTITY_SELECTION: CLONE_ENTITY_SELECTION_CONSTRUCTOR
+    }
+}
+
+prestart(() => {
+    ig.EVENT_STEP.CLONE_ENTITY_SELECTION = ig.EventStepBase.extend({
+        init(settings) {
+            this.selectionName = settings.selectionName
+            this.newSelectionName = settings.newSelectionName
+            assert(this.newSelectionName, 'ig.EVENT_STEP.CLONE_ENTITY_SELECTION "newSelectionName" missing!')
+        },
+        start(_data, eventCall) {
+            assert(eventCall)
+
+            const entities = eventCall.getSelectedEntities(this.selectionName)
+            eventCall.selectEntities(entities)
+        },
+    })
+})
+
+declare global {
+    namespace ig.EVENT_STEP {
         namespace UNSELECT_ENTITIES {
             interface Settings {
                 entities: ig.Event.GetEntity[]
