@@ -9,6 +9,7 @@ import { COMBATANT_PARTY as COMBATANT_PARTY1 } from '../net/binary/binary-types'
 
 import './gui'
 import './steps'
+import './pvp-var-access'
 
 declare global {
     namespace sc {
@@ -301,14 +302,6 @@ prestart(() => {
 
             ig.game.varsChangedDeferred()
             this.releaseBlocking()
-        },
-        // onVarAccess different team points??
-        onVarAccess(path, keys) {
-            if (!multi.server) return this.parent(path, keys)
-            if (keys[0] == 'pvp') {
-                if (keys[1] == 'partyCount') return this.parties.length
-            }
-            return this.parent(path, keys)
         },
         onPostUpdate() {
             if (!this.multiplayerPvp) return this.parent()
