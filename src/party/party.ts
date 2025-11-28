@@ -12,6 +12,7 @@ import type {
     ArmorType,
     LevelType,
     Username,
+    MapName,
 } from '../net/binary/binary-types'
 import { OnLinkChange } from '../server/ccmap/ccmap'
 import { PhysicsServer } from '../server/physics/physics-server'
@@ -19,6 +20,7 @@ import { RemoteServer } from '../server/remote/remote-server'
 import { addCombatantParty } from './combatant-party-api'
 
 import './social-list-gui'
+import './party-var-access'
 
 export type MultiPartyId = string
 
@@ -94,12 +96,14 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
         return party.players.length
     }
 
-    getPartyCombatants(party: MultiParty): dummy.DummyPlayer[] {
+    getPartyCombatants(party: MultiParty, _playerOnly?: boolean, onMap?: MapName): dummy.DummyPlayer[] {
         const combatants: dummy.DummyPlayer[] = []
         for (const username of party.players) {
             const client = multi.server.clients.get(username)
             assert(client?.dummy)
-            combatants.push(client.dummy)
+            if (!onMap || client.getMap().name == onMap) {
+                combatants.push(client.dummy)
+            }
         }
         return combatants
     }
@@ -118,6 +122,10 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
 
     createPersonalParty(username: Username) {
         const id = 'personal_' + username
+        if (this.parties[id]) {
+            this.setPlayerData(username, this.parties[id])
+            return
+        }
         const combatantParty = addCombatantParty(id)
         const party: MultiParty = {
             id,
@@ -169,16 +177,20 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
         this.joinParty(username, ownerParty)
     }
 
-    joinParty(username: Username, party: MultiParty) {
-        assert(!party.players.includes(username))
-        party.players.push(username)
-
+    private setPlayerData(username: Username, party: MultiParty) {
         if (multi.server instanceof PhysicsServer) {
             const client = multi.server.clients.get(username)
             assert(client)
             client.dummy.party = party.combatantParty
             client.dummy.multiParty = party
         }
+    }
+
+    joinParty(username: Username, party: MultiParty) {
+        assert(!party.players.includes(username))
+        party.players.push(username)
+
+        this.setPlayerData(username, party)
 
         sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.JOIN, { username, party })
     }
