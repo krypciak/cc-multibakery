@@ -2,6 +2,7 @@ import './step-id'
 import './event-call-history'
 import './action-history'
 
+import './custom-vec-resolve'
 import './run-js-function'
 import './input-field-dialog'
 import './entity-selection/entity-selection'
