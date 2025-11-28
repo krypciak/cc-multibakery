@@ -1,4 +1,5 @@
 import { prestart } from '../loading-stages'
+import { arrayVarAccess } from '../steps/array/array'
 import { MultiParty } from './party'
 
 function multiPartyVarAccess(keys: string[], party?: MultiParty) {
@@ -8,8 +9,14 @@ function multiPartyVarAccess(keys: string[], party?: MultiParty) {
     if (keys[0] == 'owner') return party.owner
     if (keys[0] == 'combatantParty') return party.combatantParty
     if (keys[0] == 'title') return party.title
-    if (keys[0] == 'playerCount') return party.players.length
-    if (keys[0] == 'playerCountOnMap') return multi.server.party.getPartyCombatants(party, true, ig.game.mapName).length
+    if (keys[0].startsWith('players')) {
+        return arrayVarAccess(
+            multi.server.party
+                .getPartyCombatants(party, keys[0].endsWith('OnMap') ? ig.game.mapName : undefined)
+                .filter(c => c instanceof dummy.DummyPlayer),
+            keys.slice(1)
+        )
+    }
 }
 
 prestart(() => {

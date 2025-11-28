@@ -96,7 +96,7 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
         return party.players.length
     }
 
-    getPartyCombatants(party: MultiParty, _playerOnly?: boolean, onMap?: MapName): dummy.DummyPlayer[] {
+    getPartyCombatants(party: MultiParty, onMap?: MapName): dummy.DummyPlayer[] {
         const combatants: dummy.DummyPlayer[] = []
         for (const username of party.players) {
             const client = multi.server.clients.get(username)

@@ -58,35 +58,33 @@ prestart(() => {
 
 declare global {
     namespace ig.EVENT_STEP {
-        namespace ADD_SELECTED_PARTIES_TO_PVP_PARTIES {
+        namespace ADD_PLAYERS_TO_PVP {
             interface Settings {
-                selectionName?: string
+                players: ig.Event.ArrayExpression<dummy.DummyPlayer>
             }
         }
-        interface ADD_SELECTED_PARTIES_TO_PVP_PARTIES extends ig.EventStepBase {
-            selectionName?: string
+        interface ADD_PLAYERS_TO_PVP extends ig.EventStepBase {
+            players: ig.Event.ArrayExpression<dummy.DummyPlayer>
         }
-        interface ADD_SELECTED_PARTIES_TO_PVP_PARTIES_CONSTRUCTOR
-            extends ImpactClass<ADD_SELECTED_PARTIES_TO_PVP_PARTIES> {
-            new (
-                settings: ig.EVENT_STEP.ADD_SELECTED_PARTIES_TO_PVP_PARTIES.Settings
-            ): ADD_SELECTED_PARTIES_TO_PVP_PARTIES
+        interface ADD_PLAYERS_TO_PVP_CONSTRUCTOR extends ImpactClass<ADD_PLAYERS_TO_PVP> {
+            new (settings: ig.EVENT_STEP.ADD_PLAYERS_TO_PVP.Settings): ADD_PLAYERS_TO_PVP
         }
-        var ADD_SELECTED_PARTIES_TO_PVP_PARTIES: ADD_SELECTED_PARTIES_TO_PVP_PARTIES_CONSTRUCTOR
+        var ADD_PLAYERS_TO_PVP: ADD_PLAYERS_TO_PVP_CONSTRUCTOR
     }
 }
 
 prestart(() => {
-    ig.EVENT_STEP.ADD_SELECTED_PARTIES_TO_PVP_PARTIES = ig.EventStepBase.extend({
+    ig.EVENT_STEP.ADD_PLAYERS_TO_PVP = ig.EventStepBase.extend({
         init(settings) {
-            this.selectionName = settings.selectionName
+            this.players = settings.players
+            assert(this.players, 'ig.EVENT_STEP.ADD_PLAYERS_TO_PVP "players" missing!')
         },
-        start(_data, eventCall) {
+        start() {
             assert(multi.server)
-            assert(eventCall)
+            assert(!sc.pvp.multiplayerPvp, 'Called ig.EVENT_STEP.ADD_PLAYERS_TO_PVP while pvp is running!')
 
             const parties = new Set<MultiParty>()
-            const entities = eventCall.getSelectedEntities(this.selectionName)
+            const entities = ig.Event.getArray(this.players).filter(entity => entity instanceof dummy.DummyPlayer)
             for (const party of entities.map(entity => multi.server.party.getPartyOfEntity(entity))) {
                 if (party) parties.add(party)
             }

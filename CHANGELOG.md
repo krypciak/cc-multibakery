@@ -14,7 +14,7 @@
 
 ### Changed
 
-- Simply the entity selection system by removing bulk selection functionality
+- Ditch entity selection system in favor of var arrays
 - Pvp party rework (now uses the new party system)
 - Custom pvp steps rework
 

@@ -74,7 +74,7 @@ const popupConfigs: {
                             validFunction: multi.server.party.isPartyTitleValid,
                             accepted: [
                                 {
-                                    type: 'RUN_FUNCTION',
+                                    type: 'RUN_JS_FUNCTION',
                                     func() {
                                         const newTitle = ig.vars.get('tmp.newPartyName')
                                         assert(typeof newTitle === 'string')
