@@ -10,6 +10,7 @@ declare global {
             interface Settings {
                 players: ig.Event.ArrayExpression
                 steps: ig.EventStepBase.Settings[]
+                indexVarName?: ig.Event.VariableExpression
                 noWait?: boolean
             }
             interface Data {
@@ -19,6 +20,7 @@ declare global {
         interface FOR_EACH_PLAYER extends ig.EventStepBase {
             players: ig.Event.ArrayExpression
             event: ig.Event
+            indexVarName?: ig.Event.VariableExpression
             noWait?: boolean
 
             start(this: this, data: ig.EVENT_STEP.FOR_EACH_PLAYER.Data, eventCall?: ig.EventCall): void
@@ -36,6 +38,7 @@ prestart(() => {
         init(settings) {
             this.players = settings.players
             this.noWait = settings.noWait
+            this.indexVarName = settings.indexVarName
 
             assert(settings.players, 'ig.EVENT_STEP.FOR_EACH_PLAYER "players" missing!')
             assert(settings.steps, 'ig.EVENT_STEP.FOR_EACH_PLAYER "steps" missing!')
@@ -51,13 +54,18 @@ prestart(() => {
             if (!multi.server) return
             assert(multi.server instanceof PhysicsServer)
 
+            const indexVarName = ig.Event.getVarName(this.indexVarName)
+
             const entities = ig.Event.getArray(this.players)
             const players = entities.filter(entity => entity instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]
 
             const clients = players.map(player => player.getClient())
             const eventCalls = runTasks(
                 clients.map(client => client.inst),
-                () => runEvent(this.event, ig.EventRunType.PARALLEL, ig.game.playerEntity, { ...data }, true)
+                i => {
+                    if (indexVarName) ig.vars.set(indexVarName, i)
+                    return runEvent(this.event, ig.EventRunType.PARALLEL, ig.game.playerEntity, { ...data }, true)
+                }
             )
             data.eventCalls = eventCalls
         },
