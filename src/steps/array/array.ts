@@ -2,6 +2,7 @@ import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
 
 import './array-entity-var-access'
+import './array-regular-polygon-vertices'
 
 declare global {
     namespace ig {
