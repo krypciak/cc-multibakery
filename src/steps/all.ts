@@ -1,6 +1,7 @@
 import './step-id'
 import './event-call-history'
 import './action-history'
+import './resolve-object-access-fix'
 
 import './log'
 import './custom-vec-resolve'
