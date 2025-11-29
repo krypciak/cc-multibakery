@@ -4,6 +4,7 @@ import './action-history'
 import './resolve-object-access-fix'
 
 import './log'
+import './vec-assign'
 import './custom-vec-resolve'
 import './run-js-function'
 import './input-field-dialog'
