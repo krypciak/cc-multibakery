@@ -4,7 +4,7 @@ import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 
-function startDevServer() {
+async function startDevServer() {
     if (!PHYSICS) return
 
     multi.setServer(
@@ -35,10 +35,10 @@ function startDevServer() {
                         cert: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+1.pem',
                         key: '/home/krypek/home/Programming/crosscode/instances/cc-ccloader3/cc-bundler/cert/localhost+1-key.pem',
                     },
-                    ccbundler: {
-                        modProxy: true,
-                        liveModUpdates: true,
-                    },
+                    // ccbundler: {
+                    //     modProxy: true,
+                    //     liveModUpdates: true,
+                    // },
                     type: 'socket',
                 },
                 details: {
@@ -50,6 +50,8 @@ function startDevServer() {
             },
             defaultMap: {
                 map: 'multibakery/dev',
+                // map: 'multibakery/pvp-test',
+                // map: 'multibakery/fish-minigame-test',
                 // map: 'rhombus-dng/room-1',
                 // map: 'rhombus-dng/boss',
                 // map: 'rhombus-sqr/dng-end',
@@ -66,13 +68,45 @@ function startDevServer() {
                 // map: 'xpc/bonus/art-testing',
                 // marker: 'entrance',
                 // marker: 'puzzle',
-                // marker: 'pvp',
-                marker: 'exit',
+                marker: 'pvp',
+                // marker: 'exit',
                 // marker: 'door-west1',
             },
         })
     )
-    multi.server.start()
+    await multi.server.start()
+
+    if (!window.crossnode?.options.test && process.execPath.includes('server')) {
+        multi.server.setMasterClient(
+            await multi.server.createAndJoinClient({
+                username: `lea_${1}`,
+                inputType: 'clone',
+                remote: false,
+            })
+        )
+        // await this.createAndJoinClient({
+        //     username: `obama`,
+        //     inputType: 'clone',
+        //     remote: false,
+        // })
+        // await this.createAndJoinClient({
+        //     username: `lea_${3}`,
+        //     inputType: 'clone',
+        //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
+        // })
+        let promises = []
+        for (let i = 2; i <= 3; i++) {
+            promises.push(
+                multi.server.createAndJoinClient({
+                    username: `lea_${i}`,
+                    noShowInstance: true || i != 2,
+                    inputType: 'clone',
+                    remote: false,
+                })
+            )
+        }
+        await Promise.all(promises)
+    }
 }
 
 function isInServerDir() {

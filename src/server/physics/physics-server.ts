@@ -78,36 +78,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         multi.storage.load()
         this.registerVariableChargeTime()
 
-        if (!window.crossnode?.options.test && process.execPath.includes('server')) {
-            this.setMasterClient(
-                await this.createAndJoinClient({
-                    username: `lea_${1}`,
-                    inputType: 'clone',
-                    remote: false,
-                })
-            )
-            // await this.createAndJoinClient({
-            //     username: `lea_${2}`,
-            //     inputType: 'clone',
-            //     remote: false,
-            // })
-            // await this.createAndJoinClient({
-            //     username: `lea_${3}`,
-            //     inputType: 'clone',
-            //     forceInputType: ig.INPUT_DEVICES.GAMEPAD,
-            // })
-            // let promises = []
-            // for (let i = 2; i <= 20; i++) {
-            //     promises.push(
-            //         this.createAndJoinClient({
-            //             username: `lea_${i}`,
-            //             noShowInstance: true,
-            //         })
-            //     )
-            // }
-            // await Promise.all(promises)
-        }
-
         const netInfo = this.settings.netInfo
         if (PHYSICSNET && netInfo) {
             this.httpServer = new PhysicsHttpServer(netInfo)
@@ -123,10 +93,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
 
         if (window.crossnode && !window.crossnode.tests) startRepl()
-
-        // if (!window.crossnode?.options.test) {
-        //     stagePvp()
-        // }
     }
     update() {
         super.update()
