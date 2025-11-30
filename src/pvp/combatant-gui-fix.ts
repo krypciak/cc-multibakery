@@ -2,6 +2,7 @@ import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
+import { runTaskInMapInst } from '../client/client'
 
 declare global {
     namespace ig.ENTITY {
@@ -78,9 +79,9 @@ prestart(() => {
             this.parent(levelChange)
             if (!multi.server) return
 
-            const map = ig.ccmap
-            assert(map)
-            map.onLinkChange.erase(this)
+            runTaskInMapInst(() => {
+                ig.ccmap!.onLinkChange.erase(this)
+            })
 
             /* memory leak fix, does it work: probably no */
             this.statusGui = undefined as any
