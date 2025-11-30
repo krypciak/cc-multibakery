@@ -1,6 +1,6 @@
-import { Client } from '../client/client'
+import type { Client } from '../client/client'
 import { assert } from '../misc/assert'
-import { type COMBATANT_PARTY } from '../net/binary/binary-types'
+import type { COMBATANT_PARTY } from '../net/binary/binary-types'
 import type {
     AttackType,
     DefenceType,
@@ -14,7 +14,7 @@ import type {
     Username,
     MapName,
 } from '../net/binary/binary-types'
-import { type OnLinkChange } from '../server/ccmap/ccmap'
+import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { addCombatantParty } from './combatant-party-api'
 import { isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'

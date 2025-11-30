@@ -1,4 +1,4 @@
-import { Server } from './server/server'
+import type { Server } from './server/server'
 import { assert } from './misc/assert'
 import { prestart } from './loading-stages'
 

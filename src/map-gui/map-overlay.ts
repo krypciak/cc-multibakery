@@ -1,6 +1,6 @@
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { prestart } from '../loading-stages'
-import { type Username } from '../net/binary/binary-types'
+import type { Username } from '../net/binary/binary-types'
 import { getPlayerLocations } from './player-locations'
 
 declare global {

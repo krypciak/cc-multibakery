@@ -1,6 +1,6 @@
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { type MarkerLike } from '../server/ccmap/teleport-fix'
+import type { MarkerLike } from '../server/ccmap/teleport-fix'
 
 interface MarkerExpression {
     marker?: ig.Event.StringExpression

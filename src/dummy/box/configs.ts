@@ -1,4 +1,4 @@
-import { type DummyBoxGuiConfig } from './box-addon'
+import type { DummyBoxGuiConfig } from './box-addon'
 
 import './configs/username'
 import './configs/combat-art'

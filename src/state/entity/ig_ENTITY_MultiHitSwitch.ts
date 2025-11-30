@@ -1,8 +1,8 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
-import { type StateKey } from '../states'
-import { type u4 } from 'ts-binarifier/src/type-aliases'
+import type { StateKey } from '../states'
+import type { u4 } from 'ts-binarifier/src/type-aliases'
 import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {

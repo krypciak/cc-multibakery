@@ -1,8 +1,9 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { CCMap, type OnLinkChange } from './ccmap'
+import type { CCMap } from './ccmap'
+import type { OnLinkChange } from './ccmap'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { Client } from '../../client/client'
+import type { Client } from '../../client/client'
 
 export class CCMapDisplay implements OnLinkChange {
     camera!: ig.Camera.TargetHandle

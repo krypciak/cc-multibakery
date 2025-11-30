@@ -1,4 +1,4 @@
-import { StateMemory } from '../state-util'
+import type { StateMemory } from '../state-util'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 
 type Return = ReturnType<typeof getState>

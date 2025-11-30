@@ -1,4 +1,4 @@
-import { Client } from '../client/client'
+import type { Client } from '../client/client'
 
 declare global {
     interface StateUpdatePacket {}

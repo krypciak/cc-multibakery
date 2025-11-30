@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { type MultibakerySaveData } from './storage'
+import type { MultibakerySaveData } from './storage'
 
 declare global {
     namespace sc {

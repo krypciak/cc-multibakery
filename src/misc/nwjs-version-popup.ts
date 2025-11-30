@@ -1,4 +1,4 @@
-import { type MultiPageButtonGuiButtons } from '../client/menu/pause/server-manage-button'
+import type { MultiPageButtonGuiButtons } from '../client/menu/pause/server-manage-button'
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { Opts } from '../options'
 

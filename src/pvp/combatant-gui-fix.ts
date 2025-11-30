@@ -1,7 +1,7 @@
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
-import { type OnLinkChange } from '../server/ccmap/ccmap'
+import type { OnLinkChange } from '../server/ccmap/ccmap'
 
 declare global {
     namespace ig.ENTITY {

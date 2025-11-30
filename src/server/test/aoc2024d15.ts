@@ -3,10 +3,10 @@ import { assert } from '../../misc/assert'
 import Multibakery from '../../plugin'
 import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../physics/physics-server'
-import { type InputData } from '../../dummy/dummy-input-puppet'
-import { Client } from '../../client/client'
-import { CCMap } from '../ccmap/ccmap'
-import { type EntityNetid } from '../../misc/entity-netid'
+import type { InputData } from '../../dummy/dummy-input-puppet'
+import type { Client } from '../../client/client'
+import type { CCMap } from '../ccmap/ccmap'
+import type { EntityNetid } from '../../misc/entity-netid'
 
 declare global {
     namespace ig.ENTITY {

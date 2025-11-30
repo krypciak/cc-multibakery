@@ -1,4 +1,4 @@
-import { type MapName, type Username } from '../net/binary/binary-types'
+import type { MapName, Username } from '../net/binary/binary-types'
 
 export type PlayerLocation = {
     pos: Vec2 | undefined

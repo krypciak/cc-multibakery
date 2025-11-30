@@ -1,12 +1,12 @@
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { clearCollectedState, getStateUpdatePacket, type StateKey } from '../../state/states'
-import { CCMap } from '../ccmap/ccmap'
-import { type NetConnection } from '../../net/connection'
+import type { CCMap } from '../ccmap/ccmap'
+import type { NetConnection } from '../../net/connection'
 import { cleanRecord } from '../../state/state-util'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
-import { type f64 } from 'ts-binarifier/src/type-aliases'
-import { type MapTpInfo } from '../server'
-import { type MapName, type Username } from '../../net/binary/binary-types'
+import type { f64 } from 'ts-binarifier/src/type-aliases'
+import type { MapTpInfo } from '../server'
+import type { MapName, Username } from '../../net/binary/binary-types'
 import { assertPhysics } from './is-physics-server'
 
 declare global {

@@ -1,4 +1,5 @@
-import { StateMemory, undefinedIfFalsy } from '../state-util'
+import type { StateMemory } from '../state-util'
+import { undefinedIfFalsy } from '../state-util'
 
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.AnimatedEntity, memory: StateMemory) {

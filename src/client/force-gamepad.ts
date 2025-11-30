@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { Client } from './client'
+import type { Client } from './client'
 
 function getGamepadManager(client: Client) {
     const gamepadManager = client.inst.ig.gamepad

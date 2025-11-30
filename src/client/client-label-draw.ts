@@ -1,5 +1,5 @@
 import { type LabelDrawClass, ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
-import { Client } from './client'
+import type { Client } from './client'
 import { Opts } from '../options'
 import { assertRemote } from '../server/remote/is-remote-server'
 

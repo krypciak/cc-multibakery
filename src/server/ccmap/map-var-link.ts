@@ -1,4 +1,4 @@
-import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 const regularKeys = ['map', 'session', 'tmp']
 

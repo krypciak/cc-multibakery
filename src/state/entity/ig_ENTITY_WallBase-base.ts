@@ -1,7 +1,7 @@
 import { prestart } from '../../loading-stages'
 import { isRemote } from '../../server/remote/is-remote-server'
 import { StateMemory } from '../state-util'
-import { type StateKey } from '../states'
+import type { StateKey } from '../states'
 
 declare global {
     namespace ig.ENTITY {

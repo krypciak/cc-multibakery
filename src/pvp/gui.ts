@@ -2,7 +2,7 @@ import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import { Opts } from '../options'
 import { COLOR, wrapColor } from '../misc/wrap-color'
-import { type MultiParty } from '../party/party'
+import type { MultiParty } from '../party/party'
 
 import './combatant-gui-fix'
 

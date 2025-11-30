@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
-import { type MultiParty } from '../party/party'
+import type { MultiParty } from '../party/party'
 
 declare global {
     namespace ig.EVENT_STEP {

@@ -1,7 +1,7 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
 import { getStepSettings } from '../steps/step-id'
-import { type EntityNetid } from '../misc/entity-netid'
+import type { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { shouldCollectStateData } from './state-util'

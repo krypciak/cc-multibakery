@@ -1,7 +1,7 @@
-import { type RemoteServerConnectionSettings } from '../../server/remote/remote-server'
-import { type PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
+import type { RemoteServerConnectionSettings } from '../../server/remote/remote-server'
+import type { PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
 import { Opts } from '../../options'
-import { type ModCompatibilityList } from '../../server/mod-compatibility-list'
+import type { ModCompatibilityList } from '../../server/mod-compatibility-list'
 
 interface ServerDetailsBase {
     title: string

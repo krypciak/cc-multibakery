@@ -1,5 +1,5 @@
-import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { Client } from './client'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import type { Client } from './client'
 
 export function linkClientVars(client: Client, mapInst: InstanceinatorInstance) {
     const from = mapInst.ig.vars

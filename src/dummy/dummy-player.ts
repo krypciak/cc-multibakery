@@ -1,10 +1,10 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
-import { Client } from '../client/client'
-import { CCMap } from '../server/ccmap/ccmap'
+import type { Client } from '../client/client'
+import type { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { type Username } from '../net/binary/binary-types'
+import type { Username } from '../net/binary/binary-types'
 
 import './dummy-skins'
 import './dummy-var-access'

@@ -6,7 +6,7 @@ import {
     isInputData,
 } from '../../dummy/dummy-input-puppet'
 import { assert } from '../../misc/assert'
-import { type MapName, type Username } from '../../net/binary/binary-types'
+import type { MapName, Username } from '../../net/binary/binary-types'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { assertRemote } from './is-remote-server'

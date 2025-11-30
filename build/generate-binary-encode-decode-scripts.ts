@@ -1,4 +1,5 @@
-import { Config, generateEncodeDecodeScripts, SingleConfig } from 'ts-binarifier/src/index'
+import type { Config, SingleConfig } from 'ts-binarifier/src/index';
+import { generateEncodeDecodeScripts } from 'ts-binarifier/src/index'
 import { createEntityStateRecordUnionNode } from './entity-state-record-union-node'
 import fs from 'fs'
 

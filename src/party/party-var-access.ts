@@ -1,6 +1,6 @@
 import { prestart } from '../loading-stages'
 import { arrayVarAccess } from '../steps/array/array'
-import { type MultiParty } from './party'
+import type { MultiParty } from './party'
 
 function multiPartyVarAccess(keys: string[], party?: MultiParty) {
     if (!party) return

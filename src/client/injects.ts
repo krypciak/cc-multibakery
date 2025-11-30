@@ -1,6 +1,6 @@
 import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { Client } from './client'
+import type { Client } from './client'
 import { isPhysics } from '../server/physics/is-physics-server'
 
 prestart(() => {

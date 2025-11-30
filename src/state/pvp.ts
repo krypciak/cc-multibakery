@@ -1,11 +1,11 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler, type StateKey } from './states'
 import { cleanRecord, StateMemory } from './state-util'
-import { PvpTeam } from '../pvp/pvp'
+import type { PvpTeam } from '../pvp/pvp'
 import { assert } from '../misc/assert'
-import { type u3, type u6, type u8 } from 'ts-binarifier/src/type-aliases'
-import { type COMBATANT_PARTY } from '../net/binary/binary-types'
-import { type EntityNetid } from '../misc/entity-netid'
+import type { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
+import type { COMBATANT_PARTY } from '../net/binary/binary-types'
+import type { EntityNetid } from '../misc/entity-netid'
 
 export interface PvpTeamSerialized {
     name: string

@@ -3,7 +3,7 @@ import { addStateHandler, type StateKey } from './states'
 import { StateMemory } from './state-util'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { type Username } from '../net/binary/binary-types'
+import type { Username } from '../net/binary/binary-types'
 
 interface GameModelState {
     map?: sc.GAME_MODEL_STATE

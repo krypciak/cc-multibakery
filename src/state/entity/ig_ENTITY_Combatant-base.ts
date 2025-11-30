@@ -2,15 +2,15 @@ import { StateMemory } from '../state-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
-import { type f64 } from 'ts-binarifier/src/type-aliases'
-import {
-    type AttackType,
-    type COMBATANT_PARTY,
-    type DefenceType,
-    type FocusType,
-    type HpType,
-    type SpLevelType,
-    type SpType,
+import type { f64 } from 'ts-binarifier/src/type-aliases'
+import type {
+    AttackType,
+    COMBATANT_PARTY,
+    DefenceType,
+    FocusType,
+    HpType,
+    SpLevelType,
+    SpType,
 } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 import { isRemote } from '../../server/remote/is-remote-server'

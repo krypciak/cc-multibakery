@@ -1,12 +1,12 @@
-import {
-    type f32,
-    type u16,
-    type u10,
-    type u14,
-    type u32,
-    type u6,
-    type i11,
-    type u7,
+import type {
+    f32,
+    u16,
+    u10,
+    u14,
+    u32,
+    u6,
+    i11,
+    u7,
 } from 'ts-binarifier/src/type-aliases'
 
 export {}

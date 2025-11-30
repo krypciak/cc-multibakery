@@ -3,9 +3,9 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { createFakeEffectSheet } from '.././entity'
 import { StateMemory } from '.././state-util'
-import { type StateKey } from '.././states'
-import { type u8 } from 'ts-binarifier/src/type-aliases'
-import { type ItemType } from '../../net/binary/binary-types'
+import type { StateKey } from '.././states'
+import type { u8 } from 'ts-binarifier/src/type-aliases'
+import type { ItemType } from '../../net/binary/binary-types'
 import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {

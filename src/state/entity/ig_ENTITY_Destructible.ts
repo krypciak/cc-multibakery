@@ -1,7 +1,7 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
-import { type StateKey } from '../states'
+import type { StateKey } from '../states'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 
 declare global {

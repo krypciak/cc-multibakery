@@ -3,7 +3,7 @@ import { addStateHandler, type StateKey } from './states'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
-import { type RecordSize, type u16 } from 'ts-binarifier/src/type-aliases'
+import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
 import { runTaskInMapInst } from '../client/client'
 
 type VarObj = Record<string, unknown> & RecordSize<u16>
