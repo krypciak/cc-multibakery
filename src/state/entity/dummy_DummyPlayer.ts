@@ -8,6 +8,9 @@ import type { f32, u32 } from 'ts-binarifier/src/type-aliases'
 import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
+    namespace dummy {
+        interface DummyPlayer extends StateMemory.MapHolder<StateKey> {}
+    }
     interface EntityStates {
         'dummy.DummyPlayer': Return
     }
