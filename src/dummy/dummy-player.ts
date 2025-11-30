@@ -5,11 +5,11 @@ import type { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import type { Username } from '../net/binary/binary-types'
+import { isPhysics } from '../server/physics/is-physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 import './dummy-skins'
 import './dummy-var-access'
-import { isPhysics } from '../server/physics/is-physics-server'
-import { isRemote } from '../server/remote/is-remote-server'
 
 declare global {
     namespace NodeJS {
