@@ -28,10 +28,10 @@ importers:
         version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/111da928ccb11a31285881697d93e057d46b47f8
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c9a4f99a5245597226a46810ac36d6e9e9466230
       cc-variable-charge-time:
         specifier: github:krypciak/cc-variable-charge-time
-        version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/fa4187c32d8952ea7b5cdb3fdd7f5860d8946466
+        version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024
       ccmoddb:
         specifier: github:CCDirectLink/CCModDB
         version: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1
@@ -52,7 +52,7 @@ importers:
         version: 14.1.1
       nax-ccuilib:
         specifier: github:krypciak/nax-ccuilib
-        version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/c8a60419e44d208655f526732b1e9120ab617511
+        version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/1ecf8db5495258d248f2d9f4a0260933a2f51f9d
       node:
         specifier: ^25.1.0
         version: 25.1.0
@@ -430,13 +430,13 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0}
     version: 1.0.0
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/111da928ccb11a31285881697d93e057d46b47f8:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/111da928ccb11a31285881697d93e057d46b47f8}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c9a4f99a5245597226a46810ac36d6e9e9466230:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c9a4f99a5245597226a46810ac36d6e9e9466230}
     version: 1.0.5
 
-  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/fa4187c32d8952ea7b5cdb3fdd7f5860d8946466:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/fa4187c32d8952ea7b5cdb3fdd7f5860d8946466}
-    version: 0.0.1
+  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024}
+    version: 1.0.0
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
     resolution: {tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1}
@@ -770,9 +770,9 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/c8a60419e44d208655f526732b1e9120ab617511:
-    resolution: {tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/c8a60419e44d208655f526732b1e9120ab617511}
-    version: 1.5.4
+  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/1ecf8db5495258d248f2d9f4a0260933a2f51f9d:
+    resolution: {tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/1ecf8db5495258d248f2d9f4a0260933a2f51f9d}
+    version: 1.5.5
 
   negotiator@0.6.3:
     resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
@@ -1307,9 +1307,9 @@ snapshots:
 
   cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/111da928ccb11a31285881697d93e057d46b47f8: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/c9a4f99a5245597226a46810ac36d6e9e9466230: {}
 
-  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/fa4187c32d8952ea7b5cdb3fdd7f5860d8946466: {}
+  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024: {}
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/1d00ec5f13b8e9dd2eaac9f6ee9a2ace072b47d1:
     dependencies:
@@ -1684,7 +1684,7 @@ snapshots:
 
   ms@2.1.3: {}
 
-  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/c8a60419e44d208655f526732b1e9120ab617511: {}
+  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/1ecf8db5495258d248f2d9f4a0260933a2f51f9d: {}
 
   negotiator@0.6.3: {}
 
