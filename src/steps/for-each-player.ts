@@ -1,8 +1,8 @@
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { PhysicsServer } from '../server/physics/physics-server'
 import { runEvent } from './event-steps-run'
+import { assertPhysics } from '../server/physics/is-physics-server'
 
 declare global {
     namespace ig.EVENT_STEP {
@@ -52,7 +52,7 @@ prestart(() => {
             assert(eventCall)
 
             if (!multi.server) return
-            assert(multi.server instanceof PhysicsServer)
+            assertPhysics(multi.server)
 
             const indexVarName = ig.Event.getVarName(this.indexVarName)
 

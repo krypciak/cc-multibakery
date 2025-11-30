@@ -1,7 +1,6 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { poststart, prestart } from '../../../loading-stages'
 import type { getState } from '../../../state/entity/ig_ENTITY_Player-base'
-import { PhysicsServer } from '../physics-server'
 import { assert } from '../../../misc/assert'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { type MapTpInfo } from '../../server'
@@ -9,6 +8,7 @@ import { type Username } from '../../../net/binary/binary-types'
 
 import './save-slot-button'
 import './pause-screen-save-button'
+import { assertPhysics, isPhysics } from '../is-physics-server'
 
 type PlayerGetStateReturn = ReturnType<typeof getState>
 type PlayerState = PlayerGetStateReturn & MapTpInfo
@@ -32,7 +32,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     onStorageSave(this: this, savefile: ig.SaveSlot.Data): void {
         savefile.multibakery = this.currentData
 
-        if (!(multi.server instanceof PhysicsServer)) return
+        if (!isPhysics(multi.server)) return
 
         this.currentData = savefile.multibakery ??= {}
         this.saveData()
@@ -100,7 +100,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
         let saved = false
 
-        if (multi.server instanceof PhysicsServer) {
+        if (isPhysics(multi.server)) {
             const { manualSaving, automaticlySave } = multi.server.settings.save ?? {}
 
             if (slotId === undefined) {
@@ -175,7 +175,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     load() {
-        assert(multi.server instanceof PhysicsServer)
+        assertPhysics(multi.server)
         const settings = multi.server.settings.save
         if (!settings) return
 

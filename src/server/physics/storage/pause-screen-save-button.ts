@@ -1,12 +1,12 @@
 import { prestart } from '../../../loading-stages'
-import { PhysicsServer } from '../physics-server'
+import { isPhysics } from '../is-physics-server'
 
 prestart(() => {
     function updateButton(button: sc.ButtonGui) {
         if (!multi.server) return
 
         const active =
-            multi.server instanceof PhysicsServer &&
+            isPhysics(multi.server) &&
             multi.server.settings.save?.manualSaving &&
             (ig.ccmap || ig.client == multi.server.getMasterClient())
 

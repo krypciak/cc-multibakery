@@ -1,12 +1,12 @@
 import { prestart } from '../../../loading-stages'
-import { PhysicsServer } from '../../physics/physics-server'
+import { isPhysics } from '../is-physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 prestart(() => {
     if (!PHYSICS) return
 
     function replace<T extends ig.StepBase>(this: T & { parent: T['start'] }, data: unknown, eventCall?: ig.EventCall) {
-        if (!(multi.server instanceof PhysicsServer)) return this.parent(data, eventCall)
+        if (!isPhysics(multi.server)) return this.parent(data, eventCall)
 
         if (ig.client) setNextSetBy(ig.game.playerEntity)
 

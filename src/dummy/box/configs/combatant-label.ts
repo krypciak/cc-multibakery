@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { PhysicsServer } from '../../../server/physics/physics-server'
+import { isPhysics } from '../../../server/physics/is-physics-server'
 import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
 
 declare global {
@@ -18,8 +18,7 @@ prestart(() => {
 
     sc.Combat.inject({
         showCombatantLabel(entity, msg) {
-            if (!(multi.server instanceof PhysicsServer) || !(entity instanceof dummy.DummyPlayer))
-                return this.parent(entity, msg)
+            if (!isPhysics(multi.server) || !(entity instanceof dummy.DummyPlayer)) return this.parent(entity, msg)
 
             const { text, box } = disableSmallEntityBoxAdding(() => this.parent(entity, msg))
             if (text && box) {

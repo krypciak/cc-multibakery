@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { PhysicsServer } from '../server/physics/physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 import { onEventStepStart } from '../state/event-steps'
 
 declare global {
@@ -17,7 +17,7 @@ prestart(() => {
             this.event = event
         },
         performStep(stackEntry) {
-            if (!(multi.server instanceof PhysicsServer)) return this.parent(stackEntry)
+            if (isRemote(multi.server)) return this.parent(stackEntry)
 
             do {
                 if (!stackEntry.currentStep) stackEntry.currentStep = stackEntry.event.rootStep

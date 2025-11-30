@@ -5,11 +5,11 @@ import {
     closePhysicsServerAndSaveState,
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
-import { PhysicsServer } from '../../../server/physics/physics-server'
 import { createClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
 import type { InputFieldIsValidFunc } from 'ccmodmanager/types/mod-options'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../../misc/nwjs-version-popup'
 import { runTask } from 'cc-instanceinator/src/inst-util'
+import { isPhysics } from '../../../server/physics/is-physics-server'
 
 declare global {
     namespace ig {
@@ -113,7 +113,7 @@ prestart(() => {
                             createPhysicsServerFromCurrentState()
                         },
                     })
-                } else if (multi.server instanceof PhysicsServer && isMaster) {
+                } else if (isPhysics(multi.server) && isMaster) {
                     buttons.push({
                         name: 'Stop server',
                         onPress() {

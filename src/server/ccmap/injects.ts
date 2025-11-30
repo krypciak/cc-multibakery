@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
-import { PhysicsServer } from '../physics/physics-server'
+import { isPhysics } from '../physics/is-physics-server'
 
 prestart(() => {
     const backup = ig.CollTools.isInScreen
@@ -229,7 +229,7 @@ prestart(() => {
 
     ig.ENTITY.ItemDestruct.inject({
         ballHit(ballLike, blockDir) {
-            if (!(multi.server instanceof PhysicsServer)) return this.parent!(ballLike, blockDir)
+            if (!isPhysics(multi.server)) return this.parent!(ballLike, blockDir)
 
             this.destroyedBy = ballLike.getCombatantRoot()
             const ret = this.parent!(ballLike, blockDir)
@@ -237,7 +237,7 @@ prestart(() => {
             return ret
         },
         dropItem() {
-            if (!(multi.server instanceof PhysicsServer)) return this.parent()
+            if (!isPhysics(multi.server)) return this.parent()
 
             assert(ig.ccmap)
             assert(this.destroyedBy)

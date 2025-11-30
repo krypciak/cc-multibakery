@@ -7,9 +7,9 @@ import {
     removeServerListEntry,
     replaceServerEntry,
 } from './server-info'
-import { DEFAULT_HTTP_PORT } from '../../net/web-server'
 import { addTitleScreenButton } from '../../misc/title-screen-button'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../misc/nwjs-version-popup'
+import { DEFAULT_HTTP_PORT } from './default-server-list'
 
 import './server-list-list'
 

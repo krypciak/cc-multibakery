@@ -1,7 +1,7 @@
 import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { PhysicsServer } from '../server/physics/physics-server'
 import { Client } from './client'
+import { isPhysics } from '../server/physics/is-physics-server'
 
 prestart(() => {
     ig.Physics.inject({
@@ -129,7 +129,7 @@ declare global {
     }
 }
 export function updateDummyData(client: Client) {
-    if (!(multi.server instanceof PhysicsServer)) return
+    if (!isPhysics(multi.server)) return
     const inp = client.inputManager
 
     const menu = sc.menu.currentMenu

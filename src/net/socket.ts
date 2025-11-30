@@ -2,7 +2,6 @@ import type { Server as _Server, Socket as _Socket } from 'socket.io'
 import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { type NetConnection, type NetManagerPhysicsServer } from './connection'
-import { PhysicsServer } from '../server/physics/physics-server'
 import {
     type ClientLeaveData,
     isClientLeaveData,
@@ -17,6 +16,7 @@ import { parser as binaryParser } from './socket-io-parser'
 import { type NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
 import { type Username } from './binary/binary-types'
+import { assertPhysics } from '../server/physics/is-physics-server'
 
 type SocketData = never
 
@@ -82,7 +82,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         })
 
         const server = multi.server
-        assert(server instanceof PhysicsServer)
+        assertPhysics(server)
         this.io.on('connection', async socket => {
             const connection = new SocketNetConnection(socket, () => {
                 this.connections.erase(connection)

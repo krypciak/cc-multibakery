@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { PhysicsServer } from '../physics-server'
+import { isPhysics } from '../is-physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 declare global {
@@ -25,7 +25,7 @@ prestart(() => {
             this.tmpEntity = undefined
         },
         activate(noDelay) {
-            if (!(multi.server instanceof PhysicsServer)) return this.parent(noDelay)
+            if (!isPhysics(multi.server)) return this.parent(noDelay)
             if (!this.isOn) setNextSetBy(this.tmpEntity!)
             this.parent(noDelay)
             unsetNextSetBy()

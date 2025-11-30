@@ -1,8 +1,8 @@
 import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
-import { PhysicsServer } from '../../../server/physics/physics-server'
 import { closePhysicsServerAndSaveState } from '../../../server/physics/create-from-current-state'
 import { schedulePostTask } from 'cc-instanceinator/src/inst-util'
+import { isPhysics } from '../../../server/physics/is-physics-server'
 
 declare global {
     namespace sc {
@@ -24,8 +24,7 @@ prestart(() => {
                     onButtonPress: this.toTitleButton.onButtonPress,
                 }
 
-                const isMaster =
-                    PHYSICS && multi.server instanceof PhysicsServer && multi.server.getMasterClient() == ig.client
+                const isMaster = PHYSICS && isPhysics(multi.server) && multi.server.getMasterClient() == ig.client
 
                 const { text, dialogText } = isMaster
                     ? {

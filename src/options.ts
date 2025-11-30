@@ -1,11 +1,10 @@
 import type { Options } from 'ccmodmanager/types/mod-options'
 import { poststart, prestart } from './loading-stages'
-import { RemoteServer } from './server/remote/remote-server'
-import { DEFAULT_HTTP_PORT } from './net/web-server'
 import { generateRandomUsername, isUsernameValid } from './misc/username-util'
 import Multibakery from './plugin'
-import { serverListDefault } from './client/menu/server-info'
-import { PhysicsServer } from './server/physics/physics-server'
+import { DEFAULT_HTTP_PORT, serverListDefault } from './client/menu/default-server-list'
+import { isPhysics } from './server/physics/is-physics-server'
+import { isRemote } from './server/remote/is-remote-server'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -44,7 +43,7 @@ function registerOpts() {
                         name: 'Show network traffic',
                         description: 'Shows the network trafic per second',
                         changeEvent() {
-                            if (multi.server instanceof RemoteServer) {
+                            if (isRemote(multi.server)) {
                                 multi.server.measureTraffic =
                                     Opts.showPacketNetworkTraffic || Opts.showPacketNetworkSize
                             }
@@ -56,7 +55,7 @@ function registerOpts() {
                         name: 'Show individual traffic',
                         description: 'Shows the size of individual packets',
                         changeEvent() {
-                            if (multi.server instanceof RemoteServer) {
+                            if (isRemote(multi.server)) {
                                 multi.server.measureTraffic =
                                     Opts.showPacketNetworkTraffic || Opts.showPacketNetworkSize
                             }
@@ -268,7 +267,7 @@ function registerOpts() {
                         name: 'Copy stats for new players',
                         description: 'Gives new players cloned stats of the first player on the same map',
                         changeEvent() {
-                            if (multi.server instanceof PhysicsServer) {
+                            if (isPhysics(multi.server)) {
                                 multi.server.settings.copyNewPlayerStats = Opts.serverCopyNewPlayerStats
                             }
                         },

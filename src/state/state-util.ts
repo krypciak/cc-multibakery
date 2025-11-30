@@ -1,7 +1,7 @@
-import { PhysicsServer } from '../server/physics/physics-server'
+import { isPhysics } from '../server/physics/is-physics-server'
 
 export function shouldCollectStateData(): boolean {
-    return multi.server instanceof PhysicsServer && multi.server.anyRemoteClientsOn
+    return isPhysics(multi.server) && multi.server.anyRemoteClientsOn
 }
 
 export function undefinedIfFalsy<T>(obj: T): T | undefined {

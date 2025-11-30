@@ -1,5 +1,4 @@
 import { type RemoteServerConnectionSettings } from '../../server/remote/remote-server'
-import { DEFAULT_HTTP_PORT } from '../../net/web-server'
 import { type PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
 import { Opts } from '../../options'
 import { type ModCompatibilityList } from '../../server/mod-compatibility-list'
@@ -33,22 +32,6 @@ export interface NetServerInfoPhysics {
     details: ServerDetailsPhysics
 }
 
-export const serverListDefault: NetServerInfoRemote[] = [
-    {
-        connection: {
-            type: 'socket',
-            host: 'crosscode.krypek.cc',
-            port: 443,
-        },
-    },
-    {
-        connection: {
-            type: 'socket',
-            host: '127.0.0.1',
-            port: DEFAULT_HTTP_PORT,
-        },
-    },
-]
 export function getServerListInfo(): NetServerInfoRemote[] {
     return [...Opts.serverList]
 }

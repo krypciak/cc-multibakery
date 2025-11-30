@@ -1,12 +1,12 @@
 import { assert } from '../../misc/assert'
 import { createNetidSpecialBit, type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { PhysicsServer } from '../../server/physics/physics-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import { type StateKey } from '../states'
 import { type f64, type i6, type u16 } from 'ts-binarifier/src/type-aliases'
 import { runTaskInMapInst } from '../../client/client'
+import { isPhysics } from '../../server/physics/is-physics-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -258,7 +258,7 @@ prestart(() => {
     if (ASSERT) {
         ig.EFFECT_ENTRY.COPY_SPRITE.inject({
             start(entity) {
-                if (multi.server instanceof PhysicsServer && entity.target && !entity.target.netid) {
+                if (isPhysics(multi.server) && entity.target && !entity.target.netid) {
                     console.warn(
                         `entity.target (${findClassName(entity.target)}) is not an net entity! on ig.EFFECT_ENTRY.COPY_SPRITE#start, clients will crash!`
                     )

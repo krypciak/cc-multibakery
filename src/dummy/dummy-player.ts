@@ -5,11 +5,11 @@ import { Client } from '../client/client'
 import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { PhysicsServer } from '../server/physics/physics-server'
 import { type Username } from '../net/binary/binary-types'
 
 import './dummy-skins'
 import './dummy-var-access'
+import { isPhysics } from '../server/physics/is-physics-server'
 
 declare global {
     namespace NodeJS {
@@ -181,7 +181,7 @@ prestart(() => {
             this.setConfig(new sc.PlayerConfig('Lea'))
 
             const client = this.dummy.getClient(true)
-            if (multi.server instanceof PhysicsServer) assert(client)
+            if (isPhysics(multi.server)) assert(client)
             if (client) {
                 runTask(client.inst, () => {
                     ig.vars.registerVarAccessor('item', this, 'VarItemEditor')
@@ -199,7 +199,7 @@ prestart(() => {
             ig.vars.unregisterVarAccessor(this)
 
             const client = this.dummy.getClient(true)
-            if (multi.server instanceof PhysicsServer) assert(client)
+            if (isPhysics(multi.server)) assert(client)
             if (client) {
                 runTask(client.inst, () => {
                     ig.vars.unregisterVarAccessor(this)

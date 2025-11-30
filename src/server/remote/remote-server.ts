@@ -40,6 +40,7 @@ export function isClientLeaveData(data: unknown): data is ClientLeaveData {
 }
 
 export class RemoteServer extends Server<RemoteServerSettings> {
+    physics: boolean = false
     netManager!: SocketNetManagerRemoteServer
     notifyReadyMaps?: MapName[]
 

@@ -2,7 +2,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../../misc/assert'
 import { prestart } from '../../../loading-stages'
 import { findSetByEntityByVars } from './vars'
-import { PhysicsServer } from '../../physics/physics-server'
+import { isPhysics } from '../is-physics-server'
 
 declare global {
     namespace ig {
@@ -29,7 +29,7 @@ prestart(() => {
 
     ig.EventManager.inject({
         callEvent(...args) {
-            if (!(multi.server instanceof PhysicsServer)) return this.parent(...args)
+            if (!isPhysics(multi.server)) return this.parent(...args)
 
             let player: ig.Entity | undefined
             if (this.nextTriggeredBy) {

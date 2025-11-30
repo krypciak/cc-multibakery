@@ -21,6 +21,7 @@ import { linkMusic } from '../server/music'
 import { type MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
 import { type Username } from '../net/binary/binary-types'
+import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 
 import './injects'
 
@@ -230,11 +231,11 @@ export class Client extends InstanceUpdateable {
         await runTask(map.inst, () => this.createPlayer())
         map.enter(this)
 
-        runTask(map.inst, () => {
-            if (multi.server instanceof PhysicsServer) {
+        if (isPhysics(multi.server)) {
+            runTask(map.inst, () => {
                 teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker, undefined, true)
-            }
-        })
+            })
+        }
         this.ready = true
 
         this.linkMapToInstance(map)
@@ -348,7 +349,7 @@ export class Client extends InstanceUpdateable {
     }
 
     getSaveState(allowCopy: boolean) {
-        if (!(multi.server instanceof PhysicsServer)) return
+        if (!isPhysics(multi.server)) return
 
         let state = multi.storage.getPlayerState(this.username)
         if (allowCopy && !state && multi.server.settings.copyNewPlayerStats) {
@@ -366,7 +367,7 @@ export class Client extends InstanceUpdateable {
     }
 
     private loadState() {
-        assert(multi.server instanceof PhysicsServer)
+        assertPhysics(multi.server)
         const state = this.getSaveState(true)
         if (state) {
             applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
@@ -374,7 +375,7 @@ export class Client extends InstanceUpdateable {
     }
 
     private async createPlayer() {
-        if (multi.server instanceof PhysicsServer) {
+        if (isPhysics(multi.server)) {
             if (this.dummy && !this.dummy._killed) {
                 runTask(instanceinator.instances[this.dummy._instanceId], () => {
                     this.dummy.gui.crosshair.kill(true)

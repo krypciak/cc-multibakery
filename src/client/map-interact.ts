@@ -3,7 +3,7 @@ import { assert } from '../misc/assert'
 import { runTask, runTasks, scheduleTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
-import { PhysicsServer } from '../server/physics/physics-server'
+import { isPhysics } from '../server/physics/is-physics-server'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -136,7 +136,7 @@ prestart(() => {
     })
     sc.XenoDialogIcon.inject({
         onSkipInteract(msg) {
-            if (!(multi.server instanceof PhysicsServer) || ig.ccmap) return this.parent(msg)
+            if (!isPhysics(multi.server) || ig.ccmap) return this.parent(msg)
             assert(ig.client)
 
             if (msg == sc.SKIP_INTERACT_MSG.SKIPPED) {

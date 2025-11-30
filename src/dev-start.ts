@@ -1,5 +1,5 @@
 import { PhysicsServer } from './server/physics/physics-server'
-import { DEFAULT_HTTP_PORT } from './net/web-server'
+import { DEFAULT_HTTP_PORT } from './client/menu/default-server-list'
 import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'

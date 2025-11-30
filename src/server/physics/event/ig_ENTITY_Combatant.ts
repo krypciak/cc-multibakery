@@ -1,7 +1,7 @@
 import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
 import { type EntityNetid } from '../../../misc/entity-netid'
-import { PhysicsServer } from '../physics-server'
+import { isPhysics } from '../is-physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 declare global {
@@ -39,7 +39,7 @@ prestart(() => {
         },
         selfDestruct(resolveDefeat) {
             const entity = this.getLastDamagingEntity()
-            if (!(multi.server instanceof PhysicsServer) || !entity) return this.parent(resolveDefeat)
+            if (!isPhysics(multi.server) || !entity) return this.parent(resolveDefeat)
 
             setNextSetBy(entity)
             this.parent(resolveDefeat)
@@ -47,7 +47,7 @@ prestart(() => {
         },
         update() {
             const entity = this.getLastDamagingEntity()
-            if (!(multi.server instanceof PhysicsServer) || !entity) return this.parent()
+            if (!isPhysics(multi.server) || !entity) return this.parent()
 
             setNextSetBy(entity)
             this.parent()

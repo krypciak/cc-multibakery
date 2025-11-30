@@ -58,6 +58,8 @@ export interface ClientJoinAckData {
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
+    abstract physics: boolean
+
     baseInst!: InstanceinatorInstance
 
     maps: Map<MapName, CCMap> = new Map()

@@ -15,9 +15,9 @@ import type {
     MapName,
 } from '../net/binary/binary-types'
 import { type OnLinkChange } from '../server/ccmap/ccmap'
-import { PhysicsServer } from '../server/physics/physics-server'
-import { RemoteServer } from '../server/remote/remote-server'
 import { addCombatantParty } from './combatant-party-api'
+import { isPhysics } from '../server/physics/is-physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 import './social-list-gui'
 import './party-var-access'
@@ -178,7 +178,7 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
     }
 
     private setPlayerData(username: Username, party: MultiParty) {
-        if (multi.server instanceof PhysicsServer) {
+        if (isPhysics(multi.server)) {
             const client = multi.server.clients.get(username)
             assert(client)
             client.dummy.party = party.combatantParty
@@ -207,14 +207,14 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
     }
 
     onClientUnlink(this: this, client: Client) {
-        if (multi.server instanceof RemoteServer) return
+        if (!isPhysics(multi.server)) return
         if (!client.dummy) return
 
         this.leaveCurrentParty(client.username)
     }
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {
-        if (multi.server instanceof RemoteServer) throw new Error('RemoteServer#getPlayerList not implemented!')
+        if (isRemote(multi.server)) throw new Error('RemoteServer#getPlayerList not implemented!')
 
         const client = multi.server.clients.get(username)
         assert(client?.dummy)

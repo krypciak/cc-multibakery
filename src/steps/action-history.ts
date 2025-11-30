@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { PhysicsServer } from '../server/physics/physics-server'
+import { isPhysics } from '../server/physics/is-physics-server'
 import { onActionStepStart } from '../state/action-steps'
 
 prestart(() => {
@@ -9,7 +9,7 @@ prestart(() => {
     }
     ig.Action.inject({
         run(actor) {
-            if (!(multi.server instanceof PhysicsServer)) return this.parent(actor)
+            if (!isPhysics(multi.server)) return this.parent(actor)
 
             if (!this.parallelMove) Vec2.assignC(actor.coll.accelDir, 0, 0)
             const oldCurrentAction = actor.currentAction

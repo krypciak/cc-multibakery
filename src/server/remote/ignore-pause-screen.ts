@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { PhysicsServer } from '../physics/physics-server'
+import { isPhysics } from '../physics/is-physics-server'
 
 declare global {
     namespace ig {
@@ -16,7 +16,7 @@ prestart(() => {
             if (!ig.client) return
 
             function trySetBlock(value: boolean) {
-                if (multi.server instanceof PhysicsServer) {
+                if (isPhysics(multi.server)) {
                     const inp = ig.client!.inputManager
                     if (inp instanceof dummy.input.Puppet.InputManager) {
                         setPauseScreenBlock(inp, value)

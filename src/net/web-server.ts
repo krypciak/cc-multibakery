@@ -5,8 +5,6 @@ import { assert } from '../misc/assert'
 import { getCCBundlerHttpModules } from './cc-bundler-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 
-export const DEFAULT_HTTP_PORT = 33405
-
 export class PhysicsHttpServer {
     private stopFunc = () => this.stop()
 
