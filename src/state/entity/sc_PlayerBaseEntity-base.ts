@@ -1,7 +1,7 @@
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
-import type { u10, u8 } from 'ts-binarifier/src/type-aliases'
+import type { u10, u7, u8 } from 'ts-binarifier/src/type-aliases'
 import type { ArmorType, ExpType, ItemType, LevelType } from '../../net/binary/binary-types'
 
 declare global {
@@ -37,8 +37,8 @@ export function getState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: 
         torso: memory.diff(this.model.equip.torso),
         feet: memory.diff(this.model.equip.feet),
 
-        level: memory.diff(this.model.level),
-        exp: memory.diff(this.model.exp),
+        level: memory.diff(this.model.level as u7),
+        exp: memory.diff(this.model.exp as u10),
 
         element: memory.diff(this.model.currentElementMode),
     }
