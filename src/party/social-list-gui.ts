@@ -227,6 +227,7 @@ prestart(() => {
                 }
             } else if (model == multi.server.party) {
                 if (message != MULTI_PARTY_EVENT.LEAVE) {
+                    this.list.tabContent[0]?.list.remove()
                     this.list.tabContent[0] = this.list.onContentCreation()
                     this.optionsMultiPlayers?.hideSortMenu()
                     this.party.updatePartyMembers()
@@ -282,12 +283,6 @@ prestart(() => {
             } else {
                 menu.setPivot(menu.hook.size.x / 2, 0)
             }
-
-            // if (!sc.model.player.getCore(sc.PLAYER_CORE.MENU_SOCIAL_INVITE)) {
-            //     inviteActive = contactActive = false
-            // }
-
-            // sc.party.currentParty.length >= sc.PARTY_MAX_MEMBERS
 
             button.keepButtonPressed()
             this._keepButtonFocused = button
