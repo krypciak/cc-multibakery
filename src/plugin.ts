@@ -1,7 +1,8 @@
-import { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
+import type { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
+import type { Mod1 } from 'cc-instanceinator/src/types'
 import ccmod from '../ccmod.json'
-import { Mod1 } from 'cc-instanceinator/src/types'
 import { executePostload, executePoststart, executePrestart } from './loading-stages'
+
 import './multiplayer'
 import './options'
 import './misc/modify-prototypes'
@@ -34,4 +35,13 @@ export default class Multibakery implements PluginClass {
     }
 }
 
+/* TODO: release instanceinator */
+/* TODO: check if remote items work correctly */
+/* TODO: socket.ts assert holding the entire project */
+/* TODO: improve performance of hidden instances */
+
+/* todo maybe sometime */
 /* TODO: npc stuff fix */
+/* TODO: npc still sometimes crashes on cutscene skip spam */
+/* TODO: ascended equipment rework */
+/* TODO: cond entities breaking netid? */

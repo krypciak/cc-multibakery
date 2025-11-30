@@ -106,8 +106,8 @@ async function run(
                     if (dropAssert) {
                         sp = sp.map(line =>
                             line
-                                .replace(/^\s*(else )?(if \(.*\) )?assert\(.*\)$/g, '')
-                                .replace(/^\s*\} else assert\(.*\)$/g, '}')
+                                .replace(/^\s*(else )?(if \(.*\) )?assert(Physics|Remote)?\(.*\)$/g, '')
+                                .replace(/^\s*\} else assert(Physics|Remote)?\(.*\)$/g, '}')
                         )
                     }
                     if (!remote) {
@@ -115,9 +115,13 @@ async function run(
                             line
                                 .replace(/multi\.server instanceof RemoteServer/g, 'false')
                                 .replace(/server instanceof RemoteServer/g, 'false')
+                                .replace(/isRemote\(multi\.server\)/g, 'false')
+                                .replace(/isRemote\(server\)/g, 'false')
+
                                 .replace(/multi\.server instanceof PhysicsServer/g, 'multi.server')
                                 .replace(/server instanceof PhysicsServer/g, 'multi.server')
-                                .replace(/multi\.server instanceof PhysicsServer/g, 'multi.server')
+                                .replace(/isPhysics\(multi\.server\)/g, 'multi.server')
+                                .replace(/isPhysics\(server\)/g, 'multi.server')
                         )
                         if (!physics) throw new Error('cannot both disable remote and physics')
                     } else if (!physics) {
@@ -125,8 +129,13 @@ async function run(
                             line
                                 .replace(/multi\.server instanceof RemoteServer/g, 'multi.server')
                                 .replace(/server instanceof RemoteServer/g, 'server')
+                                .replace(/isRemote\(multi\.server\)/g, 'multi.server')
+                                .replace(/isRemote\(server\)/g, 'server')
+
                                 .replace(/multi\.server instanceof PhysicsServer/g, 'false')
                                 .replace(/server instanceof PhysicsServer/g, 'false')
+                                .replace(/isPhysics\(multi\.server\)/g, 'false')
+                                .replace(/isPhysics\(server\)/g, 'false')
                         )
                         if (!remote) throw new Error('cannot both disable remote and physics')
                     }
