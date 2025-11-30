@@ -139,7 +139,9 @@ prestart(() => {
             }
             if (success) this.loaded = true
             else this.failed = true
-            runTask(instanceinator.instances[this._instanceId], () => {
+            const inst = instanceinator.instances[this._instanceId]
+            if (!inst) return
+            runTask(inst, () => {
                 this.loadingFinished(success)
             })
         },
