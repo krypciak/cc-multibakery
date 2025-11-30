@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { RemoteServer } from '../remote/remote-server'
+import { isRemote } from '../remote/is-remote-server'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
 
@@ -67,7 +67,7 @@ prestart(() => {
     ig.EVENT_STEP.TELEPORT.inject({
         start(data, eventCall) {
             if (!multi.server) return this.parent(data, eventCall)
-            if (multi.server instanceof RemoteServer) return
+            if (isRemote(multi.server)) return
 
             const player: ig.ENTITY.Player | undefined =
                 ig.client?.dummy ?? eventCall?.stack[0]?.stepData?._actionEntity

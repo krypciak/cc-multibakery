@@ -45,7 +45,7 @@ prestart(() => {
                             ig.interact.removeEntry(this.buttonInteract)
                             assert(ig.client)
                             if (isMaster) {
-                                closePhysicsServerAndSaveState()
+                                PHYSICS && closePhysicsServerAndSaveState()
                             } else {
                                 const client = ig.client
                                 schedulePostTask(multi.server.inst, () => {

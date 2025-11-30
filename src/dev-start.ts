@@ -7,7 +7,7 @@ import { Opts } from './options'
 async function startDevServer() {
     if (!PHYSICS) return
 
-    multi.setServer(
+    PHYSICS && multi.setServer(
         new PhysicsServer({
             tps: 60,
             useAnimationFrameLoop: true,

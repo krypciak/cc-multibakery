@@ -110,14 +110,14 @@ prestart(() => {
                         onPress() {
                             self.closeMenu()
                             self.doStateTransition('HIDDEN', true, true)
-                            createPhysicsServerFromCurrentState()
+                            PHYSICS && createPhysicsServerFromCurrentState()
                         },
                     })
                 } else if (isPhysics(multi.server) && isMaster) {
                     buttons.push({
                         name: 'Stop server',
                         onPress() {
-                            closePhysicsServerAndSaveState()
+                            PHYSICS && closePhysicsServerAndSaveState()
                         },
                     })
                 }
