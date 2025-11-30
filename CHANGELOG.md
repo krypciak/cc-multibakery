@@ -26,6 +26,7 @@
 - Fix remote menu scroll desyncing
 - Fix some some actions sometimes not preserving the event chain and running on the wrong instance
 - Fix variables failing to set when their parent object doesn't exist
+- Fix crash on item drop
 
 ## [0.6.1] 2025-11-19
 

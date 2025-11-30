@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
-import { assertPhysics, isPhysics } from '../physics/is-physics-server'
+import { isPhysics } from '../physics/is-physics-server'
 
 prestart(() => {
     const backup = ig.CollTools.isInScreen
@@ -226,12 +226,13 @@ prestart(() => {
         dropItem() {
             if (!isPhysics(multi.server)) return this.parent()
 
-            assert(ig.ccmap)
             assert(this.destroyedBy)
-            let player: dummy.DummyPlayer
+            let player!: dummy.DummyPlayer
             if (this.destroyedBy instanceof dummy.DummyPlayer) {
                 player = this.destroyedBy
-            } else {
+            } else if (ig.client) {
+                player = ig.client.dummy
+            } else if (ig.ccmap) {
                 // console.warn('ig.ENTITY.ItemDestruct not destroyed by player, picking first player on map')
                 player = ig.ccmap.clients[0]?.dummy
                 /* haven't encountered a situation where player is undefined, but just to be safe */
