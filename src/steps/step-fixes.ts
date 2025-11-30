@@ -30,6 +30,21 @@ prestart(() => {
     })
 })
 
+prestart(() => {
+    ig.EVENT_STEP.SHOW_PARALLAX.inject({
+        start(data, eventCall) {
+            if (!ig.client) return this.parent(data, eventCall)
+
+            this.parallaxGui = ig.gui.createEventGui(
+                '__parallaxGui__',
+                'Parallax',
+                this.parallaxGui.hook.mapGuiInfo!.settings
+            )
+            return this.parent(data, eventCall)
+        },
+    })
+})
+
 /* client -> map */
 prestart(() => {
     if (!PHYSICS) return
