@@ -2,8 +2,8 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
-import { u4 } from 'ts-binarifier/src/type-aliases'
+import { type StateKey } from '../states'
+import { type u4 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {

@@ -1,6 +1,6 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../loading-stages'
-import { MapName } from '../../net/binary/binary-types'
+import { type MapName } from '../../net/binary/binary-types'
 
 type Layer = keyof typeof ig.MAP
 export function initMapsAndLevels(this: ig.Game, data: sc.MapModel.Map) {

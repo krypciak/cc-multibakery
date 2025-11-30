@@ -1,9 +1,9 @@
-import { entityIgnoreDeath, EntityNetid } from '../../misc/entity-netid'
+import { entityIgnoreDeath, type EntityNetid } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
-import { addStateHandler, StateKey } from '../states'
-import { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
+import { addStateHandler, type StateKey } from '../states'
+import { type RecordSize, type u16, type u4 } from 'ts-binarifier/src/type-aliases'
 import { runTaskInMapInst } from '../../client/client'
 
 type EntityDeathsObj = Record<EntityNetid, u4>

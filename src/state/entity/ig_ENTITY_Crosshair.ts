@@ -1,8 +1,8 @@
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
-import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
+import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
+import { type StateKey } from '../states'
 import { inputBackup } from '../../dummy/dummy-input'
 import { RemoteServer } from '../../server/remote/remote-server'
 

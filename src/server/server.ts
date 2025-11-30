@@ -1,16 +1,16 @@
 import { startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { Client, ClientSettings } from '../client/client'
+import { Client, type ClientSettings } from '../client/client'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
-import { NetConnection } from '../net/connection'
+import { type NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
 import { MultiPartyManager } from '../party/party'
-import { MapName, Username } from '../net/binary/binary-types'
+import { type MapName, type Username } from '../net/binary/binary-types'
 
 export interface MapTpInfo {
     map: MapName

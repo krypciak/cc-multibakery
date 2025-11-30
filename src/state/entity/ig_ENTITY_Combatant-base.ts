@@ -3,15 +3,15 @@ import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
-import { f64 } from 'ts-binarifier/src/type-aliases'
+import { type f64 } from 'ts-binarifier/src/type-aliases'
 import {
-    AttackType,
-    COMBATANT_PARTY,
-    DefenceType,
-    FocusType,
-    HpType,
-    SpLevelType,
-    SpType,
+    type AttackType,
+    type COMBATANT_PARTY,
+    type DefenceType,
+    type FocusType,
+    type HpType,
+    type SpLevelType,
+    type SpType,
 } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 

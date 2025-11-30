@@ -1,11 +1,11 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler, StateKey } from './states'
+import { addStateHandler, type StateKey } from './states'
 import { StateMemory } from './state-util'
 import {
     getPlayerLocations,
     mergePlayerLocations,
-    PlayerLocation,
-    PlayerLocationRecord,
+    type PlayerLocation,
+    type PlayerLocationRecord,
 } from '../map-gui/player-locations'
 
 declare global {

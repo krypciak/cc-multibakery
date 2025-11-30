@@ -5,8 +5,8 @@ import { assert } from '../misc/assert'
 import { getStepSettings } from '../steps/step-id'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { shouldCollectStateData } from './state-util'
-import { EntityNetid } from '../misc/entity-netid'
-import { Username } from '../net/binary/binary-types'
+import { type EntityNetid } from '../misc/entity-netid'
+import { type Username } from '../net/binary/binary-types'
 import { runEvent } from '../steps/event-steps-run'
 
 interface StepObj {

@@ -1,4 +1,4 @@
-import { u16, u6 } from 'ts-binarifier/src/type-aliases'
+import { type u16, type u6 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { assert } from './assert'
 import { RemoteServer } from '../server/remote/remote-server'

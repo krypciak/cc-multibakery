@@ -1,7 +1,7 @@
-import { NetServerInfoRemote } from '../../client/menu/server-info'
+import { type NetServerInfoRemote } from '../../client/menu/server-info'
 import { assert } from '../../misc/assert'
 import { Opts } from '../../options'
-import { ClientJoinAckData, ClientJoinData } from '../server'
+import { type ClientJoinAckData, type ClientJoinData } from '../server'
 import { RemoteServer } from './remote-server'
 
 export async function tryJoinRemote(

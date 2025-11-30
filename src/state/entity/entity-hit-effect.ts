@@ -2,8 +2,8 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
-import { u16 } from 'ts-binarifier/src/type-aliases'
-import { EntityNetid } from '../../misc/entity-netid'
+import { type u16 } from 'ts-binarifier/src/type-aliases'
+import { type EntityNetid } from '../../misc/entity-netid'
 import { runTaskInMapInst } from '../../client/client'
 
 interface HitConfig {

@@ -1,6 +1,6 @@
 import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
-import { EntityNetid } from '../../../misc/entity-netid'
+import { type EntityNetid } from '../../../misc/entity-netid'
 import { PhysicsServer } from '../physics-server'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 

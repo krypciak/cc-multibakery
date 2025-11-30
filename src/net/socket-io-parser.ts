@@ -1,4 +1,4 @@
-import { u32, u8 } from 'ts-binarifier/src/type-aliases'
+import { type u32, type u8 } from 'ts-binarifier/src/type-aliases'
 import { Decoder as BinaryDecoder } from 'ts-binarifier/src/decoder'
 import { assert } from '../misc/assert'
 import { SocketIoPacketEncoderDecoder } from './binary/socket-io-packet-encoder-decoder.generated'

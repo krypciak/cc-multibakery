@@ -6,7 +6,7 @@ import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { PhysicsServer } from '../server/physics/physics-server'
-import { Username } from '../net/binary/binary-types'
+import { type Username } from '../net/binary/binary-types'
 
 import './dummy-skins'
 import './dummy-var-access'

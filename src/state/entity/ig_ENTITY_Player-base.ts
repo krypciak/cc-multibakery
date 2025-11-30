@@ -2,10 +2,10 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
+import { type StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
-import { u10, u3, u8 } from 'ts-binarifier/src/type-aliases'
-import { ArmorType, ExpType, ItemType, LevelType } from '../../net/binary/binary-types'
+import { type u10, type u3, type u8 } from 'ts-binarifier/src/type-aliases'
+import { type ArmorType, type ExpType, type ItemType, type LevelType } from '../../net/binary/binary-types'
 
 declare global {
     namespace ig.ENTITY {

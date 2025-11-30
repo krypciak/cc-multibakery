@@ -1,8 +1,8 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
-import { WallBaseReturn } from './ig_ENTITY_WallBase-base'
+import { type StateKey } from '../states'
+import { type WallBaseReturn } from './ig_ENTITY_WallBase-base'
 import './ig_ENTITY_WallBase-base'
 
 declare global {

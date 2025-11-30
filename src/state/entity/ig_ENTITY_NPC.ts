@@ -1,10 +1,10 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
+import { type StateKey } from '../states'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { RemoteServer } from '../../server/remote/remote-server'
-import { i16 } from 'ts-binarifier/src/type-aliases'
+import { type i16 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {

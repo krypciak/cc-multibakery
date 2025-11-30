@@ -1,17 +1,17 @@
 import { poststart, prestart } from '../../loading-stages'
 import Multibakery from '../../plugin'
-
-import './server-list-list'
 import {
     addServerListEntry,
     moveServerEntry,
-    NetServerInfoRemote,
+    type NetServerInfoRemote,
     removeServerListEntry,
     replaceServerEntry,
 } from './server-info'
 import { DEFAULT_HTTP_PORT } from '../../net/web-server'
 import { addTitleScreenButton } from '../../misc/title-screen-button'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../misc/nwjs-version-popup'
+
+import './server-list-list'
 
 prestart(() => {
     if (!REMOTE) return

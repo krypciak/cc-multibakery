@@ -1,22 +1,22 @@
 import type { Server as _Server, Socket as _Socket } from 'socket.io'
 import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
-import { NetConnection, NetManagerPhysicsServer } from './connection'
+import { type NetConnection, type NetManagerPhysicsServer } from './connection'
 import { PhysicsServer } from '../server/physics/physics-server'
 import {
-    ClientLeaveData,
+    type ClientLeaveData,
     isClientLeaveData,
     RemoteServer,
-    RemoteServerConnectionSettings,
+    type RemoteServerConnectionSettings,
 } from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import type { Server as HttpServer } from 'http'
-import { ClientJoinAckData, ClientJoinData, isClientJoinData } from '../server/server'
+import { type ClientJoinAckData, type ClientJoinData, isClientJoinData } from '../server/server'
 import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
-import { NetServerInfoPhysics } from '../client/menu/server-info'
+import { type NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
-import { Username } from './binary/binary-types'
+import { type Username } from './binary/binary-types'
 
 type SocketData = never
 

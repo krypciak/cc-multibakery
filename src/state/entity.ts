@@ -1,7 +1,7 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler, StateKey } from './states'
+import { addStateHandler, type StateKey } from './states'
 import { assert } from '../misc/assert'
-import { entityApplyPriority, EntityNetid, entityTypeidToClass, getEntityTypeId } from '../misc/entity-netid'
+import { entityApplyPriority, type EntityNetid, entityTypeidToClass, getEntityTypeId } from '../misc/entity-netid'
 import { cleanRecord } from './state-util'
 
 import './entity/entity-death'

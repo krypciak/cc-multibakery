@@ -1,8 +1,8 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
-import { u8 } from 'ts-binarifier/src/type-aliases'
+import { type StateKey } from '../states'
+import { type u8 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     namespace ig.ENTITY {

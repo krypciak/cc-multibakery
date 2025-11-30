@@ -1,7 +1,7 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler, StateKey } from './states'
+import { addStateHandler, type StateKey } from './states'
 import { StateMemory } from './state-util'
-import { AreaName } from '../net/binary/binary-types'
+import { type AreaName } from '../net/binary/binary-types'
 
 type AreasObj = Record<AreaName, /* landmarks */ Record<string, true>>
 

@@ -1,11 +1,11 @@
 import { assert } from '../../misc/assert'
-import { createNetidSpecialBit, EntityNetid, registerNetEntity } from '../../misc/entity-netid'
+import { createNetidSpecialBit, type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { PhysicsServer } from '../../server/physics/physics-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
-import { StateKey } from '../states'
-import { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
+import { type StateKey } from '../states'
+import { type f64, type i6, type u16 } from 'ts-binarifier/src/type-aliases'
 import { runTaskInMapInst } from '../../client/client'
 
 declare global {

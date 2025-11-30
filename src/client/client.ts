@@ -18,9 +18,9 @@ import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
 import { linkMusic } from '../server/music'
-import { MapTpInfo } from '../server/server'
+import { type MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
-import { Username } from '../net/binary/binary-types'
+import { type Username } from '../net/binary/binary-types'
 
 import './injects'
 

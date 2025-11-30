@@ -4,9 +4,9 @@ import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { createFakeEffectSheet } from '.././entity'
 import { StateMemory } from '.././state-util'
-import { StateKey } from '.././states'
-import { u8 } from 'ts-binarifier/src/type-aliases'
-import { ItemType } from '../../net/binary/binary-types'
+import { type StateKey } from '.././states'
+import { type u8 } from 'ts-binarifier/src/type-aliases'
+import { type ItemType } from '../../net/binary/binary-types'
 
 declare global {
     namespace sc {

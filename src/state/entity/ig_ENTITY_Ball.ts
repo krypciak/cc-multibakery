@@ -1,10 +1,10 @@
 import { assert } from '../../misc/assert'
-import { EntityNetid, registerNetEntity } from '../../misc/entity-netid'
+import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { RemoteServer } from '../../server/remote/remote-server'
 import { resolveProxyFromType } from './proxy-util'
 import { StateMemory } from '../state-util'
-import { StateKey } from '../states'
+import { type StateKey } from '../states'
 
 declare global {
     namespace ig.ENTITY {

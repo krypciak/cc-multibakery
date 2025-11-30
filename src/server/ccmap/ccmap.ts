@@ -9,7 +9,7 @@ import { linkMapVars } from './map-var-link'
 import { linkOptions } from '../physics/storage/storage'
 import { linkMusic } from '../music'
 import { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { MapName } from '../../net/binary/binary-types'
+import { type MapName } from '../../net/binary/binary-types'
 
 import './injects'
 
