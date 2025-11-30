@@ -34,6 +34,7 @@ prestart(() => {
         },
     })
 })
+
 poststart(() => {
     dummy.DummyPlayer.inject({
         clearActionAttached(...args) {
@@ -110,16 +111,6 @@ prestart(() => {
     }
 })
 
-prestart(() => {
-    ig.EVENT_STEP.SHOW_TUTORIAL_START.inject({
-        start(data, eventCall) {
-            if (!multi.server) return this.parent(data, eventCall)
-            ;(data as any).done = true
-            ;(data as any).accept = false
-        },
-    })
-})
-
 declare global {
     namespace dummy.DummyPlayer {
         interface Data {
@@ -165,15 +156,6 @@ prestart(() => {
     sc.CrossCode.inject({
         onGameLoopStart() {
             if (!multi.server) return this.parent()
-        },
-    })
-})
-
-prestart(() => {
-    ig.EVENT_STEP.SPAWN_ENEMY.inject({
-        start(data, eventCall) {
-            if (!ig.client) return this.parent(data, eventCall)
-            return runTask(ig.client.getMap().inst, () => this.parent(data, eventCall))
         },
     })
 })

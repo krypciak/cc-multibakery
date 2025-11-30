@@ -2,6 +2,7 @@ import './step-id'
 import './event-call-history'
 import './action-history'
 import './resolve-object-access-fix'
+import './step-fixes'
 
 import './log'
 import './vec-assign'

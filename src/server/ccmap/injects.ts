@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
-import { isPhysics } from '../physics/is-physics-server'
+import { assertPhysics, isPhysics } from '../physics/is-physics-server'
 
 prestart(() => {
     const backup = ig.CollTools.isInScreen
@@ -19,19 +19,6 @@ prestart(() => {
             const ret = this.parent(party)
             ig.game.playerEntity = undefined as any
             return ret
-        },
-    })
-
-    ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({
-        start(actor) {
-            if (!multi.server) return this.parent(actor)
-            assert(ig.game.playerEntity == undefined)
-            // @ts-expect-error
-            ig.game.playerEntity = {
-                hasCameraTarget: () => true,
-            }
-            this.parent(actor)
-            ig.game.playerEntity = undefined as any
         },
     })
 
