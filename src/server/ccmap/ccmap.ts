@@ -25,7 +25,7 @@ export interface OnLinkChange {
 }
 
 export class CCMap extends InstanceUpdateable {
-    rawLevelData!: sc.MapModel.Map
+    private rawLevelData!: sc.MapModel.Map
 
     clients: Client[] = []
 
@@ -46,6 +46,13 @@ export class CCMap extends InstanceUpdateable {
                 resolve()
             }
         })
+    }
+
+    copyRawLevelData(): sc.MapModel.Map {
+        return {
+            ...this.rawLevelData,
+            layer: this.rawLevelData.layer.map(layer => ({ ...layer, data: layer.data.map(arr => [...arr]) })),
+        }
     }
 
     private link() {
@@ -70,7 +77,7 @@ export class CCMap extends InstanceUpdateable {
         this.rawLevelData = levelData
 
         await runTask(this.inst, async () => {
-            await setDataFromLevelData.call(ig.game, this.name, levelData)
+            await setDataFromLevelData.call(ig.game, this.name, this.copyRawLevelData())
             runTask(this.inst, () => {
                 sc.model.enterNewGame()
                 sc.model.enterGame()

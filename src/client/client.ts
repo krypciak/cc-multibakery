@@ -264,7 +264,8 @@ export class Client extends InstanceUpdateable {
             ig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
 
             ig.light.shadowProviders = []
-            initMapsAndLevels.call(ig.game, map.rawLevelData)
+            const data = map.copyRawLevelData()
+            initMapsAndLevels.call(ig.game, data)
 
             ig.game.physics = mig.game.physics
 
@@ -309,24 +310,31 @@ export class Client extends InstanceUpdateable {
             sc.map = msc.map
             addAddon(sc.map, ig.game)
 
+            multi.server.party.createPersonalParty(this.username)
+
             sc.model.enterNewGame()
             sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
 
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
-            for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(map.rawLevelData)
+            for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(data)
 
             ig.ready = true
-            const loader = new ig.Loader()
-            loader.load()
-            ig.game.currentLoadingResource = loader
+            // const loader = new ig.Loader()
+            // loader.load()
+            // ig.game.currentLoadingResource = loader
+
+            // ig.game.loadingComplete()
+            ig.game.playerEntity.onPlayerPlaced()
+            ig.game.preDrawMaps()
+            for (const addon of ig.game.addons.levelLoaded) addon.onLevelLoaded(ig.game)
+            ig.game.handleLoadingComplete()
 
             initMapInteractEntries(map.inst)
 
             this.updateGamepadForcer()
 
             sc.model.enterGame()
-            ig.game.playerEntity.onPlayerPlaced()
 
             sc.Model.notifyObserver(sc.model.player.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
 
@@ -344,7 +352,6 @@ export class Client extends InstanceUpdateable {
                 client.dummy.model.updateStats()
                 sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
             }
-            multi.server.party.createPersonalParty(this.username)
         })
     }
 
