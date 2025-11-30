@@ -1,10 +1,10 @@
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import { assert } from '../../misc/assert'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -56,13 +56,13 @@ prestart(() => {
 
     ig.ENTITY.Enemy.inject({
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 
     sc.EnemyType.inject({
         initEntity(enemy) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(enemy)
+            if (!isRemote(multi.server)) return this.parent(enemy)
             this.attribs = {}
             return this.parent(enemy)
         },

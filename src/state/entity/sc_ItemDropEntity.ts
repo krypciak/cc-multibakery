@@ -1,12 +1,12 @@
 import { assert } from '../../misc/assert'
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { createFakeEffectSheet } from '.././entity'
 import { StateMemory } from '.././state-util'
 import { type StateKey } from '.././states'
 import { type u8 } from 'ts-binarifier/src/type-aliases'
 import { type ItemType } from '../../net/binary/binary-types'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace sc {
@@ -70,11 +70,11 @@ prestart(() => {
     sc.ItemDropEntity.inject({
         init(x, y, z, settings) {
             this.parent(x, y, z, settings)
-            if (!(multi.server instanceof RemoteServer)) return
+            if (!isRemote(multi.server)) return
             this.effects = createFakeEffectSheet()
         },
         collectItem(count) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(count)
+            if (!isRemote(multi.server)) return this.parent(count)
             const backup = sc.model.player.addItem
             sc.model.player.addItem = () => {}
             this.parent(count)

@@ -9,10 +9,8 @@ import {
     createClientNetworkPacketTrafficLabel,
     createClientPingLabel,
 } from './client-label-draw'
-import { RemoteServer } from '../server/remote/remote-server'
 import { isUsernameValid } from '../misc/username-util'
 import { applyStateUpdatePacket } from '../state/states'
-import { PhysicsServer } from '../server/physics/physics-server'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
@@ -22,6 +20,7 @@ import { type MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
 import { type Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 import './injects'
 
@@ -87,7 +86,7 @@ export class Client extends InstanceUpdateable {
 
         new dummy.BoxGuiAddon.BoxGuiAddon(this.inst.ig.game)
 
-        if (multi.server instanceof RemoteServer) {
+        if (isRemote(multi.server)) {
             createClientPingLabel(this)
             createClientConnectionInfoLabel(this)
             createClientNetworkPacketTrafficLabel(this)

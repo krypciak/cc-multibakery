@@ -1,13 +1,13 @@
 import { assert } from '../../misc/assert'
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { type StateKey } from '../states'
 import { resolveProxyFromType } from './proxy-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { runTaskInMapInst } from '../../client/client'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace sc {
@@ -71,7 +71,7 @@ prestart(() => {
     if (REMOTE) {
         sc.CombatProxyEntity.inject({
             update() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!isRemote(multi.server)) return this.parent()
                 ig.AnimatedEntity.prototype.update.call(this)
             },
         })
@@ -125,13 +125,13 @@ prestart(() => {
         let ignoreDestroy = false
         sc.CombatProxyEntity.inject({
             destroy(type) {
-                if (multi.server instanceof RemoteServer) {
+                if (isRemote(multi.server)) {
                     if (ignoreDestroy) return
                 }
                 this.parent(type)
             },
             update() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!isRemote(multi.server)) return this.parent()
                 if (!ig.settingState && !ig.lastStatePacket?.states?.[this.netid]) return
 
                 ignoreDestroy = true
@@ -170,7 +170,7 @@ prestart(() => {
     ig.ACTION_STEP.SHOW_EFFECT.inject({
         start(actor: ig.ActorEntity) {
             /* dont spawn proxies on remote server because ig.ENTITY.Effect is already being handled */
-            if (!(multi.server instanceof RemoteServer)) return this.parent(actor)
+            if (!isRemote(multi.server)) return this.parent(actor)
         },
     })
 })

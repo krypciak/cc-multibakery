@@ -1,6 +1,5 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
-import { RemoteServer } from '../server/remote/remote-server'
 import { Client } from '../client/client'
 import { CCMap } from '../server/ccmap/ccmap'
 import { inputBackup } from './dummy-input'
@@ -10,6 +9,7 @@ import { type Username } from '../net/binary/binary-types'
 import './dummy-skins'
 import './dummy-var-access'
 import { isPhysics } from '../server/physics/is-physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 declare global {
     namespace NodeJS {
@@ -136,7 +136,7 @@ prestart(() => {
 
             let inp = this.thrower.inputManager
             let backup: sc.PlayerCrossHairController['updatePos'] | undefined
-            if (multi.server instanceof RemoteServer) {
+            if (isRemote(multi.server)) {
                 const clientInp = this.thrower.getClient(true)?.inputManager
                 if (clientInp?.player) {
                     inp = clientInp

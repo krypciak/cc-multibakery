@@ -1,11 +1,11 @@
 import { assert } from '../../misc/assert'
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { type StateKey } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as igEntityPlayer from './ig_ENTITY_Player-base'
 import { type f32, type u32 } from 'ts-binarifier/src/type-aliases'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     interface EntityStates {
@@ -63,7 +63,7 @@ prestart(() => {
         getState,
         setState,
         createNetid() {
-            if (multi.server instanceof RemoteServer) return
+            if (isRemote(multi.server)) return
             return this.parent()
         },
     })
@@ -87,7 +87,7 @@ prestart(() => {
     if (REMOTE) {
         dummy.DummyPlayer.inject({
             update() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!isRemote(multi.server)) return this.parent()
                 ig.AnimatedEntity.prototype.update.call(this)
             },
         })

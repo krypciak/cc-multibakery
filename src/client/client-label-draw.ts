@@ -1,8 +1,7 @@
 import { type LabelDrawClass, ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import { Client } from './client'
-import { assert } from '../misc/assert'
-import { RemoteServer } from '../server/remote/remote-server'
 import { Opts } from '../options'
+import { assertRemote } from '../server/remote/is-remote-server'
 
 abstract class BasicLabelDrawClass implements LabelDrawClass {
     abstract condition(): boolean
@@ -32,7 +31,7 @@ export function createClientPingLabel(client: Client) {
 }
 
 export function createClientConnectionInfoLabel(client: Client) {
-    assert(multi.server instanceof RemoteServer)
+    assertRemote(multi.server)
     const server = multi.server
 
     class ConnectionInfoLabelDrawClass extends BasicLabelDrawClass {
@@ -45,7 +44,7 @@ export function createClientConnectionInfoLabel(client: Client) {
 }
 
 export function createClientNetworkPacketTrafficLabel(client: Client) {
-    assert(multi.server instanceof RemoteServer)
+    assertRemote(multi.server)
     const server = multi.server
 
     class NetworkPacketTrafficLabelDrawClass extends BasicLabelDrawClass {

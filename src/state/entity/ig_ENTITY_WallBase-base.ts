@@ -1,5 +1,5 @@
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
+import { isRemote } from '../../server/remote/is-remote-server'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
 
@@ -49,14 +49,14 @@ prestart(() => {
 
     ig.ENTITY.WallBlocker.inject({
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
             /* prevent this.timer from ticking */
         },
     })
 
     ig.ENTITY.WallBase.inject({
         varsChanged() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent!()
+            if (!isRemote(multi.server)) return this.parent!()
         },
     })
 }, 2)

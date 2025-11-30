@@ -1,10 +1,10 @@
 import { assert } from '../../misc/assert'
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { resolveProxyFromType } from './proxy-util'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -83,19 +83,19 @@ prestart(() => {
     if (REMOTE) {
         ig.ENTITY.Ball.inject({
             update() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!isRemote(multi.server)) return this.parent()
 
                 ig.ENTITY.Projectile.prototype.update.call(this)
             },
             onBounce(pos, collData) {
-                if (!(multi.server instanceof RemoteServer)) return this.parent(pos, collData)
+                if (!isRemote(multi.server)) return this.parent(pos, collData)
             },
         })
     }
     if (PHYSICSNET) {
         ig.ENTITY.Ball.inject({
             setBallInfo(ballInfo, setFactors) {
-                if (!(multi.server instanceof RemoteServer)) return this.parent(ballInfo, setFactors)
+                if (!isRemote(multi.server)) return this.parent(ballInfo, setFactors)
 
                 ig.ignoreEffectNetid = true
                 this.parent(ballInfo, setFactors)

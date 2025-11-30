@@ -1,10 +1,10 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type {} from 'ccmodmanager/types/local-mods'
 import { prestart } from '../loading-stages'
-import { RemoteServer } from '../server/remote/remote-server'
 import Multibakery from '../plugin'
 import { assert } from './assert'
 import { isPhysics } from '../server/physics/is-physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 prestart(() => {
     ig.System.inject({
@@ -32,7 +32,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
 
     const server = multi.server
     let serverTypeSpecificInfo: string = `clients: [${[...server.clients.values()].map(c => `(${c.username}, ${c.tpInfo.map})`).join(', ')}]\n`
-    if (server instanceof RemoteServer) {
+    if (isRemote(server)) {
         const connectionInfo = server.netManager?.conn?.getConnectionInfo()
         serverTypeSpecificInfo += `${connectionInfo ? `connection: ${connectionInfo}` : ''}\n`
     } else if (isPhysics(server)) {

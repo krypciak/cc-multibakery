@@ -4,7 +4,7 @@ import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
 import { inputBackup } from '../../dummy/dummy-input'
-import { RemoteServer } from '../../server/remote/remote-server'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -84,7 +84,7 @@ prestart(() => {
         getState,
         setState,
         createNetid() {
-            if (multi.server instanceof RemoteServer) return
+            if (isRemote(multi.server)) return
             return this.parent()
         },
     })

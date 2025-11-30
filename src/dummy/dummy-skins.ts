@@ -1,7 +1,7 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { RemoteServer } from '../server/remote/remote-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 export type PlayerSkin = string
 
@@ -82,14 +82,14 @@ prestart(() => {
 
     dummy.DummyPlayer.inject({
         updateAnimSheet(noSpawnFx) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(noSpawnFx)
+            if (!isRemote(multi.server)) return this.parent(noSpawnFx)
             this.parent(true)
         },
     })
 
     sc.PlayerSkinLibrary.inject({
         checkItemSet(toggleSetName) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(toggleSetName)
+            if (!isRemote(multi.server)) return this.parent(toggleSetName)
         },
     })
 })

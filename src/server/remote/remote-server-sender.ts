@@ -9,7 +9,7 @@ import { assert } from '../../misc/assert'
 import { type MapName, type Username } from '../../net/binary/binary-types'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import { cleanRecord, StateMemory } from '../../state/state-util'
-import { RemoteServer } from './remote-server'
+import { assertRemote } from './is-remote-server'
 
 declare global {
     namespace ig {
@@ -20,7 +20,7 @@ declare global {
 const maxInputFieldTextLength = 50
 
 export function sendRemoteServerPacket() {
-    assert(multi.server instanceof RemoteServer)
+    assertRemote(multi.server)
     const conn = multi.server.netManager.conn
     if (!conn) return
 

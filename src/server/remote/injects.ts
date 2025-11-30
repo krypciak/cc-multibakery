@@ -1,20 +1,20 @@
 import { prestart } from '../../loading-stages'
 import { isParticleClass } from '../../state/entity/ig_ENTITY_Effect'
-import { RemoteServer } from './remote-server'
+import { isRemote } from './is-remote-server'
 
 prestart(() => {
     if (!REMOTE) return
 
     dummy.DummyPlayer.inject({
         setAction(action, keepState, noStateReset) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(action, keepState, noStateReset)
+            if (!isRemote(multi.server)) return this.parent(action, keepState, noStateReset)
         },
     })
 
     ig.Game.inject({
         spawnEntity(entity, x, y, z, settings, showAppearEffects) {
             if (ASSERT) {
-                if (multi.server instanceof RemoteServer && !ig.settingState && ig.ccmap?.ready) {
+                if (isRemote(multi.server) && !ig.settingState && ig.ccmap?.ready) {
                     const isOk =
                         typeof entity === 'function'
                             ? isParticleClass(entity) ||
@@ -38,32 +38,32 @@ prestart(() => {
 
     ig.ENTITY.EventTrigger.inject({
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 
     ig.ENTITY.NPC.inject({
         onInteraction() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 
     sc.CommonEvents.inject({
         triggerEvent(type, data) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(type, data)
+            if (!isRemote(multi.server)) return this.parent(type, data)
             return null
         },
     })
 
     ig.ENTITY.EnemySpawner.inject({
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 
     ig.ACTION_STEP.REMOVE_PROXIES.inject({
         start(target) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(target)
+            if (!isRemote(multi.server)) return this.parent(target)
         },
     })
 
@@ -78,7 +78,7 @@ prestart(() => {
 
     ig.ENTITY.TeleportField.inject({
         onInteraction() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 }, 3)

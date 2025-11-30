@@ -1,7 +1,7 @@
 import { runTaskInMapInst } from '../../client/client'
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
-import { RemoteServer } from '../remote/remote-server'
+import { isRemote } from '../remote/is-remote-server'
 
 class MultiVarAccessor implements ig.Vars.Accessor {
     onVarAccess(_path: string, keys: string[]): ig.VarValue | void {
@@ -10,7 +10,7 @@ class MultiVarAccessor implements ig.Vars.Accessor {
         /* multi.active - always true when server is on */
         if (keys[1] == 'active') return true
 
-        if (multi.server instanceof RemoteServer) {
+        if (isRemote(multi.server)) {
             console.warn('var access multi.* will return incorrect data on remote!')
         }
 

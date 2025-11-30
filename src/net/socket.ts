@@ -5,7 +5,6 @@ import { type NetConnection, type NetManagerPhysicsServer } from './connection'
 import {
     type ClientLeaveData,
     isClientLeaveData,
-    RemoteServer,
     type RemoteServerConnectionSettings,
 } from '../server/remote/remote-server'
 import { Client } from '../client/client'
@@ -17,6 +16,7 @@ import { type NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
 import { type Username } from './binary/binary-types'
 import { assertPhysics } from '../server/physics/is-physics-server'
+import { assertRemote } from '../server/remote/is-remote-server'
 
 type SocketData = never
 
@@ -143,7 +143,7 @@ export class SocketNetManagerRemoteServer {
         window.addEventListener('beforeunload', this.stopFunc)
 
         const server = multi.server
-        assert(server instanceof RemoteServer)
+        assertRemote(server)
 
         let ioclient: typeof import('socket.io-client')
         if ('io' in window) {
@@ -219,7 +219,7 @@ export class SocketNetManagerRemoteServer {
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
         const ack = await new Promise<ClientJoinAckData>(resolve => {
             assert(this.conn)
-            assert(multi.server instanceof RemoteServer)
+            assertRemote(multi.server)
             this.joinActCallbacks[data.username] = resolve
             this.conn.socket.emit('join', data, resolve)
         })
@@ -228,7 +228,7 @@ export class SocketNetManagerRemoteServer {
 
     async sendLeave(data: ClientLeaveData): Promise<void> {
         assert(this.conn)
-        assert(multi.server instanceof RemoteServer)
+        assertRemote(multi.server)
         this.conn.socket.emit('leave', data)
     }
 

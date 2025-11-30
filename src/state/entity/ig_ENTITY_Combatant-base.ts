@@ -1,7 +1,6 @@
 import { StateMemory } from '../state-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { type f64 } from 'ts-binarifier/src/type-aliases'
 import {
@@ -14,6 +13,7 @@ import {
     type SpType,
 } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace sc {
@@ -91,7 +91,7 @@ export function setState(this: ig.ENTITY.Combatant, state: Return) {
 prestart(() => {
     sc.CombatParams.inject({
         setBaseParams(baseParams, noEffect) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(baseParams, noEffect)
+            if (!isRemote(multi.server)) return this.parent(baseParams, noEffect)
         },
     })
 })

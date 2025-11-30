@@ -1,5 +1,5 @@
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from './remote-server'
+import { isRemote } from './is-remote-server'
 
 declare global {
     interface ImpactClass<Instance> {
@@ -11,7 +11,7 @@ prestart(() => {
     if (!REMOTE) return
 
     function shouldUpdatePhysicsOn(entity: ig.Entity): boolean | undefined {
-        if (!(multi.server instanceof RemoteServer)) return true
+        if (!isRemote(multi.server)) return true
 
         const clazz = ig.classIdToClass[entity.classId]
         return clazz.forceRemotePhysics

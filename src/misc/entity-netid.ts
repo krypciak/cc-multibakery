@@ -1,7 +1,7 @@
 import { type u16, type u6 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { assert } from './assert'
-import { RemoteServer } from '../server/remote/remote-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 interface EntityClass extends ImpactClass<any> {
     new (x: number, y: number, z: number, settings: any): any
@@ -59,7 +59,7 @@ function setEntityNetidSpecialBit(netid: EntityNetid): EntityNetid {
 
 export function createNetidSpecialBit(this: ig.Class & { parent(): EntityNetid | void }): EntityNetid {
     let netid = this.parent()!
-    if (multi.server instanceof RemoteServer) netid = setEntityNetidSpecialBit(netid)
+    if (isRemote(multi.server)) netid = setEntityNetidSpecialBit(netid)
     return netid
 }
 

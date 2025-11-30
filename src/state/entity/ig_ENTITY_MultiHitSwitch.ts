@@ -1,9 +1,9 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
 import { type u4 } from 'ts-binarifier/src/type-aliases'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -56,13 +56,13 @@ prestart(() => {
 
     ig.ENTITY.MultiHitSwitch.inject({
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
 
             /* skip this.currentHits decreasing */
             ig.AnimatedEntity.prototype.update.call(this)
         },
         ballHit(ball) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(ball)
+            if (!isRemote(multi.server)) return this.parent(ball)
             return false
         },
     })

@@ -1,9 +1,9 @@
 import { assert } from '../../misc/assert'
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -46,10 +46,10 @@ prestart(() => {
     if (REMOTE) {
         ig.ENTITY.FloorSwitch.inject({
             varsChanged() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!isRemote(multi.server)) return this.parent()
             },
             update() {
-                if (!(multi.server instanceof RemoteServer)) return this.parent()
+                if (!isRemote(multi.server)) return this.parent()
             },
         })
     }

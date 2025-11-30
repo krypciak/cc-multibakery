@@ -1,8 +1,8 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -50,11 +50,11 @@ prestart(() => {
 
     ig.ENTITY.PushPullBlock.inject({
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
             if (!ig.lastStatePacket?.states?.[this.netid]) this.pushPullable.stopSound()
         },
         deferredUpdate() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 }, 2)

@@ -3,8 +3,8 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import { type StateKey } from '../states'
 import * as scActorEntity from './sc_ActorEntity-base'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { type i16 } from 'ts-binarifier/src/type-aliases'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -47,7 +47,7 @@ prestart(() => {
     if (REMOTE) {
         ig.ENTITY.NPC.inject({
             updateNpcState(init, force) {
-                if (!(multi.server instanceof RemoteServer)) return this.parent(init, force)
+                if (!isRemote(multi.server)) return this.parent(init, force)
             },
         })
     }

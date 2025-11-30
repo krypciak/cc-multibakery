@@ -1,9 +1,9 @@
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { RemoteServer } from '../../server/remote/remote-server'
 import { type StateKey } from '../states'
 import { createFakeEffectSheet } from '../entity'
 import { StateMemory } from '../state-util'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -47,13 +47,13 @@ prestart(() => {
 
     ig.ENTITY.CombatantMarble.inject({
         init(x, y, z, settings) {
-            if (!(multi.server instanceof RemoteServer)) return this.parent(x, y, z, settings)
+            if (!isRemote(multi.server)) return this.parent(x, y, z, settings)
 
             this.effects = createFakeEffectSheet()
             this.parent(x, y, z, settings)
         },
         update() {
-            if (!(multi.server instanceof RemoteServer)) return this.parent()
+            if (!isRemote(multi.server)) return this.parent()
         },
     })
 }, 2)
