@@ -59,7 +59,6 @@ prestart(() => {
     }
 
     ig.EVENT_STEP.MANUAL_COMBATANT_KILL.inject({ start: runStepOnMap })
-    ig.EVENT_STEP.ADD_PARTY_MEMBER.inject({ start: runStepOnMap })
     ig.EVENT_STEP.HIDE_ENTITY.inject({ start: runStepOnMap })
     ig.EVENT_STEP.SPAWN_ENEMY.inject({ start: runStepOnMap })
 })

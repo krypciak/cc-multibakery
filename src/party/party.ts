@@ -14,13 +14,13 @@ import type {
     Username,
     MapName,
 } from '../net/binary/binary-types'
-import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { addCombatantParty } from './combatant-party-api'
-import { isPhysics } from '../server/physics/is-physics-server'
+import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
 
 import './social-list-gui'
 import './party-var-access'
+import './vanilla-party'
 
 export type MultiPartyId = string
 
@@ -32,6 +32,7 @@ export interface MultiParty {
 
     title: string
     players: Username[]
+    vanillaMembers: string[]
 }
 
 // export type PlayerInfoStatus = 'online' | 'in-party' | 'current-party'
@@ -67,6 +68,8 @@ export const MULTI_PARTY_EVENT = {
     LEAVE: 2,
     PARTY_ADDED: 3,
     PARTY_TITLE_CHANGED: 4,
+    VANILLA_MEMBER_JOIN: 5,
+    VANILLA_MEMBER_LEAVE: 6,
 } as const
 export type MULTI_PARTY_EVENT = (typeof MULTI_PARTY_EVENT)[keyof typeof MULTI_PARTY_EVENT]
 
@@ -78,7 +81,7 @@ declare global {
     }
 }
 
-export class MultiPartyManager implements OnLinkChange, sc.Model {
+export class MultiPartyManager implements sc.Model {
     observers: sc.Model.Observer<this>[] = []
 
     listeners: MULTI_PARTY_EVENT[] = []
@@ -133,6 +136,7 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
             combatantParty,
             title: `${username}`,
             players: [],
+            vanillaMembers: [],
         }
         this.addParty(party)
         this.joinParty(username, party)
@@ -149,6 +153,7 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
     }
 
     getPartyOfEntity(entity: dummy.DummyPlayer): MultiParty
+    getPartyOfEntity(entity: sc.PartyMemberEntity): MultiParty
     getPartyOfEntity(entity: ig.Entity): MultiParty | undefined
     getPartyOfEntity(entity: ig.Entity): MultiParty | undefined {
         if (entity instanceof sc.PlayerBaseEntity) return entity.multiParty
@@ -180,10 +185,14 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
     private setPlayerData(username: Username, party: MultiParty) {
         if (isPhysics(multi.server)) {
             const client = multi.server.clients.get(username)
-            assert(client)
-            client.dummy.party = party.combatantParty
-            client.dummy.multiParty = party
+            assert(client?.dummy)
+            this.setCombatantData(client.dummy, party)
         }
+    }
+
+    private setCombatantData(combatant: sc.PlayerBaseEntity, party: MultiParty) {
+        combatant.party = party.combatantParty
+        combatant.multiParty = party
     }
 
     joinParty(username: Username, party: MultiParty) {
@@ -206,10 +215,31 @@ export class MultiPartyManager implements OnLinkChange, sc.Model {
         sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.PARTY_TITLE_CHANGED, { party })
     }
 
-    onClientUnlink(this: this, client: Client) {
+    joinPartyVanillaMember(model: string, party: MultiParty) {
+        assert(!party.vanillaMembers.includes(model))
+        party.vanillaMembers.push(model)
+
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.VANILLA_MEMBER_JOIN, { model, party })
+    }
+
+    leavePartyVanillaMember(model: string, party: MultiParty) {
+        assert(party.vanillaMembers.includes(model))
+        party.vanillaMembers.erase(model)
+
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.VANILLA_MEMBER_LEAVE, { model, party })
+    }
+
+    updateVanillaMemberInfo(member: sc.PartyMemberEntity, party: MultiParty) {
+        assertPhysics(multi.server)
+        this.setCombatantData(member, party)
+        const ownerClient = multi.server.clients.get(party.owner)
+        assert(ownerClient?.dummy)
+        member.ownerPlayer = ownerClient.dummy
+    }
+
+    onClientDestroy(this: this, client: Client) {
         if (!isPhysics(multi.server)) return
         if (!client.dummy) return
-
         this.leaveCurrentParty(client.username)
     }
 

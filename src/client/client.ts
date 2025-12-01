@@ -261,6 +261,7 @@ export class Client extends InstanceUpdateable {
             ig.game.freeEntityIds = mig.game.freeEntityIds
             ig.game.namedEntities = mig.game.namedEntities
             ig.game.conditionalEntities = mig.game.conditionalEntities
+            ig.game._deferredDetach = mig.game._deferredDetach
             ig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
 
             ig.light.shadowProviders = []
@@ -427,6 +428,8 @@ export class Client extends InstanceUpdateable {
         this.inputManager?.destroy()
 
         if (this.dummy) multi.storage.savePlayerState(this.username, this.dummy, this.tpInfo)
+
+        multi.server.party.onClientDestroy(this)
 
         const map = multi.server.maps.get(this.tpInfo.map)
         map?.leave(this)

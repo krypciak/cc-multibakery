@@ -239,7 +239,19 @@ prestart(() => {
             this.optionsMultiPlayers?.hideSortMenu()
         },
         openOptionsMenu(button, isNotFriend) {
-            if (!multi.server || this.list.currentTabIndex != 0) return this.parent(button, isNotFriend)
+            if (!multi.server) return this.parent(button, isNotFriend)
+            if (this.list.currentTabIndex != 0) {
+                this.parent(button, isNotFriend)
+
+                if (!isNotFriend) {
+                    assert(ig.client)
+                    const party = multi.server.party.getPartyOfEntity(ig.client.dummy)
+                    if (party.owner != ig.client.username) {
+                        this.options.buttons[0].setActive(false)
+                    }
+                }
+                return
+            }
 
             assert(button instanceof multi.class.SocialEntryButton)
             const clickedPlayerInfo = button.playerInfo
@@ -411,13 +423,9 @@ declare global {
             scrollContent: ig.GuiElementBase
             thisFramePartyMembersUpdated: boolean
 
-            createEntry(
-                this: this,
-                username: Username,
-                y: number,
-                isFirst: boolean,
-                skipTransition?: Nullable<boolean>
-            ): number
+            addEntryGui(this: this, gui: sc.SocialPartyMember, y: number, skipTransition?: Nullable<boolean>): number
+            createPlayerEntryGui(this: this, username: Username, isFirst: boolean): multi.class.SocialPartyMember
+            createVanillaMemberEntryGui(this: this, modelName: string): sc.SocialPartyMember
             updateScroll(this: this, y: number): void
         }
     }
@@ -457,15 +465,23 @@ prestart(() => {
                 this.scrollContainer.scrollY(20, false, 0.05)
             }
         },
-        createEntry(username, y, isFirst, skipTransition) {
-            const playerInfo = multi.server.party.getPlayerInfoOf(username)
-            const gui = new multi.class.SocialPartyMember(isFirst, playerInfo)
+        addEntryGui(gui, y, skipTransition) {
             gui.setPos(0, y)
             gui.show(skipTransition)
             y += gui.hook.size.y + 3
             this.scrollContent.addChildGui(gui)
             this.members.push(gui)
             return y
+        },
+        createPlayerEntryGui(username, isFirst) {
+            const playerInfo = multi.server.party.getPlayerInfoOf(username)
+            const gui = new multi.class.SocialPartyMember(isFirst, playerInfo)
+            return gui
+        },
+        createVanillaMemberEntryGui(modelName) {
+            const model = sc.party.models[modelName]
+            const gui = new sc.SocialPartyMember(false, model, modelName)
+            return gui
         },
         updatePartyMembers() {
             if (!multi.server) return this.parent()
@@ -479,12 +495,14 @@ prestart(() => {
             assert(ig.client)
             const party = multi.server.party.getPartyOfEntity(ig.client.dummy)
             const players = party.players
+            const vanillaMembers = party.vanillaMembers
 
             for (let i = 0; i < this.members.length; i++) {
                 const gui = this.members[i]
-                const username: Username = gui.name!
-                if (players.includes(username)) {
-                    unchanged.push(username)
+                /* username or model name */
+                const name = gui.name!
+                if (players.includes(name) || vanillaMembers.includes(name)) {
+                    unchanged.push(name)
                     gui.doPosTranstition(0, y, 0.2)
                     y += gui.hook.size.y + 3
                 } else {
@@ -498,7 +516,12 @@ prestart(() => {
 
             for (const username of players) {
                 if (!unchanged.includes(username)) {
-                    y = this.createEntry(username, y, false)
+                    y = this.addEntryGui(this.createPlayerEntryGui(username, false), y, false)
+                }
+            }
+            for (const modelName of vanillaMembers) {
+                if (!unchanged.includes(modelName)) {
+                    y = this.addEntryGui(this.createVanillaMemberEntryGui(modelName), y, false)
                 }
             }
             this.members[0]?.currentValue?.setNumber(multi.server.party.sizeOf(party), true)
@@ -511,7 +534,6 @@ prestart(() => {
 
             assert(ig.client)
             const party = multi.server.party.getPartyOfEntity(ig.client.dummy)
-            const players = party.players
 
             for (let i = 0; i < this.members.length; i++) {
                 const memberGui = this.members[i]
@@ -520,11 +542,17 @@ prestart(() => {
             }
 
             this.members = []
+            const players = [...party.players]
+            players.erase(ig.client.username)
+            players.unshift(ig.client.username)
 
             let y = 0
             for (let i = 0; i < players.length; i++) {
                 const username = players[i]
-                y = this.createEntry(username, y, i == 0, skipTransition)
+                y = this.addEntryGui(this.createPlayerEntryGui(username, i == 0), y, skipTransition)
+            }
+            for (const modelName of party.vanillaMembers) {
+                y = this.addEntryGui(this.createVanillaMemberEntryGui(modelName), y, skipTransition)
             }
             this.updateScroll(y)
         },
