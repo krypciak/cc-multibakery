@@ -1,7 +1,7 @@
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { poststart, prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { MULTI_PARTY_EVENT, type MultiParty, type PlayerInfoEntry } from './party'
+import { type MultiParty, type PlayerInfoEntry } from './party'
 import { runEvent } from '../steps/event-steps-run'
 import type { Username } from '../net/binary/binary-types'
 
@@ -12,6 +12,7 @@ declare global {
         }
         interface SocialMenu {
             optionsMultiPlayers?: sc.SortMenu
+            scheduledPartyMembersUpdate?: boolean
         }
         interface SocialList {
             statusText: sc.TextGui
@@ -226,12 +227,18 @@ prestart(() => {
                     this.optionsMultiPlayers?.hideSortMenu()
                 }
             } else if (model == multi.server.party) {
-                if (message != MULTI_PARTY_EVENT.LEAVE) {
-                    this.list.tabContent[0]?.list.remove()
-                    this.list.tabContent[0] = this.list.onContentCreation()
-                    this.optionsMultiPlayers?.hideSortMenu()
-                    this.party.updatePartyMembers()
-                }
+                this.scheduledPartyMembersUpdate = true
+            }
+        },
+        update() {
+            this.parent()
+            if (this.scheduledPartyMembersUpdate) {
+                this.scheduledPartyMembersUpdate = false
+
+                this.list.tabContent[0]?.list.remove()
+                this.list.tabContent[0] = this.list.onContentCreation()
+                this.optionsMultiPlayers?.hideSortMenu()
+                this.party.updatePartyMembers()
             }
         },
         exitMenu() {

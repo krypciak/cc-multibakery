@@ -24,13 +24,20 @@ prestart(() => {
             multi.server.party.joinPartyVanillaMember(name, party)
         },
         removePartyMember(name, npc, skipEffect) {
-            this.parent(name, npc, skipEffect)
+            if (!multi.server) return this.parent(name, npc, skipEffect)
 
-            if (!multi.server) return
+            /* fix PARTY_CHANGED message getting called before we call multi.server.party.leavePartyVanillaMember */
+            const backup = sc.Model.notifyObserver
+            sc.Model.notifyObserver = () => {}
+            this.parent(name, npc, skipEffect)
+            sc.Model.notifyObserver = backup
+
             assert(ig.client)
             const player = ig.client.dummy
             const party = multi.server.party.getPartyOfEntity(player)
             multi.server.party.leavePartyVanillaMember(name, party)
+
+            sc.Model.notifyObserver(this, sc.PARTY_MSG.PARTY_CHANGED)
         },
         _spawnPartyMemberEntity(name, showEffects, idx, npc) {
             if (!multi.server) return this.parent(name, showEffects, idx, npc)

@@ -27,6 +27,7 @@ export type MultiPartyId = string
 export interface MultiParty {
     id: MultiPartyId
     owner: Username
+    originalOwner: Username
     /* not necessarily unique */
     combatantParty: COMBATANT_PARTY
 
@@ -125,14 +126,20 @@ export class MultiPartyManager implements sc.Model {
 
     createPersonalParty(username: Username) {
         const id = 'personal_' + username
-        if (this.parties[id]) {
-            this.setPlayerData(username, this.parties[id])
+        let party: MultiParty = this.parties[id]
+        if (party) {
+            this.setPlayerData(username, party)
+            if (!party.players.includes(username)) {
+                this.joinParty(username, party)
+                this.transferPartyOwnership(username, party)
+            }
             return
         }
         const combatantParty = addCombatantParty(id)
-        const party: MultiParty = {
+        party = {
             id,
             owner: username,
+            originalOwner: username,
             combatantParty,
             title: `${username}`,
             players: [],
@@ -159,10 +166,10 @@ export class MultiPartyManager implements sc.Model {
         if (entity instanceof sc.PlayerBaseEntity) return entity.multiParty
     }
 
-    private getOwnerPartyOf(username: Username): MultiParty {
+    private getOriginalOwnerPartyOf(username: Username): MultiParty {
         for (const partyName in this.parties) {
             const party = this.parties[partyName]
-            if (party.owner == username) return party
+            if (party.originalOwner == username) return party
         }
         assert(false, `owner party of ${username} not found!`)
     }
@@ -178,7 +185,7 @@ export class MultiPartyManager implements sc.Model {
     leaveCurrentParty(username: Username) {
         this.leaveParty(username)
 
-        const ownerParty = this.getOwnerPartyOf(username)
+        const ownerParty = this.getOriginalOwnerPartyOf(username)
         this.joinParty(username, ownerParty)
     }
 
@@ -237,10 +244,25 @@ export class MultiPartyManager implements sc.Model {
         member.ownerPlayer = ownerClient.dummy
     }
 
+    private transferPartyOwnership(toUsername: Username, party: MultiParty) {
+        party.owner = toUsername
+        for (const modelName of [...party.vanillaMembers]) {
+            this.leavePartyVanillaMember(modelName, party)
+        }
+    }
+
     onClientDestroy(this: this, client: Client) {
         if (!isPhysics(multi.server)) return
         if (!client.dummy) return
-        this.leaveCurrentParty(client.username)
+
+        const party = this.getPartyOfEntity(client.dummy)
+        if (party.owner == client.username) {
+            const nextPlayer = party.players.find(username => username != client.username)
+            if (nextPlayer) {
+                this.transferPartyOwnership(nextPlayer, party)
+            }
+        }
+        this.leaveParty(client.username)
     }
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {
