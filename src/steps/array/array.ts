@@ -1,5 +1,6 @@
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
+import { attemptForwardVar } from './var-object-forward'
 
 import './array-entity-var-access'
 import './array-regular-polygon-vertices'
@@ -10,9 +11,6 @@ declare global {
         type VarValue = any
 
         namespace Event {
-            interface VarObject {
-                index?: ig.Event.NumberExpression
-            }
             type ArrayExpression<T = ig.VarValue> = ig.Event.VarExpression<T[]>
         }
         interface EventConstructor {
@@ -29,16 +27,6 @@ prestart(() => {
         assert(Array.isArray(value), `ig.Event.getArray: resolved "${JSON.stringify(array)}" is not an array!`)
         value = value.map(v => ig.Event.getExpressionValue(v))
         return value
-    }
-    const orig = ig.Event.getExpressionValue
-    ig.Event.getExpressionValue = expr => {
-        if (expr && typeof expr === 'object' && 'index' in expr) {
-            const value = orig(expr)
-            assert(Array.isArray(value), `${JSON.stringify(expr)} received value is not an array!`)
-            const index = ig.Event.getExpressionValue(expr.index as ig.Event.NumberExpression)
-            return value[index]
-        }
-        return orig(expr)
     }
 })
 
@@ -71,7 +59,8 @@ export function arrayVarAccess<T>(array: T[], keys: string[]) {
     if (keys[0] == 'length') return array.length
     const index = parseInt(keys[0])
     const value = array[index]
-    if (value instanceof ig.Entity) return ig.vars.forwardEntityVarAccess(value, keys, 1)
+    const forwardValue = attemptForwardVar(value, keys, 1)
+    if (forwardValue) return forwardValue
     return value
 }
 
