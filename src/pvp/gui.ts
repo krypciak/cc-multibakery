@@ -37,7 +37,16 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
     }
 
     function drawTeamHeads(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean) {
-        const heads: number[] = multi.server.party.getPartyCombatants(party).map(player => player.getHeadIdx())
+        const heads: number[] = multi.server.party
+            .getPartyCombatants(party)
+            .map(entity =>
+                entity instanceof dummy.DummyPlayer
+                    ? entity.getHeadIdx()
+                    : entity instanceof sc.PartyMemberEntity
+                      ? entity.model.getHeadIdx()
+                      : undefined
+            )
+            .filter(id => id !== undefined)
         if (left) x += (heads.length - 1) * 16
         this._renderHeads(renderer, x + (left ? 24 : 0), left, heads)
         if (left) x += 16

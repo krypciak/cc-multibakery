@@ -71,7 +71,7 @@ prestart(() => {
             if (!multi.server || !ig.client?.dummy) return this.parent()
             const party = multi.server.party.getPartyOfEntity(ig.client.dummy)
             if (!party) return 0
-            return party.vanillaMembers.length
+            return multi.server.party.vanillaSizeOf(party)
         },
         getPartySizeAlive(unused) {
             if (!multi.server) return this.parent(unused)

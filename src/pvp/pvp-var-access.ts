@@ -1,4 +1,5 @@
 import { prestart } from '../loading-stages'
+import { multiPartyVarAccess } from '../party/party-var-access'
 import { arrayVarAccess } from '../steps/array/array'
 
 prestart(() => {
@@ -6,7 +7,13 @@ prestart(() => {
         // onVarAccess different team points??
         onVarAccess(path, keys) {
             if (multi.server && keys[0] == 'pvp') {
-                if (keys[1] == 'parties') return arrayVarAccess(this.parties, keys.slice(2))
+                if (keys[1] == 'parties')
+                    return arrayVarAccess(
+                        this.parties.map(party => ({
+                            onVarAccess: (path: string, keys: string[]) => multiPartyVarAccess(path, keys, party),
+                        })),
+                        keys.slice(2)
+                    )
                 if (keys[1] == 'players') {
                     return arrayVarAccess(
                         this.parties.flatMap(party =>

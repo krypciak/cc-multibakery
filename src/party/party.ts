@@ -97,11 +97,23 @@ export class MultiPartyManager implements sc.Model {
     }
 
     sizeOf(party: MultiParty) {
-        return party.players.length
+        return party.players.length + this.vanillaSizeOf(party)
     }
 
-    getPartyCombatants(party: MultiParty, onMap?: MapName): dummy.DummyPlayer[] {
-        const combatants: dummy.DummyPlayer[] = []
+    vanillaSizeOf(party: MultiParty) {
+        return party.vanillaMembers.length
+    }
+
+    getVanillaMemberEntity(party: MultiParty, modelName: string): { entity?: sc.PartyMemberEntity; map: string } {
+        assertPhysics(multi.server)
+        const ownerClient = multi.server.clients.get(party.owner)
+        assert(ownerClient)
+        const entity = ownerClient.inst.sc.party.getPartyMemberEntity(modelName)
+        return { entity, map: ownerClient.getMap().name }
+    }
+
+    getPartyCombatants(party: MultiParty, onMap?: MapName): ig.ENTITY.Combatant[] {
+        const combatants: ig.ENTITY.Combatant[] = []
         for (const username of party.players) {
             const client = multi.server.clients.get(username)
             assert(client?.dummy)
@@ -109,11 +121,14 @@ export class MultiPartyManager implements sc.Model {
                 combatants.push(client.dummy)
             }
         }
+        for (const modelName of party.vanillaMembers) {
+            const { entity, map } = this.getVanillaMemberEntity(party, modelName)
+            assert(entity)
+            if (!onMap || map == onMap) {
+                combatants.push(entity)
+            }
+        }
         return combatants
-    }
-
-    getPartiesWithCombatantParty(combatantParty: COMBATANT_PARTY): MultiParty[] {
-        return Object.values(this.parties).filter(party => party.combatantParty == combatantParty)
     }
 
     addParty(party: MultiParty) {
