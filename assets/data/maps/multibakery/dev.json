@@ -323,12 +323,104 @@
             }
         },
         { "type": "PushPullBlock", "x": 576, "y": 328, "level": 2, "settings": { "name": "", "pushPullType": "Large", "mapId": 124 } },
+        { "type": "Marker", "x": 1133, "y": 1112, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 163, "dir": "NORTH", "name": "to_pvp" } },
         {
             "type": "EventTrigger",
             "x": 1264,
             "y": 1032,
             "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 130, "event": [{ "type": "WAIT", "time": 1, "ignoreSlowDown": false }, { "type": "PREPARE_PVP_ROUND" }, { "type": "WAIT", "time": 1 }, { "type": "START_PVP_ROUND" }], "name": "pvpBrake", "eventType": "PARALLEL", "triggerType": "ALWAYS", "startCondition": "pvp.brake", "endCondition": "false" }
+            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 130, "event": [
+                { "type": "DEFINE_MACRO", "name": "multibakery/pvpNavigateToPositions", "steps": [
+                    {
+                        "type": "SET_ARRAY_REGULAR_POLYGON_VERTICES",
+                        "varName": "tmp.basePartyPosArray",
+                        "radius": 60,
+                        "size": { "varName": "pvp.parties.length" }
+                    },
+                    { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
+                        {
+                           "type": "ASSIGN_VEC3",
+                            "changeType": "set",
+                            "varName": "tmp.basePos",
+                            "value": { "varName": "tmp.basePartyPosArray[tmp.partyI]" }
+                        },
+                        {
+                           "type": "CHANGE_VAR_VEC3",
+                            "changeType": "add",
+                            "varName": "tmp.basePos",
+                            "value": { "marker": "to_pvp" }
+                        },
+
+                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.positions", "value": [{ "x": 0, "y": 0, "z": 0 }] },
+                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
+                        {
+                            "type": "CHANGE_VAR_NUMBER",
+                            "changeType": "set",
+                            "varName": "tmp.circlePointCount",
+                            "value": { "varName": "tmp.combatants.length" }
+                        },
+                        { "type": "CHANGE_VAR_NUMBER", "changeType": "sub", "varName": "tmp.circlePointCount", "value": 1 },
+                        {
+                            "type": "SET_ARRAY_REGULAR_POLYGON_VERTICES",
+                            "varName": "tmp.circlePositions",
+                            "size": { "varName": "tmp.circlePointCount" },
+                            "radius": 20 
+                        },
+                        {
+                            "type": "CHANGE_VAR_ARRAY",
+                            "changeType": "push",
+                            "varName": "tmp.positions",
+                            "value": { "varName": "tmp.circlePositions" }
+                        },
+                        { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
+                            {
+                                "type": "ASSIGN_VEC3",
+                                "varName": "tmp.newPos",
+                                "value": { "varName": "tmp.basePos" }
+                            },
+                            {
+                                "type": "CHANGE_VAR_VEC2",
+                                "changeType": "add",
+                                "varName": "tmp.newPos",
+                                "value": { "varName": "tmp.positions[tmp.combatantI]" }
+                            },
+                            {
+                                "type": "DO_ACTION",
+                                "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
+                                "immediately": true,
+                                "action": [
+                                    { "type": "SET_SLIP_THROUGH", "value": true },
+                                    { "type": "SET_POS", "newPos": { "varName": "tmp.newPos" } },
+                                    { "type": "SET_FACE_TO_ENTITY", "entity": { "name": "to_pvp" }, "rotate": true, "rotateSpeed": 2 }
+                                ]
+                            }
+                        ]}
+                    ]}
+                ] },
+                { "type": "DEFINE_MACRO", "name": "multibakery/pvpReleasePlayerInputLock", "steps": [
+                    { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
+                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
+                        { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
+                            { "type": "WAIT_UNTIL_ACTION_DONE", "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } } },
+                            {
+                                "type": "DO_ACTION",
+                                "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
+                                "wait": true,
+                                "action": [
+                                    { "type": "SET_SLIP_THROUGH", "value": false }
+                                ]
+                            }
+                        ]}
+                    ]}
+                ]},
+
+                { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
+                { "type": "PREPARE_PVP_ROUND" },
+                { "type": "WAIT", "time": 1 },
+                { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" },
+                { "type": "START_PVP_ROUND" }
+            ],
+            "name": "pvpBrake", "eventType": "PARALLEL", "triggerType": "ALWAYS", "startCondition": "pvp.brake", "endCondition": "false" }
         },
         {
             "type": "EventTrigger",
@@ -342,10 +434,35 @@
                     { "type": "WAIT", "time": 0.5 },
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": false },
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpArena", "value": false },
-                    { "type": "CONSTRUCT_ENTITY_SELECTIONS_FROM_PVP_TEAMS" },
-                    { "type": "STOP_PVP_BATTLE" },
-                    { "type": "WAIT", "time": 1 },
-                    { "type": "TELEPORT_SELECTED_ENTITIES", "marker": "from_pvp_", "selectionName": "team_", "bulk": true }
+                    {
+                        "type": "FOR_EACH_PLAYER",
+                        "players": { "varName": "game.entities.type.Player" },
+                        "steps": [
+                            { 
+                                "type": "IF",
+                                "condition": "party.owner.username == player.username",
+                                "thenStep": [
+                                    {
+                                        "type": "FOR_EACH_PLAYER",
+                                        "players": { "varName": "party.combatants.onMap.players" },
+                                        "steps": [
+                                            { 
+                                                "type": "DO_ACTION",
+                                                "entity": { "player": true },
+                                                "action": [
+                                                    { 
+                                                        "type": "SET_POS",
+                                                        "newPos": { "marker": "pvp" }
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    { "type": "STOP_PVP_BATTLE" }
                 ],
                 "name": "pvpEnd",
                 "eventType": "PARALLEL",
@@ -363,29 +480,81 @@
                 "size": { "x": 16, "y": 16 },
                 "mapId": 132,
                 "event": [
-                    { "changeType": "set", "type": "CHANGE_VAR_NUMBER", "varName": "tmp.startPvp", "value": false },
+                    { "type": "CHANGE_VAR_NUMBER", "varName": "tmp.startPvp", "changeType": "set", "value": false },
+
                     {
                         "type": "IF",
                         "condition": "!pvp.active",
                         "thenStep": [
-                            { "type": "SELECT_ENTITIES_STANDING_ON", "markerPrefix": "pvp_team_select_", "selectionName": "team_", "bulk": true },
-                            { "type": "CLEAR_MULTIPLAYER_PVP_TEAMS" },
-                            { "type": "CONSTRUCT_PVP_TEAMS_FROM_ENTITY_SELECTIONS", "selectionPrefix": "team_" },
-                            {
-                                "type": "IF",
-                                "condition": "pvp.teamCount > 1",
-                                "thenStep": [
-                                    { "type": "SHOW_INPUT_DIALOG", "title": "Win points", "initialValue": 2, "saveToVar": "tmp.pvpWinPoints", "validRegex": "^[1-9]\\d*$" },
+                            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.standingOn.pvp_select_block" } },
+                            { "type": "CHANGE_VAR_ARRAY", "changeType": "intersect", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.type.Player" } },
+                            { "type": "CHANGE_VAR_BOOL", "varName": "tmp.playersOnOtherMapDetected", "changeType": "set", "value": false },
+                            { 
+                                "type": "FOR_EACH_PLAYER",
+                                "players": { "varName": "tmp.playersInBox" },
+                                "steps": [
                                     {
                                         "type": "IF",
-                                        "condition": "tmp.dialogAccepted",
+                                        "condition": "party.combatants.onMap.players.length != party.combatants.players.length",
                                         "thenStep": [
-                                            { "type": "TELEPORT_SELECTED_ENTITIES", "marker": "to_pvp_", "selectionName": "team_", "bulk": true },
-                                            { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": true },
-                                            { "ignoreSlowDown": false, "type": "WAIT", "time": 0.1 },
-                                            { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpArena", "value": true },
-                                            { "type": "START_MULTIPLAYER_PVP_BATTLE", "winPoints": { "varName": "tmp.pvpWinPoints" } },
-                                            { "type": "PREPARE_PVP_ROUND", "autoContinue": true }
+                                            { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "tmp.playersOnOtherMapDetected", "value": true }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "type": "IF",
+                                "condition": "!tmp.playersOnOtherMapDetected",
+                                "thenStep": [
+                                    { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.outsideEntities", "value": { "varName": "game.entities.type.Player" } },
+                                    { "type": "CHANGE_VAR_ARRAY", "changeType": "erase", "varName": "tmp.outsideEntities", "value": { "varName": "tmp.playersInBox" } },
+                                    {
+                                        "type": "FOR_EACH_PLAYER",
+                                        "players": { "varName": "tmp.outsideEntities" },
+                                        "steps": [
+                                            { "type": "CHANGE_VAR_STRING", "changeType": "set", "varName": "tmp.outsidePlayerPartyId", "value": { "varName": "party.id" } },
+                                            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.outsidePlayerParty", "value": { "varName": "party.combatants.players" } },
+                                            { 
+                                               "type": "FOR_EACH_PLAYER",
+                                               "players": { "varName": "tmp.playersInBox" },
+                                               "steps": [
+                                                   {
+                                                       "type": "IF",
+                                                       "condition": "party.id == tmp.outsidePlayerPartyId",
+                                                       "thenStep": [
+                                                            { "type": "CHANGE_VAR_ARRAY", "changeType": "erase", "varName": "tmp.playersInBox", "value": { "varName": "tmp.outsidePlayerParty" }}
+                                                       ]
+                                                   }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    { "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" },
+                                    { "type": "ADD_PLAYERS_TO_PVP", "players": { "varName": "tmp.playersInBox" } },
+                                    {
+                                        "type": "IF",
+                                        "condition": "pvp.parties.length > 1",
+                                        "thenStep": [
+                                            { 
+                                                "type": "SHOW_INPUT_DIALOG",
+                                                "title": "Win points",
+                                                "initialValue": 2,
+                                                "saveToVar": "tmp.pvpWinPoints",
+                                                "validRegex": "^[1-9]\\d*$",
+                                                "accepted": [
+                                                    { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
+                                                    { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": true },
+                                                    { "ignoreSlowDown": false, "type": "WAIT", "time": 0.1 },
+                                                    { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpArena", "value": true },
+                                                    { "type": "START_MULTIPLAYER_PVP_BATTLE", "winPoints": { "varName": "tmp.pvpWinPoints" } },
+                                                    { "ignoreSlowDown": false, "type": "WAIT", "time": 0.5 },
+                                                    { "type": "PREPARE_PVP_ROUND", "autoContinue": true },
+                                                    { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" }
+                                                ],
+                                                "rejected": [
+                                                    { "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" }
+                                                ]
+                                            }
                                         ]
                                     }
                                 ]
@@ -401,19 +570,8 @@
             }
         },
         { "type": "Switch", "x": 936, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 134, "name": "s_startMultiPvp", "variable": "tmp.startPvp" } },
-        { "type": "Marker", "x": 896, "y": 1128, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 135, "name": "pvp", "dir": "NORTH" } },
-        { "type": "Marker", "x": 1056, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 136, "name": "to_pvp_0", "dir": "NORTH" } },
-        { "type": "Marker", "x": 1208, "y": 1064, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 137, "name": "to_pvp_1", "dir": "NORTH" } },
-        { "type": "Marker", "x": 1056, "y": 1144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 138, "name": "to_pvp_2", "dir": "NORTH" } },
-        { "type": "Marker", "x": 1208, "y": 1144, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 139, "name": "to_pvp_3", "dir": "NORTH" } },
-        { "type": "HiddenBlock", "x": 880, "y": 1072, "level": 2, "settings": { "size": { "x": 48, "y": 48 }, "mapId": 140, "shape": "RECTANGLE", "heightShape": "NONE", "terrain": "", "collType": "NONE", "name": "pvp_team_select_0", "zHeight": 16 } },
-        { "type": "HiddenBlock", "x": 960, "y": 1072, "level": 2, "settings": { "size": { "x": 48, "y": 48 }, "mapId": 141, "shape": "RECTANGLE", "heightShape": "NONE", "terrain": "", "collType": "NONE", "name": "pvp_team_select_1", "zHeight": 16 } },
-        { "type": "HiddenBlock", "x": 960, "y": 1152, "level": 2, "settings": { "size": { "x": 48, "y": 48 }, "mapId": 142, "shape": "RECTANGLE", "heightShape": "NONE", "terrain": "", "collType": "NONE", "name": "pvp_team_select_3", "zHeight": 16 } },
-        { "type": "HiddenBlock", "x": 880, "y": 1152, "level": 2, "settings": { "size": { "x": 48, "y": 48 }, "mapId": 143, "shape": "RECTANGLE", "heightShape": "NONE", "terrain": "", "collType": "NONE", "name": "pvp_team_select_2", "zHeight": 16 } },
-        { "type": "Marker", "x": 896, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 144, "name": "from_pvp_0", "dir": "NORTH" } },
-        { "type": "Marker", "x": 976, "y": 1088, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 145, "name": "from_pvp_1", "dir": "NORTH" } },
-        { "type": "Marker", "x": 976, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 146, "name": "from_pvp_3", "dir": "NORTH" } },
-        { "type": "Marker", "x": 896, "y": 1168, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 147, "name": "from_pvp_2", "dir": "NORTH" } },
+        { "type": "Marker", "x": 920, "y": 1127, "level": 3, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 135, "name": "pvp", "dir": "NORTH" } },
+        { "type": "HiddenBlock", "x": 880, "y": 1072, "level": 2, "settings": { "size": { "x": 128, "y": 128 }, "mapId": 140, "shape": "RECTANGLE", "heightShape": "NONE", "terrain": "", "collType": "NONE", "name": "pvp_select_block", "zHeight": 16 } },
         { "type": "Switch", "x": 744, "y": 200, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 150, "variable": "tmp.sideMsg0", "name": "switchSideCond0" } },
         { "type": "Marker", "x": 352, "y": 256, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 151, "name": "puzzle", "dir": "NORTH" } },
         { "type": "Switch", "x": 688, "y": 1056, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 152, "name": "s_godmode_branch", "variable": "tmp.godmodeBranch" } },
