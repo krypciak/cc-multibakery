@@ -1,5 +1,6 @@
 import { postload } from '../loading-stages'
 import { assert } from '../misc/assert'
+import { applyStepMacros } from './step-macros'
 
 postload(() => {
     ig.module('multibakery.step.id')
@@ -17,6 +18,8 @@ function injectSteps() {
         labeledSteps: Record<string, ig.StepBase>,
         lastLastSteps: ig.StepBase[]
     ): Nullable<ig.StepBase> {
+        stepSettingsList = applyStepMacros(stepSettingsList)
+
         let rootStep: ig.StepBase | null = null
         let lastSteps: ig.StepBase[] = []
 
