@@ -51,6 +51,17 @@ prestart(() => {
     })
 })
 
+prestart(() => {
+    ig.Event.registerEntityFetchType('expr', obj => {
+        const entity = ig.Event.getExpressionValue(obj)
+        assert(
+            entity instanceof ig.Entity,
+            `Entity expr call ("${JSON.stringify(obj)}") resulted in non entity: ${obj}`
+        )
+        return entity
+    })
+})
+
 function removeClassesRec(obj: any) {
     for (const k in obj) {
         const v = obj[k]
