@@ -68,7 +68,7 @@ prestart(() => {
     })
 
     if (PHYSICSNET) {
-        addVarModifyListener((path, _oldPath, newValue) => {
+        addVarModifyListener((path, newValue) => {
             if (!shouldCollectStateData()) return
             if (!path.startsWith('map.') && !path.startsWith('tmp.') && !path.startsWith('menu.')) return
             runTaskInMapInst(() => {
