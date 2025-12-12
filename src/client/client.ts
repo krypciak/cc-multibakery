@@ -267,6 +267,12 @@ export class Client extends InstanceUpdateable {
             ig.light.shadowProviders = []
             const data = map.copyRawLevelData()
             initMapsAndLevels.call(ig.game, data)
+            for (const levelName in mig.game.levels) {
+                const level = mig.game.levels[levelName]
+                if (level.collision) {
+                    ig.game.levels[levelName].collision = level.collision
+                }
+            }
 
             ig.game.physics = mig.game.physics
 

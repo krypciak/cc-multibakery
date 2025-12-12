@@ -55,6 +55,23 @@ export function initMapsAndLevels(this: ig.Game, data: sc.MapModel.Map) {
     this.size.y = sizeY
 }
 
+function prepareCollision(this: ig.Game) {
+    let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
+    collisionLayer?.prepare()
+
+    for (let i = this.masterLevel + 1; i < this.maxLevel; i++) {
+        const level = this.levels[i]
+        level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i - 1].height!) / 16 : 0)
+        collisionLayer = level.collision
+    }
+    collisionLayer = this.levels[this.masterLevel].collision
+    for (let i = this.masterLevel - 1; i >= 0; i--) {
+        const level = this.levels[i]
+        level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i + 1].height!) / 16 : 0)
+        collisionLayer = level.collision
+    }
+}
+
 export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.MapModel.Map): Promise<void> {
     /* mostly stolen from ig.Game#loadLevel */
 
@@ -79,7 +96,7 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
     this.renderer.mapCleared()
 
     const loader = new (this.mapLoader || ig.Loader)()
-    const promise = new Promise<void>(resolve => {
+    return new Promise<void>(resolve => {
         loader.onEnd = function (this: ig.Loader) {
             scheduleTask(instanceinator.instances[this._instanceId], () => {
                 /* this.finalize() */
@@ -91,6 +108,8 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
 
                 ig.game.preDrawMaps()
                 // ig.game.loadingComplete()
+                prepareCollision.call(ig.game)
+
                 for (const addon of ig.game.addons.levelLoaded) addon.onLevelLoaded(ig.game)
                 ig.game.handleLoadingComplete()
 
@@ -100,33 +119,10 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
                 resolve()
             })
         }.bind(loader)
+
+        loader.load()
+        this.currentLoadingResource = loader
     })
-
-    loader.load()
-    this.currentLoadingResource = loader
-
-    /* stuff below from ig.Game#loadingComplete() */
-
-    let collisionLayer: ig.MAP.Collision | undefined = this.levels[this.masterLevel].collision
-    collisionLayer?.prepare()
-
-    for (let i = this.masterLevel + 1; i < this.maxLevel; i++) {
-        const level = this.levels[i]
-        if (!level.collision!.prepare) throw new Error('level.collision!.prepare null????????')
-        // if (level.collision!.prepare) {
-        level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i - 1].height!) / 16 : 0)
-        collisionLayer = level.collision
-        // } else collisionLayer = undefined
-    }
-    collisionLayer = this.levels[this.masterLevel].collision // ? this.levels[this.masterLevel].collision : undefined
-    for (let i = this.masterLevel - 1; i >= 0; i--) {
-        const level = this.levels[i]
-        if (!level.collision!.prepare) throw new Error('level.collision!.prepare null????????')
-        level.collision!.prepare(collisionLayer, collisionLayer ? (level.height! - this.levels[i + 1].height!) / 16 : 0)
-        collisionLayer = level.collision
-    }
-
-    return promise
 }
 
 prestart(() => {
