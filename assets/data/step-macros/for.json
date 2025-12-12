@@ -1,0 +1,19 @@
+[
+    {
+        "name": "FOR",
+        "args": ["to", "steps"],
+        "argsDepth": 2,
+        "argsDefault": {
+            "loopName": "forStart@UNIQUE",
+            "i": "forI@UNIQUE",
+            "from": 0
+        },
+        "steps": [
+            { "type": "CHANGE_VAR_NUMBER", "changeType": "set", "varName": "i", "value": "from" },
+            { "type": "LABEL", "name": "loopName" },
+            "steps",
+            { "type": "CHANGE_VAR_NUMBER", "changeType": "add", "varName": "i", "value": 1 },
+            { "type": "GOTO_LABEL_WHILE", "name": "loopName", "condition": "i < to" }
+        ]
+    }
+]

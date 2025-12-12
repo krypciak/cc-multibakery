@@ -1,3 +1,6 @@
+import { prestart } from '../loading-stages'
+import Multibakery from '../plugin'
+
 interface MacroSettings {
     name: string
     args?: string[]
@@ -35,6 +38,8 @@ declare global {
 }
 
 const macros = new Map<string, MacroSettings>()
+let uniqueCounter = 0
+
 function addMacro(macro: MacroSettings) {
     macros.set(macro.name, macro)
 }
@@ -44,7 +49,7 @@ function prepareBody(body: any, args: Record<string, any>, depth: number) {
 
     function handleString(v: string) {
         if (depth < 0) return [v]
-        
+
         let sp = v.split(' ')
         for (let i = 0; i < sp.length; i++) {
             const name = sp[i]
@@ -106,7 +111,8 @@ export function applyStepMacros<T extends ig.EventStepBase.Settings[] | ig.Actio
                 for (const argName in macro.argsDefault) {
                     if (step[argName] === undefined) {
                         let def = macro.argsDefault[argName]
-                        if (typeof def === 'function') def = def()
+                        if (typeof def === 'string') def = def.replace(/@UNIQUE/, `${uniqueCounter++}`)
+
                         step[argName] = def
                     }
                 }
@@ -122,25 +128,32 @@ export function applyStepMacros<T extends ig.EventStepBase.Settings[] | ig.Actio
     return steps
 }
 
-let uniqueCounter = 0
-function nextUniqueNumber(): number {
-    return uniqueCounter++
+async function findAndApplyMacroFiles() {
+    const assets = Multibakery.mod.isCCL3
+        ? [...modloader.loadedMods.values()].flatMap(m => [...(m.assets ?? [])])
+        : activeMods.flatMap(m => m.assets ?? [])
+    const macroFilePaths = assets.filter(a => {
+        const sp = a.split('/')
+        return sp[2] == 'assets' && sp[3] == 'data' && sp[4] == 'step-macros'
+    })
+
+    const files = await Promise.all(macroFilePaths.map(async m => (await fetch(m)).json()))
+    for (let i = 0; i < files.length; i++) {
+        const json = files[i]
+        if (!Array.isArray(json)) {
+            console.error(`Step macro file: "${macroFilePaths[i]}" is not an array!`)
+            continue
+        }
+        const arr: MacroSettings[] = json
+        for (let i = 0; i < arr.length; i++) {
+            const entry = arr[i]
+            if (!entry.name) throw new Error(`Step macro file: "${macroFilePaths[i]}" is missing field "name"!`)
+            if (!entry.steps) new Error(`Step macro file: "${macroFilePaths[i]}" is missing field "steps"!`)
+            addMacro(entry)
+        }
+    }
 }
 
-addMacro({
-    name: 'FOR',
-    args: ['to', 'steps'],
-    argsDepth: 2,
-    argsDefault: {
-        loopName: () => 'forStart' + nextUniqueNumber(),
-        i: () => 'forI' + nextUniqueNumber(),
-        from: 0,
-    },
-    steps: [
-        { type: 'CHANGE_VAR_NUMBER', changeType: 'set', varName: 'i', value: 'from' },
-        { type: 'LABEL', name: 'loopName' },
-        'steps',
-        { type: 'CHANGE_VAR_NUMBER', changeType: 'add', varName: 'i', value: 1 },
-        { type: 'GOTO_LABEL_WHILE', name: 'loopName', condition: 'i < to' },
-    ],
+prestart(() => {
+    findAndApplyMacroFiles()
 })
