@@ -25,6 +25,7 @@ prestart(() => {
                     )
                 }
                 if (keys[1] == 'isPlayerInPvp') return sc.pvp.isCombatantInPvP(ig.game.playerEntity)
+                if (keys[1] == 'active' && this.multiplayerPvp) return true
             }
             return this.parent(path, keys)
         },
