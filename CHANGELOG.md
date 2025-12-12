@@ -28,6 +28,7 @@
 - Fix variables failing to set when their parent object doesn't exist
 - Fix crash on item drop
 - Fix navigation maps often not working
+- Fix Manage server popup being closeable while Create client popup is shown
 
 ## [0.6.1] 2025-11-19
 

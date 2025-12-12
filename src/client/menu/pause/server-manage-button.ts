@@ -173,6 +173,14 @@ prestart(() => {
                             }
                         )
                         inputButton.setDialog(dialog)
+
+                        self.blockClosing = true
+                        const orig = dialog.closeMenu
+                        dialog.closeMenu = () => {
+                            self.blockClosing = false
+                            orig.call(dialog)
+                        }
+
                         dialog.openMenu()
                     },
                 })
@@ -200,6 +208,7 @@ prestart(() => {
         },
         closeMenu() {
             this.parent()
+            if (this.blockClosing) return
             ig.canLeavePauseMenu = true
             ig.multibakeryManageServerPopup = undefined
         },
