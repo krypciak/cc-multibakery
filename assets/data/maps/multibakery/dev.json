@@ -330,90 +330,6 @@
             "y": 1032,
             "level": 2,
             "settings": { "size": { "x": 16, "y": 16 }, "mapId": 130, "event": [
-                { "type": "DEFINE_MACRO", "name": "multibakery/pvpNavigateToPositions", "steps": [
-                    {
-                        "type": "SET_ARRAY_REGULAR_POLYGON_VERTICES",
-                        "varName": "tmp.basePartyPosArray",
-                        "radius": 60,
-                        "size": { "varName": "pvp.parties.length" }
-                    },
-                    { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
-                        {
-                           "type": "ASSIGN_VEC3",
-                            "changeType": "set",
-                            "varName": "tmp.basePos",
-                            "value": { "varName": "tmp.basePartyPosArray[tmp.partyI]" }
-                        },
-                        {
-                           "type": "CHANGE_VAR_VEC3",
-                            "changeType": "add",
-                            "varName": "tmp.basePos",
-                            "value": { "marker": "to_pvp" }
-                        },
-
-                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.positions", "value": [{ "x": 0, "y": 0, "z": 0 }] },
-                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
-                        {
-                            "type": "CHANGE_VAR_NUMBER",
-                            "changeType": "set",
-                            "varName": "tmp.circlePointCount",
-                            "value": { "varName": "tmp.combatants.length" }
-                        },
-                        { "type": "CHANGE_VAR_NUMBER", "changeType": "sub", "varName": "tmp.circlePointCount", "value": 1 },
-                        {
-                            "type": "SET_ARRAY_REGULAR_POLYGON_VERTICES",
-                            "varName": "tmp.circlePositions",
-                            "size": { "varName": "tmp.circlePointCount" },
-                            "radius": 20 
-                        },
-                        {
-                            "type": "CHANGE_VAR_ARRAY",
-                            "changeType": "push",
-                            "varName": "tmp.positions",
-                            "value": { "varName": "tmp.circlePositions" }
-                        },
-                        { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
-                            {
-                                "type": "ASSIGN_VEC3",
-                                "varName": "tmp.newPos",
-                                "value": { "varName": "tmp.basePos" }
-                            },
-                            {
-                                "type": "CHANGE_VAR_VEC2",
-                                "changeType": "add",
-                                "varName": "tmp.newPos",
-                                "value": { "varName": "tmp.positions[tmp.combatantI]" }
-                            },
-                            {
-                                "type": "DO_ACTION",
-                                "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
-                                "immediately": true,
-                                "action": [
-                                    { "type": "SET_SLIP_THROUGH", "value": true },
-                                    { "type": "SET_POS", "newPos": { "varName": "tmp.newPos" } },
-                                    { "type": "SET_FACE_TO_ENTITY", "entity": { "name": "to_pvp" }, "rotate": true, "rotateSpeed": 2 }
-                                ]
-                            }
-                        ]}
-                    ]}
-                ] },
-                { "type": "DEFINE_MACRO", "name": "multibakery/pvpReleasePlayerInputLock", "steps": [
-                    { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
-                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
-                        { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
-                            { "type": "WAIT_UNTIL_ACTION_DONE", "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } } },
-                            {
-                                "type": "DO_ACTION",
-                                "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
-                                "wait": true,
-                                "action": [
-                                    { "type": "SET_SLIP_THROUGH", "value": false }
-                                ]
-                            }
-                        ]}
-                    ]}
-                ]},
-
                 { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
                 { "type": "PREPARE_PVP_ROUND" },
                 { "type": "WAIT", "time": 1 },
@@ -434,34 +350,19 @@
                     { "type": "WAIT", "time": 0.5 },
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": false },
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpArena", "value": false },
-                    {
-                        "type": "FOR_EACH_PLAYER",
-                        "players": { "varName": "game.entities.type.Player" },
-                        "steps": [
+
+                    { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
+                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
+                        { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
                             { 
-                                "type": "IF",
-                                "condition": "party.owner.username == player.username",
-                                "thenStep": [
-                                    {
-                                        "type": "FOR_EACH_PLAYER",
-                                        "players": { "varName": "party.combatants.onMap.players" },
-                                        "steps": [
-                                            { 
-                                                "type": "DO_ACTION",
-                                                "entity": { "player": true },
-                                                "action": [
-                                                    { 
-                                                        "type": "SET_POS",
-                                                        "newPos": { "marker": "pvp" }
-                                                    }
-                                                ]
-                                            }
-                                        ]
-                                    }
+                                "type": "DO_ACTION",
+                                "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
+                                "action": [
+                                    { "type": "SET_POS", "newPos": { "marker": "pvp" } }
                                 ]
                             }
-                        ]
-                    },
+                        ]}
+                    ]},
                     { "type": "STOP_PVP_BATTLE" }
                 ],
                 "name": "pvpEnd",
@@ -488,47 +389,18 @@
                         "thenStep": [
                             { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.standingOn.pvp_select_block" } },
                             { "type": "CHANGE_VAR_ARRAY", "changeType": "intersect", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.type.Player" } },
-                            { "type": "CHANGE_VAR_BOOL", "varName": "tmp.playersOnOtherMapDetected", "changeType": "set", "value": false },
-                            { 
-                                "type": "FOR_EACH_PLAYER",
-                                "players": { "varName": "tmp.playersInBox" },
-                                "steps": [
-                                    {
-                                        "type": "IF",
-                                        "condition": "party.combatants.onMap.players.length != party.combatants.players.length",
-                                        "thenStep": [
-                                            { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "tmp.playersOnOtherMapDetected", "value": true }
-                                        ]
-                                    }
-                                ]
+
+                            {
+                               "type": "MACRO",
+                               "name": "multibakery/pvpCheckForPlayersOnDifferentMaps",
+                               "varName": "tmp.playersOnOtherMapDetected",
+                               "players": { "varName": "tmp.playersInBox" }
                             },
                             {
                                 "type": "IF",
                                 "condition": "!tmp.playersOnOtherMapDetected",
                                 "thenStep": [
-                                    { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.outsideEntities", "value": { "varName": "game.entities.type.Player" } },
-                                    { "type": "CHANGE_VAR_ARRAY", "changeType": "erase", "varName": "tmp.outsideEntities", "value": { "varName": "tmp.playersInBox" } },
-                                    {
-                                        "type": "FOR_EACH_PLAYER",
-                                        "players": { "varName": "tmp.outsideEntities" },
-                                        "steps": [
-                                            { "type": "CHANGE_VAR_STRING", "changeType": "set", "varName": "tmp.outsidePlayerPartyId", "value": { "varName": "party.id" } },
-                                            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.outsidePlayerParty", "value": { "varName": "party.combatants.players" } },
-                                            { 
-                                               "type": "FOR_EACH_PLAYER",
-                                               "players": { "varName": "tmp.playersInBox" },
-                                               "steps": [
-                                                   {
-                                                       "type": "IF",
-                                                       "condition": "party.id == tmp.outsidePlayerPartyId",
-                                                       "thenStep": [
-                                                            { "type": "CHANGE_VAR_ARRAY", "changeType": "erase", "varName": "tmp.playersInBox", "value": { "varName": "tmp.outsidePlayerParty" }}
-                                                       ]
-                                                   }
-                                                ]
-                                            }
-                                        ]
-                                    },
+                                    { "type": "MACRO", "name": "multibakery/pvpEraseIncompleteParties", "players": "tmp.playersInBox" },
                                     { "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" },
                                     { "type": "ADD_PLAYERS_TO_PVP", "players": { "varName": "tmp.playersInBox" } },
                                     {

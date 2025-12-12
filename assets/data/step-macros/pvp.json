@@ -1,0 +1,125 @@
+[
+    { "name": "multibakery/pvpNavigateToPositions", "steps": [
+        {
+            "type": "SET_ARRAY_REGULAR_POLYGON_VERTICES",
+            "varName": "tmp.basePartyPosArray",
+            "radius": 60,
+            "size": { "varName": "pvp.parties.length" }
+        },
+        { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
+            {
+               "type": "ASSIGN_VEC3",
+                "changeType": "set",
+                "varName": "tmp.basePos",
+                "value": { "varName": "tmp.basePartyPosArray[tmp.partyI]" }
+            },
+            {
+               "type": "CHANGE_VAR_VEC3",
+                "changeType": "add",
+                "varName": "tmp.basePos",
+                "value": { "marker": "to_pvp" }
+            },
+
+            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.positions", "value": [{ "x": 0, "y": 0, "z": 0 }] },
+            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
+            {
+                "type": "CHANGE_VAR_NUMBER",
+                "changeType": "set",
+                "varName": "tmp.circlePointCount",
+                "value": { "varName": "tmp.combatants.length" }
+            },
+            { "type": "CHANGE_VAR_NUMBER", "changeType": "sub", "varName": "tmp.circlePointCount", "value": 1 },
+            {
+                "type": "SET_ARRAY_REGULAR_POLYGON_VERTICES",
+                "varName": "tmp.circlePositions",
+                "size": { "varName": "tmp.circlePointCount" },
+                "radius": 20 
+            },
+            {
+                "type": "CHANGE_VAR_ARRAY",
+                "changeType": "push",
+                "varName": "tmp.positions",
+                "value": { "varName": "tmp.circlePositions" }
+            },
+            { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
+                {
+                    "type": "ASSIGN_VEC3",
+                    "varName": "tmp.newPos",
+                    "value": { "varName": "tmp.basePos" }
+                },
+                {
+                    "type": "CHANGE_VAR_VEC2",
+                    "changeType": "add",
+                    "varName": "tmp.newPos",
+                    "value": { "varName": "tmp.positions[tmp.combatantI]" }
+                },
+                {
+                    "type": "DO_ACTION",
+                    "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
+                    "immediately": true,
+                    "action": [
+                        { "type": "SET_POS", "newPos": { "varName": "tmp.newPos" } },
+                        { "type": "SET_FACE_TO_ENTITY", "entity": { "name": "to_pvp" }, "rotate": true, "rotateSpeed": 2 }
+                    ]
+                }
+            ]}
+        ]}
+    ] },
+    { "name": "multibakery/pvpReleasePlayerInputLock", "steps": [
+        { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
+            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
+            { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
+                { "type": "WAIT_UNTIL_ACTION_DONE", "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } } },
+                {
+                    "type": "DO_ACTION",
+                    "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
+                    "wait": true,
+                    "action": [
+                        { "type": "SET_SLIP_THROUGH", "value": false }
+                    ]
+                }
+            ]}
+        ]}
+    ]},
+    { "name": "multibakery/pvpCheckForPlayersOnDifferentMaps", "args": ["varName", "players"], "steps": [
+        { "type": "CHANGE_VAR_BOOL", "varName": "varName", "changeType": "set", "value": false },
+        { 
+            "type": "FOR_EACH_PLAYER",
+            "players": "players",
+            "steps": [
+                {
+                    "type": "IF",
+                    "condition": "party.combatants.onMap.players.length != party.combatants.players.length",
+                    "thenStep": [
+                        { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "varName", "value": true }
+                    ]
+                }
+            ]
+        }
+    ]},
+    { "name": "multibakery/pvpEraseIncompleteParties", "args": ["players"], "steps": [
+        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.outsideEntities", "value": { "varName": "game.entities.type.Player" } },
+        { "type": "CHANGE_VAR_ARRAY", "changeType": "erase", "varName": "tmp.outsideEntities", "value": { "varName": "players" } },
+        {
+            "type": "FOR_EACH_PLAYER",
+            "players": { "varName": "tmp.outsideEntities" },
+            "steps": [
+                { "type": "CHANGE_VAR_STRING", "changeType": "set", "varName": "tmp.outsidePlayerPartyId", "value": { "varName": "party.id" } },
+                { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.outsidePlayerParty", "value": { "varName": "party.combatants.players" } },
+                { 
+                   "type": "FOR_EACH_PLAYER",
+                   "players": { "varName": "players" },
+                   "steps": [
+                       {
+                           "type": "IF",
+                           "condition": "party.id == tmp.outsidePlayerPartyId",
+                           "thenStep": [
+                                { "type": "CHANGE_VAR_ARRAY", "changeType": "erase", "varName": "players", "value": { "varName": "tmp.outsidePlayerParty" }}
+                           ]
+                       }
+                    ]
+                }
+            ]
+        }
+    ] }
+]
