@@ -1,7 +1,7 @@
 import type { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import type { Mod1 } from 'cc-instanceinator/src/types'
 import ccmod from '../ccmod.json'
-import { executePostload, executePoststart, executePrestart } from './loading-stages'
+import { executePostload, executePoststart, executePreload, executePrestart } from './loading-stages'
 
 import './multiplayer'
 import './options'
@@ -22,6 +22,10 @@ export default class Multibakery implements PluginClass {
         if (!Multibakery.mod.isCCL3) Object.assign(mod, { id: Multibakery.mod.name })
     }
 
+    async preload() {
+        await executePreload()
+    }
+
     async prestart() {
         await executePrestart()
     }
@@ -35,10 +39,11 @@ export default class Multibakery implements PluginClass {
     }
 }
 
+/* TODO: improve performance of hidden instances */
 /* TODO: release instanceinator */
 /* TODO: check if remote items work correctly */
-/* TODO: socket.ts assert holding the entire project */
-/* TODO: improve performance of hidden instances */
+/* TODO: interactable doesnt disappear after opening a chest */
+/* TODO: unfocusing game should stop server updated */
 
 /* todo maybe sometime */
 /* TODO: npc stuff fix */

@@ -53,7 +53,7 @@ function cloneMapInteractEntry(e: sc.MapInteractEntry): sc.MapInteractEntry {
     } else if (subGui instanceof sc.XenoDialogIcon) {
         newSubSui = cloneXenoDialogIcon(subGui)
     } else if (subGui)
-        assert(false, 'subGui type not supported ' + (window['findClassName'] ? findClassName(subGui) : ''))
+        assert(false, 'subGui type not supported ' + findClassName(subGui))
 
     if (newSubSui) ne.setSubGui(newSubSui)
     return ne

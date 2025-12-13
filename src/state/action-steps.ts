@@ -1,6 +1,5 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
-import { getStepSettings } from '../steps/step-id'
 import type { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
@@ -92,7 +91,7 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
         runTaskInMapInst(() => {
             ig.actionStepsFired ??= {}
             ;(ig.actionStepsFired[actor.netid] ??= []).push({
-                settings: getStepSettings(step) as ig.ActionStepBase.Settings,
+                settings: ig.StepHelpers.getStepSettings(step) as ig.ActionStepBase.Settings,
             })
         })
     }

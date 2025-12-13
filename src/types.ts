@@ -5,6 +5,7 @@ import type {} from 'ccmodmanager/types/gui/menu'
 import type {} from 'nax-ccuilib/src/ui/pause-screen/pause-screen-api'
 import type {} from 'nax-ccuilib/src/ui/quick-menu/quick-menu-extension'
 import type {} from 'cc-variable-charge-time/src/plugin'
+import type {} from 'cc-krypek-lib/src/plugin'
 import 'ts-binarifier/src/type-aliases'
 
 declare global {
@@ -20,8 +21,4 @@ declare global {
             id: number
         }
     }
-
-    /* personal dev utils, used for debugging stuff only */
-    function findClassName(id: any): string
-    function fcn(id: any): string
 }

@@ -86,7 +86,7 @@ async function addServerDialog(entry?: NetServerInfoRemote): Promise<NetServerIn
     }
 
     return new Promise<NetServerInfoRemote | undefined>(resolve => {
-        const dialog = new multi.class.InputFieldDialog(
+        const dialog = new sc.InputFieldDialog(
             300,
             'Enter server address',
             entry ? `${entry.connection.host}:${entry.connection.port}` : '',

@@ -1,3 +1,12 @@
+let preloadFunctions: [() => void | Promise<void>, number][]
+export function preload(func: () => void | Promise<void>, priority: number = 100) {
+    preloadFunctions ??= []
+    preloadFunctions.push([func, priority])
+}
+export async function executePreload() {
+    await Promise.all((preloadFunctions ?? []).sort((a, b) => a[1] - b[1]).map(([f]) => f()))
+}
+
 let postloadFunctions: [() => void | Promise<void>, number][]
 export function postload(func: () => void | Promise<void>, priority: number = 100) {
     postloadFunctions ??= []

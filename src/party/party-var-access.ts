@@ -1,6 +1,5 @@
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { arrayVarAccess } from '../steps/array/array'
 import type { MultiParty } from './party'
 
 export function multiPartyVarAccess(path: string, keys: string[], party?: MultiParty) {
@@ -27,7 +26,7 @@ export function multiPartyVarAccess(path: string, keys: string[], party?: MultiP
         else if (keys[1] == 'vanillaMembers') combatants = combatants.filter(c => c instanceof sc.PartyMemberEntity)
         else throw new Error(`Invalid var access! ${path}`)
 
-        return arrayVarAccess(combatants, keys.slice(2))
+        return ig.Vars.arrayVarAccess(combatants, keys.slice(2))
     }
 
     /* vanilla keys */

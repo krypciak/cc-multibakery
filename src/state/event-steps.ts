@@ -2,7 +2,6 @@ import { prestart } from '../loading-stages'
 import { addStateHandler } from './states'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
-import { getStepSettings } from '../steps/step-id'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
@@ -59,7 +58,7 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
                     } else if (
-                        value instanceof multi.class.InputFieldDialog ||
+                        value instanceof sc.InputFieldDialog ||
                         value instanceof ig.Action ||
                         typeof value == 'function'
                     ) {
@@ -207,7 +206,7 @@ export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, dat
         ig.eventStepsFired.set(call, group)
     }
     group.steps.push({
-        settings: getStepSettings(step) as ig.EventStepBase.Settings,
+        settings: ig.StepHelpers.getStepSettings(step) as ig.EventStepBase.Settings,
         data,
     })
 }
