@@ -29,6 +29,7 @@
 - Fix crash on item drop
 - Fix navigation maps often not working
 - Fix Manage server popup being closeable while Create client popup is shown
+- Fix interactables visual glitches
 
 ## [0.6.1] 2025-11-19
 

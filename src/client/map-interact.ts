@@ -1,9 +1,10 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
-import { runTask, runTasks, scheduleTasks } from 'cc-instanceinator/src/inst-util'
+import { runTask, runTasks, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
 import { isPhysics } from '../server/physics/is-physics-server'
+import { runTaskInMapInst } from './client'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -34,7 +35,9 @@ function cloneTradeIconGui(subGui: sc.TradeIconGui): sc.TradeIconGui {
 
 function cloneXenoDialogIcon(e: sc.XenoDialogIcon): sc.XenoDialogIcon {
     const gui = new sc.XenoDialogIcon()
-    gui.setText(e.textGui.text, e.xenoDialog)
+    scheduleTask(instanceinator.instances[instanceinator.id], () => {
+        gui.setText(e.textGui.text, e.xenoDialog)
+    })
     gui.show()
     return gui
 }
@@ -52,49 +55,70 @@ function cloneMapInteractEntry(e: sc.MapInteractEntry): sc.MapInteractEntry {
         newSubSui = cloneTradeIconGui(subGui)
     } else if (subGui instanceof sc.XenoDialogIcon) {
         newSubSui = cloneXenoDialogIcon(subGui)
-    } else if (subGui)
-        assert(false, 'subGui type not supported ' + findClassName(subGui))
+    } else if (subGui) assert(false, 'subGui type not supported ' + findClassName(subGui))
 
-    if (newSubSui) ne.setSubGui(newSubSui)
+    if (newSubSui) {
+        ne.setIcon(e.icon)
+        ne.setState(e.state)
+        ne.setSubGui(newSubSui)
+    }
     return ne
 }
 
+let isBroadcasting = false
 export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
+    isBroadcasting = true
     assert(!ig.ccmap)
     for (const entry of sc.mapInteract.entries) {
         sc.mapInteract.removeEntry(entry)
     }
     for (const entry of mapInst.sc.mapInteract.entries) {
         if (entry.gui.subGui instanceof sc.XenoDialogIcon) continue
-        const newEntry = cloneMapInteractEntry(entry)
-        if (newEntry) sc.mapInteract.addEntry(newEntry)
+        sc.mapInteract.addEntry(entry)
     }
+    isBroadcasting = false
 }
 
 prestart(() => {
+    function broadcastFunction(broadcast: () => void, func: () => void) {
+        if (isBroadcasting) {
+            func()
+            return
+        }
+        isBroadcasting = true
+        runTaskInMapInst(() => {
+            runTasks(ig.ccmap!.getAllInstances(true), () => {
+                broadcast()
+            })
+        })
+        isBroadcasting = false
+    }
+
+    function findEntry(entry: sc.MapInteractEntry) {
+        return sc.mapInteract.entries.find(a => a.entity == entry.entity)
+    }
+
     sc.MapInteract.inject({
         addEntry(entry) {
-            this.parent(entry)
-
-            if (!ig.ccmap) return
-
-            scheduleTasks(ig.ccmap.getAllInstances(), () => {
-                const newEntry = cloneMapInteractEntry(entry)
-                if (newEntry) sc.mapInteract.addEntry(newEntry)
-            })
+            if (!multi.server) return this.parent(entry)
+            broadcastFunction(
+                () => sc.mapInteract.addEntry(entry),
+                () => {
+                    const newEntry = entry._instanceId == this._instanceId ? entry : cloneMapInteractEntry(entry)
+                    if (newEntry) this.parent(newEntry)
+                }
+            )
         },
         removeEntry(entry) {
-            if (this.entries.indexOf(entry) == -1) return
-            this.parent(entry)
+            if (!multi.server) return this.parent(entry)
 
-            if (!ig.ccmap) return
-
-            runTasks(ig.ccmap.getAllInstances(), () => {
-                const clientEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
-                if (clientEntry) {
-                    sc.mapInteract.removeEntry(clientEntry)
+            broadcastFunction(
+                () => sc.mapInteract.removeEntry(entry),
+                () => {
+                    const newEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
+                    if (newEntry) this.parent(newEntry)
                 }
-            })
+            )
         },
         onPreUpdate() {
             if (!multi.server || ig.ccmap || !ig.client || !ig.client.dummy) return this.parent()
@@ -106,6 +130,17 @@ prestart(() => {
                 entry.gui.remove()
             }
             this.entries = []
+        },
+    })
+
+    sc.MapInteractEntry.inject({
+        setIcon(icon) {
+            if (!multi.server) return this.parent(icon)
+            this.parent(icon)
+            broadcastFunction(
+                () => findEntry(this)?.setIcon(icon),
+                () => this.parent(icon)
+            )
         },
     })
 })
@@ -182,8 +217,7 @@ prestart(() => {
             assert(ig.ccmap)
             assert(!ig.game.playerEntity)
             if (this.gripDir) assert(this.player)
-            const apply = !!this.player
-            if (!apply) return this.parent()
+            if (!this.player) return this.parent()
 
             wrapInput(this.player!.inputManager, () => this.parent())
         },
