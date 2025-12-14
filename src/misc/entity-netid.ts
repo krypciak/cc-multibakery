@@ -110,13 +110,17 @@ prestart(() => {
             const typeid = classIdToTypeid[this.classId]
             ig.game.entityTypeIdCounterMap[typeid] ??= 0
             let netid: EntityNetid = 0
+            const baseId = baseNetidFromTypeId(typeid)
+            let overflowCount = 0
             do {
                 let add = ++ig.game.entityTypeIdCounterMap[typeid]
                 if (add >= entityNetidCounterSize) {
                     add = 1
                     ig.game.entityTypeIdCounterMap[typeid] = 0
+                    if (++overflowCount >= 2)
+                        throw new Error(`Netid pool exsausted for typeid: ${typeid}, entity: ${fcn(this)}`)
                 }
-                netid = baseNetidFromTypeId(typeid) + add
+                netid = baseId + add
             } while (ig.game.entitiesByNetid[netid])
             return netid
         },
