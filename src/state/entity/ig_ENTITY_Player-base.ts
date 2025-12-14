@@ -4,8 +4,8 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import * as scPlayerBaseEntity from './sc_PlayerBaseEntity-base'
-import type { u10, u3, u8 } from 'ts-binarifier/src/type-aliases'
-import type { ArmorType, ExpType, ItemType, LevelType } from '../../net/binary/binary-types'
+import type { RecordSize, u10, u11, u3, u8 } from 'ts-binarifier/src/type-aliases'
+import type { ItemType } from '../../net/binary/binary-types'
 
 declare global {
     namespace ig.ENTITY {
@@ -13,20 +13,9 @@ declare global {
     }
 
     namespace sc {
-        namespace PlayerModel {
-            interface Equip {
-                head: ArmorType
-                leftArm: ArmorType
-                rightArm: ArmorType
-                torso: ArmorType
-                feet: ArmorType
-            }
-        }
         interface PlayerModel {
-            level: LevelType
-            items: Record<ItemType, u10 | null>
             skillPoints: u8[]
-            exp: ExpType
+            items: Record<ItemType, u10 | null> & RecordSize<u11>
         }
     }
 }

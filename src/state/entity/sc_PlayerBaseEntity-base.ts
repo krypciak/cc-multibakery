@@ -1,8 +1,8 @@
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
-import type { u10, u7, u8 } from 'ts-binarifier/src/type-aliases'
-import type { ArmorType, ExpType, ItemType, LevelType } from '../../net/binary/binary-types'
+import type { u10, u7 } from 'ts-binarifier/src/type-aliases'
+import type { ArmorType, ExpType, LevelType } from '../../net/binary/binary-types'
 
 declare global {
     namespace sc {
@@ -17,8 +17,6 @@ declare global {
         }
         interface PlayerModel {
             level: LevelType
-            items: Record<ItemType, u10 | null>
-            skillPoints: u8[]
             exp: ExpType
         }
     }
