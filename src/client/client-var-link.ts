@@ -7,6 +7,7 @@ export function linkClientVars(client: Client, mapInst: InstanceinatorInstance) 
 
     to.currentLevelName = from.currentLevelName
     to.varsSetBy = from.varsSetBy
+    to.entityAccessors = from.entityAccessors
 
     const mapProxy = new Proxy((from.storage.map ??= {}), {
         get(target, p, receiver) {
