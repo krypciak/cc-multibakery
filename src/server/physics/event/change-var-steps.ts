@@ -8,7 +8,7 @@ prestart(() => {
     function replace<T extends ig.StepBase>(this: T & { parent: T['start'] }, data: unknown, eventCall?: ig.EventCall) {
         if (!isPhysics(multi.server)) return this.parent(data, eventCall)
 
-        if (ig.client) setNextSetBy(ig.game.playerEntity)
+        if (ig.client?.dummy) setNextSetBy(ig.client.dummy)
 
         this.parent(data, eventCall)
 
