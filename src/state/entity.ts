@@ -7,6 +7,9 @@ import { cleanRecord } from './state-util'
 import './entity/entity-death'
 import './entity/entity-hit-effect'
 
+/* these modules cannot export anything,
+ * or else it might screw up import order
+ * and therefore screw up binary encoding */
 import './entity/dummy_DummyPlayer'
 import './entity/ig_ENTITY_Effect'
 import './entity/ig_ENTITY_PushPullBlock'

@@ -1,5 +1,4 @@
 import { prestart } from '../../loading-stages'
-import { isParticleClass } from '../../state/entity/ig_ENTITY_Effect'
 import { isRemote } from './is-remote-server'
 
 prestart(() => {
@@ -8,31 +7,6 @@ prestart(() => {
     dummy.DummyPlayer.inject({
         setAction(action, keepState, noStateReset) {
             if (!isRemote(multi.server)) return this.parent(action, keepState, noStateReset)
-        },
-    })
-
-    ig.Game.inject({
-        spawnEntity(entity, x, y, z, settings, showAppearEffects) {
-            if (ASSERT) {
-                if (isRemote(multi.server) && !ig.settingState && ig.ccmap?.ready) {
-                    const isOk =
-                        typeof entity === 'function'
-                            ? isParticleClass(entity) ||
-                              (entity == ig.ENTITY.Effect && ig.ignoreEffectNetid) ||
-                              entity == dummy.DummyPlayer ||
-                              entity == ig.ENTITY.Crosshair ||
-                              entity == ig.ENTITY.CrosshairDot ||
-                              entity == sc.NPCRunnerEntity
-                            : false
-                    if (!isOk) {
-                        console.groupCollapsed('local entity spawn!', findClassName(entity))
-                        console.log(settings)
-                        console.trace()
-                        console.groupEnd()
-                    }
-                }
-            }
-            return this.parent(entity, x, y, z, settings, showAppearEffects)
         },
     })
 

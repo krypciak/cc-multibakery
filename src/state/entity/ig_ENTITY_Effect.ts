@@ -248,10 +248,6 @@ prestart(() => {
     })
 })
 
-export function isParticleClass(clazz: ig.EntityConstructor): boolean {
-    return particles.includes(clazz)
-}
-
 prestart(() => {
     if (!PHYSICSNET) return
 
