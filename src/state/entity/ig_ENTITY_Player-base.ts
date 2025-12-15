@@ -102,6 +102,14 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         }
     }
 
+    if (state.charge !== undefined) {
+        if (state.charge == 0) {
+            this.charging.time = 1
+            this.clearCharge()
+        } else {
+            this.showChargeEffect(state.charge)
+        }
+    }
 }
 
 prestart(() => {
