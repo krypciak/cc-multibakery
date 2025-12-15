@@ -43,7 +43,7 @@ prestart(() => {
         setState,
     })
     sc.ItemDropEntity.create = (netid, state: Return) => {
-        assert(state.dropType !== undefined)
+        if (state.dropType === undefined) return
         assert(state.item !== undefined)
         assert(state.amount !== undefined)
         assert(state.target)
