@@ -41,7 +41,6 @@ export default class Multibakery implements PluginClass {
 
 /* TODO: improve performance of hidden instances */
 /* TODO: release instanceinator */
-/* TODO: check if remote items work correctly */
 /* TODO: unfocusing game should stop server updated */
 
 /* todo maybe sometime */

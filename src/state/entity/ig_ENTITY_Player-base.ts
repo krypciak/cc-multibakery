@@ -42,12 +42,19 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
     memory ??= StateMemory.getBy(this, player)
 
+    const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
+    const itemsDiff =
+        !player || this == player.dummy
+            ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null>)
+            : undefined
+
     return {
         ...scPlayerBaseEntity.getState.call(this, memory),
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
-        items: memory.diffRecord(this.model.items),
+        items,
+        itemsDiff: items ? undefined : itemsDiff,
         skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints) : undefined,
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
 
@@ -76,28 +83,25 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         this.interactObject = entity.pushPullable
     } else this.interactObject = null
 
-    if (state.items) {
-        if (ig.settingStateImmediately) {
-            this.model.items = state.items
-        } else {
-            for (const idStr in state.items) {
-                const id = idStr as unknown as ItemType
-                const amount = state.items[id]
-                const oldAmount = this.model.items[id]
+    if (state.items) this.model.items = state.items
+    if (state.itemsDiff) {
+        for (const id of Object.keysT(state.itemsDiff)) {
+            const amount = state.itemsDiff[id]
+            const oldAmount = this.model.items[id]
 
-                this.model.items[id] = amount
+            this.model.items[id] = amount
 
-                if ((amount ?? 0) > (oldAmount ?? 0)) {
-                    notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
-                        id,
-                        amount,
-                        skip: false,
-                        cutscene: undefined,
-                    })
-                }
+            if ((amount ?? 0) > (oldAmount ?? 0)) {
+                notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {
+                    id,
+                    amount,
+                    skip: false,
+                    cutscene: undefined,
+                })
             }
         }
     }
+
 }
 
 prestart(() => {
