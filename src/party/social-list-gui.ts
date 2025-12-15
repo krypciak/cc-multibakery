@@ -169,8 +169,7 @@ prestart(() => {
 
             list.clear()
             buttonGroup.clear()
-            const playerList = multi.server.party
-                .getPlayerInfoList()
+            const playerList = Object.values(multi.server.getPlayerInfoEntries())
                 .map(info => ({ info, party: multi.server.party.getPartyOfUsername(info.username) }))
                 .sort(({ party: p1, info: i1 }, { party: p2, info: i2 }) =>
                     p1 == p2 ? i1.username.localeCompare(i2.username) : p1.id.localeCompare(p2.id)
@@ -265,7 +264,7 @@ prestart(() => {
             const clickedParty = multi.server.party.getPartyOfUsername(clickedPlayerInfo.username)
 
             assert(ig.client)
-            const ownPlayerInfo = multi.server.party.getPlayerInfoOf(ig.client.username)
+            const ownPlayerInfo = multi.server.getPlayerInfoOf(ig.client.username)
             const ownParty = multi.server.party.getPartyOfUsername(ig.client.username)
 
             const filteredConfigs = popupConfigs.filter(config =>
@@ -481,7 +480,7 @@ prestart(() => {
             return y
         },
         createPlayerEntryGui(username, isFirst) {
-            const playerInfo = multi.server.party.getPlayerInfoOf(username)
+            const playerInfo = multi.server.getPlayerInfoOf(username)
             const gui = new multi.class.SocialPartyMember(isFirst, playerInfo)
             return gui
         },

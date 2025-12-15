@@ -14,13 +14,14 @@ import type { ClientLeaveData } from '../remote/remote-server'
 import { startGameLoop } from '../../game-loop'
 import { sendPhysicsServerPacket } from './physics-server-sender'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
-import type { MapName } from '../../net/binary/binary-types'
+import type { MapName, Username } from '../../net/binary/binary-types'
 
 import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
 import './server-var-access'
+import type { PlayerInfoEntry } from '../../party/party'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -242,6 +243,37 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             conn.leave(client)
             this.leaveClient(client)
         }
+    }
+
+    getPlayerInfoOf(username: Username): PlayerInfoEntry {
+        const client = multi.server.clients.get(username)
+        assert(client?.dummy)
+        const model = client.dummy.model
+        return {
+            username: client.username,
+            character: model.name,
+            stats: {
+                level: model.level,
+                maxhp: model.params.getStat('hp'),
+                attack: model.params.getStat('attack'),
+                defense: model.params.getStat('defense'),
+                focus: model.params.getStat('focus'),
+
+                hp: model.params.currentHp,
+                spLevel: model.params.maxSp,
+                sp: model.params.currentSp,
+                exp: model.exp,
+            },
+            equip: model.equip,
+        }
+    }
+
+    getPlayerInfoEntries() {
+        return Object.fromEntries(
+            [...multi.server.clients.values()]
+                .filter(client => client.dummy)
+                .map(client => [client.username, this.getPlayerInfoOf(client.username)])
+        )
     }
 
     destroy() {

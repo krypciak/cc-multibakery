@@ -9,7 +9,7 @@ import { removeAddon } from '../dummy/box/box-addon'
 import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 import type { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
-import { MultiPartyManager } from '../party/party'
+import { MultiPartyManager, type PlayerInfoEntry } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
 
 export interface MapTpInfo {
@@ -243,6 +243,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         if (!this.masterUsername) return
         return this.clients.get(this.masterUsername)
     }
+
+    abstract getPlayerInfoOf(username: Username): PlayerInfoEntry
+
+    abstract getPlayerInfoEntries(): Record<Username, PlayerInfoEntry>
 
     destroy() {
         if (this.destroyed) return

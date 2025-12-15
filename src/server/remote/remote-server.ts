@@ -13,11 +13,12 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import { applyModCompatibilityList, type ModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 import type { CCMap } from '../ccmap/ccmap'
-import type { MapName } from '../../net/binary/binary-types'
+import type { MapName, Username } from '../../net/binary/binary-types'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
+import type { PlayerInfoEntry } from '../../party/party'
 
 export interface RemoteServerConnectionSettings {
     host: string
@@ -209,6 +210,14 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         super.leaveClient(client)
 
         this.netManager.sendLeave({ username: client.username })
+    }
+
+    getPlayerInfoOf(username: Username): PlayerInfoEntry {
+        throw new Error('not implemented')
+    }
+
+    getPlayerInfoEntries() {
+        return {}
     }
 
     destroy() {

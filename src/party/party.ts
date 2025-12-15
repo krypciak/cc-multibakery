@@ -16,7 +16,6 @@ import type {
 } from '../net/binary/binary-types'
 import { addCombatantParty } from './combatant-party-api'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
-import { isRemote } from '../server/remote/is-remote-server'
 
 import './social-list-gui'
 import './party-var-access'
@@ -278,36 +277,5 @@ export class MultiPartyManager implements sc.Model {
             }
         }
         this.leaveParty(client.username)
-    }
-
-    getPlayerInfoOf(username: Username): PlayerInfoEntry {
-        if (isRemote(multi.server)) throw new Error('RemoteServer#getPlayerList not implemented!')
-
-        const client = multi.server.clients.get(username)
-        assert(client?.dummy)
-        const model = client.dummy.model
-        return {
-            username: client.username,
-            character: model.name,
-            stats: {
-                level: model.level,
-                maxhp: model.params.getStat('hp'),
-                attack: model.params.getStat('attack'),
-                defense: model.params.getStat('defense'),
-                focus: model.params.getStat('focus'),
-
-                hp: model.params.currentHp,
-                spLevel: model.params.maxSp,
-                sp: model.params.currentSp,
-                exp: model.exp,
-            },
-            equip: model.equip,
-        }
-    }
-
-    getPlayerInfoList(): PlayerInfoEntry[] {
-        return [...multi.server.clients.values()]
-            .filter(client => client.dummy)
-            .map(client => this.getPlayerInfoOf(client.username))
     }
 }
