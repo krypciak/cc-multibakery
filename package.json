@@ -48,7 +48,8 @@
         "onlyBuiltDependencies": [
             "bun",
             "esbuild",
-            "node"
+            "node",
+            "ultimate-crosscode-typedefs"
         ]
     }
 }
