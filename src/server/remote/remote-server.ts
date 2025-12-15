@@ -44,6 +44,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
     netManager!: SocketNetManagerRemoteServer
     notifyReadyMaps?: MapName[]
+    private playerInfoEntries: Record<Username, PlayerInfoEntry> = {}
 
     constructor(settings: RemoteServerSettings) {
         console.info('ROLE: RemoteServer')
@@ -213,11 +214,13 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {
-        throw new Error('not implemented')
+        const entry = this.playerInfoEntries[username]
+        assert(`getPlayerInfoEntry: asked for username: ${username} that has no entry!`)
+        return entry
     }
 
     getPlayerInfoEntries() {
-        return {}
+        return this.playerInfoEntries
     }
 
     destroy() {

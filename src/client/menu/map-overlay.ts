@@ -1,7 +1,7 @@
-import { COLOR, wrapColor } from '../misc/wrap-color'
-import { prestart } from '../loading-stages'
-import type { Username } from '../net/binary/binary-types'
-import { getPlayerLocations } from './player-locations'
+import { COLOR, wrapColor } from '../../misc/wrap-color'
+import { prestart } from '../../loading-stages'
+import type { MapName, Username } from '../../net/binary/binary-types'
+import type { PlayerInfoEntry } from '../../party/party'
 
 declare global {
     namespace sc {
@@ -39,17 +39,21 @@ prestart(() => {
                 username: Username
             }[] = []
 
-            const locations = getPlayerLocations()
-            for (const mapName in locations) {
+            const playerInfos = multi.server.getPlayerInfoEntries()
+            const maps = Object.values(playerInfos).reduce(
+                (acc, p) => {
+                    ;(acc[p.tpInfo.map] ??= []).push(p)
+                    return acc
+                },
+                {} as Record<MapName, PlayerInfoEntry[]>
+            )
+            for (const mapName in maps) {
                 const mapNameCamel = mapName.toCamel()
                 const room = this.floor.roomClases.find(room => room?.name == mapNameCamel || room?.name == mapName)
                 if (!room) continue
 
-                const mapRecord = locations[mapName]
-                for (const username in mapRecord) {
-                    const { pos } = mapRecord[username]
-                    if (!pos) continue
-
+                const mapRecord = maps[mapName]
+                for (const { username, pos } of mapRecord) {
                     const realX = room.hook.pos.x + room.hook.size.x * pos.x
                     const realY = room.hook.pos.y + room.hook.size.y * pos.y
 

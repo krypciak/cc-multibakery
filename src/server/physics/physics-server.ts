@@ -249,9 +249,16 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         const client = multi.server.clients.get(username)
         assert(client?.dummy)
         const model = client.dummy.model
+        const mapSize: Vec2 = client.getMap().inst.ig.game.size
         return {
             username: client.username,
             character: model.name,
+            tpInfo: client.tpInfo,
+            pos: {
+                x: client.dummy.coll.pos.x / mapSize.x,
+                y: (client.dummy.coll.pos.y - client.dummy.coll.pos.z) / mapSize.y,
+            },
+
             stats: {
                 level: model.level,
                 maxhp: model.params.getStat('hp'),

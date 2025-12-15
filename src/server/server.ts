@@ -6,7 +6,6 @@ import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../dummy/box/box-addon'
-import { invalidateOldPlayerLocations, updatePlayerLocations } from '../map-gui/player-locations'
 import type { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
 import { MultiPartyManager, type PlayerInfoEntry } from '../party/party'
@@ -122,13 +121,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         startGameLoop(useAnimationFrame)
 
         multi.class.gamepadAssigner.initialize()
-    }
-
-    update() {
-        super.update()
-
-        updatePlayerLocations()
-        invalidateOldPlayerLocations()
     }
 
     private preUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {

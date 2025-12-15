@@ -10,12 +10,9 @@ import './state/states'
 import './misc/paused-virtual'
 import './misc/disable-fkeys'
 import './misc/unregister-var-accessor'
-import './client/menu/server-list-menu'
-import './client/menu/pause/pause-screen'
 import './pvp/pvp'
 import './steps/all'
 import './misc/icons'
-import './map-gui/map-overlay'
 
 declare global {
     namespace multi {

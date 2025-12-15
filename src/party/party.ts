@@ -14,6 +14,7 @@ import type {
     Username,
     MapName,
 } from '../net/binary/binary-types'
+import type { MapTpInfo } from '../server/server'
 import { addCombatantParty } from './combatant-party-api'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 
@@ -40,7 +41,8 @@ export interface MultiParty {
 export interface PlayerInfoEntry {
     username: Username
     character: string
-    // status: PlayerInfoStatus
+    tpInfo: MapTpInfo
+    pos: Vec2
 
     stats: {
         level: LevelType

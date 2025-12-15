@@ -24,6 +24,9 @@ import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
 
 import './injects'
+import './menu/server-list-menu'
+import './menu/pause/pause-screen'
+import './menu/map-overlay'
 
 declare global {
     namespace ig {
