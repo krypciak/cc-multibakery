@@ -59,7 +59,6 @@ export class Client extends InstanceUpdateable {
     tpInfo: MapTpInfo = { map: '' }
     nextTpInfo: MapTpInfo = { map: '' }
     ready: boolean = false
-    justTeleported: boolean = false
     playerAttachResolve?: (player: dummy.DummyPlayer) => void
 
     static async create(settings: ClientSettings): Promise<Client> {
@@ -207,7 +206,6 @@ export class Client extends InstanceUpdateable {
         }
 
         this.nextTpInfo = tpInfo
-        this.justTeleported = true
 
         this.ready = false
 

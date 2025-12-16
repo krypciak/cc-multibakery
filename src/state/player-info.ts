@@ -21,6 +21,7 @@ export interface PlayerInfoEntry {
     username: Username
     character: string
     tpInfo: MapTpInfo
+    nextTpInfo: MapTpInfo
     pos: Vec2
 
     stats: {
@@ -49,6 +50,7 @@ interface PartialPlayerInfoEntry {
     username?: Username
     character?: string
     tpInfo?: MapTpInfo
+    nextTpInfo?: MapTpInfo
     pos?: Vec2
 
     stats?: {
@@ -97,6 +99,11 @@ prestart(() => {
                         if (!b) return !!a
                         return a.map != b.map || a.marker != b.marker
                     },
+                    nextTpInfo(a, b) {
+                        if (!a) return !!b
+                        if (!b) return !!a
+                        return a.map != b.map || a.marker != b.marker
+                    },
                     pos: (a, b) => isInMapMenu && (a?.x !== b?.x || a?.y !== b?.y),
                     stats(a, b) {
                         if (!isInPartyMenu) return false
@@ -129,6 +136,7 @@ prestart(() => {
                 },
                 {
                     tpInfo: tpInfo => tpInfo && { ...tpInfo },
+                    nextTpInfo: nextTpInfo => nextTpInfo && { ...nextTpInfo },
                     pos: v => v && Vec2.create(v),
                     stats: stats => stats && { ...stats },
                     equip: equip => equip && { ...equip },
@@ -149,6 +157,13 @@ prestart(() => {
                         const key = keyRaw as keyof PlayerInfoEntry
                         const v = playerInfo[key]
                         if (v !== undefined) entry[key] = v as any
+                    }
+
+                    if (entry.nextTpInfo) {
+                        const client = multi.server.clients.get(username)
+                        if (!client?.ready) continue
+
+                        client.teleport(entry.nextTpInfo)
                     }
                 }
             }

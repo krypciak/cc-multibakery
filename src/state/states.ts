@@ -21,7 +21,6 @@ import './vars'
 
 // global
 import './areas'
-import './player-maps'
 import './player-info'
 
 declare global {
