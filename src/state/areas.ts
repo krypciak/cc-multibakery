@@ -1,32 +1,25 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler, type StateKey } from './states'
+import { addGlobalStateHandler, type GlobalStateKey } from './states'
 import { StateMemory } from './state-util'
 import type { AreaName } from '../net/binary/binary-types'
+import { fromCamel } from '../misc/from-camel'
 
 type AreasObj = Record<AreaName, /* landmarks */ Record<string, true>>
 
 declare global {
-    interface StateUpdatePacket {
+    interface GlobalStateUpdatePacket {
         areas?: AreasObj
     }
-    namespace ig {
-        var areasStatePlayerMemory: StateMemory.MapHolder<StateKey> | undefined
-    }
-}
-
-function fromCamel(str: string) {
-    return str.replace(/[A-Z]/g, a => '-' + a.toLowerCase())
 }
 
 prestart(() => {
-    addStateHandler({
-        get(packet, client) {
-            if (packet.areas) return
+    let areaObj: AreasObj | undefined
+    const areaStateMemory: StateMemory.MapHolder<GlobalStateKey> = {}
+    addGlobalStateHandler({
+        get(packet, conn) {
+            const memory = StateMemory.getBy(areaStateMemory, conn)
 
-            ig.areasStatePlayerMemory ??= {}
-            const memory = StateMemory.getBy(ig.areasStatePlayerMemory, client)
-
-            const obj: AreasObj = Object.fromEntries(
+            areaObj ??= Object.fromEntries(
                 Object.keys(sc.map.areasVisited)
                     .map(fromCamel)
                     .map(areaName => [
@@ -38,7 +31,11 @@ prestart(() => {
                         ),
                     ])
             )
-            packet.areas = memory.diffRecordRecursive(obj)
+
+            packet.areas = memory.diffRecordRecursive(areaObj)
+        },
+        clear() {
+            areaObj = undefined
         },
         set(packet) {
             if (!packet.areas) return

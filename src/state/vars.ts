@@ -1,15 +1,21 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler, type StateKey } from './states'
+import { addGlobalStateHandler, addStateHandler, type GlobalStateKey, type StateKey } from './states'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
 import { runTaskInMapInst } from '../client/client'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
+import type { MapName } from '../net/binary/binary-types'
+import { fromCamel } from '../misc/from-camel'
 
 type VarObj = Record<string, unknown> & RecordSize<u16>
 
 declare global {
     interface StateUpdatePacket {
+        vars?: VarObj
+    }
+    interface GlobalStateUpdatePacket {
         vars?: VarObj
     }
     namespace ig {
@@ -32,6 +38,13 @@ function flattenRecursive(obj: Record<string, unknown>, path: string, into: Reco
     }
 }
 
+function extractMapNameOutOfMapsVar(path: string): MapName {
+    let map = path.substring(5)
+    const index = map.indexOf('.')
+    map = map.substring(0, index == -1 ? undefined : index)
+    return fromCamel(map)
+}
+
 prestart(() => {
     addStateHandler({
         get(packet, client) {
@@ -43,11 +56,7 @@ prestart(() => {
                 if (client) ig.vars.everSent.add(client)
 
                 packet.vars ??= {}
-                flattenRecursive(ig.vars.storage.map, 'map', packet.vars)
                 flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
-                flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
-
-                for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
             }
         },
         clear() {
@@ -67,20 +76,65 @@ prestart(() => {
         },
     })
 
+    const globalEverSent = new WeakSet<GlobalStateKey>()
+    let globalVarsChanged: VarObj | undefined = undefined
+
+    addGlobalStateHandler({
+        get(packet, conn) {
+            packet.vars = globalVarsChanged
+
+            if (!globalEverSent.has(conn)) {
+                globalEverSent.add(conn)
+
+                packet.vars ??= {}
+                flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
+
+                for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
+            }
+        },
+        clear() {
+            globalVarsChanged = undefined
+        },
+        set(packet) {
+            if (!packet.vars) return
+
+            const mapsToNotify = new Set<MapName>()
+            for (const path in packet.vars) {
+                const value = packet.vars[path]
+
+                const obj = ig.vars._getAccessObject(path)
+                assert(obj)
+                obj.obj[obj.key] = value
+                if (path.startsWith('maps')) {
+                    mapsToNotify.add(extractMapNameOutOfMapsVar(path))
+                }
+            }
+            runTasks(
+                [...mapsToNotify]
+                    .map(mapName => multi.server.maps.get(mapName))
+                    .filter(Boolean)
+                    .map(map => map!.inst),
+                () => ig.game.varsChangedDeferred()
+            )
+        },
+    })
+
     if (PHYSICSNET) {
         addVarModifyListener((path, newValue) => {
             if (!shouldCollectStateData()) return
-            if (
-                !path.startsWith('maps.') &&
-                !path.startsWith('map.') &&
-                !path.startsWith('tmp.') &&
-                !path.startsWith('menu.')
-            )
-                return
-            runTaskInMapInst(() => {
-                ig.vars.varsChanged ??= {}
-                ig.vars.varsChanged[path] = newValue
-            })
+
+            if (path.startsWith('map.')) {
+                path = 'maps.' + ig.vars.currentLevelName + path.substring(3)
+            }
+            if (path.startsWith('maps.') || path.startsWith('menu.')) {
+                globalVarsChanged ??= {}
+                globalVarsChanged[path] = newValue
+            } else if (path.startsWith('tmp.')) {
+                runTaskInMapInst(() => {
+                    ig.vars.varsChanged ??= {}
+                    ig.vars.varsChanged[path] = newValue
+                })
+            }
         })
     }
 

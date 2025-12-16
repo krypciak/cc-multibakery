@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import type { NetConnection } from '../../net/connection'
 import { SocketNetManagerRemoteServer } from '../../net/socket'
-import { applyStateUpdatePacket } from '../../state/states'
+import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { type ClientJoinAckData, type ClientJoinData, Server, type ServerSettings } from '../server'
 import type { Client } from '../../client/client'
@@ -44,7 +44,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
     netManager!: SocketNetManagerRemoteServer
     notifyReadyMaps?: MapName[]
-    private playerInfoEntries: Record<Username, PlayerInfoEntry> = {}
+    playerInfoEntries: Record<Username, PlayerInfoEntry> = {}
 
     constructor(settings: RemoteServerSettings) {
         console.info('ROLE: RemoteServer')
@@ -163,6 +163,14 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             client.lastPingMs = msPing
         }
 
+        if (data.global) {
+            try {
+                applyGlobalStateUpdatePacket(data.global)
+            } catch (e) {
+                this.onInstanceUpdateError(e)
+            }
+        }
+
         // if (data.mapPackets) console.log(JSON.stringify(data.mapPackets, null, 4))
         for (const mapName in data.mapPackets) {
             const stateUpdatePacket = data.mapPackets[mapName]
@@ -185,19 +193,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 }
                 map.noStateAppliedYet = false
             })
-        }
-
-        if (data.playerMaps) {
-            // console.log(JSON.stringify(data.playerMaps, null, 4))
-            for (const mapName in data.playerMaps) {
-                const mapRecord = data.playerMaps[mapName]
-                for (const { username, marker } of mapRecord) {
-                    const client = multi.server.clients.get(username)
-                    if (!client?.ready) continue
-
-                    client.teleport({ map: mapName, marker })
-                }
-            }
         }
     }
 
