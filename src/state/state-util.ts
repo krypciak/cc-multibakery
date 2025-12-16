@@ -29,67 +29,6 @@ export function cleanRecord<T extends object>(rec: T): T | undefined {
     return newRecord as T
 }
 
-const copy: <T>(obj: T) => T =
-    window.structuredClone ??
-    function <T>(obj: T): T {
-        if (typeof obj !== 'object') return obj
-        if (Array.isArray(obj)) {
-            const newObj = []
-            for (let i = 0; i < obj.length; i++) newObj[i] = copy(obj[i])
-            return newObj as T
-        }
-        const newObj = {} as T
-        for (const key in obj) newObj[key] = copy(obj[key])
-        return newObj
-    }
-
-function diffRecordRecursive<K extends string, V>(currRecord: PartialRecord<K, V>, lastRecord: PartialRecord<K, V>) {
-    const changed = {} as any
-    let atLeastOne = false
-
-    const currKeys = (
-        Array.isArray(currRecord) ? currRecord.keys() : Object.keys(currRecord).values()
-    ) as ArrayIterator<K>
-    for (const key of currKeys) {
-        const currValue = currRecord[key] as any
-        const lastValue = lastRecord[key] as any
-
-        if (currValue === undefined) {
-            if (lastValue === undefined) continue
-            atLeastOne = true
-            changed[key] = lastRecord[key] = undefined as any
-        } else {
-            if (lastValue === undefined) {
-                atLeastOne = true
-                lastRecord[key] = copy(currValue)
-                changed[key] = currValue
-            } else {
-                if (typeof currValue === 'object') {
-                    const v = diffRecordRecursive(currValue, lastValue)
-                    if (v !== undefined) {
-                        atLeastOne = true
-                        changed[key] = v
-                    }
-                } else if (currValue !== lastValue) {
-                    atLeastOne = true
-                    changed[key] = lastRecord[key] = currValue
-                }
-            }
-        }
-    }
-    const lastKeys = (
-        Array.isArray(lastRecord) ? lastRecord.keys() : Object.keys(lastRecord).values()
-    ) as ArrayIterator<K>
-    for (const key of lastKeys) {
-        if (currRecord[key] === undefined && lastRecord[key] !== undefined) {
-            atLeastOne = true
-            changed[key] = undefined
-            lastRecord[key] = undefined
-        }
-    }
-    return atLeastOne ? changed : undefined
-}
-
 export namespace StateMemory {
     export type ArrayDiffEntry<V> = [number, V]
     export type ArrayDiff<V> =
@@ -193,16 +132,52 @@ export class StateMemory {
         }
     }
 
-    diffRecordRecursive<K extends string, V>(currRecord: Record<K, V>) {
+    diffRecord2Deep<T extends Record<string, Record<string, V>>, V>(
+        currRecord: T,
+        eq: (a: V, b: V) => boolean = (a, b) => a == b,
+        clone: (a: V) => V = a => a
+    ): T | undefined {
         const i = this.i++
         if (this.data.length <= i) {
-            this.data.push(copy(currRecord))
+            this.data.push(currRecord)
             return currRecord
         } else {
-            const lastRecord = this.data[i] as Record<K, V>
-            return diffRecordRecursive(currRecord, lastRecord)
+            function cloneRecord(rec: Record<string, V>): Record<string, V> {
+                return Object.fromEntries(Object.entries(rec).map(([k, v]) => [k, clone(v)]))
+            }
+
+            const lastRecord = this.data[i] as T
+            const changed: Record<string, Record<string, V>> = {}
+            let atLeastOne = false
+
+            for (const key1 in currRecord) {
+                const currSubR = currRecord[key1] as Record<string, V>
+                const lastSubR = lastRecord[key1] as Record<string, V> | undefined
+
+                if (!lastSubR) {
+                    changed[key1] = cloneRecord(currSubR)
+                    atLeastOne = true
+                } else {
+                    for (const key2 in currSubR) {
+                        const currV = currSubR[key2]
+                        const lastV = lastSubR[key2]
+                        if (!eq(currV, lastV)) {
+                            ;(changed[key1] ??= {})[key2] = clone(currV)
+                            atLeastOne = true
+                        }
+                    }
+                }
+            }
+            const newRecord: Record<string, Record<string, V>> = { ...currRecord }
+            for (const key in newRecord) {
+                newRecord[key] = cloneRecord(newRecord[key])
+            }
+            this.data[i] = newRecord
+
+            return atLeastOne ? (changed as T) : undefined
         }
     }
+
     static applyChangeRecord<T extends object>(into: NoInfer<T>, change: T | undefined) {
         if (!change) return
 

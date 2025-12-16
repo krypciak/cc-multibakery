@@ -32,7 +32,7 @@ prestart(() => {
                     ])
             )
 
-            packet.areas = memory.diffRecordRecursive(areaObj)
+            packet.areas = memory.diffRecord2Deep(areaObj)
         },
         clear() {
             areaObj = undefined
