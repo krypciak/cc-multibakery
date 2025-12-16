@@ -15,7 +15,6 @@ declare global {
     namespace sc {
         interface PlayerModel {
             skillPoints: u8[]
-            items: Record<ItemType, u10 | null> & RecordSize<u11>
         }
     }
 }
@@ -45,7 +44,7 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
     const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
     const itemsDiff =
         !player || this == player.dummy
-            ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null>)
+            ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null> & RecordSize<u11>)
             : undefined
 
     return {
@@ -85,7 +84,8 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
 
     if (state.items) this.model.items = state.items
     if (state.itemsDiff) {
-        for (const id of Object.keysT(state.itemsDiff)) {
+        for (const idStr of Object.keys(state.itemsDiff)) {
+            const id = parseInt(idStr)
             const amount = state.itemsDiff[id]
             const oldAmount = this.model.items[id]
 
