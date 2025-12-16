@@ -38,7 +38,7 @@ prestart(() => {
                         ),
                     ])
             )
-            packet.areas = memory.diffRecord2Deep(obj)
+            packet.areas = memory.diffRecordRecursive(obj)
         },
         set(packet) {
             if (!packet.areas) return
