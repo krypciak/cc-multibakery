@@ -31,6 +31,7 @@ function flattenRecursive(obj: Record<string, unknown>, path: string, into: Reco
         const value = obj[key]
         const newPath = path + '.' + key
         if (typeof value == 'object' && value) {
+            if (value instanceof ig.Class) continue
             flattenRecursive(value as any, newPath, into)
         } else {
             into[newPath] = value
@@ -121,7 +122,12 @@ prestart(() => {
 
     if (PHYSICSNET) {
         addVarModifyListener((path, newValue) => {
-            if (!shouldCollectStateData()) return
+            if (
+                !shouldCollectStateData() ||
+                newValue instanceof ig.Class ||
+                (Array.isArray(newValue) && newValue.some(v => v instanceof ig.Class))
+            )
+                return
 
             if (path.startsWith('map.')) {
                 path = 'maps.' + ig.vars.currentLevelName + path.substring(3)
