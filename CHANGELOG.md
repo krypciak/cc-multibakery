@@ -30,6 +30,7 @@
 - Fix navigation maps often not working
 - Fix Manage server popup being closeable while Create client popup is shown
 - Fix interactables visual glitches
+- Fix remote state not sending vars with prefix `maps.`
 
 ## [0.6.1] 2025-11-19
 

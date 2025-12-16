@@ -70,7 +70,13 @@ prestart(() => {
     if (PHYSICSNET) {
         addVarModifyListener((path, newValue) => {
             if (!shouldCollectStateData()) return
-            if (!path.startsWith('map.') && !path.startsWith('tmp.') && !path.startsWith('menu.')) return
+            if (
+                !path.startsWith('maps.') &&
+                !path.startsWith('map.') &&
+                !path.startsWith('tmp.') &&
+                !path.startsWith('menu.')
+            )
+                return
             runTaskInMapInst(() => {
                 ig.vars.varsChanged ??= {}
                 ig.vars.varsChanged[path] = newValue
