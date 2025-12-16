@@ -122,59 +122,67 @@ export class StateMemory {
                 const lastValue = lastRecord[key]
 
                 if (!eq(currValue, lastValue)) {
+                    lastRecord[key] = currValue
                     changed[key] = currValue
                     atLeastOne = true
                 }
             }
-            this.data[i] = { ...currRecord }
 
             return atLeastOne ? changed : undefined
         }
     }
 
-    diffRecord2Deep<T extends Record<string, Record<string, V>>, V>(
-        currRecord: T,
-        eq: (a: V, b: V) => boolean = (a, b) => a == b,
-        clone: (a: V) => V = a => a
-    ): T | undefined {
+    diffRecord2Deep<K2 extends string, R extends PartialRecord<K2, unknown>>(
+        currRecord: Record<string, R>,
+        notEqMap: { [K in keyof R]?: (a: R[K], b: R[K]) => boolean } = {},
+        cloneMap: { [K in keyof R]?: (obj: R[K]) => R[K] } = {}
+    ): Record<string, R> | undefined {
         const i = this.i++
         if (this.data.length <= i) {
             this.data.push(currRecord)
             return currRecord
         } else {
-            function cloneRecord(rec: Record<string, V>): Record<string, V> {
-                return Object.fromEntries(Object.entries(rec).map(([k, v]) => [k, clone(v)]))
+            function cloneRecord(rec: R): R {
+                return Object.fromEntries(
+                    Object.entries(rec).map(([k, v]) => [k, cloneMap[k as keyof R]?.(v as R[keyof R]) ?? v])
+                ) as R
             }
 
-            const lastRecord = this.data[i] as T
-            const changed: Record<string, Record<string, V>> = {}
+            const lastRecord = this.data[i] as Record<string, R>
+            const changed: Record<string, R> = {}
             let atLeastOne = false
 
             for (const key1 in currRecord) {
-                const currSubR = currRecord[key1] as Record<string, V>
-                const lastSubR = lastRecord[key1] as Record<string, V> | undefined
+                const currSubR = currRecord[key1] as R
+                const lastSubR = lastRecord[key1] as R | undefined
 
                 if (!lastSubR) {
-                    changed[key1] = cloneRecord(currSubR)
+                    lastRecord[key1] = cloneRecord(currSubR)
+                    changed[key1] = currSubR
                     atLeastOne = true
                 } else {
                     for (const key2 in currSubR) {
                         const currV = currSubR[key2]
                         const lastV = lastSubR[key2]
-                        if (!eq(currV, lastV)) {
-                            ;(changed[key1] ??= {})[key2] = clone(currV)
+                        if (notEqMap[key2]?.(currV, lastV) ?? currV != lastV) {
+                            lastSubR[key2] = cloneMap[key2]?.(currV) ?? currV
+
+                            changed[key1] ??= {} as R
+                            changed[key1][key2] = currV
                             atLeastOne = true
                         }
                     }
                 }
             }
-            const newRecord: Record<string, Record<string, V>> = { ...currRecord }
-            for (const key in newRecord) {
-                newRecord[key] = cloneRecord(newRecord[key])
+            for (const key1 in lastRecord) {
+                if (currRecord[key1] === undefined && lastRecord[key1] !== undefined) {
+                    lastRecord[key1] = undefined as any
+                    changed[key1] = undefined as any
+                    atLeastOne = true
+                }
             }
-            this.data[i] = newRecord
 
-            return atLeastOne ? (changed as T) : undefined
+            return atLeastOne ? changed : undefined
         }
     }
 
