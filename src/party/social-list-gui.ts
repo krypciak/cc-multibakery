@@ -1,9 +1,10 @@
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { poststart, prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { type MultiParty, type PlayerInfoEntry } from './party'
+import { type MultiParty } from './party'
 import { runEvent } from '../steps/event-steps-run'
 import type { Username } from '../net/binary/binary-types'
+import type { PlayerInfoEntry } from '../state/player-info'
 
 declare global {
     namespace sc {

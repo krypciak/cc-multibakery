@@ -21,7 +21,6 @@ import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
 import './server-var-access'
-import type { PlayerInfoEntry } from '../../party/party'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -245,7 +244,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    getPlayerInfoOf(username: Username): PlayerInfoEntry {
+    getPlayerInfoOf(username: Username) {
         const client = multi.server.clients.get(username)
         assert(client?.dummy)
         const model = client.dummy.model
@@ -254,6 +253,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             username: client.username,
             character: model.name,
             tpInfo: client.tpInfo,
+            nextTpInfo: client.nextTpInfo,
             pos: {
                 x: client.dummy.coll.pos.x / mapSize.x,
                 y: (client.dummy.coll.pos.y - client.dummy.coll.pos.z) / mapSize.y,

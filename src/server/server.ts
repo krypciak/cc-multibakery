@@ -8,8 +8,9 @@ import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../dummy/box/box-addon'
 import type { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
-import { MultiPartyManager, type PlayerInfoEntry } from '../party/party'
+import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
+import type { PlayerInfoEntry } from '../state/player-info'
 
 export interface MapTpInfo {
     map: MapName

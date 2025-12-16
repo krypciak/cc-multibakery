@@ -18,7 +18,7 @@ import type { MapName, Username } from '../../net/binary/binary-types'
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import type { PlayerInfoEntry } from '../../party/party'
+import type { PlayerInfoEntry } from '../../state/player-info'
 
 export interface RemoteServerConnectionSettings {
     host: string

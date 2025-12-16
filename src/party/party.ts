@@ -1,20 +1,6 @@
 import type { Client } from '../client/client'
 import { assert } from '../misc/assert'
-import type { COMBATANT_PARTY } from '../net/binary/binary-types'
-import type {
-    AttackType,
-    DefenceType,
-    ExpType,
-    FocusType,
-    HpType,
-    SpLevelType,
-    SpType,
-    ArmorType,
-    LevelType,
-    Username,
-    MapName,
-} from '../net/binary/binary-types'
-import type { MapTpInfo } from '../server/server'
+import type { COMBATANT_PARTY, MapName, Username } from '../net/binary/binary-types'
 import { addCombatantParty } from './combatant-party-api'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 
@@ -37,33 +23,6 @@ export interface MultiParty {
 }
 
 // export type PlayerInfoStatus = 'online' | 'in-party' | 'current-party'
-
-export interface PlayerInfoEntry {
-    username: Username
-    character: string
-    tpInfo: MapTpInfo
-    pos: Vec2
-
-    stats: {
-        level: LevelType
-        maxhp: HpType
-        attack: AttackType
-        defense: DefenceType
-        focus: FocusType
-
-        hp: HpType
-        spLevel: SpLevelType
-        sp: SpType
-        exp: ExpType
-    }
-    equip: {
-        head: ArmorType
-        leftArm: ArmorType
-        rightArm: ArmorType
-        torso: ArmorType
-        feet: ArmorType
-    }
-}
 
 export const MULTI_PARTY_EVENT = {
     JOIN: 1,

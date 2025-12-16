@@ -1,7 +1,7 @@
 import { COLOR, wrapColor } from '../../misc/wrap-color'
 import { prestart } from '../../loading-stages'
 import type { MapName, Username } from '../../net/binary/binary-types'
-import type { PlayerInfoEntry } from '../../party/party'
+import type { PlayerInfoEntry } from '../../state/player-info'
 
 declare global {
     namespace sc {
