@@ -38,7 +38,7 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
     assert(this.thrower.netid)
     return {
         owner: memory.onlyOnce(this.thrower.netid),
-        pos: memory.diffVec3(this.coll.pos),
+        pos: this.active || this.circleGlow > 0 ? memory.diffVec3(this.coll.pos) : undefined,
         active: memory.diff(this.active),
         special: memory.diff(this.special),
         isAiming: memory.diff(isAiming),
