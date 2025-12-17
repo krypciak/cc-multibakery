@@ -163,6 +163,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             client.lastPingMs = msPing
         }
 
+        // if (Object.keys(cleanRecord(data) ?? {}).length > 1) {
+        //     console.log(JSON.stringify(data, null, 4))
+        // }
+
         if (data.global) {
             try {
                 applyGlobalStateUpdatePacket(data.global)
@@ -171,7 +175,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             }
         }
 
-        // if (data.mapPackets) console.log(JSON.stringify(data.mapPackets, null, 4))
         for (const mapName in data.mapPackets) {
             const stateUpdatePacket = data.mapPackets[mapName]
 
