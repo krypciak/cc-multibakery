@@ -17,6 +17,7 @@
 - Ditch entity selection system in favor of var arrays
 - Pvp party rework (now uses the new party system)
 - Custom pvp steps rework
+- Respect cc-instanceinator display id and display fps options
 
 ### Fixed
 

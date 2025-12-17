@@ -107,9 +107,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
 
-        instanceinator.displayId = true
-        instanceinator.displayFps = true
-
         this.baseInst = instanceinator.instances[0]
         this.inst = await instanceinator.copy(this.baseInst, { name: 'server', display: this.isVisible() })
         this.inst.apply()
