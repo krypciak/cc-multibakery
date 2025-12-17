@@ -72,7 +72,7 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
     if (
         state.circleGlow &&
         (!(this.thrower instanceof dummy.DummyPlayer) ||
-            this.thrower.inputManager.input.currentDevice == ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE) &&
+            this.thrower.inputManager.input.currentDevice != ig.INPUT_DEVICES.GAMEPAD) &&
         sc.options.get('close-circle')
     ) {
         this.setCircleGlow()
