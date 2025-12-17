@@ -91,6 +91,7 @@ prestart(() => {
                 flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
 
                 for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
+                flattenRecursive(ig.vars.storage.maps ?? {}, 'maps', packet.vars)
             }
         },
         clear() {
