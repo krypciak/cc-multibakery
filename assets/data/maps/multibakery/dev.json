@@ -331,6 +331,7 @@
             "level": 2,
             "settings": { "size": { "x": 16, "y": 16 }, "mapId": 130, "event": [
                 { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
+                { "type": "WAIT", "time": 1 },
                 { "type": "PREPARE_PVP_ROUND" },
                 { "type": "WAIT", "time": 1 },
                 { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" },
