@@ -11,3 +11,4 @@ assets/data/maps/multibakery/test/aoc50x50*
 *.bkp
 metafile.json
 *.generated*.ts
+todo.txt

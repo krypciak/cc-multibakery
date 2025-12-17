@@ -38,13 +38,3 @@ export default class Multibakery implements PluginClass {
         await executePoststart()
     }
 }
-
-/* TODO: improve performance of hidden instances */
-/* TODO: release instanceinator */
-/* TODO: unfocusing game should stop server updated */
-
-/* todo maybe sometime */
-/* TODO: npc stuff fix */
-/* TODO: npc still sometimes crashes on cutscene skip spam */
-/* TODO: ascended equipment rework */
-/* TODO: cond entities breaking netid? */
