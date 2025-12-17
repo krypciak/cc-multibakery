@@ -11,10 +11,10 @@
     },
     "dependencies": {
         "crosscode": ">=1.4.0",
-        "cc-instanceinator": ">=1.0.3",
+        "cc-instanceinator": ">=1.0.6",
         "nax-ccuilib": ">=1.5.5",
         "ccmodmanager": ">=1.1.2",
-        "cc-krypek-lib": ">=0.0.1"
+        "cc-krypek-lib": ">=1.0.0"
     },
     "plugin": "plugin.js"
 }
