@@ -161,7 +161,7 @@ prestart(() => {
 
                     if (entry.nextTpInfo) {
                         const client = multi.server.clients.get(username)
-                        if (!client?.ready) continue
+                        if (!client?.ready || client.tpInfo.map == entry.nextTpInfo.map) continue
 
                         client.teleport(entry.nextTpInfo)
                     }
