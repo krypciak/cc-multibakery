@@ -26,21 +26,23 @@ declare global {
 
 type Return = ReturnType<typeof getState>
 export function getState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory) {
+    /* model can be null for sc.PartyMemberEntity right after leaving the party */
+    const model = this.model as typeof this.model | undefined
     return {
-        modelName: memory.diff(this.model.name),
-
         ...igEntityCombatant.getState.call(this, memory),
 
-        head: memory.diff(this.model.equip.head),
-        leftArm: memory.diff(this.model.equip.leftArm),
-        rightArm: memory.diff(this.model.equip.rightArm),
-        torso: memory.diff(this.model.equip.torso),
-        feet: memory.diff(this.model.equip.feet),
+        modelName: model && memory.diff(model.name),
 
-        level: memory.diff(this.model.level as u7),
-        exp: memory.diff(this.model.exp as u10),
+        head: model && memory.diff(model.equip.head),
+        leftArm: model && memory.diff(model.equip.leftArm),
+        rightArm: model && memory.diff(model.equip.rightArm),
+        torso: model && memory.diff(model.equip.torso),
+        feet: model && memory.diff(model.equip.feet),
 
-        element: memory.diff(this.model.currentElementMode),
+        level: model && memory.diff(model.level as u7),
+        exp: model && memory.diff(model.exp as u10),
+
+        element: model && memory.diff(model.currentElementMode),
 
         multiParty: memory.diff(this.multiParty!.id),
     }

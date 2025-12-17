@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import type { StateKey } from '../states'
 import { StateMemory } from '../state-util'
 import * as scPlayerBaseEntity from './sc_PlayerBaseEntity-base'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace sc {
@@ -31,7 +32,17 @@ prestart(() => {
         setState,
     })
     sc.PartyMemberEntity.create = (netid: EntityNetid, state: Return) => {
-        throw new Error('sc.PartyMemberEntity.create not implemented')
+        assert(state.modelName)
+        assert(state.multiParty)
+        const party = multi.server.party.parties[state.multiParty]
+        assert(party)
+
+        const entity = ig.game.spawnEntity(sc.PartyMemberEntity, 0, 0, 0, {
+            netid,
+            partyMemberName: state.modelName,
+        })
+        entity.multiParty = party
+        return entity
     }
     registerNetEntity({ entityClass: sc.PartyMemberEntity })
 }, 2)

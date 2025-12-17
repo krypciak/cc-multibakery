@@ -3,6 +3,7 @@ import { runTaskInMapInst } from '../client/client'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { assertPhysics } from '../server/physics/is-physics-server'
+import { isRemote } from '../server/remote/is-remote-server'
 
 declare global {
     namespace sc {
@@ -94,7 +95,7 @@ prestart(() => {
     sc.PartyMemberEntity.inject({
         update() {
             if (!multi.server) return this.parent()
-            assertPhysics(multi.server)
+            if (isRemote(multi.server)) return ig.AnimatedEntity.prototype.update.call(this)
             assert(this.ownerPlayer)
 
             const client = this.ownerPlayer.getClient(true)
