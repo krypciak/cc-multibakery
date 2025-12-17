@@ -73,21 +73,42 @@ export class MultiPartyManager implements sc.Model {
         return party.vanillaMembers.length
     }
 
-    getVanillaMemberEntity(party: MultiParty, modelName: string): { entity?: sc.PartyMemberEntity; map: string } {
-        assertPhysics(multi.server)
-        const ownerClient = multi.server.clients.get(party.owner)
-        assert(ownerClient)
-        const entity = ownerClient.inst.sc.party.getPartyMemberEntity(modelName)
-        return { entity, map: ownerClient.getMap().name }
+    getVanillaMemberEntity(party: MultiParty, modelName: string): { entity?: sc.PartyMemberEntity; map?: string } {
+        if (isPhysics(multi.server)) {
+            const ownerClient = multi.server.clients.get(party.owner)
+            assert(ownerClient)
+            const entity = ownerClient.inst.sc.party.getPartyMemberEntity(modelName)
+            return { entity, map: ownerClient.getMap().name }
+        } else {
+            for (const entity of ig.game.entities) {
+                if (
+                    entity instanceof sc.PartyMemberEntity &&
+                    entity.multiParty == party &&
+                    entity.model.name == modelName
+                ) {
+                    return { entity, map: ig.game.mapName }
+                }
+            }
+            return {}
+        }
     }
 
     getPartyCombatants(party: MultiParty, onMap?: MapName): ig.ENTITY.Combatant[] {
         const combatants: ig.ENTITY.Combatant[] = []
         for (const username of party.players) {
-            const client = multi.server.clients.get(username)
-            assert(client?.dummy)
-            if (!onMap || client.getMap().name == onMap) {
-                combatants.push(client.dummy)
+            if (isPhysics(multi.server)) {
+                const client = multi.server.clients.get(username)
+                assert(client?.dummy)
+                if (!onMap || client.getMap().name == onMap) {
+                    combatants.push(client.dummy)
+                }
+            } else {
+                assert(onMap == ig.game.mapName)
+                for (const entity of ig.game.entities) {
+                    if (entity instanceof dummy.DummyPlayer && party.players.includes(entity.data.username)) {
+                        combatants.push(entity)
+                    }
+                }
             }
         }
         for (const modelName of party.vanillaMembers) {

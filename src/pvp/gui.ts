@@ -38,7 +38,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
 
     function drawTeamHeads(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean) {
         const heads: number[] = multi.server.party
-            .getPartyCombatants(party)
+            .getPartyCombatants(party, ig.game.mapName)
             .map(entity =>
                 entity instanceof dummy.DummyPlayer
                     ? entity.getHeadIdx()

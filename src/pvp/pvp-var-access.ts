@@ -17,7 +17,7 @@ prestart(() => {
                     return ig.Vars.arrayVarAccess(
                         this.parties.flatMap(party =>
                             multi.server.party
-                                .getPartyCombatants(party)
+                                .getPartyCombatants(party, ig.game.mapName)
                                 .filter(entity => entity instanceof dummy.DummyPlayer)
                         ),
                         keys.slice(2)

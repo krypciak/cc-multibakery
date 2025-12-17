@@ -1,22 +1,15 @@
 import { prestart } from '../loading-stages'
 import { addStateHandler, type StateKey } from './states'
 import { cleanRecord, StateMemory } from './state-util'
-import type { PvpTeam } from '../pvp/pvp'
-import { assert } from '../misc/assert'
 import type { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
 import type { COMBATANT_PARTY } from '../net/binary/binary-types'
-import type { EntityNetid } from '../misc/entity-netid'
-
-export interface PvpTeamSerialized {
-    name: string
-    party: COMBATANT_PARTY
-    players: EntityNetid[]
-}
+import type { MultiPartyId } from '../party/party'
+import { assert } from '../misc/assert'
 
 interface PvpObj {
     on?: boolean
     winPoints?: u6
-    teams?: PvpTeamSerialized[]
+    parties?: MultiPartyId[]
     round?: u8
     state?: u3
     points?: PartialRecord<COMBATANT_PARTY, u6>
@@ -31,25 +24,6 @@ declare global {
     }
 }
 
-function serializeTeam(team: PvpTeam): PvpTeamSerialized {
-    return {
-        ...team,
-        players: team.players.map(player => player.netid),
-    }
-}
-
-function deserializeTeam(team: PvpTeamSerialized): PvpTeam {
-    return {
-        ...team,
-        players: team.players.map(netid => {
-            const player = ig.game.entitiesByNetid[netid]
-            assert(player)
-            assert(player instanceof dummy.DummyPlayer)
-            return player
-        }),
-    }
-}
-
 prestart(() => {
     addStateHandler({
         get(packet, client) {
@@ -58,17 +32,11 @@ prestart(() => {
             ig.pvpStatePlayerMemory ??= {}
             const memory = StateMemory.getBy(ig.pvpStatePlayerMemory, client)
 
-            const serializedTeams = sc.pvp.teams?.map(serializeTeam)
+            const parties = sc.pvp.parties?.map(p => p.id)
 
             packet.pvp = cleanRecord({
                 on: memory.diff(sc.pvp.multiplayerPvp && sc.pvp.state !== 0),
-                teams:
-                    sc.pvp.teams &&
-                    (sc.pvp.teams.length > 0 ? true : undefined) &&
-                    memory.diffArray(
-                        serializedTeams,
-                        (a, b) => a.name == b.name && a.party == b.party && a.players.length == b.players.length
-                    ),
+                parties: parties && memory.diffArray(parties),
                 winPoints: memory.diff(sc.pvp.winPoints),
                 state: memory.diff(sc.pvp.state),
                 points: memory.diffRecord(sc.pvp.points),
@@ -82,8 +50,12 @@ prestart(() => {
                 sc.pvp.winPoints = packet.pvp.winPoints
             }
 
-            if (packet.pvp.teams) {
-                sc.pvp.teams = packet.pvp.teams.map(deserializeTeam)
+            if (packet.pvp.parties) {
+                sc.pvp.parties = packet.pvp.parties.map(id => {
+                    const party = multi.server.party.parties[id]
+                    assert(party)
+                    return party
+                })
             }
 
             if (packet.pvp.on !== undefined) {

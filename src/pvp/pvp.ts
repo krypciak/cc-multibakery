@@ -101,7 +101,7 @@ prestart(() => {
         },
         getOnlyPartyAlive() {
             const partiesAlive = this.parties.filter(party =>
-                multi.server.party.getPartyCombatants(party).some(combatant => !combatant.isDefeated())
+                multi.server.party.getPartyCombatants(party, ig.game.mapName).some(combatant => !combatant.isDefeated())
             )
 
             if (partiesAlive.length == 1) {
@@ -234,7 +234,7 @@ prestart(() => {
             if (!this.isActive() || !(combatant instanceof dummy.DummyPlayer)) return false
 
             for (const party of this.parties) {
-                if (multi.server.party.getPartyCombatants(party).includes(combatant)) return true
+                if (multi.server.party.getPartyCombatants(party, ig.game.mapName).includes(combatant)) return true
             }
             return false
         },
@@ -268,7 +268,7 @@ prestart(() => {
 
             for (const party of this.parties) {
                 const regenAmount = party.combatantParty == combatantParty ? 0.5 : 1
-                for (const combatant of multi.server.party.getPartyCombatants(party)) {
+                for (const combatant of multi.server.party.getPartyCombatants(party, ig.game.mapName)) {
                     combatant.regenPvp(regenAmount)
                 }
             }
