@@ -33,7 +33,7 @@ function flattenRecursive(obj: Record<string, unknown>, path: string, into: Reco
         if (typeof value == 'object' && value) {
             if (value instanceof ig.Class) continue
             flattenRecursive(value as any, newPath, into)
-        } else {
+        } else if (typeof value !== 'function') {
             into[newPath] = value
         }
     }
