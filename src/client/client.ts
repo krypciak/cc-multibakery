@@ -321,7 +321,7 @@ export class Client extends InstanceUpdateable {
             multi.server.party.createPersonalParty(this.username)
 
             sc.model.enterNewGame()
-            sc.model.enterGame()
+            if (isPhysics(multi.server)) sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
 
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
@@ -342,7 +342,7 @@ export class Client extends InstanceUpdateable {
 
             this.updateGamepadForcer()
 
-            sc.model.enterGame()
+            if (isPhysics(multi.server)) sc.model.enterGame()
 
             sc.Model.notifyObserver(sc.model.player.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
 

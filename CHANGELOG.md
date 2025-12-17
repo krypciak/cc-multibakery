@@ -32,6 +32,7 @@
 - Fix interactables visual glitches
 - Fix remote state not sending vars with prefix `maps.`
 - Fix circle glow not appearing for other remote players on remote
+- Fix remote game model state getting overriden by client initialization
 
 ## [0.6.1] 2025-11-19
 
