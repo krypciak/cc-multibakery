@@ -21,8 +21,17 @@ export interface MultiParty {
     players: Username[]
     vanillaMembers: string[]
 }
+/* unfortunetly I cant use type magic to create this type automaticly since ts-binarifier bugs out on such a type :( */
+export interface PartialMultiParty {
+    id?: MultiPartyId
+    owner?: Username
+    originalOwner?: Username
+    combatantParty?: COMBATANT_PARTY
 
-// export type PlayerInfoStatus = 'online' | 'in-party' | 'current-party'
+    title?: string
+    players?: Username[]
+    vanillaMembers?: string[]
+}
 
 export const MULTI_PARTY_EVENT = {
     JOIN: 1,
@@ -126,12 +135,14 @@ export class MultiPartyManager implements sc.Model {
         return party
     }
 
-    getPartyOfUsername(username: Username): MultiParty {
+    getPartyOfUsername(username: Username, noAssert?: false): MultiParty
+    getPartyOfUsername(username: Username, noAssert: true): MultiParty | undefined
+    getPartyOfUsername(username: Username, noAssert?: boolean): MultiParty | undefined {
         for (const partyName in this.parties) {
             const party = this.parties[partyName]
             if (party.players.includes(username)) return party
         }
-        assert(false, `party of ${username} not found!`)
+        if (!noAssert) assert(false, `party of ${username} not found!`)
     }
 
     getPartyOfEntity(entity: dummy.DummyPlayer): MultiParty
@@ -154,7 +165,7 @@ export class MultiPartyManager implements sc.Model {
         assert(party.players.includes(username))
         party.players.erase(username)
 
-        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.LEAVE, { username, party })
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.LEAVE, { party })
     }
 
     leaveCurrentParty(username: Username) {
@@ -183,12 +194,17 @@ export class MultiPartyManager implements sc.Model {
 
         this.setPlayerData(username, party)
 
-        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.JOIN, { username, party })
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.JOIN, { party })
+    }
+
+    switchParty(username: Username, party: MultiParty) {
+        this.leaveParty(username)
+        this.joinParty(username, party)
     }
 
     invitePlayerTo(username: Username, party: MultiParty) {
-        this.leaveParty(username)
-        this.joinParty(username, party)
+        assertPhysics(multi.server)
+        this.switchParty(username, party)
     }
 
     changePartyTitle(party: MultiParty, newTitle: string) {
@@ -201,14 +217,14 @@ export class MultiPartyManager implements sc.Model {
         assert(!party.vanillaMembers.includes(model))
         party.vanillaMembers.push(model)
 
-        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.VANILLA_MEMBER_JOIN, { model, party })
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.VANILLA_MEMBER_JOIN, { party })
     }
 
     leavePartyVanillaMember(model: string, party: MultiParty) {
         assert(party.vanillaMembers.includes(model))
         party.vanillaMembers.erase(model)
 
-        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.VANILLA_MEMBER_LEAVE, { model, party })
+        sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.VANILLA_MEMBER_LEAVE, { party })
     }
 
     updateVanillaMemberInfo(member: sc.PartyMemberEntity, party: MultiParty) {

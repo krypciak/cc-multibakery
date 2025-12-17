@@ -137,17 +137,16 @@ export class StateMemory {
         notEqMap: { [K in keyof R]?: (a: R[K], b: R[K]) => boolean } = {},
         cloneMap: { [K in keyof R]?: (obj: R[K]) => R[K] } = {}
     ): Record<string, R> | undefined {
+        function cloneRecord(rec: R): R {
+            return Object.fromEntries(
+                Object.entries(rec).map(([k, v]) => [k, cloneMap[k as keyof R]?.(v as R[keyof R]) ?? v])
+            ) as R
+        }
         const i = this.i++
         if (this.data.length <= i) {
-            this.data.push(currRecord)
+            this.data.push(Object.fromEntries(Object.entries(currRecord).map(([k, v]) => [k, cloneRecord(v)])))
             return currRecord
         } else {
-            function cloneRecord(rec: R): R {
-                return Object.fromEntries(
-                    Object.entries(rec).map(([k, v]) => [k, cloneMap[k as keyof R]?.(v as R[keyof R]) ?? v])
-                ) as R
-            }
-
             const lastRecord = this.data[i] as Record<string, R>
             const changed: Record<string, R> = {}
             let atLeastOne = false

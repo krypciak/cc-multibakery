@@ -5,8 +5,8 @@ import type { CCMap } from '../server/ccmap/ccmap'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
 import { runTaskInMapInst } from '../client/client'
-import type { Username } from '../net/binary/binary-types'
 import type { COMBATANT_PARTY as COMBATANT_PARTY1 } from '../net/binary/binary-types'
+import { isPhysics } from '../server/physics/is-physics-server'
 
 import './gui'
 import './steps'
@@ -152,11 +152,11 @@ prestart(() => {
             )
         },
         modelChanged(model, message, data) {
-            if (!this.multiplayerPvp) return
+            if (!this.multiplayerPvp || !isPhysics(multi.server)) return this.parent?.(model, message, data)
 
             if (model == multi.server.party) {
                 if (message == MULTI_PARTY_EVENT.LEAVE) {
-                    const { party } = data as { party: MultiParty; username: Username }
+                    const { party } = data as { party: MultiParty }
 
                     if (multi.server.party.sizeOf(party) == 0) {
                         this.parties.erase(party)

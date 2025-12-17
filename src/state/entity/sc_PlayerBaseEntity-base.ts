@@ -3,6 +3,8 @@ import { StateMemory } from '../state-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import type { u10, u7 } from 'ts-binarifier/src/type-aliases'
 import type { ArmorType, ExpType, LevelType } from '../../net/binary/binary-types'
+import { assert } from '../../misc/assert'
+import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {
     namespace sc {
@@ -39,6 +41,8 @@ export function getState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: 
         exp: memory.diff(this.model.exp as u10),
 
         element: memory.diff(this.model.currentElementMode),
+
+        multiParty: memory.diff(this.multiParty!.id),
     }
 }
 
@@ -101,5 +105,10 @@ export function setState(this: ig.ENTITY.Player | sc.PartyMemberEntity, state: R
 
     if (state.element !== undefined) {
         this.model.currentElementMode = state.element
+    }
+
+    if (state.multiParty !== undefined && isRemote(multi.server)) {
+        this.multiParty = multi.server.party.parties[state.multiParty]
+        assert(this.multiParty)
     }
 }

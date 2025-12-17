@@ -22,6 +22,7 @@ import './vars'
 // global
 import './areas'
 import './player-info'
+import './party'
 
 declare global {
     namespace ig {

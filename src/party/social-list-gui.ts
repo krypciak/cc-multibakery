@@ -5,6 +5,7 @@ import { type MultiParty } from './party'
 import { runEvent } from '../steps/event-steps-run'
 import type { Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
+import { isRemote } from '../server/remote/is-remote-server'
 
 declare global {
     namespace sc {
@@ -54,6 +55,7 @@ const popupConfigs: {
             return ownParty.owner != ownPlayerInfo.username
         },
         execute(clickedPlayerInfo) {
+            if (isRemote(multi.server)) return
             multi.server.party.leaveCurrentParty(clickedPlayerInfo.username)
         },
     },
@@ -65,6 +67,7 @@ const popupConfigs: {
             return clickedPlayerInfo.username == ownPlayerInfo.username && ownParty.owner == ownPlayerInfo.username
         },
         execute(_clickedPlayerInfo, _ownPlayerInfo, clickedParty) {
+            ig.ignoreEventStepsCollection = true
             runEvent(
                 new ig.Event({
                     steps: [
@@ -89,6 +92,7 @@ const popupConfigs: {
                 }),
                 ig.EventRunType.BLOCKING
             )
+            ig.ignoreEventStepsCollection = false
         },
     },
     {
@@ -99,6 +103,7 @@ const popupConfigs: {
             return !ownParty.players.includes(clickedPlayerInfo.username)
         },
         execute(clickedPlayerInfo, _ownPlayerInfo, _clickedParty, ownParty) {
+            if (isRemote(multi.server)) return
             multi.server.party.invitePlayerTo(clickedPlayerInfo.username, ownParty)
         },
     },
@@ -113,6 +118,7 @@ const popupConfigs: {
             )
         },
         execute(clickedPlayerInfo) {
+            if (isRemote(multi.server)) return
             multi.server.party.leaveCurrentParty(clickedPlayerInfo.username)
         },
     },

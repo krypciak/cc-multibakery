@@ -74,6 +74,8 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
         for (let i = 0; step.settings[i]; i++) {
             delete step.settings[i]
         }
+        /* from ig.EVENT_STEP.SHOW_INPUT_DIALOG */
+        if (step.settings.accepted) step.settings.accepted = []
     }
     return group as StepGroupSerialized
 }
@@ -189,11 +191,12 @@ declare global {
         interface EventCall {
             whitelistStepHistory?: EventStepHistoryEntry[]
         }
+        var ignoreEventStepsCollection: boolean | undefined
     }
 }
 
 export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, data: Record<string, unknown>) {
-    if (!eventStepWhitelist.has(step.classId) || !shouldCollectStateData()) return
+    if (!eventStepWhitelist.has(step.classId) || !shouldCollectStateData() || ig.ignoreEventStepsCollection) return
 
     call.whitelistStepHistory ??= []
     const entry: EventStepHistoryEntry = { step, data, call }
