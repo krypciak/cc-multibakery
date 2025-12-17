@@ -34,6 +34,7 @@
 - Fix remote state not sending vars with prefix `maps.`
 - Fix circle glow not appearing for other remote players on remote
 - Fix remote game model state getting overriden by client initialization
+- Fix godmode overriding maps vars
 
 ## [0.6.1] 2025-11-19
 

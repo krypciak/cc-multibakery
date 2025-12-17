@@ -88,7 +88,8 @@ prestart(() => {
             area.load(() => {
                 for (const floor of area.data.floors) {
                     for (const map of floor.maps) {
-                        ig.vars.set(`maps.${map.path.toCamel().toPath('', '')}`, {})
+                        const mapPath = map.path.toCamel().toPath('', '')
+                        if (!ig.vars.storage.maps[mapPath]) ig.vars.set(`maps.${mapPath}`, {})
                     }
                 }
             })

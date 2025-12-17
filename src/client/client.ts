@@ -318,6 +318,7 @@ export class Client extends InstanceUpdateable {
             sc.map = msc.map
             addAddon(sc.map, ig.game)
 
+            sc.party.contacts = msc.party.contacts
             multi.server.party.createPersonalParty(this.username)
 
             sc.model.enterNewGame()
@@ -404,8 +405,7 @@ export class Client extends InstanceUpdateable {
             })
 
             if (multi.server.settings.godmode) {
-                ig.godmode(this.dummy.model)
-                runTask(this.inst, () => ig.godmode(this.dummy.model, { circuitBranch: true }))
+                ig.godmode(this.dummy.model, { circuitBranch: true })
             }
 
             this.loadState()
