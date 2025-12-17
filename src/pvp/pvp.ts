@@ -72,6 +72,7 @@ prestart(() => {
             this.state = 1
             this.round = 0
             this.winPoints = winPoints
+            assert(this.winPoints <= 63 /* u6 */)
             this.points[sc.COMBATANT_PARTY.PLAYER] = 0
             this.points[sc.COMBATANT_PARTY.ENEMY] = 0
 

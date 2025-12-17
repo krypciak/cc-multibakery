@@ -412,7 +412,7 @@
                                                 "title": "Win points",
                                                 "initialValue": 2,
                                                 "saveToVar": "tmp.pvpWinPoints",
-                                                "validRegex": "^[1-9]\\d*$",
+                                                "validRegex": "^(?:[1-9]|[1-5][0-9]|6[0-3])$",
                                                 "accepted": [
                                                     { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
                                                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": true },
