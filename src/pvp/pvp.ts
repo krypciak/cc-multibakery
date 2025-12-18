@@ -129,7 +129,9 @@ prestart(() => {
         },
         rearrangeHpBars() {
             runTasks(
-                Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
+                Object.keysT(this.hpBars)
+                    .map(id => instanceinator.instances[id])
+                    .filter(Boolean),
                 () => {
                     const hpBars = this.hpBars[instanceinator.id]
                     hpBars.sort((a, b) => a.order - b.order)
@@ -197,7 +199,9 @@ prestart(() => {
         },
         removePvpGuis() {
             runTasks(
-                Object.keysT(this.hpBars).map(id => instanceinator.instances[id]),
+                Object.keysT(this.hpBars)
+                    .map(id => instanceinator.instances[id])
+                    .filter(Boolean),
                 () => {
                     const hpBars = this.hpBars[instanceinator.id]
                     for (let i = hpBars.length - 1; i >= 0; i--) {

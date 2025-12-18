@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix crash when starting server using the Server manage menu
+- Fix crash when a player in pvp leaves the server
 
 ## [0.7.0] 2025-12-17
 
