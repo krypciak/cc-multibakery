@@ -69,7 +69,6 @@
         { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
             { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
             { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
-                { "type": "WAIT_UNTIL_ACTION_DONE", "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } } },
                 {
                     "type": "DO_ACTION",
                     "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },

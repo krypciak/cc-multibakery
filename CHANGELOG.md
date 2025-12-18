@@ -10,6 +10,7 @@
 - Fix crash when a player in pvp leaves the server
 - Fix generated random username in the Create client menu sometimes being invalid
 - Fix certain player properties (like face orientation or items) being shared across different players when loading from save
+- Fix pvp soft locking sometimes after round end
 
 ## [0.7.0] 2025-12-17
 
