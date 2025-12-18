@@ -12,12 +12,12 @@ export function isUsernameValid(username: Username): boolean {
 export function generateRandomUsername(): Username {
     const numberSuffix = (10 + 90 * Math.random()).floor()
 
-    let randomPrefix: string
-
+    let username: string
     do {
         const obj = ig.database.data.names[(Math.random() * ig.database.data.names.length).floor()]
-        randomPrefix = typeof obj.name == 'string' ? obj.name : obj.name.en_US!
-    } while (!isUsernameValid(randomPrefix))
+        const randomPrefix = typeof obj.name == 'string' ? obj.name : obj.name.en_US!
+        username = `${randomPrefix}${numberSuffix}`
+    } while (!isUsernameValid(username))
 
-    return `${randomPrefix}${numberSuffix}`
+    return username
 }

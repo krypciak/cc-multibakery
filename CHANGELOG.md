@@ -8,6 +8,7 @@
 
 - Fix crash when starting server using the Server manage menu
 - Fix crash when a player in pvp leaves the server
+- Fix generated random username in the Create client menu sometimes being invalid
 
 ## [0.7.0] 2025-12-17
 
