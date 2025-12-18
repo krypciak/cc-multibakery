@@ -5,10 +5,11 @@ import { assert } from '../../../misc/assert'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapTpInfo } from '../../server'
 import type { Username } from '../../../net/binary/binary-types'
+import { assertPhysics, isPhysics } from '../is-physics-server'
+import { copy } from '../../../misc/object-copy'
 
 import './save-slot-button'
 import './pause-screen-save-button'
-import { assertPhysics, isPhysics } from '../is-physics-server'
 
 type PlayerGetStateReturn = ReturnType<typeof getState>
 type PlayerState = PlayerGetStateReturn & MapTpInfo
@@ -134,8 +135,9 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     savePlayerState(username: Username, player: ig.ENTITY.Player, tpInfo: MapTpInfo): PlayerState {
         this.currentData ??= {}
         this.currentData.players ??= {}
+        const playerState = copy(player.getState!() as PlayerGetStateReturn)
         return (this.currentData.players[username] = {
-            ...(player.getState!() as PlayerGetStateReturn),
+            ...playerState,
             animAlpha: 1,
             ...tpInfo,
         })
