@@ -44,7 +44,7 @@ export function getState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: 
 
         element: model && memory.diff(model.currentElementMode),
 
-        multiParty: memory.diff(this.multiParty!.id),
+        multiParty: memory.diff(this.multiParty?.id),
     }
 }
 

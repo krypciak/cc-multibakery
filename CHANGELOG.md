@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix crash when starting server using the Server manage menu
+
 ## [0.7.0] 2025-12-17
 
 ### Added
