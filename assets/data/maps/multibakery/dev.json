@@ -145,7 +145,11 @@
             "settings": {
                 "size": { "x": 16, "y": 16 },
                 "mapId": 68,
-                "event": [{ "type": "IF", "withElse": false, "condition": "tmp.lvlupCond", "thenStep": [{ "type": "ADD_PLAYER_EXP", "level": -1, "exp": -1000 }, { "type": "CROSSEDEYES_LEVEL_UP" }, { "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlupCond", "changeType": "set", "value": false }] }],
+                "event": [
+                    { "type": "ADD_PLAYER_EXP", "level": -1, "exp": -1000 },
+                    { "type": "FORCE_LEVEL_UP" },
+                    { "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlup", "changeType": "set", "value": false }
+                ],
                 "eventType": "INTERRUPTABLE",
                 "startCondition": "tmp.lvlup",
                 "triggerType": "ALWAYS",
@@ -154,7 +158,6 @@
                 "endCondition": "false"
             }
         },
-        { "type": "EventTrigger", "x": 400, "y": 152, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 69, "event": [{ "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlupCond", "changeType": "set", "value": true }], "name": "lvlupCondEvent0", "eventType": "INTERRUPTABLE", "startCondition": "!tmp.lvlup", "endCondition": "false", "triggerType": "ALWAYS", "loadCondition": true } },
         { "type": "Switch", "x": 400, "y": 200, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 70, "name": "s2", "variable": "tmp.lvlup" } },
         {
             "type": "OLPlatform",
@@ -248,7 +251,6 @@
         { "type": "BallChanger", "x": 88, "y": 280, "level": 2, "settings": { "changerType": { "type": "RESET_SPEED", "settings": { "factor": 2.5 } }, "name": "bc2", "mapId": 86 } },
         { "type": "BallChanger", "x": 112, "y": 280, "level": 2, "settings": { "changerType": { "type": "CHANGE_DIR", "settings": { "dir": "SOUTH" } }, "name": "bc3", "mapId": 87 } },
         { "type": "BallChanger", "x": 64, "y": 304, "level": 2, "settings": { "changerType": { "type": "CHANGE_ELEMENT", "settings": { "element": "HEAT" } }, "name": "bc4", "mapId": 88 } },
-        { "type": "Switch", "x": 568, "y": 416, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 92, "name": "s_reloadmap", "variable": "tmp.reloadmap" } },
         {
             "type": "EventTrigger",
             "x": 513,
@@ -275,7 +277,6 @@
                 "endCondition": "false"
             }
         },
-        { "type": "EventTrigger", "x": 568, "y": 392, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 94, "event": [{ "type": "CROSSEDEYES_RELOAD_LEVEL" }], "eventType": "INTERRUPTABLE", "startCondition": "tmp.reloadmap", "triggerType": "ONCE_PER_ENTRY", "name": "reloadmap", "loadCondition": true, "endCondition": "false" } },
         { "type": "HiddenBlock", "x": 163, "y": 216, "level": 0, "settings": { "name": "", "size": { "x": 32, "y": 48 }, "shape": "RECTANGLE", "heightShape": "EAST_UP", "zHeight": 32, "terrain": "", "mapId": 95 } },
         { "type": "HiddenBlock", "x": 528, "y": 1104, "level": 2, "settings": { "name": "stairs1", "size": { "x": 32, "y": 48 }, "shape": "RECTANGLE", "heightShape": "EAST_UP", "zHeight": 32, "terrain": "", "mapId": 96 } },
         { "type": "JumpPanelFar", "x": 832, "y": 352, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 100, "panelType": "SOUTH", "jumpDistance": "48" } },
