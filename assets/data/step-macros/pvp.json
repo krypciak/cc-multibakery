@@ -17,7 +17,7 @@
                "type": "CHANGE_VAR_VEC3",
                 "changeType": "add",
                 "varName": "tmp.basePos",
-                "value": { "marker": "to_pvp" }
+                "value": { "varName": "game.entities.name.to_pvp.pos" }
             },
 
             { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.positions", "value": [{ "x": 0, "y": 0, "z": 0 }] },
