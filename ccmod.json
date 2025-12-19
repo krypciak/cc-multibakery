@@ -14,7 +14,7 @@
         "cc-instanceinator": ">=1.0.6",
         "nax-ccuilib": ">=1.5.5",
         "ccmodmanager": ">=1.1.2",
-        "cc-krypek-lib": ">=1.0.0"
+        "cc-krypek-lib": ">=1.1.0"
     },
     "plugin": "plugin.js"
 }

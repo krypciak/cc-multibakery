@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix compatibility with cc-krypek-lib v1.1.0
+
 ## [0.7.1] 2025-12-18
 
 ### Fixed
