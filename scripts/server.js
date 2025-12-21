@@ -11,7 +11,8 @@ startCrossnode({
         'cc-ts-template-esbuild',
         'nax-ccuilib',
         'cc-alybox',
-        'cc-multibakery-additions'
+        'cc-multibakery-additions',
+        'cc-krypek-lib'
     ],
     extensionWhitelist: ['post-game'],
 })
