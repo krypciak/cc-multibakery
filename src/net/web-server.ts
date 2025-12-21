@@ -91,12 +91,12 @@ export class PhysicsHttpServer {
     }
 
     stop() {
+        process.off('exit', this.stopFunc)
         this.httpServer?.close()
     }
 
     destroy() {
         this.stop()
-        process.off('exit', this.stopFunc)
         window.removeEventListener('beforeunload', this.stopFunc)
     }
 }

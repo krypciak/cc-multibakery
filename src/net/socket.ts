@@ -111,6 +111,8 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
     }
 
     async stop() {
+        process.off('exit', this.stopFunc)
+
         for (const connection of this.connections) {
             connection.close()
         }
@@ -120,7 +122,6 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
     destroy() {
         this.stop()
-        process.off('exit', this.stopFunc)
         window.removeEventListener('beforeunload', this.stopFunc)
     }
 }
@@ -158,6 +159,7 @@ export class SocketNetManagerRemoteServer {
             secure: this.connectionSettings.https,
             rejectUnauthorized: false,
             parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
+            timeout: multi.server.settings.timeout,
         }) as ClientSocket
 
         socket.on('update', data => server.onNetReceive(this.conn!, data))
@@ -233,12 +235,12 @@ export class SocketNetManagerRemoteServer {
     }
 
     stop() {
+        process.off('exit', this.stopFunc)
         this.conn?.close()
     }
 
     destroy() {
         this.stop()
-        process.off('exit', this.stopFunc)
         window.removeEventListener('beforeunload', this.stopFunc)
     }
 }
