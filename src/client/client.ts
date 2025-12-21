@@ -57,7 +57,7 @@ export class Client extends InstanceUpdateable {
     inputManager!: dummy.InputManager
     dummy!: dummy.DummyPlayer
     tpInfo: MapTpInfo = { map: '' }
-    nextTpInfo: MapTpInfo = { map: '' }
+    nextTpInfo?: MapTpInfo
     ready: boolean = false
     playerAttachResolve?: (player: dummy.DummyPlayer) => void
 
@@ -238,6 +238,7 @@ export class Client extends InstanceUpdateable {
             })
         }
         this.ready = true
+        this.nextTpInfo = { map: '' }
 
         this.linkMapToInstance(map)
 

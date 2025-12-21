@@ -21,7 +21,7 @@ export interface PlayerInfoEntry {
     username: Username
     character: string
     tpInfo: MapTpInfo
-    nextTpInfo: MapTpInfo
+    nextTpInfo?: MapTpInfo
     pos: Vec2
 
     stats: {
@@ -160,9 +160,12 @@ prestart(() => {
 
                     if (entry.nextTpInfo) {
                         const client = multi.server.clients.get(username)
-                        if (!client?.ready || client.tpInfo.map == entry.nextTpInfo.map) continue
-
-                        client.teleport(entry.nextTpInfo)
+                        if (!client?.ready) continue
+                        if (!entry.nextTpInfo.map) {
+                            client.nextTpInfo = entry.nextTpInfo
+                        } else {
+                            client.teleport(entry.nextTpInfo)
+                        }
                     }
                 }
             }

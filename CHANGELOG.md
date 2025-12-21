@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix remote player camera detaching after teleporting to the same map
+
 ## [0.7.2] 2025-12-19
 
 ### Fixed
