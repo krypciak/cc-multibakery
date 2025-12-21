@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix remote player camera detaching after teleporting to the same map
+- Fix remote external animations (like lea sitting)
 
 ## [0.7.2] 2025-12-19
 

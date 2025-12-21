@@ -69,6 +69,8 @@ prestart(() => {
             ig.ACTION_STEP.SET_CAMERA_ZOOM,
             ig.ACTION_STEP.RESET_CAMERA,
 
+            ig.ACTION_STEP.SHOW_EXTERN_ANIM,
+
             /* this.clearActionAttached() callers */
             ig.ACTION_STEP.CLEAR_STUN_LOCKED,
             ig.ACTION_STEP.STOP_SOUNDS,
