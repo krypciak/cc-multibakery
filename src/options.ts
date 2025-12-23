@@ -298,6 +298,38 @@ function registerOpts() {
                             return `${this.min + index * this.step} ms`
                         },
                     },
+                    serverPingInterval: {
+                        type: 'OBJECT_SLIDER',
+                        init: 25e3,
+                        min: 1e3,
+                        max: 100e3,
+                        step: 1e3,
+                        thumbWidth: 60,
+                        name: 'Ping interval',
+                        description: 'How often to send a heartbeat request',
+                        customNumberDisplay(index) {
+                            // @ts-expect-error
+                            const ms: number = this.min + index * this.step
+                            return `${ms / 1000} s`
+                        },
+                    },
+                    serverPingTimeout: {
+                        type: 'OBJECT_SLIDER',
+                        init: 20e3,
+                        min: 1e3,
+                        max: 100e3,
+                        step: 1e3,
+                        thumbWidth: 60,
+                        name: 'Ping timeout',
+                        description: 'How long to wait for heartbeat response',
+                        customNumberDisplay(index) {
+                            // @ts-expect-error
+                            const ms: number = this.min + index * this.step
+                            // @ts-expect-error
+                            if (ms == this.max) return `Inf s`
+                            return `${ms / 1000} s`
+                        },
+                    },
                 },
                 'remote server': {
                     serverTimeSynchronization: {

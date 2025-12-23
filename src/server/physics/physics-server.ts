@@ -28,6 +28,9 @@ export interface PhysicsServerConnectionSettings {
     ccbundler?: CCBundlerModuleOptions
     https?: import('https').ServerOptions
 
+    pingInterval?: number
+    pingTimeout?: number
+
     type: 'socket'
 }
 

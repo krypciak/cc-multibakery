@@ -79,6 +79,8 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
                 origin: `*`,
             },
             parser: this.netInfo.details.forceJsonCommunication ? undefined : binaryParser,
+            pingInterval: this.netInfo.connection.pingInterval ?? Opts.flatOpts.serverPingInterval.init,
+            pingTimeout: this.netInfo.connection.pingTimeout ?? Opts.flatOpts.serverPingTimeout.init,
         })
 
         const server = multi.server
@@ -159,7 +161,6 @@ export class SocketNetManagerRemoteServer {
             secure: this.connectionSettings.https,
             rejectUnauthorized: false,
             parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
-            timeout: multi.server.settings.timeout,
         }) as ClientSocket
 
         socket.on('update', data => server.onNetReceive(this.conn!, data))

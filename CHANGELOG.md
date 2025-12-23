@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add ping interval and ping timeout server options
+
 ### Fixed
 
 - Fix remote player camera detaching after teleporting to the same map
