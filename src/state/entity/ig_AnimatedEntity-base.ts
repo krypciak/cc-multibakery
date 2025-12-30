@@ -6,7 +6,7 @@ export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
     return {
         pos: memory.diffVec3(this.coll.pos),
         hidden: memory.diff(this._hidden),
-        currentAnim: memory.diff(this.currentAnim as string),
+        currentAnim: memory.diff(typeof this.currentAnim === 'string' ? this.currentAnim : undefined),
         currentAnimTimer: memory.onlyOnce(this.animState.timer),
         resetAnimTimer: undefinedIfFalsy(this.animState.timer - ig.system.tick == 0),
 

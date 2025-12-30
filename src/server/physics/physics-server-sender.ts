@@ -74,6 +74,9 @@ export function sendPhysicsServerPacket() {
         const toSend = multi.server.settings.netInfo!.details.forceJsonCommunication
             ? data
             : PhysicsUpdatePacketEncoderDecoder.encode(data)
+        // if (ASSERT && toSend instanceof Uint8Array) {
+        //     PhysicsUpdatePacketEncoderDecoder.decode(toSend)
+        // }
         conn.send('update', toSend)
     }
 

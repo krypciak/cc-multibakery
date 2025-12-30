@@ -16,7 +16,7 @@ prestart(() => {
 
                 step.start?.(stackEntry.stepData, this)
 
-                onEventStepStart(this, step, stackEntry.stepData)
+                onEventStepStart(this, stackEntry)
 
                 if (step.getInlineEvent) {
                     const inlineEvent = step.getInlineEvent()

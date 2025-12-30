@@ -64,7 +64,7 @@ prestart(() => {
                 clients.map(client => client.inst),
                 i => {
                     if (indexVarName) ig.vars.set(indexVarName, i)
-                    return runEvent(this.event, ig.EventRunType.PARALLEL, ig.game.playerEntity, { ...data }, true)
+                    return runEvent(this.event, ig.EventRunType.PARALLEL, ig.game.playerEntity, { ...data }, undefined, true)
                 }
             )
             data.eventCalls = eventCalls

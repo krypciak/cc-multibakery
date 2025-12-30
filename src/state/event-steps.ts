@@ -12,6 +12,7 @@ import { isRemote } from '../server/remote/is-remote-server'
 interface StepObj {
     settings: any // ig.EventStepBase.Settings
     data?: Record<string, unknown>
+    input?: ig.Event.Vars
 }
 
 interface StepGroupBase {
@@ -54,11 +55,7 @@ function serializeStepSettingsRecursive(data: any) {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
-                    } else if (
-                        value instanceof sc.InputFieldDialog ||
-                        value instanceof ig.Action ||
-                        typeof value == 'function'
-                    ) {
+                    } else if (value instanceof sc.InputFieldDialog || value instanceof ig.Action) {
                         data[key] = undefined
                     } else {
                         assert(false)
@@ -66,6 +63,8 @@ function serializeStepSettingsRecursive(data: any) {
                 } else {
                     serializeStepSettingsRecursive(value)
                 }
+            } else if (typeof value == 'function') {
+                data[key] = undefined
             }
         }
     }
@@ -135,11 +134,15 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
     runTask(inst, () => {
         for (const { steps, type, callEntity, eventCallId, end } of stepGroups) {
             const allData: Record<string, unknown> = {}
+            const allInput: ig.Event.Vars = {}
             const stepsSettings = steps.map(({ settings }) => settings)
 
-            for (const { data } of steps) Object.assign(allData, data)
+            for (const { data, input } of steps) {
+                Object.assign(allData, data)
+                Object.assign(allInput, input)
+            }
 
-            const call = runEvent(new ig.Event({ steps: stepsSettings }), type, callEntity, allData)
+            const call = runEvent(new ig.Event({ steps: stepsSettings }), type, callEntity, allData, allInput)
             if (eventCallMemory.has(eventCallId)) {
                 const { eventAttached } = eventCallMemory.get(eventCallId)!
                 call.eventAttached = eventAttached
@@ -210,6 +213,8 @@ prestart(() => {
             ig.EVENT_STEP.SHOW_SIDE_MSG,
             ig.EVENT_STEP.SHOW_BOARD_MSG,
             ig.EVENT_STEP.SHOW_CHOICE,
+            ig.EVENT_STEP.SHOW_TUTORIAL_MSG,
+            ig.EVENT_STEP.SHOW_GET_MSG,
 
             ig.EVENT_STEP.SET_CAMERA_TARGET,
             ig.EVENT_STEP.SET_CAMERA_POS,
@@ -236,16 +241,9 @@ prestart(() => {
     )
 }, 2000)
 
-interface EventStepHistoryEntry {
-    step: ig.EventStepBase
-    data: Record<string, unknown>
-    call: ig.EventCall
-}
-
 declare global {
     namespace ig {
         interface EventCall {
-            whitelistStepHistory?: EventStepHistoryEntry[]
             eventCallId: number
         }
         var ignoreEventStepsCollection: boolean | undefined
@@ -268,18 +266,19 @@ function getGroup(call: ig.EventCall) {
     return group
 }
 
-export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, data: Record<string, unknown>) {
-    if (!eventStepWhitelist.has(step.classId) || !shouldCollectStateData() || ig.ignoreEventStepsCollection) return
-
-    call.whitelistStepHistory ??= []
-    const entry: EventStepHistoryEntry = { step, data, call }
-    call.whitelistStepHistory.push(entry)
+export function onEventStepStart(
+    call: ig.EventCall,
+    { currentStep: step, stepData: data, vars }: ig.EventCall.StackEntry
+) {
+    if (!step || !eventStepWhitelist.has(step.classId) || !shouldCollectStateData() || ig.ignoreEventStepsCollection)
+        return
 
     const group = getGroup(call)
     assert(group.eventCallId == call.eventCallId)
     group.steps.push({
         settings: ig.StepHelpers.getStepSettings(step) as ig.EventStepBase.Settings,
         data,
+        input: vars,
     })
 }
 
@@ -294,7 +293,7 @@ prestart(() => {
         },
         setDone() {
             this.parent()
-            if (!shouldCollectStateData()) return
+            if (!shouldCollectStateData() || this.eventAttached.length == 0) return
             const group = getGroup(this)
             group.end = true
         },
@@ -305,7 +304,7 @@ prestart(() => {
     if (!REMOTE) return
     ig.EventCall.inject({
         setDone() {
-            if (!isRemote(multi.server) || forceSetDone) return this.parent()
+            if (!isRemote(multi.server) || this.eventAttached.length == 0 || forceSetDone) return this.parent()
         },
     })
 })
