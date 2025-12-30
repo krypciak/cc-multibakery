@@ -7,6 +7,7 @@
 ### Added
 
 - Add ping interval and ping timeout server options
+- Add remote camera and screen blur step synchronization
 
 ### Fixed
 

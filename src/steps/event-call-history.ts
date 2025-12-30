@@ -2,20 +2,10 @@ import { prestart } from '../loading-stages'
 import { isRemote } from '../server/remote/is-remote-server'
 import { onEventStepStart } from '../state/event-steps'
 
-declare global {
-    namespace ig {
-        interface EventCall {
-            event: ig.Event
-        }
-    }
-}
-
 prestart(() => {
+    if (!PHYSICS) return
+
     ig.EventCall.inject({
-        init(event, input, runType, onStart, onEnd, callEntity, data) {
-            this.parent(event, input, runType, onStart, onEnd, callEntity, data)
-            this.event = event
-        },
         performStep(stackEntry) {
             if (isRemote(multi.server)) return this.parent(stackEntry)
 

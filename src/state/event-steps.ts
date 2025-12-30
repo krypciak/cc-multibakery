@@ -7,6 +7,7 @@ import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
 import type { Username } from '../net/binary/binary-types'
 import { runEvent } from '../steps/event-steps-run'
+import { isRemote } from '../server/remote/is-remote-server'
 
 interface StepObj {
     settings: any // ig.EventStepBase.Settings
@@ -16,6 +17,8 @@ interface StepObj {
 interface StepGroupBase {
     steps: StepObj[]
     type: ig.EventRunType
+    eventCallId: number
+    end: boolean
 }
 
 interface StepGroupDeserialized extends StepGroupBase {
@@ -41,19 +44,13 @@ declare global {
     }
 }
 
-function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
-    if (group.callEntity) {
-        assert(group.callEntity.netid)
-        group.callEntity = group.callEntity.netid as any
-    }
-
-    for (const step of group.steps) {
-        let data = (step.data = { ...step.data })
-        if (data && typeof data == 'object') {
-            for (const key in data) {
-                const value = data[key]
-                if (!value) continue
-                if (typeof value === 'object' && value instanceof ig.Class) {
+function serializeStepSettingsRecursive(data: any) {
+    if (data && typeof data == 'object') {
+        for (const key in data) {
+            const value = data[key]
+            if (!value) continue
+            if (typeof value === 'object') {
+                if (value instanceof ig.Class) {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
@@ -66,9 +63,23 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
                     } else {
                         assert(false)
                     }
+                } else {
+                    serializeStepSettingsRecursive(value)
                 }
             }
         }
+    }
+}
+
+function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
+    group = ig.copy(group)
+    if (group.callEntity) {
+        assert(group.callEntity.netid)
+        group.callEntity = group.callEntity.netid as any
+    }
+
+    for (const step of group.steps) {
+        serializeStepSettingsRecursive(step.data)
 
         /* remove branch step settings */
         for (let i = 0; step.settings[i]; i++) {
@@ -76,8 +87,28 @@ function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
         }
         /* from ig.EVENT_STEP.SHOW_INPUT_DIALOG */
         if (step.settings.accepted) step.settings.accepted = []
+
+        serializeStepSettingsRecursive(step.settings)
     }
     return group as StepGroupSerialized
+}
+
+function deserializeStepSettingsRecursive(data: any) {
+    if (data && typeof data == 'object') {
+        for (const key in data) {
+            const value = data[key]
+            if (value && typeof value === 'object') {
+                if ('netid' in value) {
+                    const netid = value.netid as EntityNetid
+                    const entity = ig.game.entitiesByNetid[netid]
+                    assert(entity)
+                    data[key] = entity
+                } else {
+                    deserializeStepSettingsRecursive(value)
+                }
+            }
+        }
+    }
 }
 
 function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized {
@@ -90,31 +121,38 @@ function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized
 
     for (const step of group.steps) {
         const data = step.data as Record<string, unknown>
-        if (data && typeof data == 'object') {
-            for (const key in data) {
-                const value = data[key]
-                if (value && typeof value === 'object' && 'netid' in value) {
-                    const netid = value.netid as EntityNetid
-                    const entity = ig.game.entitiesByNetid[netid]
-                    assert(entity)
-                    data[key] = entity
-                }
-            }
-        }
+        deserializeStepSettingsRecursive(data)
+        deserializeStepSettingsRecursive(step.settings)
     }
     return group as StepGroupDeserialized
 }
 
+const eventCallMemory: Map<number, { eventAttached: ig.EventCall.EventAttached[] }> = new Map()
+let forceSetDone = false
+
 function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
     const stepGroups = steps.map(deserializeStepGroup)
     runTask(inst, () => {
-        for (const { steps, type, callEntity } of stepGroups) {
+        for (const { steps, type, callEntity, eventCallId, end } of stepGroups) {
             const allData: Record<string, unknown> = {}
             const stepsSettings = steps.map(({ settings }) => settings)
 
             for (const { data } of steps) Object.assign(allData, data)
 
-            runEvent(new ig.Event({ steps: stepsSettings }), type, callEntity, allData)
+            const call = runEvent(new ig.Event({ steps: stepsSettings }), type, callEntity, allData)
+            if (eventCallMemory.has(eventCallId)) {
+                const { eventAttached } = eventCallMemory.get(eventCallId)!
+                call.eventAttached = eventAttached
+            } else {
+                eventCallMemory.set(eventCallId, {
+                    eventAttached: call.eventAttached,
+                })
+            }
+            if (end) {
+                forceSetDone = true
+                call.setDone()
+                forceSetDone = false
+            }
         }
     })
 }
@@ -173,6 +211,24 @@ prestart(() => {
             ig.EVENT_STEP.SHOW_BOARD_MSG,
             ig.EVENT_STEP.SHOW_CHOICE,
 
+            ig.EVENT_STEP.SET_CAMERA_TARGET,
+            ig.EVENT_STEP.SET_CAMERA_POS,
+            ig.EVENT_STEP.SET_CAMERA_BETWEEN,
+            ig.EVENT_STEP.RESET_CAMERA,
+            ig.EVENT_STEP.UNDO_CAMERA,
+            ig.EVENT_STEP.SET_CAMERA_ZOOM,
+            ig.EVENT_STEP.ADD_PLAYER_CAMERA_TARGET,
+            ig.EVENT_STEP.REMOVE_PLAYER_CAMERA_TARGET,
+            ig.EVENT_STEP.REMOVE_ALL_PLAYER_CAMERAS,
+
+            ig.EVENT_STEP.SET_SCREEN_BLUR,
+            ig.EVENT_STEP.CLEAR_SCREEN_BLUR,
+            ig.EVENT_STEP.SET_ZOOM_BLUR,
+            ig.EVENT_STEP.FADE_OUT_ZOOM_BLUR,
+
+            ig.EVENT_STEP.SET_OVERLAY,
+            ig.EVENT_STEP.SHOW_AR_MSG,
+
             ig.EVENT_STEP.START_NPC_TRADE_MENU,
 
             ig.EVENT_STEP.SHOW_INPUT_DIALOG,
@@ -190,9 +246,26 @@ declare global {
     namespace ig {
         interface EventCall {
             whitelistStepHistory?: EventStepHistoryEntry[]
+            eventCallId: number
         }
         var ignoreEventStepsCollection: boolean | undefined
     }
+}
+
+function getGroup(call: ig.EventCall) {
+    ig.eventStepsFired ??= new Map()
+    let group = ig.eventStepsFired.get(call)
+    if (!group) {
+        group = {
+            steps: [],
+            type: call.runType,
+            callEntity: call.callEntity,
+            eventCallId: call.eventCallId,
+            end: false,
+        }
+        ig.eventStepsFired.set(call, group)
+    }
+    return group
 }
 
 export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, data: Record<string, unknown>) {
@@ -202,14 +275,37 @@ export function onEventStepStart(call: ig.EventCall, step: ig.EventStepBase, dat
     const entry: EventStepHistoryEntry = { step, data, call }
     call.whitelistStepHistory.push(entry)
 
-    ig.eventStepsFired ??= new Map()
-    let group = ig.eventStepsFired.get(call)
-    if (!group) {
-        group = { steps: [], type: call.runType, callEntity: call.callEntity }
-        ig.eventStepsFired.set(call, group)
-    }
+    const group = getGroup(call)
+    assert(group.eventCallId == call.eventCallId)
     group.steps.push({
         settings: ig.StepHelpers.getStepSettings(step) as ig.EventStepBase.Settings,
         data,
     })
 }
+
+prestart(() => {
+    if (!PHYSICSNET) return
+
+    let eventCallIdCounter = 0
+    ig.EventCall.inject({
+        init(...args) {
+            this.parent(...args)
+            this.eventCallId = eventCallIdCounter++
+        },
+        setDone() {
+            this.parent()
+            if (!shouldCollectStateData()) return
+            const group = getGroup(this)
+            group.end = true
+        },
+    })
+})
+
+prestart(() => {
+    if (!REMOTE) return
+    ig.EventCall.inject({
+        setDone() {
+            if (!isRemote(multi.server) || forceSetDone) return this.parent()
+        },
+    })
+})

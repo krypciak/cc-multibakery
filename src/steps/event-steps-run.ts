@@ -16,7 +16,8 @@ export function runEvent(
         eventCall.blocked = true
         ig.game.events.blockedEventCallQueue.push(eventCall)
     }
-    if (!noUpdate) ig.game.events.update()
+    /* TODO: who needs this? */
+    // if (!noUpdate) ig.game.events.update()
 
     return eventCall
 }
