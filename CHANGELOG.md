@@ -9,6 +9,7 @@
 - Add ping interval and ping timeout server options
 - Add remote camera and screen blur step synchronization
 - Add ig.ENTITY.OneTimeSwitch event chain preservation
+- Add ig.ENTITY.EnemyCounter event chain preservation
 
 ### Fixed
 
