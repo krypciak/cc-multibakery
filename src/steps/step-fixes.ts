@@ -43,6 +43,14 @@ prestart(() => {
             return this.parent(data, eventCall)
         },
     })
+
+    ig.EVENT_STEP.ADD_GUI.inject({
+        start(data, eventCall) {
+            if (!ig.client) return this.parent(data, eventCall)
+            this.guiElement = ig.gui.createEventGui(this.name!, this.guiInfo.type, this.guiInfo.settings)
+            return this.parent(data, eventCall)
+        },
+    })
 })
 
 /* client -> map */
