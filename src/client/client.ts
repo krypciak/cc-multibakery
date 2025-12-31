@@ -170,10 +170,10 @@ export class Client extends InstanceUpdateable {
     async teleportInitial(tpInfoOverride?: MapTpInfo) {
         const state = this.getSaveState(false)
 
-        const tpInfo: MapTpInfo = {
-            map: tpInfoOverride?.map ?? state?.map ?? multi.server.settings.defaultMap?.map ?? 'multibakery/dev',
-            marker: tpInfoOverride?.marker ?? state?.marker ?? multi.server.settings.defaultMap?.marker ?? 'entrance',
-        }
+        const tpInfo: MapTpInfo = tpInfoOverride ??
+            state ??
+            multi.server.settings.defaultMap ??
+            multi.server.getMasterClient()?.tpInfo ?? { map: 'multibakery/dev', marker: 'entrance' }
         await this.teleport(tpInfo)
     }
 

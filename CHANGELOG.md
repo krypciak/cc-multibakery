@@ -11,6 +11,10 @@
 - Add ig.ENTITY.OneTimeSwitch event chain preservation
 - Add ig.ENTITY.EnemyCounter event chain preservation
 
+### Changed
+
+- Teleport new remote players to the same map as master player
+
 ### Fixed
 
 - Fix remote player camera detaching after teleporting to the same map
