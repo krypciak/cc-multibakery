@@ -3,8 +3,7 @@ export function runEvent(
     type: ig.EventRunType,
     callEntity?: ig.Entity,
     allData: Record<string, unknown> = {},
-    allInput?: ig.Event.Vars,
-    noUpdate?: boolean
+    allInput?: ig.Event.Vars
 ) {
     const eventCall = new ig.EventCall(event, allData, type)
     eventCall.callEntity = callEntity
@@ -18,8 +17,6 @@ export function runEvent(
         eventCall.blocked = true
         ig.game.events.blockedEventCallQueue.push(eventCall)
     }
-    /* TODO: who needs this? */
-    // if (!noUpdate) ig.game.events.update()
 
     return eventCall
 }
