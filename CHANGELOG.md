@@ -20,6 +20,7 @@
 - Fix remote player camera detaching after teleporting to the same map
 - Fix remote external animations (like lea sitting)
 - Fix crash on ig.EVENT_STEP.ADD_GUI
+- Fix pvp hp bars not disappearing after player defeat on remote
 
 ## [0.7.2] 2025-12-19
 

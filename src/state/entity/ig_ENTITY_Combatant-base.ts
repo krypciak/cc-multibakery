@@ -49,6 +49,7 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
 
         party: memory.diff(this.party as COMBATANT_PARTY),
         hp: memory.diff(this.params?.currentHp),
+        defeated: memory.diff(this.params?.defeated),
         baseParams: memory.diffRecord(this.params?.baseParams ?? ({} as sc.CombatParams.BaseParams)),
         spLevel: memory.diff(this.params?.maxSp),
         sp: memory.diff(this.params?.currentSp),
@@ -64,6 +65,9 @@ export function setState(this: ig.ENTITY.Combatant, state: Return) {
     }
 
     if (this.params) {
+        if (state.defeated !== undefined) {
+            this.params.defeated = state.defeated
+        }
         if (state.hp !== undefined) {
             this.params.currentHp = state.hp
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.HP_CHANGED)
