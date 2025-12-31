@@ -13,6 +13,7 @@ interface PvpObj {
     round?: u8
     state?: u3
     points?: PartialRecord<COMBATANT_PARTY, u6>
+    justRearrangedHpBars?: boolean
 }
 
 declare global {
@@ -41,7 +42,9 @@ prestart(() => {
                 state: memory.diff(sc.pvp.state),
                 points: memory.diffRecord(sc.pvp.points),
                 round: memory.diff(sc.pvp.round),
+                justRearrangedHpBars: sc.pvp.justRearrangedHpBars,
             })
+            sc.pvp.justRearrangedHpBars = undefined
         },
         set(packet) {
             if (!packet.pvp) return
@@ -85,6 +88,10 @@ prestart(() => {
 
             if (packet.pvp.points) {
                 StateMemory.applyChangeRecord(sc.pvp.points, packet.pvp.points)
+            }
+
+            if (packet.pvp.justRearrangedHpBars) {
+                sc.pvp.rearrangeHpBars()
             }
         },
     })

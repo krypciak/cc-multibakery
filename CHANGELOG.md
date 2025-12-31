@@ -21,6 +21,7 @@
 - Fix remote external animations (like lea sitting)
 - Fix crash on ig.EVENT_STEP.ADD_GUI
 - Fix pvp hp bars not disappearing after player defeat on remote
+- Fix pvp hp bars not rearranging themselves after player defeat on remote
 
 ## [0.7.2] 2025-12-19
 

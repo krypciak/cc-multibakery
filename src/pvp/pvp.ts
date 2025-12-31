@@ -21,6 +21,7 @@ declare global {
             map: CCMap
             hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
             points: PartialRecord<COMBATANT_PARTY1, number>
+            justRearrangedHpBars?: boolean
 
             clearParties(this: this): void
             addParty(this: this, party: MultiParty): void
@@ -128,6 +129,7 @@ prestart(() => {
             this.rearrangeHpBars()
         },
         rearrangeHpBars() {
+            this.justRearrangedHpBars = true
             runTasks(
                 Object.keysT(this.hpBars)
                     .map(id => instanceinator.instances[id])
