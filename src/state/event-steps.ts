@@ -292,8 +292,8 @@ prestart(() => {
             this.eventCallId = eventCallIdCounter++
         },
         setDone() {
+            if (!shouldCollectStateData() || this.eventAttached.length == 0) return this.parent()
             this.parent()
-            if (!shouldCollectStateData() || this.eventAttached.length == 0) return
             const group = getGroup(this)
             group.end = true
         },
