@@ -54,10 +54,10 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
         items,
         itemsDiff: items ? undefined : itemsDiff,
+        charge: memory.diff(chargeLevel as u3),
+        credit: memory.diff(this.model.credit),
         skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints) : undefined,
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
-
-        charge: memory.diff(chargeLevel as u3),
     }
 }
 
@@ -108,6 +108,15 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
             this.clearCharge()
         } else {
             this.showChargeEffect(state.charge)
+        }
+    }
+
+    if (state.credit !== undefined) {
+        const diff = state.credit - this.model.credit
+        this.model.credit = state.credit
+
+        if (!ig.settingStateImmediately) {
+            sc.Model.notifyObserver(this.model, sc.PLAYER_MSG.CREDIT_CHANGE, diff)
         }
     }
 }

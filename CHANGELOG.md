@@ -7,10 +7,11 @@
 ### Added
 
 - Add ping interval and ping timeout server options
-- Add remote camera and screen blur step synchronization
+- Add remote camera and screen blur step state
 - Add ig.ENTITY.OneTimeSwitch event chain preservation
 - Add ig.ENTITY.EnemyCounter event chain preservation
-- Add ig.ENTITY.NPC activeStateIdx remote state synchronization
+- Add ig.ENTITY.NPC activeStateIdx remote state
+- Add remote player credit state
 
 ### Changed
 
