@@ -20,6 +20,7 @@ function getState(this: ig.ENTITY.NPC, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         config: memory.diff(Object.values(this.configs).indexOf(this.defaultConfig) as i16),
+        activeStateIdx: memory.diff(this.activeStateIdx as i16),
 
         ...scActorEntity.getState.call(this, memory),
     }
@@ -29,6 +30,24 @@ function setState(this: ig.ENTITY.NPC, state: Return) {
     if (state.config !== undefined) {
         const config = Object.values(this.configs)[state.config]
         this.setDefaultConfig(config)
+    }
+    // let h = this.eventBlocked || (this.currentAction && this.currentAction.eventAction && !this._hidden)
+    // init && (h = false)
+    let h = false
+
+    if (state.activeStateIdx !== undefined) {
+        this.activeStateIdx = state.activeStateIdx
+        if (this.activeStateIdx == -1) {
+            sc.mapInteract.removeEntry(this.interactEntry)
+        } else {
+            const newState = this.npcStates[this.activeStateIdx]
+            this.setMapInteractIcon(newState)
+            if (h || !newState.npcEventObj) {
+                sc.mapInteract.removeEntry(this.interactEntry)
+            } else {
+                sc.mapInteract.addEntry(this.interactEntry)
+            }
+        }
     }
 
     scActorEntity.setState.call(this, state)

@@ -10,6 +10,7 @@
 - Add remote camera and screen blur step synchronization
 - Add ig.ENTITY.OneTimeSwitch event chain preservation
 - Add ig.ENTITY.EnemyCounter event chain preservation
+- Add ig.ENTITY.NPC activeStateIdx remote state synchronization
 
 ### Changed
 
