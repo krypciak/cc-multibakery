@@ -16,7 +16,6 @@ import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
-import { linkMusic } from '../server/music'
 import type { MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
 import type { Username } from '../net/binary/binary-types'
@@ -283,7 +282,6 @@ export class Client extends InstanceUpdateable {
             ig.light.screenFlashHandles = mig.light.screenFlashHandles
 
             linkClientVars(this, map.inst)
-            linkMusic(this.inst, map.inst)
             linkTimersModel(this.inst, map.inst)
 
             removeAddon(ig.screenBlur, ig.game)

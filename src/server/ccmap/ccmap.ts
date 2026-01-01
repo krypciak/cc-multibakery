@@ -7,7 +7,6 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { InstanceUpdateable } from '../instance-updateable'
 import { linkMapVars } from './map-var-link'
 import { linkOptions } from '../physics/storage/storage'
-import { linkMusic } from '../music'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapName } from '../../net/binary/binary-types'
 
@@ -56,7 +55,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     private link() {
-        const toLink = [linkMapVars, linkOptions, linkMusic, linkMapModel, linkTimersModel]
+        const toLink = [linkMapVars, linkOptions, linkMapModel, linkTimersModel]
         for (const link of toLink) link(this.inst, multi.server.inst)
     }
 

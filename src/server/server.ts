@@ -112,6 +112,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.inst.apply()
         this.safeguardInst()
         this.link()
+        this.updateMusicInstance()
 
         removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
         this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
@@ -221,10 +222,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
                 this.setMasterClient(this.clients.values().next()?.value!)
             }
         }
+        this.updateMusicInstance()
     }
 
     setMasterClient(client: Client): Client {
         this.masterUsername = client.username
+        this.updateMusicInstance()
         multi.storage.save()
         return client
     }
@@ -232,6 +235,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     getMasterClient(): Client | undefined {
         if (!this.masterUsername) return
         return this.clients.get(this.masterUsername)
+    }
+
+    private updateMusicInstance() {
+        const masterClient = this.getMasterClient()
+        instanceinator.setMusicInstanceId(masterClient?.inst.id ?? this.inst.id)
     }
 
     abstract getPlayerInfoOf(username: Username): PlayerInfoEntry
@@ -261,6 +269,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId
         instanceinator.displayFps = modmanager.options['cc-instanceinator'].displayFps
+        instanceinator.setMusicInstanceId(this.baseInst.id)
 
         instanceinator.retile()
     }

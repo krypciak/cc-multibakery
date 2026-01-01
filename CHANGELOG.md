@@ -16,6 +16,7 @@
 ### Changed
 
 - Teleport new remote players to the same map as master player
+- Allow music to play only in the master player's instance
 
 ### Fixed
 

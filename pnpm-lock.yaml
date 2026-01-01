@@ -31,7 +31,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/38bb049c70ac85f2c2bdd5e998c81152587db44f
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/69fc690bb36dbb494b361a3c16b329f387aa75b1
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
         version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f
@@ -599,9 +599,9 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0}
     version: 1.0.0
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/38bb049c70ac85f2c2bdd5e998c81152587db44f:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/38bb049c70ac85f2c2bdd5e998c81152587db44f}
-    version: 1.0.6
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/69fc690bb36dbb494b361a3c16b329f387aa75b1:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/69fc690bb36dbb494b361a3c16b329f387aa75b1}
+    version: 1.0.7
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f}
@@ -1558,7 +1558,7 @@ snapshots:
 
   cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/38bb049c70ac85f2c2bdd5e998c81152587db44f: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/69fc690bb36dbb494b361a3c16b329f387aa75b1: {}
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f: {}
 
