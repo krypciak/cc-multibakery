@@ -68,6 +68,10 @@ prestart(() => {
             updateNpcState(init, force) {
                 if (!isRemote(multi.server)) return this.parent(init, force)
             },
+            update() {
+                if (!isRemote(multi.server)) return this.parent()
+                ig.AnimatedEntity.prototype.update.call(this)
+            },
         })
     }
 }, 2)
