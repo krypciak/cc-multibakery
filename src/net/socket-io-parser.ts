@@ -1,4 +1,4 @@
-import type { u32, u8 } from 'ts-binarifier/src/type-aliases'
+import type { RecordSize, u24, u32, u8 } from 'ts-binarifier/src/type-aliases'
 import { Decoder as BinaryDecoder } from 'ts-binarifier/src/decoder'
 import { assert } from '../misc/assert'
 import { SocketIoPacketEncoderDecoder } from './binary/socket-io-packet-encoder-decoder.generated'
@@ -21,7 +21,7 @@ interface SocketIoPacket {
     ids?: { pid: string; sid: string }
     otherEventsData?: any
     updateEventData?: {
-        data: u8[]
+        data: u8[] & RecordSize<u24>
     }
 }
 export type GenerateType = SocketIoPacket

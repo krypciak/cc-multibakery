@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix server crash when remote player joins and the save file has a lot of data
+
 ## [0.7.3] 2026-01-01
 
 ### Added
