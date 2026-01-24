@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix remote crash when remote player uses the nax art switch keybinding
+
 ## [0.7.4] 2026-01-22
 
 ### Fixed

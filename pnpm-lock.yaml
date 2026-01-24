@@ -37,7 +37,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f
       cc-variable-charge-time:
         specifier: github:krypciak/cc-variable-charge-time
-        version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024
+        version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803
       ccmoddb:
         specifier: github:CCDirectLink/CCModDB
         version: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/f598f5c0eb0d8b86dee9a507aa7ffa25634b87c3
@@ -610,8 +610,8 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f}
     version: 1.1.0
 
-  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024}
+  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803}
     version: 1.0.0
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/f598f5c0eb0d8b86dee9a507aa7ffa25634b87c3:
@@ -1583,7 +1583,7 @@ snapshots:
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f: {}
 
-  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/d88e19771b0919a78d68db30b476fab9f7772024: {}
+  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803: {}
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/f598f5c0eb0d8b86dee9a507aa7ffa25634b87c3:
     dependencies:
