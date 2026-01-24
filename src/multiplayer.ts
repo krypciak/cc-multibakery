@@ -13,6 +13,7 @@ import './misc/unregister-var-accessor'
 import './pvp/pvp'
 import './steps/all'
 import './misc/icons'
+import './mod-compatibility/nax-art-switch'
 
 declare global {
     namespace multi {

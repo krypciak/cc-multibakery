@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix remote crash when remote player uses the nax art switch keybinding
+- Fix duplicate particles when using the nax art switch keybinding
 
 ## [0.7.4] 2026-01-22
 

@@ -21,11 +21,4 @@ declare global {
             id: number
         }
     }
-    namespace ig {
-        namespace Input {
-            interface KnownActions {
-                'nax-art-switch': true
-            }
-        }
-    }
 }
