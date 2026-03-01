@@ -70,7 +70,7 @@ prestart(() => {
             data.eventCalls = eventCalls
         },
         run({ eventCalls }) {
-            return this.noWait || eventCalls.every(call => call.done)
+            return this.noWait || !eventCalls || eventCalls.every(call => call.done)
         },
         getNext() {
             if (!multi.server) return this.branches!['steps']

@@ -9,6 +9,7 @@
 - Fix remote crash when remote player uses the nax art switch keybinding
 - Fix duplicate particles when using the nax art switch keybinding
 - Preserve event chain in actions (fixed saw obstacle)
+- Fix crash when using FOR_EACH_PLAYER event step with server off
 
 ## [0.7.4] 2026-01-22
 
