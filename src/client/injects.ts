@@ -2,6 +2,7 @@ import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import type { Client } from './client'
 import { isPhysics } from '../server/physics/is-physics-server'
+import { assert } from '../misc/assert'
 
 prestart(() => {
     ig.Physics.inject({
@@ -21,6 +22,16 @@ prestart(() => {
         varsChanged() {
             if (ig.client) return
             this.parent()
+        },
+    })
+})
+
+prestart(() => {
+    ig.Game.inject({
+        spawnEntity(...args) {
+            if (!multi.server || ig.ccmap) return this.parent(...args)
+            assert(ig.client)
+            return runTask(ig.client.getMap().inst, () => this.parent(...args))
         },
     })
 })

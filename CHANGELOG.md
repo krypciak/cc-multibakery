@@ -13,6 +13,7 @@
 - Fix certain player properties (like face orientation or items) being shared across different players when loading from save (again)
 - Fix server crash when remote interacts with gui props
 - Fix remote ig.EVENT_STEP.SHOW_CENTER_MSG
+- Fix crash when spawning enemy with steps on client instance
 
 ## [0.7.4] 2026-01-22
 

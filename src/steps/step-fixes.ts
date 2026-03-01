@@ -57,18 +57,16 @@ prestart(() => {
 prestart(() => {
     if (!PHYSICS) return
 
-    function runStepOnMap<T extends ig.EventStepBase>(
-        this: T & { parent: (data?: unknown, eventCall?: ig.EventCall) => void },
-        data?: unknown,
-        eventCall?: ig.EventCall
-    ) {
-        if (!ig.client) return this.parent(data, eventCall)
-        return runTaskInMapInst(() => this.parent(data, eventCall))
+    function runStepOnMap<T extends ig.EventStepBase, ARGS extends unknown[], R>(
+        this: T & { parent: (...args: ARGS) => R },
+        ...args: ARGS
+    ): R {
+        if (!ig.client) return this.parent(...args)
+        return runTaskInMapInst(() => this.parent(...args))
     }
 
     ig.EVENT_STEP.MANUAL_COMBATANT_KILL.inject({ start: runStepOnMap })
     ig.EVENT_STEP.HIDE_ENTITY.inject({ start: runStepOnMap })
-    ig.EVENT_STEP.SPAWN_ENEMY.inject({ start: runStepOnMap })
 })
 
 /* map -> client */
