@@ -6,7 +6,7 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 declare global {
     namespace ig {
         interface Vars {
-            nextSetBy?: ig.Entity
+            nextSetBy: ig.Entity[]
             varsSetBy: Record</* var */ string, ig.Entity>
         }
     }
@@ -17,23 +17,23 @@ prestart(() => {
         init() {
             this.parent()
             this.varsSetBy = {}
+            this.nextSetBy = []
         },
     })
 })
 
 addVarModifyListener(path => {
-    if (ig.vars.nextSetBy) {
-        ig.vars.varsSetBy[path] = ig.vars.nextSetBy
-        ig.vars.nextSetBy = undefined
+    if (ig.vars.nextSetBy.length > 0) {
+        ig.vars.varsSetBy[path] = ig.vars.nextSetBy.last()
+        ig.vars.nextSetBy.pop()
     }
 })
 export function setNextSetBy(entity: ig.Entity) {
-    assert(!ig.vars.nextSetBy)
     assert(entity)
-    ig.vars.nextSetBy = entity
+    ig.vars.nextSetBy.push(entity)
 }
 export function unsetNextSetBy() {
-    ig.vars.nextSetBy = undefined
+    ig.vars.nextSetBy.pop()
 }
 export function findSetByEntityByVars(vars: string[]): ig.Entity | undefined {
     return ig.vars.varsSetBy[vars.find(varName => ig.vars.varsSetBy[varName]) ?? -1]
@@ -42,8 +42,16 @@ export function findSetByEntityByVars(vars: string[]): ig.Entity | undefined {
 prestart(() => {
     ig.Vars.inject({
         _getAccessObject(path) {
-            if (!(ig.vars.nextSetBy instanceof dummy.DummyPlayer)) return this.parent(path)
-            const client = ig.vars.nextSetBy.getClient(true)
+            let player: dummy.DummyPlayer | undefined
+            for (let i = ig.vars.nextSetBy.length - 1; i >= 0; i--) {
+                const entity = ig.vars.nextSetBy[i]
+                if (entity instanceof dummy.DummyPlayer) {
+                    player = entity
+                    break
+                }
+            }
+            if (!player) return this.parent(path)
+            const client = player.getClient(true)
             if (!client) return this.parent(path)
 
             const newPath = ig.VarPathResolver.resolve(path)

@@ -12,11 +12,11 @@ declare global {
     }
 }
 
-export function setNextTriggeredBy(cond: ig.VarCondition) {
+export function setEventNextTriggeredBy(cond: ig.VarCondition) {
     assert(cond)
     ig.game.events.nextTriggeredBy = cond
 }
-export function unsetNextTriggeredBy() {
+export function unsetEventNextTriggeredBy() {
     ig.game.events.nextTriggeredBy = undefined
 }
 

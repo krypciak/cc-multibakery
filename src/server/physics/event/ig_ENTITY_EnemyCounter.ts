@@ -16,7 +16,7 @@ prestart(() => {
         onCombatEvent(combatant, type) {
             const entity = combatant.getLastDamagingEntity()
             if (entity) this.lastCausalEntity = entity
-            if (!isPhysics(multi.server) || !entity || ig.vars.nextSetBy) return this.parent(combatant, type)
+            if (!isPhysics(multi.server) || !entity || ig.vars.nextSetBy.length > 0) return this.parent(combatant, type)
 
             setNextSetBy(entity)
             const ret = this.parent(combatant, type)

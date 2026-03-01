@@ -1,6 +1,6 @@
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../is-physics-server'
-import { setNextTriggeredBy, unsetNextTriggeredBy } from './event-manager'
+import { setEventNextTriggeredBy, unsetEventNextTriggeredBy } from './event-manager'
 import { findSetByEntityByVars, setNextSetBy, unsetNextSetBy } from './vars'
 
 prestart(() => {
@@ -13,11 +13,11 @@ prestart(() => {
             const setBy = findSetByEntityByVars(this.startCondition.vars)
             if (setBy) setNextSetBy(setBy)
 
-            setNextTriggeredBy(this.startCondition)
+            setEventNextTriggeredBy(this.startCondition)
 
             this.parent()
 
-            unsetNextTriggeredBy()
+            unsetEventNextTriggeredBy()
             unsetNextSetBy()
         },
     })
