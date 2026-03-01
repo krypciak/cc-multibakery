@@ -215,6 +215,8 @@ prestart(() => {
             ig.EVENT_STEP.SHOW_CHOICE,
             ig.EVENT_STEP.SHOW_TUTORIAL_MSG,
             ig.EVENT_STEP.SHOW_GET_MSG,
+            ig.EVENT_STEP.SHOW_CENTER_MSG,
+            ig.EVENT_STEP.SHOW_DREAM_MSG,
 
             ig.EVENT_STEP.SET_CAMERA_TARGET,
             ig.EVENT_STEP.SET_CAMERA_POS,

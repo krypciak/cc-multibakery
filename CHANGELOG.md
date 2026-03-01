@@ -12,6 +12,7 @@
 - Fix crash when using FOR_EACH_PLAYER event step with server off
 - Fix certain player properties (like face orientation or items) being shared across different players when loading from save (again)
 - Fix server crash when remote interacts with gui props
+- Fix remote ig.EVENT_STEP.SHOW_CENTER_MSG
 
 ## [0.7.4] 2026-01-22
 
