@@ -1,4 +1,4 @@
-import type { u16, u6 } from 'ts-binarifier/src/type-aliases'
+import type { u20, u6 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { assert } from './assert'
 import { isRemote } from '../server/remote/is-remote-server'
@@ -31,11 +31,11 @@ declare global {
     }
 }
 
-export type EntityNetid = u16
+export type EntityNetid = u20
 // u1 for special bit
 const typeidSizeBits = 6
 const typeidSize = 64 // u6
-export const entityNetidCounterSize = 512 // 9
+export const entityNetidCounterSize = 8192 // 13
 const typeidShift = 16 - typeidSizeBits + 1
 const specialBit = 1 << (typeidShift - 1)
 
