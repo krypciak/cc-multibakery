@@ -21,6 +21,7 @@ import { linkClientVars } from './client-var-link'
 import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
+import { copy } from '../misc/object-copy'
 
 import './injects'
 import './menu/server-list-menu'
@@ -371,11 +372,12 @@ export class Client extends InstanceUpdateable {
             assert(ig.ccmap)
             const referenceClient = ig.ccmap.clients[0]
             if (referenceClient?.dummy) {
-                state = multi.storage.savePlayerState(
+                const referenceClientState = multi.storage.savePlayerState(
                     referenceClient.username,
                     referenceClient.dummy,
                     referenceClient.tpInfo
                 )
+                state = copy(referenceClientState)
             }
         }
         return state
