@@ -11,7 +11,7 @@ interface HitConfig {
     hitPos: Vec3
     hitDegree: sc.ATTACK_TYPE
     hitElement: sc.ELEMENT
-    shielded: boolean
+    shieldResult: sc.SHIELD_RESULT
     critical: boolean
     ignoreSounds: boolean
     spriteFilter?: u16[]
@@ -42,7 +42,7 @@ prestart(() => {
                 hitPos,
                 hitDegree,
                 hitElement,
-                shielded,
+                shieldResult: shielded,
                 critical,
                 ignoreSounds,
                 spriteFilter,
@@ -69,14 +69,14 @@ prestart(() => {
     if (!PHYSICSNET) return
 
     sc.Combat.inject({
-        showHitEffect(entity, hitPos, hitDegree, hitElement, shielded, critical, ignoreSounds, spriteFilter) {
+        showHitEffect(entity, hitPos, hitDegree, hitElement, shieldResult, critical, ignoreSounds, spriteFilter) {
             if (!shouldCollectStateData())
                 return this.parent(
                     entity,
                     hitPos,
                     hitDegree,
                     hitElement,
-                    shielded,
+                    shieldResult,
                     critical,
                     ignoreSounds,
                     spriteFilter
@@ -88,7 +88,7 @@ prestart(() => {
                 hitPos,
                 hitDegree,
                 hitElement,
-                shielded,
+                shieldResult,
                 critical,
                 ignoreSounds,
                 spriteFilter
@@ -103,7 +103,7 @@ prestart(() => {
                     hitPos,
                     hitDegree,
                     hitElement,
-                    shielded,
+                    shieldResult,
                     critical,
                     ignoreSounds,
                     spriteFilter,
