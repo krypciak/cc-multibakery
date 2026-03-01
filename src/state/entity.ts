@@ -36,6 +36,7 @@ import './entity/ig_ENTITY_DynamicPlatform'
 import './entity/ig_ENTITY_ItemDestruct'
 import './entity/ig_ENTITY_XenoDialog'
 import './entity/sc_PartyMemberEntity'
+import './entity/ig_ENTITY_Prop'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 

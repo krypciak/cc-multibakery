@@ -11,6 +11,7 @@
 - Preserve event chain in actions (fixed saw obstacle)
 - Fix crash when using FOR_EACH_PLAYER event step with server off
 - Fix certain player properties (like face orientation or items) being shared across different players when loading from save (again)
+- Fix server crash when remote interacts with gui props
 
 ## [0.7.4] 2026-01-22
 
