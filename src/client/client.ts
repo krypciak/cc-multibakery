@@ -76,7 +76,7 @@ export class Client extends InstanceUpdateable {
     private async init(settings: ClientSettings) {
         this.inst = await instanceinator.copy(
             multi.server.inst,
-            { name: 'localclient-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
+            { name: 'client-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
             {
                 preLoad: inst => {
                     inst.ig.client = this
