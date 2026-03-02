@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add player elemental overload remote state
+
 ### Fixed
 
 - Fix remote crash when remote player uses the nax art switch keybinding

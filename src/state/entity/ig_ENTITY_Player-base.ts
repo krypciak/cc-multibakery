@@ -58,6 +58,8 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
         credit: memory.diff(this.model.credit),
         skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints) : undefined,
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
+        elementLoad: memory.diff(this.model.elementLoad),
+        hasOverload: memory.diff(this.model.hasOverload),
     }
 }
 
@@ -119,6 +121,9 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
             sc.Model.notifyObserver(this.model, sc.PLAYER_MSG.CREDIT_CHANGE, diff)
         }
     }
+
+    if (state.elementLoad !== undefined) this.model.elementLoad = state.elementLoad
+    if (state.hasOverload !== undefined) this.model.hasOverload = state.hasOverload
 }
 
 prestart(() => {
