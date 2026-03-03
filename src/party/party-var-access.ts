@@ -51,7 +51,10 @@ export function multiPartyVarAccess(path: string, keys: string[], party?: MultiP
 prestart(() => {
     ig.ENTITY.Combatant.inject({
         onVarAccess(path, keys) {
-            if (multi.server && keys[1] == 'combatantParty') return this.party
+            if (multi.server) {
+                if (keys[1] == 'combatantParty') return this.party
+                if (keys[1] == 'isInPvp') return sc.pvp.isCombatantInPvP(this)
+            }
             return this.parent(path, keys)
         },
     })
