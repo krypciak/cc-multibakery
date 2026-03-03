@@ -2,6 +2,7 @@ import { runTaskInMapInst, type Client } from '../client/client'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { checkAndCutPrefix, checkAndCutSuffix } from '../misc/check-and-cut'
+import { createPartyVarAccess } from '../pvp/pvp-var-access'
 import { isRemote } from './remote/is-remote-server'
 
 class MultiVarAccessor implements ig.Vars.Accessor {
@@ -31,6 +32,22 @@ class MultiVarAccessor implements ig.Vars.Accessor {
 
                 const playerModels = clients.map(c => c.dummy?.model).filter(Boolean)
                 return ig.Vars.arrayVarAccess(playerModels, keys.slice(2))
+            }
+        }
+
+        if (checkAndCutPrefix(keys, 1, 'parties')) {
+            const byId = checkAndCutSuffix(keys, 1, 'ById')
+            if (byId) {
+                const id = keys[2]
+                const party = multi.server.party.parties[id]
+                if (!party) return
+                const varAccess = createPartyVarAccess(party)
+                return ig.Vars.forwardVar(varAccess, keys, 3)
+            } else {
+                return ig.Vars.arrayVarAccess(
+                    Object.values(multi.server.party.parties).map(createPartyVarAccess),
+                    keys.slice(2)
+                )
             }
         }
     }

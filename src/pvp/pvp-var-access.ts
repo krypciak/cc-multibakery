@@ -2,7 +2,7 @@ import { prestart } from '../loading-stages'
 import type { MultiParty } from '../party/party'
 import { multiPartyVarAccess } from '../party/party-var-access'
 
-function createPartyVarAccess(party: MultiParty) {
+export function createPartyVarAccess(party: MultiParty) {
     return {
         onVarAccess: (path: string, keys: string[]) => multiPartyVarAccess(path, keys, party),
     }

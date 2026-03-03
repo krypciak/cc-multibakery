@@ -7,6 +7,7 @@
 ### Added
 
 - Add player elemental overload remote state
+- Add `multi.parties` read only game variable
 
 ### Fixed
 
