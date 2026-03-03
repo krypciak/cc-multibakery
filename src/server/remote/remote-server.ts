@@ -213,7 +213,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {
         const entry = this.playerInfoEntries[username]
-        assert(`getPlayerInfoEntry: asked for username: ${username} that has no entry!`)
+        assert(entry, `getPlayerInfoEntry: asked for username: ${username} that has no entry!`)
         return entry
     }
 

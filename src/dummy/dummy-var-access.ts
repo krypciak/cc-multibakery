@@ -4,7 +4,7 @@ prestart(() => {
     dummy.PlayerModel.inject({
         onVarAccess(path, keys) {
             if (multi.server) {
-                if (keys[1] == 'username') return this.dummy.data.username
+                if (keys[0] == 'player' && keys[1] == 'username') return this.dummy.data.username
             }
             return this.parent(path, keys)
         },

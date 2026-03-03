@@ -460,5 +460,5 @@ export function runTaskInMapInst<T>(task: () => T): T {
         return runTask(ig.client.getMap().inst, task)
     } else if (ig.ccmap) {
         return task()
-    } else assert(false)
+    } else assert(false, "runTaskInMapInst ran in server instance!")
 }
