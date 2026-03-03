@@ -12,6 +12,8 @@ import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
 
+import './server-var-access'
+
 export interface MapTpInfo {
     map: MapName
     marker?: Nullable<string>

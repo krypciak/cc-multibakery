@@ -6,13 +6,14 @@ prestart(() => {
         // onVarAccess different team points??
         onVarAccess(path, keys) {
             if (multi.server && keys[0] == 'pvp') {
-                if (keys[1] == 'parties')
+                if (keys[1] == 'parties') {
                     return ig.Vars.arrayVarAccess(
                         this.parties.map(party => ({
                             onVarAccess: (path: string, keys: string[]) => multiPartyVarAccess(path, keys, party),
                         })),
                         keys.slice(2)
                     )
+                }
                 if (keys[1] == 'players') {
                     return ig.Vars.arrayVarAccess(
                         this.parties.flatMap(party =>
