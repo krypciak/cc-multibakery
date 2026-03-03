@@ -34,7 +34,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/33a94ba7917da1162a1e0ffb1a5f18b480b2ff34
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
-        version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f
+        version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/e4422a41960c83d1b2db7259c748858555fee73c
       cc-variable-charge-time:
         specifier: github:krypciak/cc-variable-charge-time
         version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803
@@ -606,8 +606,8 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/33a94ba7917da1162a1e0ffb1a5f18b480b2ff34}
     version: 1.0.8
 
-  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f}
+  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/e4422a41960c83d1b2db7259c748858555fee73c:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/e4422a41960c83d1b2db7259c748858555fee73c}
     version: 1.1.0
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803:
@@ -1581,7 +1581,7 @@ snapshots:
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/33a94ba7917da1162a1e0ffb1a5f18b480b2ff34: {}
 
-  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/661c41fd1dd022226be3e1f97346a35887b1865f: {}
+  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/e4422a41960c83d1b2db7259c748858555fee73c: {}
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/bf05ad57902a86def87132817a585bec27a01803: {}
 

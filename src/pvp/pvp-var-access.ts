@@ -1,5 +1,12 @@
 import { prestart } from '../loading-stages'
+import type { MultiParty } from '../party/party'
 import { multiPartyVarAccess } from '../party/party-var-access'
+
+function createPartyVarAccess(party: MultiParty) {
+    return {
+        onVarAccess: (path: string, keys: string[]) => multiPartyVarAccess(path, keys, party),
+    }
+}
 
 prestart(() => {
     sc.PvpModel.inject({
@@ -7,12 +14,7 @@ prestart(() => {
         onVarAccess(path, keys) {
             if (multi.server && keys[0] == 'pvp') {
                 if (keys[1] == 'parties') {
-                    return ig.Vars.arrayVarAccess(
-                        this.parties.map(party => ({
-                            onVarAccess: (path: string, keys: string[]) => multiPartyVarAccess(path, keys, party),
-                        })),
-                        keys.slice(2)
-                    )
+                    return ig.Vars.arrayVarAccess(this.parties.map(createPartyVarAccess), keys.slice(2))
                 }
                 if (keys[1] == 'players') {
                     return ig.Vars.arrayVarAccess(
@@ -24,7 +26,6 @@ prestart(() => {
                         keys.slice(2)
                     )
                 }
-                if (keys[1] == 'isPlayerInPvp') return sc.pvp.isCombatantInPvP(ig.game.playerEntity)
                 if (keys[1] == 'active' && this.multiplayerPvp) return true
             }
             return this.parent(path, keys)

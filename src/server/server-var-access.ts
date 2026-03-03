@@ -1,6 +1,7 @@
 import { runTaskInMapInst, type Client } from '../client/client'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
+import { checkAndCutPrefix, checkAndCutSuffix } from '../misc/check-and-cut'
 import { isRemote } from './remote/is-remote-server'
 
 class MultiVarAccessor implements ig.Vars.Accessor {
@@ -13,17 +14,24 @@ class MultiVarAccessor implements ig.Vars.Accessor {
             console.warn(`multi.* will return incorrect data on remote!`)
         }
 
-        if (keys[1].startsWith('players')) {
-            let onMap = false
-            if (keys[1].endsWith('OnMap')) {
-                onMap = true
-                keys[1] = keys[1].slice(0, -'OnMap'.length)
+        if (checkAndCutPrefix(keys, 1, 'players')) {
+            const onMap = checkAndCutSuffix(keys, 1, 'OnMap')
+            const byName = checkAndCutSuffix(keys, 1, 'ByName')
+
+            if (byName) {
+                const name = keys[2]
+                const client = multi.server.clients.get(name)
+                if (!client) return
+                const model = client.inst.sc.model.player
+                return ig.Vars.forwardVar(model, keys, 3)
+            } else {
+                const clients: Client[] = onMap
+                    ? runTaskInMapInst(() => ig.ccmap!.clients)
+                    : [...multi.server.clients.values()]
+
+                const playerModels = clients.map(c => c.dummy?.model).filter(Boolean)
+                return ig.Vars.arrayVarAccess(playerModels, keys.slice(2))
             }
-            const clients: Client[] = onMap
-                ? runTaskInMapInst(() => ig.ccmap!.clients)
-                : [...multi.server.clients.values()]
-            const playerModels: ig.Vars.Accessor[] = clients.map(c => c.dummy?.model).filter(Boolean)
-            return ig.Vars.arrayVarAccess(playerModels, keys.slice(2))
         }
     }
 }

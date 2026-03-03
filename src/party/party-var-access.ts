@@ -1,5 +1,6 @@
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
+import { checkAndCutSuffix } from '../misc/check-and-cut'
 import type { MultiParty } from './party'
 
 export function multiPartyVarAccess(path: string, keys: string[], party?: MultiParty) {
@@ -15,18 +16,24 @@ export function multiPartyVarAccess(path: string, keys: string[], party?: MultiP
     if (keys[0] == 'title') return party.title
 
     if (keys[0] == 'combatants') {
-        let onMap = false
-        if (keys[1].endsWith('OnMap')) {
-            onMap = true
-            keys[1] = keys[1].slice(0, -'OnMap'.length)
-        }
+        const onMap = checkAndCutSuffix(keys, 1, 'OnMap')
+        const byName = checkAndCutSuffix(keys, 1, 'ByName')
+
         let combatants = multi.server.party.getPartyCombatants(party, onMap ? ig.game.mapName : undefined)
         if (keys[1] == 'all') {
         } else if (keys[1] == 'players') combatants = combatants.filter(c => c instanceof dummy.DummyPlayer)
         else if (keys[1] == 'vanillaMembers') combatants = combatants.filter(c => c instanceof sc.PartyMemberEntity)
         else throw new Error(`Invalid var access! ${path}`)
 
-        return ig.Vars.arrayVarAccess(combatants, keys.slice(2))
+        if (byName) {
+            const name = keys[2]
+            const combatant = combatants.find(c =>
+                c instanceof dummy.DummyPlayer ? c.data.username == name : c.name == name
+            )
+            return ig.Vars.forwardVar(combatant, keys, 3)
+        } else {
+            return ig.Vars.arrayVarAccess(combatants, keys.slice(2))
+        }
     }
 
     /* vanilla keys */
