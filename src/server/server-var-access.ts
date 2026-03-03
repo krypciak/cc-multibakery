@@ -13,11 +13,11 @@ class MultiVarAccessor implements ig.Vars.Accessor {
             console.warn(`multi.* will return incorrect data on remote!`)
         }
 
-        if (keys[1] == 'players') {
+        if (keys[1].startsWith('players')) {
             let onMap = false
-            if (keys[2] == 'onMap') {
+            if (keys[1].endsWith('OnMap')) {
                 onMap = true
-                keys.splice(2, 1)
+                keys[1] = keys[1].slice(0, -'OnMap'.length)
             }
             const clients: Client[] = onMap
                 ? runTaskInMapInst(() => ig.ccmap!.clients)

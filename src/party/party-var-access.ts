@@ -16,9 +16,9 @@ export function multiPartyVarAccess(path: string, keys: string[], party?: MultiP
 
     if (keys[0] == 'combatants') {
         let onMap = false
-        if (keys[1] == 'onMap') {
+        if (keys[1].endsWith('OnMap')) {
             onMap = true
-            keys.splice(1, 1)
+            keys[1] = keys[1].slice(0, -'OnMap'.length)
         }
         let combatants = multi.server.party.getPartyCombatants(party, onMap ? ig.game.mapName : undefined)
         if (keys[1] == 'all') {

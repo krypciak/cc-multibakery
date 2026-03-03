@@ -88,7 +88,7 @@
             "steps": [
                 {
                     "type": "IF",
-                    "condition": "party.combatants.onMap.players.length != party.combatants.players.length",
+                    "condition": "party.combatants.playersOnMap.length != party.combatants.players.length",
                     "thenStep": [
                         { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "varName", "value": true }
                     ]
