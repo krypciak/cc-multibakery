@@ -53,6 +53,7 @@ prestart(() => {
         },
         clearParties() {
             assert(multi.server)
+            assert(!this.multiplayerPvp)
             this.parties = []
         },
         addParty(party) {
