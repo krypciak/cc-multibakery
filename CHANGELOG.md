@@ -8,9 +8,13 @@
 
 - Add player elemental overload remote state
 - Add `multi.parties` read only game variable
+- Add `multi.players` read only game variable
+- Add `ByName` optional suffix to party var object `.combatants.{all,players,vanillaMembers}`
+- Add documentation
 
 ### Changed
 
+- `multi.playerCount` no longer exists, use `multi.players.length`
 - `pvp.active` no longer true when multiplayer pvp active, use `pvp.multiActive` instead
 
 ### Fixed
