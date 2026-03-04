@@ -4,12 +4,16 @@
 
 When geting/seting a game variable, the request goes through a chain:
 
+![Variable flow graph](/docs/drawio/game-var-flow.svg)
+
+For example:
 - if a client instance requests a variable `tmp.var`, the map instance will capture the request and return the correct value.  
 - all clients on the same map share all variables except `map.client.` and `tmp.client.`
 
+
 ## New variables
 
-![Graph of game variables](https://github.com/user-attachments/assets/9d7b916d-325e-4a55-b3b4-36a29cb525a7)
+![Graph of game variables](/docs/drawio/game-vars.svg)
 
 
 Examples:
