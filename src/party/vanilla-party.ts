@@ -53,10 +53,11 @@ prestart(() => {
                 ig.game.playerEntity = player
                 this.parent(name, showEffects, idx, npc)
                 ig.game.playerEntity = null as any
+
+                pickModelFromInst = undefined
+                const partyMember = this.partyEntities[name]
+                multi.server.party.updateVanillaMemberInfo(partyMember, party)
             })
-            pickModelFromInst = undefined
-            const partyMember = this.partyEntities[name]
-            multi.server.party.updateVanillaMemberInfo(partyMember, party)
         },
         getPartyMemberModel(name) {
             if (pickModelFromInst)

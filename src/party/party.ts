@@ -3,6 +3,7 @@ import { assert } from '../misc/assert'
 import type { COMBATANT_PARTY, MapName, Username } from '../net/binary/binary-types'
 import { addCombatantParty } from './combatant-party-api'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 import './social-list-gui'
 import './party-var-access'
@@ -200,12 +201,16 @@ export class MultiPartyManager implements sc.Model {
         if (isPhysics(multi.server)) {
             const client = multi.server.clients.get(username)
             assert(client?.dummy)
-            this.setCombatantData(client.dummy, party)
+            runTask(client.inst, () => this.setCombatantData(client.dummy, party))
         }
     }
 
+    /* has to be run in the context where the combatant is */
     private setCombatantData(combatant: sc.PlayerBaseEntity, party: MultiParty) {
-        combatant.party = party.combatantParty
+        if (combatant instanceof dummy.DummyPlayer) sc.combat.removeActiveCombatant(combatant)
+        sc.combat.changeCombatantParty(combatant, party.combatantParty)
+        if (combatant instanceof dummy.DummyPlayer) sc.combat.addActiveCombatant(combatant)
+
         combatant.multiParty = party
     }
 
