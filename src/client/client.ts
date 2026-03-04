@@ -325,6 +325,10 @@ export class Client extends InstanceUpdateable {
             if (isPhysics(multi.server)) sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
 
+            /* unlink cond lights because ig.Light clears it */
+            ig.light.condLightList = []
+            ig.light.condLights = {}
+
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
             for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(data)
 

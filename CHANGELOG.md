@@ -30,6 +30,7 @@
 - Fix remote ig.EVENT_STEP.SHOW_CENTER_MSG
 - Fix crash when spawning enemy with steps on client instance
 - Fix perfect guard sound and effect not playing on remote
+- Fix conditional lights getting cleared when exiting a map
 
 ## [0.7.4] 2026-01-22
 
