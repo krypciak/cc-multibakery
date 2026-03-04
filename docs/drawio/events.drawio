@@ -1,0 +1,160 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.5.2 Safari/537.36" version="29.5.2">
+  <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
+    <mxGraphModel dx="1722" dy="2207" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-18" edge="1" parent="1" source="Ryb9LxVY2io7Yhw6xAsQ-4" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ryb9LxVY2io7Yhw6xAsQ-12" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="640" y="190" as="sourcePoint" />
+            <mxPoint x="800" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-19" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-18" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" value="Set &quot;tmp.hit&quot; to true" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-117" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-20" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-18" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=bottom;" value="&lt;font style=&quot;font-size: 14px;&quot;&gt;Trigger event&amp;nbsp;&lt;/font&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Ask: was &quot;tmp.hit&quot; set by a player action?&lt;/font&gt;&lt;/div&gt;&lt;div&gt;&lt;font style=&quot;font-size: 14px;&quot;&gt;Answer: yes, so redirect to client instance&lt;/font&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="-7" y="95" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-56" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Map instance" vertex="1">
+          <mxGeometry height="290" width="670" x="170" y="-90" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-1" parent="Ryb9LxVY2io7Yhw6xAsQ-56" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" value="dummy.DummyPlayer" vertex="1">
+          <mxGeometry height="60" width="30" x="190" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-10" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-56" style="group" value="" vertex="1">
+          <mxGeometry height="80" width="156" x="459.99999999999994" y="105" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-4" parent="Ryb9LxVY2io7Yhw6xAsQ-10" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="" vertex="1">
+          <mxGeometry height="80" width="156" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-6" parent="Ryb9LxVY2io7Yhw6xAsQ-10" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ig.ENTITY.Switch&lt;div&gt;variable: &quot;tmp.hit&quot;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="130" x="13" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-2" edge="1" parent="Ryb9LxVY2io7Yhw6xAsQ-56" source="Ryb9LxVY2io7Yhw6xAsQ-1" style="endArrow=classic;html=1;rounded=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" target="Ryb9LxVY2io7Yhw6xAsQ-4" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="211.12" y="150" as="sourcePoint" />
+            <mxPoint x="311.12" y="150" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-3" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-2" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" value="Attack" vertex="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-71" parent="Ryb9LxVY2io7Yhw6xAsQ-56" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;labelBackgroundColor=none;" value="Equal" vertex="1">
+          <mxGeometry height="30" width="60" x="100" y="115" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-45" parent="1" style="swimlane;whiteSpace=wrap;html=1;" value="Client instance" vertex="1">
+          <mxGeometry height="460" width="670" x="170" y="220" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-11" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-45" style="group" value="" vertex="1">
+          <mxGeometry height="80" width="166" x="455" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-12" parent="Ryb9LxVY2io7Yhw6xAsQ-11" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="" vertex="1">
+          <mxGeometry height="80" width="166" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-13" parent="Ryb9LxVY2io7Yhw6xAsQ-11" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ig.ENTITY.EventTrigger&lt;div&gt;startCondition: &quot;tmp.hit&quot;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="138.33333333333334" x="13.833333333333334" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-34" edge="1" parent="Ryb9LxVY2io7Yhw6xAsQ-45" source="Ryb9LxVY2io7Yhw6xAsQ-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;exitX=0;exitY=0.5;exitDx=0;exitDy=0;" target="Ryb9LxVY2io7Yhw6xAsQ-44">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="370" y="200" as="sourcePoint" />
+            <mxPoint x="320" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-35" edge="1" parent="Ryb9LxVY2io7Yhw6xAsQ-45" source="Ryb9LxVY2io7Yhw6xAsQ-12" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=1;entryY=0.5;entryDx=0;entryDy=0;" target="Ryb9LxVY2io7Yhw6xAsQ-33">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-31" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-45" style="group" value="" vertex="1">
+          <mxGeometry height="60" width="240" x="165" y="210" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-32" parent="Ryb9LxVY2io7Yhw6xAsQ-31" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="239.99999999999997" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-33" parent="Ryb9LxVY2io7Yhw6xAsQ-31" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ig.EVENT_STEP.CHANGE_VAR_BOOL&lt;div&gt;varName: &quot;tmp.flag&quot;, value: true&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="239.99999999999997" y="15" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-40" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-45" style="group" value="" vertex="1">
+          <mxGeometry height="80" width="170" x="200" y="350" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-41" parent="Ryb9LxVY2io7Yhw6xAsQ-40" style="shape=hexagon;perimeter=hexagonPerimeter2;whiteSpace=wrap;html=1;fixedSize=1;" value="" vertex="1">
+          <mxGeometry height="80" width="169.99999999999997" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-42" parent="Ryb9LxVY2io7Yhw6xAsQ-40" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ig.ENTITY.EventTrigger&lt;div&gt;startCondition: &quot;tmp.flag&quot;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="30" width="141.66666666666666" x="14.166666666666666" y="25" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-59" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-45" style="group" value="" vertex="1">
+          <mxGeometry height="60" width="240" x="165" y="130" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-29" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-59" style="group" value="" vertex="1">
+          <mxGeometry height="60" width="240" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-27" parent="Ryb9LxVY2io7Yhw6xAsQ-29" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="240" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-44" parent="Ryb9LxVY2io7Yhw6xAsQ-29" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ig.EVENT_STEP.DO_ACTION" vertex="1">
+          <mxGeometry height="30" width="240" y="10" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-67" parent="Ryb9LxVY2io7Yhw6xAsQ-29" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="entity: { player: true }" vertex="1">
+          <mxGeometry height="15" width="150" x="45" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-37" edge="1" parent="Ryb9LxVY2io7Yhw6xAsQ-45" source="Ryb9LxVY2io7Yhw6xAsQ-32" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="Ryb9LxVY2io7Yhw6xAsQ-41" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="259.5" y="270" as="sourcePoint" />
+            <mxPoint x="260" y="350" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-38" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-37" style="edgeLabel;resizable=0;html=1;;align=center;verticalAlign=middle;" value="Set &quot;tmp.flag&quot; to true" vertex="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint y="-15" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-39" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-37" style="edgeLabel;resizable=0;html=1;;align=left;verticalAlign=bottom;" value="Trigger event" vertex="1">
+          <mxGeometry relative="1" x="-1" as="geometry">
+            <mxPoint x="-29" y="60" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-61" edge="1" parent="Ryb9LxVY2io7Yhw6xAsQ-45" source="Ryb9LxVY2io7Yhw6xAsQ-41" style="endArrow=classic;html=1;rounded=0;exitX=1;exitY=0.5;exitDx=0;exitDy=0;" value="">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="525" y="170" as="sourcePoint" />
+            <mxPoint x="505" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-64" connectable="0" parent="Ryb9LxVY2io7Yhw6xAsQ-61" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" value="Next steps..." vertex="1">
+          <mxGeometry relative="1" x="-0.1037" y="7" as="geometry">
+            <mxPoint x="14" y="-8" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-50" edge="1" parent="1" source="Ryb9LxVY2io7Yhw6xAsQ-54" style="shape=flexArrow;endArrow=classic;startArrow=classic;html=1;rounded=0;edgeStyle=elbowEdgeStyle;elbow=vertical;exitX=0.5;exitY=0;exitDx=0;exitDy=0;fillColor=default;" target="Ryb9LxVY2io7Yhw6xAsQ-1" value="">
+          <mxGeometry height="100" relative="1" width="100" as="geometry">
+            <Array as="points">
+              <mxPoint x="340" y="55" />
+            </Array>
+            <mxPoint x="230" y="190" as="sourcePoint" />
+            <mxPoint x="350" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-55" connectable="0" parent="1" style="group" value="" vertex="1">
+          <mxGeometry height="60" width="120" x="200" y="270" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-54" parent="Ryb9LxVY2io7Yhw6xAsQ-55" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="120" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-51" parent="Ryb9LxVY2io7Yhw6xAsQ-55" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="ig.game.playerEntity" vertex="1">
+          <mxGeometry height="30" width="120" y="15" as="geometry" />
+        </mxCell>
+        <mxCell id="Ryb9LxVY2io7Yhw6xAsQ-68" edge="1" parent="1" source="Ryb9LxVY2io7Yhw6xAsQ-67" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.466;entryY=1.027;entryDx=0;entryDy=0;entryPerimeter=0;" target="Ryb9LxVY2io7Yhw6xAsQ-54">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="455" y="400" />
+              <mxPoint x="256" y="400" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
