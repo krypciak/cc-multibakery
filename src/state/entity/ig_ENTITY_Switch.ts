@@ -24,8 +24,8 @@ function getState(this: ig.ENTITY.Switch, player?: StateKey) {
 }
 function setState(this: ig.ENTITY.Switch, state: Return) {
     if (state.pos) {
-        Vec3.assign(this.coll.pos, state.pos)
-        this.coll.baseZPos = this.coll.pos.z
+        this.setPos(state.pos.x, state.pos.y, state.pos.z)
+        this.coll.baseZPos = state.pos.z
     }
 
     if (state.isOn !== undefined && this.isOn != state.isOn) {

@@ -25,8 +25,8 @@ function setState(this: ig.ENTITY.DynamicPlatform, state: Return) {
     this.update()
 
     if (state.pos) {
-        Vec3.assign(this.coll.pos, state.pos)
-        this.coll.baseZPos = this.coll.pos.z
+        this.setPos(state.pos.x, state.pos.y, state.pos.z)
+        this.coll.baseZPos = state.pos.z
     }
 }
 

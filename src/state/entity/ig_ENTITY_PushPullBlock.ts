@@ -23,11 +23,7 @@ function getState(this: ig.ENTITY.PushPullBlock, player?: StateKey) {
 }
 function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
     if (state.pos) {
-        if (multi.server) {
-            Vec3.assign(this.coll.pos, state.pos)
-        } else {
-            this.setPos(state.pos.x, state.pos.y, state.pos.z)
-        }
+        this.setPos(state.pos.x, state.pos.y, state.pos.z)
         if (!ig.settingStateImmediately) {
             if (!this.pushPullable.soundHandle) {
                 this.pushPullable.soundHandle = sc.PushPullSounds.Loop.play(true)

@@ -48,7 +48,7 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
     }
 }
 function setState(this: ig.ENTITY.Crosshair, state: Return) {
-    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
+    if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 
     if (state.active !== undefined) {
         if (this.thrower instanceof dummy.DummyPlayer) {

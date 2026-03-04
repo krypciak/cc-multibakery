@@ -28,7 +28,7 @@ function getState(this: ig.ENTITY.Ball, player?: StateKey) {
     }
 }
 function setState(this: ig.ENTITY.Ball, state: Return) {
-    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
+    if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
     if (state.vel) Vec3.assign(this.coll.vel, state.vel)
 }
 

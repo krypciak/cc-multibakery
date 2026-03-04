@@ -23,7 +23,7 @@ function getState(this: ig.ENTITY.CombatantMarble, player?: StateKey) {
 }
 
 function setState(this: ig.ENTITY.CombatantMarble, state: Return) {
-    if (state.pos) Vec3.assign(this.coll.pos, state.pos)
+    if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
     this.updateAnim()
 }
 

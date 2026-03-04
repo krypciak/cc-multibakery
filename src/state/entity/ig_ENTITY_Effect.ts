@@ -49,7 +49,7 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
     }
 }
 function setState(this: ig.ENTITY.Effect, state: Return) {
-    if (!this.target && state.pos) Vec3.assign(this.coll.pos, state.pos)
+    if (!this.target && state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 
     if (state.rotateFace !== undefined) {
         this.rotateFace = state.rotateFace
