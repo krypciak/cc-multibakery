@@ -1,0 +1,67 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.5.2 Safari/537.36" version="29.5.2">
+  <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
+    <mxGraphModel dx="314" dy="498" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Server instance&lt;div&gt;server&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="120" x="370" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Map instance&lt;div&gt;&lt;div&gt;map-autumn/entrance&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="160" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Map instance&lt;div&gt;&lt;div&gt;map-autumn/path-1&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="350" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-6" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-1" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ak5tYpLGb_hfIFhe_n0J-2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="370" y="170" as="sourcePoint" />
+            <mxPoint x="420" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-7" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-1" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ak5tYpLGb_hfIFhe_n0J-3" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="370" y="170" as="sourcePoint" />
+            <mxPoint x="420" y="120" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Client instance&lt;div&gt;&lt;div&gt;localclient-apollorocks123&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="70" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-9" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Map instance&lt;div&gt;map-autumn/cubaum&lt;span style=&quot;background-color: transparent; text-wrap-mode: nowrap; color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px; text-align: start;&quot;&gt;%3CmxGraphModel%3E%3Croot%3E%3CmxCell%20id%3D%220%22%2F%3E%3CmxCell%20id%3D%221%22%20parent%3D%220%22%2F%3E%3CmxCell%20id%3D%222%22%20parent%3D%221%22%20style%3D%22rounded%3D0%3BwhiteSpace%3Dwrap%3Bhtml%3D1%3B%22%20value%3D%22Map%20instance%26lt%3Bdiv%26gt%3B%26lt%3Bdiv%26gt%3Bmap-autumn%2Fpath-1%26lt%3B%2Fdiv%26gt%3B%26lt%3B%2Fdiv%26gt%3B%22%20vertex%3D%221%22%3E%3CmxGeometry%20height%3D%2260%22%20width%3D%22160%22%20x%3D%22350%22%20y%3D%22160%22%20as%3D%22geometry%22%2F%3E%3C%2FmxCell%3E%3C%2Froot%3E%3C%2FmxGraphModel%3E&lt;/span&gt;&lt;span style=&quot;background-color: transparent; color: light-dark(rgb(0, 0, 0), rgb(255, 255, 255)); text-wrap-mode: nowrap; font-size: 0px;&quot;&gt;&lt;font color=&quot;rgba(0, 0, 0, 0)&quot; face=&quot;monospace&quot;&gt;map-autumn/cubaum&lt;/font&gt;&lt;/span&gt;&lt;span style=&quot;background-color: transparent; text-wrap-mode: nowrap; color: rgba(0, 0, 0, 0); font-family: monospace; font-size: 0px;&quot;&gt;map-autumn/cubaum&lt;/span&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="530" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-11" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-1" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ak5tYpLGb_hfIFhe_n0J-9" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="370" y="220" as="sourcePoint" />
+            <mxPoint x="420" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-14" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-2" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ak5tYpLGb_hfIFhe_n0J-8" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="410" y="220" as="sourcePoint" />
+            <mxPoint x="460" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-15" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Client instance&lt;div&gt;&lt;div&gt;localclient-Baguette2&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="250" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-16" edge="1" parent="1" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" target="ak5tYpLGb_hfIFhe_n0J-15" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="240" y="220" as="sourcePoint" />
+            <mxPoint x="460" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-17" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Client instance&lt;div&gt;&lt;div&gt;localclient-myfancyusername&lt;/div&gt;&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="530" y="250" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-18" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-9" style="endArrow=classic;html=1;rounded=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;exitX=0.5;exitY=1;exitDx=0;exitDy=0;" target="ak5tYpLGb_hfIFhe_n0J-17" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="410" y="220" as="sourcePoint" />
+            <mxPoint x="460" y="170" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

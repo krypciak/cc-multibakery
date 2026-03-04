@@ -1,0 +1,31 @@
+<mxfile host="Electron" agent="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/29.5.2 Chrome/142.0.7444.265 Electron/39.5.2 Safari/537.36" version="29.5.2">
+  <diagram id="prtHgNgQTEPvFCAcTncT" name="Page-1">
+    <mxGraphModel dx="984" dy="593" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Server instance&lt;div&gt;Will handle the rest&lt;/div&gt;" vertex="1">
+          <mxGeometry height="60" width="160" x="350" y="70" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-2" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="Map instance&lt;div style=&quot;text-align: left;&quot;&gt;Will capture:&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- map.&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- tmp.&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- session.&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="160" x="350" y="160" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-6" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-2" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="ak5tYpLGb_hfIFhe_n0J-1" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="370" y="170" as="sourcePoint" />
+            <mxPoint x="450" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-8" parent="1" style="rounded=0;whiteSpace=wrap;html=1;align=center;" value="Client instance&lt;div style=&quot;text-align: left;&quot;&gt;Will capture:&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- map.client.&lt;/div&gt;&lt;div style=&quot;text-align: left;&quot;&gt;- tmp.client.&lt;/div&gt;" vertex="1">
+          <mxGeometry height="90" width="160" x="350" y="280" as="geometry" />
+        </mxCell>
+        <mxCell id="ak5tYpLGb_hfIFhe_n0J-14" edge="1" parent="1" source="ak5tYpLGb_hfIFhe_n0J-8" style="endArrow=classic;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" target="ak5tYpLGb_hfIFhe_n0J-2" value="">
+          <mxGeometry height="50" relative="1" width="50" as="geometry">
+            <mxPoint x="410" y="220" as="sourcePoint" />
+            <mxPoint x="450" y="230" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
