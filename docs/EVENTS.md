@@ -11,6 +11,9 @@ Other actions initiated by the player and tracked by the system include:
 - Killing an `ig.ENTITY.Enemy` that has a `varIncrease` variable counter
 - Floor switches
 - Walking into `ig.ENTITY.TouchTrigger`
+- Entering a map. This means that `ig.ENTITY.EventTrigger` with `startCondition` set to `true` or `plot.line > something` 
+  will run in the client instance of the player that entered the map
 - etc.
 
-If an action does not properly trigger the redirection mechanism, it is considered a bug, since each entity requires manual redirection implementation.
+If an action does not properly trigger the redirection mechanism, it is considered a bug, since each entity requires manual redirection implementation.  
+
