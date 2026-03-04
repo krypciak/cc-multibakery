@@ -8,7 +8,7 @@ In `cc-multibakery`, there are 3 instance types:
 - Client instance
 
 Here's what the hierarchy looks like:  
-![Instance hierarchy](https://github.com/user-attachments/assets/24bcd80b-4dff-4823-b1a1-962e50c35ca7)
+![Instance hierarchy](/docs/drawio/server-architecture.svg)
 
 ## Server instance
 
