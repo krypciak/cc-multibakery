@@ -16,6 +16,11 @@ For example:
 ![Graph of game variables](/docs/drawio/game-vars.svg)
 
 
+Notes:
+- `PartyId` is a regular string
+- `party.has`, `party.alive` and `party.size` behaviour is kept unchanged from vanilla,  
+  this means that they operate only on vanilla party members
+
 Examples:
 - `multi.players.length` - count of players on the server
 - `multi.playersOnMap.length` - count of players on the current map

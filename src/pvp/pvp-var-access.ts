@@ -29,6 +29,15 @@ prestart(() => {
                         keys.slice(2)
                     )
                 }
+                if (keys[1] == 'points') {
+                    const partyId = keys[2]
+                    const party = multi.server.party.parties[partyId]
+                    if (!party) return
+                    return this.points[party.combatantParty]
+                }
+                if (keys[1] == 'lastWinPartyId') {
+                    return sc.pvp.lastWinPartyId
+                }
             }
             return this.parent(path, keys)
         },

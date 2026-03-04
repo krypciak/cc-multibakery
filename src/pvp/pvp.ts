@@ -22,6 +22,7 @@ declare global {
             hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
             points: PartialRecord<COMBATANT_PARTY1, number>
             justRearrangedHpBars?: boolean
+            lastWinPartyId?: string
 
             clearParties(this: this): void
             addParty(this: this, party: MultiParty): void
@@ -198,6 +199,7 @@ prestart(() => {
             this.parties = []
             this.points = {}
             this.map = undefined as any
+            this.lastWinPartyId = undefined
         },
         removePvpGuis() {
             runTasks(
@@ -253,7 +255,10 @@ prestart(() => {
             this.rearrangeHpBars()
 
             const onlyTeamAlive = this.getOnlyPartyAlive()
-            if (onlyTeamAlive) return this.showKO(onlyTeamAlive.combatantParty)
+            if (onlyTeamAlive) {
+                this.lastWinPartyId = onlyTeamAlive.id
+                return this.showKO(onlyTeamAlive.combatantParty)
+            }
         },
         showKO(combatantParty) {
             if (!this.multiplayerPvp) return this.parent(combatantParty)

@@ -9,6 +9,8 @@
 - Add player elemental overload remote state
 - Add `multi.parties` read only game variable
 - Add `multi.players` read only game variable
+- Add `pvp.points` read only variable
+- Add `pvp.lastWinPartyId` read only variable
 - Add `ByName` optional suffix to party var object `.combatants.{all,players,vanillaMembers}`
 - Add documentation
 
