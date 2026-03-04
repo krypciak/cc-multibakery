@@ -2,7 +2,7 @@
 
 ## Variable request flow
 
-When geting/seting a game variable, the request goes through a chain:
+When getting/setting a game variable, the request goes through a chain:
 
 ![Variable flow graph](/docs/drawio/game-var-flow.svg)
 
@@ -18,7 +18,7 @@ For example:
 
 Notes:
 - `PartyId` is a regular string
-- `party.has`, `party.alive` and `party.size` behaviour is kept unchanged from vanilla,  
+- `party.has`, `party.alive` and `party.size` behavior is kept unchanged from vanilla,  
   this means that they operate only on vanilla party members
 
 Examples:

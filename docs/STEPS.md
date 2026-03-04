@@ -6,7 +6,7 @@ Recommend to read [cc-krypek-lib](https://github.com/krypciak/cc-krypek-lib?tab=
 
 ### `ig.EVENT_STEP.ADD_PLAYERS_TO_PVP`
 
-Given players, retrives their parties and adds those parties to pvp.  
+Given players, retrieves their parties and adds those parties to pvp.  
 Pvp has to be off when calling this step.  
 
 Settings:
