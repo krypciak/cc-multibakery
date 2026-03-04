@@ -159,7 +159,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display server inst',
-                        description: ' ',
+                        description: 'Display the server instance. Not much to see there',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayServerInstance = Opts.serverDisplayServerInstance
@@ -170,7 +170,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display map insts',
-                        description: ' ',
+                        description: 'Display map instances',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayMaps = Opts.serverDisplayMaps
@@ -192,7 +192,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display inactive map insts',
-                        description: ' ',
+                        description: `Display maps instances that aren't updated`,
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayInactiveMaps = Opts.serverDisplayInactiveMaps
@@ -203,7 +203,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Display client insts',
-                        description: ' ',
+                        description: 'Display client instances',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayClientInstances = Opts.serverDisplayClientInstances
@@ -214,7 +214,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: false,
                         name: 'Display remote client insts',
-                        description: ' ',
+                        description: 'Display client instances of players connecting remotely',
                         changeEvent() {
                             if (multi.server) {
                                 multi.server.settings.displayRemoteClientInstances =
