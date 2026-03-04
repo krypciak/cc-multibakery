@@ -386,7 +386,7 @@
 
                     {
                         "type": "IF",
-                        "condition": "!pvp.active",
+                        "condition": "!pvp.multiActive",
                         "thenStep": [
                             { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.standingOn.pvp_select_block" } },
                             { "type": "CHANGE_VAR_ARRAY", "changeType": "intersect", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.type.Player" } },

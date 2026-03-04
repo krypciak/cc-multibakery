@@ -9,6 +9,10 @@
 - Add player elemental overload remote state
 - Add `multi.parties` read only game variable
 
+### Changed
+
+- `pvp.active` no longer true when multiplayer pvp active, use `pvp.multiActive` instead
+
 ### Fixed
 
 - Fix remote crash when remote player uses the nax art switch keybinding

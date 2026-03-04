@@ -13,6 +13,9 @@ prestart(() => {
         // onVarAccess different team points??
         onVarAccess(path, keys) {
             if (multi.server && keys[0] == 'pvp') {
+                if (keys[1] == 'multiActive') return this.multiplayerPvp
+                if (keys[1] == 'active' && this.multiplayerPvp) return false
+
                 if (keys[1] == 'parties') {
                     return ig.Vars.arrayVarAccess(this.parties.map(createPartyVarAccess), keys.slice(2))
                 }
@@ -26,7 +29,6 @@ prestart(() => {
                         keys.slice(2)
                     )
                 }
-                if (keys[1] == 'active' && this.multiplayerPvp) return true
             }
             return this.parent(path, keys)
         },
