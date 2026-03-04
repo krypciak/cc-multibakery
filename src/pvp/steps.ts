@@ -89,6 +89,7 @@ prestart(() => {
                 if (party) parties.add(party)
             }
             for (const party of parties) {
+                if (sc.pvp.parties.includes(party)) continue
                 sc.pvp.addParty(party)
             }
         },
