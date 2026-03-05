@@ -32,6 +32,7 @@
 - Fix perfect guard sound and effect not playing on remote
 - Fix conditional lights getting cleared when exiting a map
 - Fix players remaining a valid target for combat arts even after leaving the map
+- Fix combat art branch linking between players
 
 ## [0.7.4] 2026-01-22
 

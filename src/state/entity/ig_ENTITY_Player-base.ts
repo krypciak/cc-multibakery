@@ -65,7 +65,11 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
 
 export function setState(this: ig.ENTITY.Player, state: Return) {
     if (state.modelName !== undefined) {
-        const config = sc.party.models[state.modelName].config
+        let config: sc.PlayerConfig
+        if (this instanceof dummy.DummyPlayer && this.getClient(true)) {
+            const client = this.getClient()
+            config = client.inst.sc.party.models[state.modelName!].config
+        } else config = sc.party.models[state.modelName].config
         this.model.setConfig(config)
     }
 
