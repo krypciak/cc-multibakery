@@ -155,6 +155,10 @@ function registerOpts() {
                     },
                 },
                 server: {
+                    info: {
+                        type: 'INFO',
+                        name: `Advanced configuration below, don't touch if you don't know what you're doing!`
+                    },
                     serverDisplayServerInstance: {
                         type: 'CHECKBOX',
                         init: false,
