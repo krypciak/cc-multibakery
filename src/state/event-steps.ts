@@ -151,6 +151,8 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
                     eventAttached: call.eventAttached,
                 })
             }
+            ig.game.events.update()
+
             if (end) {
                 forceSetDone = true
                 call.setDone()

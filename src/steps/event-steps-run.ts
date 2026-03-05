@@ -3,7 +3,7 @@ export function runEvent(
     type: ig.EventRunType,
     callEntity?: ig.Entity,
     allData: Record<string, unknown> = {},
-    allInput?: ig.Event.Vars
+    allInput?: ig.Event.Vars,
 ) {
     const eventCall = new ig.EventCall(event, allData, type)
     eventCall.callEntity = callEntity

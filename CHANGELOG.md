@@ -33,6 +33,7 @@
 - Fix conditional lights getting cleared when exiting a map
 - Fix players remaining a valid target for combat arts even after leaving the map
 - Fix combat art branch linking between players
+- Fix remote camera detaching from player after prop interaction
 
 ## [0.7.4] 2026-01-22
 

@@ -55,4 +55,11 @@ prestart(() => {
             if (!isRemote(multi.server)) return this.parent()
         },
     })
+
+    sc.PropInteract.inject({
+        onInteraction() {
+            if (!isRemote(multi.server)) return this.parent()
+            return false
+        },
+    })
 }, 3)
