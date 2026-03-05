@@ -5,6 +5,7 @@ type Return = ReturnType<typeof getState>
 export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
     return {
         pos: memory.diffVec3(this.coll.pos),
+        baseZPos: memory.diff(this.coll.baseZPos),
         hidden: memory.diff(this._hidden),
         currentAnim: memory.diff(typeof this.currentAnim === 'string' ? this.currentAnim : undefined),
         currentAnimTimer: memory.onlyOnce(this.animState.timer),
@@ -18,8 +19,8 @@ export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
 export function setState(this: ig.AnimatedEntity, state: Return) {
     if (state.pos) {
         this.setPos(state.pos.x, state.pos.y, state.pos.z)
-        this.coll.baseZPos = state.pos.z
     }
+    if (state.baseZPos !== undefined) this.coll.baseZPos = state.baseZPos
 
     if (state.currentAnim !== undefined) {
         this.currentAnim = state.currentAnim

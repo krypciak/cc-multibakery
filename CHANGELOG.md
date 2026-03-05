@@ -34,6 +34,7 @@
 - Fix players remaining a valid target for combat arts even after leaving the map
 - Fix combat art branch linking between players
 - Fix remote camera detaching from player after prop interaction
+- Fix entity shadows not falling onto the ground when entity is midair
 
 ## [0.7.4] 2026-01-22
 
