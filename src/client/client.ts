@@ -282,6 +282,8 @@ export class Client extends InstanceUpdateable {
             ig.light.darknessHandles = mig.light.darknessHandles
             ig.light.screenFlashHandles = mig.light.screenFlashHandles
 
+            ig.weather = mig.weather
+
             linkClientVars(this, map.inst)
             linkTimersModel(this.inst, map.inst)
 
