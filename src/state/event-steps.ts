@@ -48,9 +48,12 @@ declare global {
 function serializeStepSettingsRecursive(data: any) {
     if (data && typeof data == 'object') {
         for (const key in data) {
-            const value = data[key]
+            let value = data[key]
             if (!value) continue
-            if (typeof value === 'object') {
+
+            if (typeof value === 'string' || value instanceof ig.LangLabel) {
+                data[key] = ig.LangLabel.bakeVars(value)
+            } else if (typeof value === 'object') {
                 if (value instanceof ig.Class) {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
