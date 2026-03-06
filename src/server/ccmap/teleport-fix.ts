@@ -45,8 +45,12 @@ export function teleportPlayerToProperMarker(
 prestart(() => {
     ig.Game.inject({
         isPlayerTouch(entity, player, dir) {
-            if (!multi.server) return this.parent(entity, player, dir)
+            if (!multi.server || ig.client) return this.parent(entity, player, dir)
 
+            if (player instanceof dummy.DummyPlayer) {
+                const client = player.getClient(true)
+                if (client) return runTask(client.inst, () => ig.game.isPlayerTouch(entity, player, dir))
+            }
             /* only thing changed is
              * player != this.playerEntity
              * replaced with
@@ -92,10 +96,19 @@ prestart(() => {
             this.coll.ignoreCollision = false
         },
     })
-    ig.ENTITY.TeleportGround.inject({
-        collideWith(entity, dir) {
+    function fixCollideWith<T extends ig.Entity>(this: T & { parent: T['collideWith'] }, entity: ig.Entity, dir: Vec2) {
+        if (!(entity instanceof dummy.DummyPlayer)) return this.parent(entity, dir)
+
+        const client = entity.getClient(true)
+        if (client) {
+            runTask(client.inst, () => this.parent(entity, dir))
+        } else {
             this.parent(entity, dir)
-            this.coll.ignoreCollision = false
-        },
-    })
+        }
+        this.coll.ignoreCollision = false
+    }
+
+    ig.ENTITY.TeleportGround.inject({ collideWith: fixCollideWith })
+    ig.ENTITY.Door.inject({ collideWith: fixCollideWith })
+    ig.ENTITY.TeleportStairs.inject({ collideWith: fixCollideWith })
 })

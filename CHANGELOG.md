@@ -38,6 +38,7 @@
 - Fix remote camera detaching from player after prop interaction
 - Fix entity shadows not falling onto the ground when entity is midair
 - Fix weather
+- Fix door, touch trigger and teleport stairs block events not running in client instance
 
 ## [0.7.4] 2026-01-22
 
