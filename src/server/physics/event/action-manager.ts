@@ -25,9 +25,16 @@ prestart(() => {
         setAction(action, keepState, noStateReset) {
             if (action && isPhysics(multi.server)) {
                 const player = ig.actionNextTriggeredBy || ig.client?.dummy
-                if (player) this.actionBoundToPlayer = player
+                if (player && (player as ig.ActorEntity) != this) this.actionBoundToPlayer = player
             }
             return this.parent(action, keepState, noStateReset)
+        },
+        cancelAction(...args) {
+            if (!this.currentAction || !this.actionBoundToPlayer) return this.parent(...args)
+
+            const client = this.actionBoundToPlayer.getClient(true)
+            if (!client) return this.parent(...args)
+            return runTask(client.inst, () => this.parent(...args))
         },
     })
 
