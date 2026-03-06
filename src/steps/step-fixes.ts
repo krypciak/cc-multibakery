@@ -15,22 +15,6 @@ prestart(() => {
 })
 
 prestart(() => {
-    /* TODO: is this really a solution? */
-    ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({
-        start(actor) {
-            if (!multi.server) return this.parent(actor)
-            assert(ig.game.playerEntity == undefined)
-            // @ts-expect-error
-            ig.game.playerEntity = {
-                hasCameraTarget: () => true,
-            }
-            this.parent(actor)
-            ig.game.playerEntity = undefined as any
-        },
-    })
-})
-
-prestart(() => {
     ig.EVENT_STEP.SHOW_PARALLAX.inject({
         start(data, eventCall) {
             if (!ig.client) return this.parent(data, eventCall)
