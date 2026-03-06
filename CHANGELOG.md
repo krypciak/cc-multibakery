@@ -14,6 +14,7 @@
 - Add `ByName` optional suffix to party var object `.combatants.{all,players,vanillaMembers}`
 - Add documentation
 - Bake vars into text in steps before sending then to the remote
+- Add `sc.FoodIconEntity` remote state
 
 ### Changed
 
