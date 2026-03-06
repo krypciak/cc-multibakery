@@ -17,9 +17,6 @@ export function setActionNextTriggeredBy(player: dummy.DummyPlayer) {
     assert(player)
     ig.actionNextTriggeredBy = player
 }
-export function unsetActionNextTriggeredBy() {
-    ig.actionNextTriggeredBy = undefined
-}
 
 prestart(() => {
     if (!PHYSICS) return
@@ -27,7 +24,8 @@ prestart(() => {
     ig.ActorEntity.inject({
         setAction(action, keepState, noStateReset) {
             if (action && isPhysics(multi.server)) {
-                this.actionBoundToPlayer = ig.actionNextTriggeredBy || ig.client?.dummy
+                const player = ig.actionNextTriggeredBy || ig.client?.dummy
+                if (player) this.actionBoundToPlayer = player
             }
             return this.parent(action, keepState, noStateReset)
         },

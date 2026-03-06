@@ -2,7 +2,7 @@ import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
 import type { EntityNetid } from '../../../misc/entity-netid'
 import { isPhysics } from '../is-physics-server'
-import { setActionNextTriggeredBy, unsetActionNextTriggeredBy } from './action-manager'
+import { setActionNextTriggeredBy } from './action-manager'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 declare global {
@@ -31,10 +31,7 @@ prestart(() => {
                     setActionNextTriggeredBy(this)
                 }
             }
-            const ret = this.parent(damagingEntity, attackInfo, animPart)
-            unsetActionNextTriggeredBy()
-
-            return ret
+            return this.parent(damagingEntity, attackInfo, animPart)
         },
         getLastDamagingEntity() {
             if (this.lastDamagedNetid) return ig.game.entitiesByNetid[this.lastDamagedNetid]
