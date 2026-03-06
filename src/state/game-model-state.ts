@@ -44,7 +44,7 @@ prestart(() => {
         },
         set(packet) {
             if (!packet.gameModelState) return
-            function setState(state: sc.GAME_MODEL_STATE) {
+            function setEntityState(state: sc.GAME_MODEL_STATE) {
                 if (state == sc.GAME_MODEL_STATE.GAME) {
                     sc.model.enterGame()
                 } else if (state == sc.GAME_MODEL_STATE.CUTSCENE) {
@@ -53,7 +53,7 @@ prestart(() => {
             }
 
             if (packet.gameModelState.map !== undefined) {
-                setState(packet.gameModelState.map)
+                setEntityState(packet.gameModelState.map)
             }
 
             if (packet.gameModelState.clients) {
@@ -62,7 +62,7 @@ prestart(() => {
                     const client = multi.server.clients.get(username)
                     assert(client)
 
-                    runTask(client.inst, () => setState(state))
+                    runTask(client.inst, () => setEntityState(state))
                 }
             }
         },

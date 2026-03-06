@@ -52,7 +52,7 @@ export function addGlobalStateHandler(handler: GlobalHandler) {
     globalHandlers.push(handler)
 }
 
-export function getStateUpdatePacket(dest: StateUpdatePacket = {}, client?: StateKey, cache?: StateUpdatePacket) {
+export function getEntityStateUpdatePacket(dest: StateUpdatePacket = {}, client?: StateKey, cache?: StateUpdatePacket) {
     for (const { get } of handlers) get(dest, client, cache)
 
     return dest

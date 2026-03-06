@@ -2,7 +2,7 @@ import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import {
     clearCollectedState,
     getGlobalStateUpdatePacket,
-    getStateUpdatePacket,
+    getEntityStateUpdatePacket,
     type StateKey,
 } from '../../state/states'
 import type { CCMap } from '../ccmap/ccmap'
@@ -89,7 +89,7 @@ export function sendPhysicsServerPacket() {
 }
 
 function getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey, cache?: StateUpdatePacket) {
-    runTask(map.inst, () => getStateUpdatePacket(dest, key, cache))
+    runTask(map.inst, () => getEntityStateUpdatePacket(dest, key, cache))
 }
 
 export interface PhysicsServerUpdatePacket {

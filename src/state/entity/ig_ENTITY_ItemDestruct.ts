@@ -12,8 +12,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.ItemDestruct, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.ItemDestruct, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
@@ -21,7 +21,7 @@ function getState(this: ig.ENTITY.ItemDestruct, player?: StateKey) {
     }
 }
 
-function setState(this: ig.ENTITY.ItemDestruct, state: Return) {
+function setEntityState(this: ig.ENTITY.ItemDestruct, state: Return) {
     if (state.dropped !== undefined) {
         if (state.dropped) {
             this.setDropped()
@@ -31,8 +31,8 @@ function setState(this: ig.ENTITY.ItemDestruct, state: Return) {
 
 prestart(() => {
     ig.ENTITY.ItemDestruct.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.ItemDestruct.create = () => {
         throw new Error('ig.ENTITY.ItemDestruct.create not implemented')

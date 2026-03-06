@@ -17,8 +17,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: sc.ItemDropEntity, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: sc.ItemDropEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     const dropType = Object.entriesT(sc.ITEM_DROP_TYPE).find(([_, v]) => v == this.dropType)![0]
@@ -33,14 +33,14 @@ function getState(this: sc.ItemDropEntity, player?: StateKey) {
     }
 }
 
-function setState(this: sc.ItemDropEntity, state: Return) {
+function setEntityState(this: sc.ItemDropEntity, state: Return) {
     if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 }
 
 prestart(() => {
     sc.ItemDropEntity.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     sc.ItemDropEntity.create = (netid, state: Return) => {
         if (state.dropType === undefined) return

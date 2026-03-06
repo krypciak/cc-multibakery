@@ -35,8 +35,8 @@ function setSkills(this: ig.ENTITY.Player, skills: Record<number, boolean>) {
     }
 }
 
-type Return = ReturnType<typeof getState>
-export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: StateMemory) {
+type Return = ReturnType<typeof getEntityState>
+export function getEntityState(this: ig.ENTITY.Player, player?: StateKey, memory?: StateMemory) {
     const chargeLevel = this.charging.time == -1 ? 0 : this.getCurrentChargeLevel() || 1
 
     memory ??= StateMemory.getBy(this, player)
@@ -48,7 +48,7 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
             : undefined
 
     return {
-        ...scPlayerBaseEntity.getState.call(this, memory),
+        ...scPlayerBaseEntity.getEntityState.call(this, memory),
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 
@@ -63,7 +63,7 @@ export function getState(this: ig.ENTITY.Player, player?: StateKey, memory?: Sta
     }
 }
 
-export function setState(this: ig.ENTITY.Player, state: Return) {
+export function setEntityState(this: ig.ENTITY.Player, state: Return) {
     if (state.modelName !== undefined) {
         let config: sc.PlayerConfig
         if (this instanceof dummy.DummyPlayer && this.getClient(true)) {
@@ -80,7 +80,7 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
         updateStats = true
     }
 
-    scPlayerBaseEntity.setState.call(this, state, updateStats)
+    scPlayerBaseEntity.setEntityState.call(this, state, updateStats)
 
     if (state.interactObject) {
         const entity = ig.game.entitiesByNetid[state.interactObject]
@@ -131,5 +131,5 @@ export function setState(this: ig.ENTITY.Player, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.Player.inject({ getState, setState })
+    ig.ENTITY.Player.inject({ getEntityState, setEntityState })
 })

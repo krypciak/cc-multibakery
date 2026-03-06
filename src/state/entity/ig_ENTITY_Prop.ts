@@ -12,18 +12,18 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Prop, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Prop, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {}
 }
-function setState(this: ig.ENTITY.Prop, state: Return) {}
+function setEntityState(this: ig.ENTITY.Prop, state: Return) {}
 
 prestart(() => {
     ig.ENTITY.Prop.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.Prop.create = () => {
         throw new Error('ig.ENTITY.Prop.create not implemented')

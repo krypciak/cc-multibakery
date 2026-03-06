@@ -13,15 +13,15 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.EnemyCounter, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.EnemyCounter, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
         postCount: memory.diff(this.postCount as u8),
     }
 }
-function setState(this: ig.ENTITY.EnemyCounter, state: Return) {
+function setEntityState(this: ig.ENTITY.EnemyCounter, state: Return) {
     if (state.postCount !== undefined && this.postCount != state.postCount) {
         this.postCount = state.postCount
         this.timer = this.MAX_FLASH_TIME
@@ -41,8 +41,8 @@ function setState(this: ig.ENTITY.EnemyCounter, state: Return) {
 
 prestart(() => {
     ig.ENTITY.EnemyCounter.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.EnemyCounter.create = () => {
         throw new Error('ig.ENTITY.EnemyCounter.create not implemented')

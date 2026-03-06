@@ -15,8 +15,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Ball, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Ball, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     const combatant = this.getCombatantRoot()
     assert(combatant)
@@ -27,7 +27,7 @@ function getState(this: ig.ENTITY.Ball, player?: StateKey) {
         pos: memory.diffVec3(this.coll.pos),
     }
 }
-function setState(this: ig.ENTITY.Ball, state: Return) {
+function setEntityState(this: ig.ENTITY.Ball, state: Return) {
     if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
     if (state.vel) Vec3.assign(this.coll.vel, state.vel)
 }
@@ -35,8 +35,8 @@ function setState(this: ig.ENTITY.Ball, state: Return) {
 prestart(() => {
     let ignoreNetidCall = false
     ig.ENTITY.Ball.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
         createNetid() {
             if (ignoreNetidCall) return
             return this.parent()

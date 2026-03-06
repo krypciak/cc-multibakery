@@ -13,15 +13,15 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.DynamicPlatform, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.DynamicPlatform, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
         pos: memory.diffVec3(this.coll.pos),
     }
 }
-function setState(this: ig.ENTITY.DynamicPlatform, state: Return) {
+function setEntityState(this: ig.ENTITY.DynamicPlatform, state: Return) {
     this.update()
 
     if (state.pos) {
@@ -32,8 +32,8 @@ function setState(this: ig.ENTITY.DynamicPlatform, state: Return) {
 
 prestart(() => {
     ig.ENTITY.DynamicPlatform.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.DynamicPlatform.create = () => {
         throw new Error('ig.ENTITY.DynamicPlatform.create not implemented')

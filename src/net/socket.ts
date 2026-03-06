@@ -305,6 +305,7 @@ export class SocketNetConnection implements NetConnection {
         for (const client of this.clients) {
             this.leave(client)
         }
+        // @ts-expect-error idk
         this.socket.removeAllListeners()
     }
 

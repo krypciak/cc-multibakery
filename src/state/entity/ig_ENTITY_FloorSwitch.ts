@@ -14,15 +14,15 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.FloorSwitch, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.FloorSwitch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
         isOn: memory.diff(this.isOn),
     }
 }
-function setState(this: ig.ENTITY.FloorSwitch, state: Return) {
+function setEntityState(this: ig.ENTITY.FloorSwitch, state: Return) {
     if (state.isOn !== undefined && this.isOn != state.isOn) {
         this.isOn = state.isOn
         const anim = this.isOn ? 'on' : 'off'
@@ -35,8 +35,8 @@ function setState(this: ig.ENTITY.FloorSwitch, state: Return) {
 
 prestart(() => {
     ig.ENTITY.FloorSwitch.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.FloorSwitch.create = () => {
         throw new Error('ig.ENTITY.FloorSwitch.create not implemented')

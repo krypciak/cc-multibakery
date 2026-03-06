@@ -16,11 +16,11 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: dummy.DummyPlayer, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: dummy.DummyPlayer, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
-        ...igEntityPlayer.getState.call(this, player, memory),
+        ...igEntityPlayer.getEntityState.call(this, player, memory),
 
         username: memory.diff(this.data.username),
         skin: memory.diff(this.currentSkinName ?? ''),
@@ -37,8 +37,8 @@ function getState(this: dummy.DummyPlayer, player?: StateKey) {
     }
 }
 
-function setState(this: dummy.DummyPlayer, state: Return) {
-    igEntityPlayer.setState.call(this, state)
+function setEntityState(this: dummy.DummyPlayer, state: Return) {
+    igEntityPlayer.setEntityState.call(this, state)
 
     if (state.skin !== undefined) {
         this.setSkin(state.skin, true)
@@ -63,8 +63,8 @@ function setState(this: dummy.DummyPlayer, state: Return) {
 
 prestart(() => {
     dummy.DummyPlayer.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
         createNetid() {
             if (isRemote(multi.server)) return
             return this.parent()

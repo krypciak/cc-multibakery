@@ -21,8 +21,8 @@ declare global {
     }
 }
 
-type Return = Exclude<ReturnType<typeof getState>, undefined>
-function getState(this: ig.ENTITY.Effect, player?: StateKey) {
+type Return = Exclude<ReturnType<typeof getEntityState>, undefined>
+function getEntityState(this: ig.ENTITY.Effect, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
@@ -48,7 +48,7 @@ function getState(this: ig.ENTITY.Effect, player?: StateKey) {
         group: memory.onlyOnce(undefinedIfFalsy(this.attachGroup)),
     }
 }
-function setState(this: ig.ENTITY.Effect, state: Return) {
+function setEntityState(this: ig.ENTITY.Effect, state: Return) {
     if (!this.target && state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 
     if (state.rotateFace !== undefined) {
@@ -80,8 +80,8 @@ let particles: ig.EntityConstructor[]
 
 prestart(() => {
     ig.ENTITY.Effect.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
         createNetid() {
             if (ig.ignoreEffectNetid) return
             return createNetidSpecialBit.call(this)

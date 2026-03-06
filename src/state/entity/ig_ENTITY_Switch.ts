@@ -13,8 +13,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Switch, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Switch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
@@ -22,7 +22,7 @@ function getState(this: ig.ENTITY.Switch, player?: StateKey) {
         isOn: memory.diff(this.isOn),
     }
 }
-function setState(this: ig.ENTITY.Switch, state: Return) {
+function setEntityState(this: ig.ENTITY.Switch, state: Return) {
     if (state.pos) {
         this.setPos(state.pos.x, state.pos.y, state.pos.z)
         this.coll.baseZPos = state.pos.z
@@ -45,8 +45,8 @@ function setState(this: ig.ENTITY.Switch, state: Return) {
 
 prestart(() => {
     ig.ENTITY.Switch.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.Switch.create = () => {
         throw new Error('ig.ENTITY.Switch.create not implemented')

@@ -9,8 +9,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.WallBase, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.WallBase, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     const timer = this.wallBlockers[0]?.timer
@@ -19,7 +19,7 @@ function getState(this: ig.ENTITY.WallBase, player?: StateKey) {
         timer: memory.diff(timer),
     }
 }
-function setState(this: ig.ENTITY.WallBase, state: Return) {
+function setEntityState(this: ig.ENTITY.WallBase, state: Return) {
     if (state.timer !== undefined) {
         for (const wallBlocker of this.wallBlockers) {
             wallBlocker.timer = state.timer
@@ -35,8 +35,8 @@ export type WallBaseReturn = Return
 
 prestart(() => {
     ig.ENTITY.WallBase.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
 
     ig.ENTITY.WallBlocker.inject({

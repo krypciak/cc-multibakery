@@ -13,15 +13,15 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.PushPullBlock, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.PushPullBlock, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
         pos: memory.diffVec3(this.coll.pos),
     }
 }
-function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
+function setEntityState(this: ig.ENTITY.PushPullBlock, state: Return) {
     if (state.pos) {
         this.setPos(state.pos.x, state.pos.y, state.pos.z)
         if (!ig.settingStateImmediately) {
@@ -34,8 +34,8 @@ function setState(this: ig.ENTITY.PushPullBlock, state: Return) {
 
 prestart(() => {
     ig.ENTITY.PushPullBlock.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')

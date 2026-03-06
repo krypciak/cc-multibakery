@@ -13,8 +13,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.BounceBlock, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.BounceBlock, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
@@ -22,7 +22,7 @@ function getState(this: ig.ENTITY.BounceBlock, player?: StateKey) {
     }
 }
 
-function setState(this: ig.ENTITY.BounceBlock, state: Return) {
+function setEntityState(this: ig.ENTITY.BounceBlock, state: Return) {
     if (state.blockState !== undefined) {
         this.blockState = state.blockState as 0 | 1 | 2
         if (ig.settingStateImmediately) {
@@ -45,8 +45,8 @@ function setState(this: ig.ENTITY.BounceBlock, state: Return) {
 
 prestart(() => {
     ig.ENTITY.BounceBlock.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.BounceBlock.create = () => {
         throw new Error('ig.ENTITY.BounceBlock.create not implemented')

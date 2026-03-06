@@ -15,18 +15,18 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.NPC, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.NPC, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         config: memory.diff(Object.values(this.configs).indexOf(this.defaultConfig) as i16),
         activeStateIdx: memory.diff(this.activeStateIdx as i16),
 
-        ...scActorEntity.getState.call(this, memory),
+        ...scActorEntity.getEntityState.call(this, memory),
     }
 }
 
-function setState(this: ig.ENTITY.NPC, state: Return) {
+function setEntityState(this: ig.ENTITY.NPC, state: Return) {
     if (state.config !== undefined) {
         const config = Object.values(this.configs)[state.config]
         this.setDefaultConfig(config)
@@ -50,13 +50,13 @@ function setState(this: ig.ENTITY.NPC, state: Return) {
         }
     }
 
-    scActorEntity.setState.call(this, state)
+    scActorEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
     ig.ENTITY.NPC.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.NPC.create = () => {
         throw new Error('ig.ENTITY.NPC.create not implemented')

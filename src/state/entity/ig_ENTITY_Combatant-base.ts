@@ -42,10 +42,10 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
+type Return = ReturnType<typeof getEntityState>
+export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
-        ...scActorEntity.getState.call(this, memory),
+        ...scActorEntity.getEntityState.call(this, memory),
 
         party: memory.diff(this.party as COMBATANT_PARTY),
         hp: memory.diff(this.params?.currentHp),
@@ -56,8 +56,8 @@ export function getState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     }
 }
 
-export function setState(this: ig.ENTITY.Combatant, state: Return) {
-    scActorEntity.setState.call(this, state)
+export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
+    scActorEntity.setEntityState.call(this, state)
 
     if (state.party !== undefined) {
         addCombatantParty(`unkonwn_party_${state.party}`, state.party)

@@ -14,15 +14,15 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.MultiHitSwitch, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.MultiHitSwitch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
         currentHits: memory.diff(this.currentHits as u4),
     }
 }
-function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
+function setEntityState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
     const hits = state.currentHits
     if (hits !== undefined && this.currentHits != hits) {
         const oldHits = this.currentHits
@@ -44,8 +44,8 @@ function setState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
 
 prestart(() => {
     ig.ENTITY.MultiHitSwitch.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.MultiHitSwitch.create = () => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')

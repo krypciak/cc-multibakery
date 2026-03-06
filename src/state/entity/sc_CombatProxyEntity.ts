@@ -18,24 +18,24 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: sc.CombatProxyEntity, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: sc.CombatProxyEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        ...scActorEntity.getState.call(this, memory),
+        ...scActorEntity.getEntityState.call(this, memory),
         proxyType: memory.onlyOnce(this.proxyType),
         combatant: memory.onlyOnce(this.combatant.netid),
     }
 }
-function setState(this: sc.CombatProxyEntity, state: Return) {
-    scActorEntity.setState.call(this, state)
+function setEntityState(this: sc.CombatProxyEntity, state: Return) {
+    scActorEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
     sc.CombatProxyEntity.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
 
     sc.CombatProxyEntity.create = (netid: EntityNetid, state: Return) => {

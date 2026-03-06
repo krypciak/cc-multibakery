@@ -15,27 +15,27 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Enemy, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Enemy, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        ...igEntityCombatant.getState.call(this, memory),
+        ...igEntityCombatant.getEntityState.call(this, memory),
 
         enemyType: memory.onlyOnce(this.enemyName),
     }
 }
 
-function setState(this: ig.ENTITY.Enemy, state: Return) {
+function setEntityState(this: ig.ENTITY.Enemy, state: Return) {
     if (this.enemyType && !this.enemyTypeInitialized) this.enemyType.initEntity(this)
 
-    igEntityCombatant.setState.call(this, state)
+    igEntityCombatant.setEntityState.call(this, state)
 }
 
 prestart(() => {
     ig.ENTITY.Enemy.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.Enemy.create = (netid: EntityNetid, state: Return) => {
         assert(state.enemyType)

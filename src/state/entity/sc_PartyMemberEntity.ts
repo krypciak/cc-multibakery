@@ -14,22 +14,22 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: sc.PartyMemberEntity, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: sc.PartyMemberEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
-        ...scPlayerBaseEntity.getState.call(this, memory),
+        ...scPlayerBaseEntity.getEntityState.call(this, memory),
     }
 }
 
-function setState(this: sc.PartyMemberEntity, state: Return) {
-    scPlayerBaseEntity.setState.call(this, state)
+function setEntityState(this: sc.PartyMemberEntity, state: Return) {
+    scPlayerBaseEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
     sc.PartyMemberEntity.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     sc.PartyMemberEntity.create = (netid: EntityNetid, state: Return) => {
         assert(state.modelName)

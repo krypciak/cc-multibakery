@@ -1,6 +1,6 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { poststart, prestart } from '../../../loading-stages'
-import type { getState } from '../../../state/entity/ig_ENTITY_Player-base'
+import type { getEntityState } from '../../../state/entity/ig_ENTITY_Player-base'
 import { assert } from '../../../misc/assert'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapTpInfo } from '../../server'
@@ -11,7 +11,7 @@ import { copy } from '../../../misc/object-copy'
 import './save-slot-button'
 import './pause-screen-save-button'
 
-type PlayerGetStateReturn = ReturnType<typeof getState>
+type PlayerGetStateReturn = ReturnType<typeof getEntityState>
 type PlayerState = PlayerGetStateReturn & MapTpInfo
 
 export interface MultibakerySaveData {
@@ -135,7 +135,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     savePlayerState(username: Username, player: ig.ENTITY.Player, tpInfo: MapTpInfo): PlayerState {
         this.currentData ??= {}
         this.currentData.players ??= {}
-        const playerState = copy(player.getState!() as PlayerGetStateReturn)
+        const playerState = copy(player.getEntityState!() as PlayerGetStateReturn)
         return (this.currentData.players[username] = {
             ...playerState,
             animAlpha: 1,

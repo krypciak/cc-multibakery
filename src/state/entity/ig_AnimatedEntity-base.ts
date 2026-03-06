@@ -1,8 +1,8 @@
 import type { StateMemory } from '../state-util'
 import { undefinedIfFalsy } from '../state-util'
 
-type Return = ReturnType<typeof getState>
-export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
+type Return = ReturnType<typeof getEntityState>
+export function getEntityState(this: ig.AnimatedEntity, memory: StateMemory) {
     return {
         pos: memory.diffVec3(this.coll.pos),
         baseZPos: memory.diff(this.coll.baseZPos),
@@ -16,7 +16,7 @@ export function getState(this: ig.AnimatedEntity, memory: StateMemory) {
     }
 }
 
-export function setState(this: ig.AnimatedEntity, state: Return) {
+export function setEntityState(this: ig.AnimatedEntity, state: Return) {
     if (state.pos) {
         this.setPos(state.pos.x, state.pos.y, state.pos.z)
     }

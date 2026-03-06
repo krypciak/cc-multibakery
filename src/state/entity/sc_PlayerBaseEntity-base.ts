@@ -24,12 +24,12 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-export function getState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory) {
+type Return = ReturnType<typeof getEntityState>
+export function getEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory) {
     /* model can be null for sc.PartyMemberEntity right after leaving the party */
     const model = this.model as typeof this.model | undefined
     return {
-        ...igEntityCombatant.getState.call(this, memory),
+        ...igEntityCombatant.getEntityState.call(this, memory),
 
         modelName: model && memory.diff(model.name),
 
@@ -48,8 +48,8 @@ export function getState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: 
     }
 }
 
-export function setState(this: ig.ENTITY.Player | sc.PartyMemberEntity, state: Return, updateStats = false) {
-    igEntityCombatant.setState.call(this, state)
+export function setEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, state: Return, updateStats = false) {
+    igEntityCombatant.setEntityState.call(this, state)
 
     if (state.spLevel !== undefined) {
         this.model.spLevel = state.spLevel

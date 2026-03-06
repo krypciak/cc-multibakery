@@ -13,8 +13,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: sc.FoodIconEntity, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: sc.FoodIconEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
@@ -26,7 +26,7 @@ function getState(this: sc.FoodIconEntity, player?: StateKey) {
     }
 }
 
-function setState(this: sc.FoodIconEntity, state: Return) {
+function setEntityState(this: sc.FoodIconEntity, state: Return) {
     if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 
     if (state.state !== undefined) this.setState(state.state, this.offset)
@@ -35,8 +35,8 @@ function setState(this: sc.FoodIconEntity, state: Return) {
 
 prestart(() => {
     sc.FoodIconEntity.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     sc.FoodIconEntity.create = (netid, state: Return) => {
         assert(state.combatant)

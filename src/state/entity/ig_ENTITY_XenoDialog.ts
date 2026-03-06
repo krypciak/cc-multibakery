@@ -13,8 +13,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.XenoDialog, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.XenoDialog, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         running: memory.diff(this.running),
@@ -22,7 +22,7 @@ function getState(this: ig.ENTITY.XenoDialog, player?: StateKey) {
     }
 }
 
-function setState(this: ig.ENTITY.XenoDialog, state: Return) {
+function setEntityState(this: ig.ENTITY.XenoDialog, state: Return) {
     this._initMembers()
 
     if (state.running !== undefined) {
@@ -58,8 +58,8 @@ function setState(this: ig.ENTITY.XenoDialog, state: Return) {
 
 prestart(() => {
     ig.ENTITY.XenoDialog.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.XenoDialog.create = () => {
         throw new Error('ig.ENTITY.XenoDialog.create not implemented')

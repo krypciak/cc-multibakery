@@ -12,15 +12,15 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Chest, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Chest, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         isOpen: memory.diff(this.isOpen),
     }
 }
 
-function setState(this: ig.ENTITY.Chest, state: Return) {
+function setEntityState(this: ig.ENTITY.Chest, state: Return) {
     if (state.isOpen !== undefined) {
         if (state.isOpen) {
             this.isOpen = true
@@ -34,8 +34,8 @@ function setState(this: ig.ENTITY.Chest, state: Return) {
 
 prestart(() => {
     ig.ENTITY.Chest.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.Chest.create = () => {
         throw new Error('ig.ENTITY.Chest.create not implemented')

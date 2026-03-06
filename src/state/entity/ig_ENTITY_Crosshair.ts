@@ -18,8 +18,8 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Crosshair, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     let isAiming = false
@@ -47,7 +47,7 @@ function getState(this: ig.ENTITY.Crosshair, player?: StateKey) {
         circleGlow: memory.diff(justSetCircleGlow),
     }
 }
-function setState(this: ig.ENTITY.Crosshair, state: Return) {
+function setEntityState(this: ig.ENTITY.Crosshair, state: Return) {
     if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 
     if (state.active !== undefined) {
@@ -81,8 +81,8 @@ function setState(this: ig.ENTITY.Crosshair, state: Return) {
 
 prestart(() => {
     ig.ENTITY.Crosshair.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
         createNetid() {
             if (isRemote(multi.server)) return
             return this.parent()

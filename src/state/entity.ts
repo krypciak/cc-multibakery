@@ -50,8 +50,8 @@ declare global {
 }
 
 interface StateEntityBase {
-    getState(player?: StateKey, cache?: object): object | undefined
-    setState(value: object): void
+    getEntityState(player?: StateKey, cache?: object): object | undefined
+    setEntityState(value: object): void
 }
 
 function isStateEntity(e: ig.Entity): e is StateEntityBase & ig.Entity {
@@ -73,7 +73,7 @@ prestart(() => {
             for (const entity of ig.game.entities) {
                 if (entity._killed) continue
                 if (isStateEntity(entity)) {
-                    let state = entity.getState(client, cache?.states?.[entity.netid])
+                    let state = entity.getEntityState(client, cache?.states?.[entity.netid])
                     if (!state) continue
                     state = cleanRecord(state)
                     if (!state) continue
@@ -105,7 +105,7 @@ prestart(() => {
                 }
                 assert(entity)
                 assert(isStateEntity(entity))
-                entity.setState(data)
+                entity.setEntityState(data)
             }
         },
     })

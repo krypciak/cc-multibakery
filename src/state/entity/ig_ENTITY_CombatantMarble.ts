@@ -14,23 +14,23 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.CombatantMarble, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.CombatantMarble, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
         pos: memory.diffVec3(this.coll.pos),
     }
 }
 
-function setState(this: ig.ENTITY.CombatantMarble, state: Return) {
+function setEntityState(this: ig.ENTITY.CombatantMarble, state: Return) {
     if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
     this.updateAnim()
 }
 
 prestart(() => {
     ig.ENTITY.CombatantMarble.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.CombatantMarble.create = (netid: EntityNetid, state: Return) => {
         const settings: ig.ENTITY.CombatantMarble.Settings = {

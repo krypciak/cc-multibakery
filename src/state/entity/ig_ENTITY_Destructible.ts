@@ -13,23 +13,23 @@ declare global {
     }
 }
 
-type Return = ReturnType<typeof getState>
-function getState(this: ig.ENTITY.Destructible, player?: StateKey) {
+type Return = ReturnType<typeof getEntityState>
+function getEntityState(this: ig.ENTITY.Destructible, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        ...igAnimatedEntity.getState.call(this, memory),
+        ...igAnimatedEntity.getEntityState.call(this, memory),
     }
 }
 
-function setState(this: ig.ENTITY.Destructible, state: Return) {
-    igAnimatedEntity.setState.call(this, state)
+function setEntityState(this: ig.ENTITY.Destructible, state: Return) {
+    igAnimatedEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
     ig.ENTITY.Destructible.inject({
-        getState,
-        setState,
+        getEntityState,
+        setEntityState,
     })
     ig.ENTITY.Destructible.create = () => {
         throw new Error('ig.ENTITY.Destructible.create not implemented')
