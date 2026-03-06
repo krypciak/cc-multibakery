@@ -59,7 +59,7 @@ prestart(() => {
             const entities = ig.Event.getArray(this.players)
             const players = entities.filter(entity => entity instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]
 
-            const clients = players.map(player => player.getClient())
+            const clients = players.map(player => player.getClient(true)!).filter(Boolean)
             const eventCalls = runTasks(
                 clients.map(client => client.inst),
                 i => {
