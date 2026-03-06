@@ -28,7 +28,7 @@ declare global {
             addParty(this: this, party: MultiParty): void
             startMultiplayerPvp(this: this, winPoints: number): void
             removeRoundGuis(this: this): void
-            getPlayerInstanceRelation(this: this, player: dummy.DummyPlayer): 'same' | 'ally' | 'enemy'
+            getPlayerInstanceRelation(this: this, combatant: ig.ENTITY.Combatant): 'same' | 'ally' | 'enemy'
             getOnlyPartyAlive(this: this): MultiParty | undefined
             pushHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
             eraseHpBar(this: this, bar: sc.SUB_HP_EDITOR.PVP): void
@@ -112,14 +112,14 @@ prestart(() => {
                 return partiesAlive[0]
             }
         },
-        getPlayerInstanceRelation(player) {
+        getPlayerInstanceRelation(combatant) {
             const instancePlayer = ig.game.playerEntity
             if (!ig.game.playerEntity) return 'enemy'
 
             assert(instancePlayer instanceof dummy.DummyPlayer)
-            if (ig.game.playerEntity == player) return 'same'
+            if (ig.game.playerEntity == combatant) return 'same'
 
-            return instancePlayer.party == player.party ? 'ally' : 'enemy'
+            return instancePlayer.party == combatant.party ? 'ally' : 'enemy'
         },
         pushHpBar(bar) {
             bar.order = ig.pvpHpBarOrder++

@@ -154,14 +154,13 @@ declare global {
 
 prestart(() => {
     sc.SUB_HP_EDITOR.PVP.inject({
-        init(player) {
-            this.parent(player)
+        init(combatant) {
+            this.parent(combatant)
             if (!multi.server) return
-            assert(player instanceof dummy.DummyPlayer)
 
             sc.pvp.pushHpBar(this)
 
-            this.relation = sc.pvp.getPlayerInstanceRelation(player)
+            this.relation = sc.pvp.getPlayerInstanceRelation(combatant)
             if (this.relation == 'same' || this.relation == 'ally') {
                 this.setAlign(ig.GUI_ALIGN.X_LEFT, ig.GUI_ALIGN.Y_BOTTOM)
                 this.setPos(17, this.hook.pos.y)
@@ -169,14 +168,11 @@ prestart(() => {
                 this.lowerColor = '#12d711'
                 this.upperColor = '#7aff7a'
             }
+            const text = combatant instanceof dummy.DummyPlayer ? combatant.data.username : combatant.name!
 
-            this.usernameText = new ig.TextBlock(
-                sc.fontsystem.tinyFont,
-                wrapColor(player.data.username, COLOR.YELLOW),
-                {
-                    maxWidth: undefined,
-                }
-            )
+            this.usernameText = new ig.TextBlock(sc.fontsystem.tinyFont, wrapColor(text, COLOR.YELLOW), {
+                maxWidth: undefined,
+            })
         },
         remove(immediately) {
             this.parent(immediately)
