@@ -32,7 +32,11 @@ function setEntityState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
                 ig.SoundHelper.playAtEntity(this.sounds.hit, this)
                 ig.SoundHelper.playAtEntity(this.sounds.bing, this)
             }
-        } else this.setOff()
+        } else {
+            this.setOff()
+            if (this.animSheet.hasAnimation('tmpOnEnd')) this.setCurrentAnim('tmpOnEnd', true, this.getOffAnim())
+            else this.setCurrentAnim(this.getOffAnim())
+        }
     }
 }
 
