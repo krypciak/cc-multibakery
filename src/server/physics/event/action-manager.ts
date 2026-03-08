@@ -23,9 +23,9 @@ prestart(() => {
 
     ig.ActorEntity.inject({
         setAction(action, keepState, noStateReset) {
-            if (action && isPhysics(multi.server)) {
+            if (action && isPhysics(multi.server) && !(this instanceof dummy.DummyPlayer)) {
                 const player = ig.actionNextTriggeredBy || ig.client?.dummy
-                if (player && (player as ig.ActorEntity) != this) this.actionBoundToPlayer = player
+                if (player) this.actionBoundToPlayer = player
             }
             return this.parent(action, keepState, noStateReset)
         },
