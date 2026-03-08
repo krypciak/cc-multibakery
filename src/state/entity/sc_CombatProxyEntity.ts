@@ -66,7 +66,7 @@ prestart(() => {
 
         return entity
     }
-    registerNetEntity({ entityClass: sc.CombatProxyEntity })
+    registerNetEntity({ entityClass: sc.CombatProxyEntity, applyPriority: 1500 /* after ig.ENTITY.Enemy */ })
 
     if (REMOTE) {
         sc.CombatProxyEntity.inject({
