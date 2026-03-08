@@ -50,6 +50,8 @@ prestart(() => {
         init() {
             this.parent()
             this.parties = []
+            this.hpBars = {}
+            this.roundGuis = {}
         },
         clearParties() {
             assert(multi.server)

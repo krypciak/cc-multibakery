@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix crash when remote player enters after a pvp battle is done
+
 ## [0.7.5] 2026-03-06
 
 ### Added
