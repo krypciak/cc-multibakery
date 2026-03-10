@@ -1,4 +1,3 @@
-import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
@@ -95,7 +94,11 @@ prestart(() => {
             )
             ig.ignoreEffectNetid = false
 
-            assert(entity.netid)
+            if (entity.netid === undefined) {
+                console.warn(
+                    `sc.Combat#showHitEffect entity (${findClassName(entity)}) is not an net entity! remote clients will crash!`
+                )
+            }
             runTaskInMapInst(() => {
                 ig.entityHitPackets ??= []
                 ig.entityHitPackets.push({
