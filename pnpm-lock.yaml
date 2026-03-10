@@ -32,6 +32,9 @@ importers:
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0
+      cc-jetpack-widget:
+        specifier: github:krypciak/cc-jetpack-widget
+        version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
         version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c
@@ -451,6 +454,10 @@ packages:
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0}
     version: 1.0.8
+
+  cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35}
+    version: 1.0.5
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c}
@@ -1344,6 +1351,8 @@ snapshots:
   cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0: {}
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0: {}
+
+  cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35: {}
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c: {}
 

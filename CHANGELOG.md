@@ -10,7 +10,8 @@
 - Fix ig.ENTITY.OneTimeSwitch not switching to off animation on remote
 - Fix SHOW_EXTERN_ANIM anims syncing only for the current player on remote
 - Fix player actions appearing in a different map after another player attacks him and changes maps
-- Fix crash when player exits in the middle of cobmat with complex enemies
+- Fix crash when player exits in the middle of combat with complex enemies
+- Fix jetpack mod compatibly
 
 ## [0.7.5] 2026-03-06
 

@@ -24,6 +24,7 @@
         "bun": "^1.3.10",
         "cc-bundler": "github:krypciak/cc-bundler",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
+        "cc-jetpack-widget": "github:krypciak/cc-jetpack-widget",
         "cc-krypek-lib": "github:krypciak/cc-krypek-lib",
         "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
         "ccmoddb": "github:CCDirectLink/CCModDB",
