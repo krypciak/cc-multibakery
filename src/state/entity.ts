@@ -40,6 +40,7 @@ import './entity/ig_ENTITY_Prop'
 import './entity/sc_FoodIconEntity'
 import './entity/ig_ENTITY_Door'
 import './entity/sc_BombEntity'
+import './entity/ig_ENTITY_BombPanel'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 

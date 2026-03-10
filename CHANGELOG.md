@@ -8,6 +8,7 @@
 
 - Add remote ig.ENTITY.Door animation
 - Add sc.BombEntity remote state
+- Add ig.ENTITY.BombPanel remote state
 
 ### Fixed
 
