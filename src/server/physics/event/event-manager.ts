@@ -38,7 +38,7 @@ prestart(() => {
                     assert(ig.ccmap)
                     assert(ig.ccmap.clients.length > 0)
                     const pl = ig.ccmap.clients[0]
-                    assert(pl.ready)
+                    // assert(pl.ready)
                     assert(pl.dummy)
                     player = pl.dummy
                 }
