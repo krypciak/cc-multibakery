@@ -38,6 +38,7 @@ import './entity/ig_ENTITY_XenoDialog'
 import './entity/sc_PartyMemberEntity'
 import './entity/ig_ENTITY_Prop'
 import './entity/sc_FoodIconEntity'
+import './entity/ig_ENTITY_Door'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 

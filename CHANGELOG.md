@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add remote ig.ENTITY.Door animation
+
 ### Fixed
 
 - Fix crash when remote player enters after a pvp battle is done
