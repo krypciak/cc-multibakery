@@ -39,6 +39,7 @@ import './entity/sc_PartyMemberEntity'
 import './entity/ig_ENTITY_Prop'
 import './entity/sc_FoodIconEntity'
 import './entity/ig_ENTITY_Door'
+import './entity/sc_BombEntity'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
 
