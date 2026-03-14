@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix map interact entries sometimes duplicating
+
 ## [0.7.6] 2026-03-11
 
 ### Added

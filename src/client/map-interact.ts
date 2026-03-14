@@ -104,6 +104,9 @@ prestart(() => {
             broadcastFunction(
                 () => sc.mapInteract.addEntry(entry),
                 () => {
+                    const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
+                    if (hasAlready) return
+
                     const newEntry = entry._instanceId == this._instanceId ? entry : cloneMapInteractEntry(entry)
                     if (newEntry) this.parent(newEntry)
                 }
