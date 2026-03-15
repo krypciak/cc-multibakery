@@ -2,7 +2,7 @@ import type { Server, IncomingMessage, ServerResponse } from 'http'
 import type { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server-info'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
-import { getCCBundlerHttpModules } from './cc-bundler-http-modules'
+import { getCCBundlerHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 
 export class PhysicsHttpServer {

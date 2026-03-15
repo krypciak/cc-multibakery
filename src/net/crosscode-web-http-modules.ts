@@ -1,4 +1,4 @@
-import type { HandleFunction } from 'cc-bundler/src/http-server/http-module-mod-proxy'
+import type { HandleFunction } from 'crosscode-web/src/http-server/http-module-mod-proxy'
 import { assert } from '../misc/assert'
 
 export interface CCBundlerModuleOptions {
@@ -16,7 +16,7 @@ export async function getCCBundlerHttpModules(options: CCBundlerModuleOptions = 
 
 async function modProxy() {
     assert(PHYSICSNET)
-    const modProxy = PHYSICSNET && (await import('cc-bundler/src/http-server/http-module-mod-proxy'))
+    const modProxy = PHYSICSNET && (await import('crosscode-web/src/http-server/http-module-mod-proxy'))
 
     modProxy.setAllowedDbs([
         'https://raw.githubusercontent.com/CCDirectLink/CCModDB/stable',
@@ -30,7 +30,7 @@ async function modProxy() {
 
 async function liveModUpdates() {
     assert(PHYSICSNET)
-    const liveModUpdates = PHYSICSNET && (await import('cc-bundler/src/http-server/http-module-live-mod-updates'))
+    const liveModUpdates = PHYSICSNET && (await import('crosscode-web/src/http-server/http-module-live-mod-updates'))
 
     const esTarget = 'es2024'
     const sourceMap = true

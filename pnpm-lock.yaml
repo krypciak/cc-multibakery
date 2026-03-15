@@ -26,15 +26,12 @@ importers:
       bun:
         specifier: ^1.3.10
         version: 1.3.10
-      cc-bundler:
-        specifier: github:krypciak/cc-bundler
-        version: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0
       cc-jetpack-widget:
         specifier: github:krypciak/cc-jetpack-widget
-        version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35
+        version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
         version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c
@@ -47,6 +44,9 @@ importers:
       ccmodmanager:
         specifier: github:CCDirectLink/CCModManager
         version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/546a1a11adf7e929a1fa7bfaf8525ffb644880cb
+      crosscode-web:
+        specifier: github:krypciak/crosscode-web
+        version: https://codeload.github.com/krypciak/crosscode-web/tar.gz/1d93727da446b9343155935e29cfebe47254a9f1
       crossnode:
         specifier: github:krypciak/crossnode
         version: https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374
@@ -447,16 +447,12 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0}
-    version: 1.0.0
-
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0}
     version: 1.0.8
 
-  cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35}
+  cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f}
     version: 1.0.5
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c:
@@ -516,6 +512,10 @@ packages:
   cross-spawn@7.0.6:
     resolution: {integrity: sha512-uV2QOWP2nWzsy2aMp8aRibhi9dlzF5Hgh5SHaB9OiTGEyDTiJJyx0uy51QXdyWbtAHNua4XJzUKca3OzKUd3vA==}
     engines: {node: '>= 8'}
+
+  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/1d93727da446b9343155935e29cfebe47254a9f1:
+    resolution: {tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/1d93727da446b9343155935e29cfebe47254a9f1}
+    version: 1.0.0
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374:
     resolution: {tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374}
@@ -1348,11 +1348,9 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  cc-bundler@https://codeload.github.com/krypciak/cc-bundler/tar.gz/dc0b0ec4197c857c6014242e8d222c7e6eff4bd0: {}
-
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0: {}
 
-  cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/67f8f84a69f8b04bec9a6ed03974d448502b6a35: {}
+  cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f: {}
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c: {}
 
@@ -1414,6 +1412,8 @@ snapshots:
       path-key: 3.1.1
       shebang-command: 2.0.0
       which: 2.0.2
+
+  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/1d93727da446b9343155935e29cfebe47254a9f1: {}
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374: {}
 
