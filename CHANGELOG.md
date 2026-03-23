@@ -12,6 +12,7 @@
 ### Fixed
 
 - Fix map interact entries sometimes duplicating
+- Return null when accessing `player.username` on map instance instead of crashing
 
 ## [0.7.6] 2026-03-11
 

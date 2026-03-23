@@ -1,6 +1,14 @@
 import { prestart } from '../loading-stages'
 
 prestart(() => {
+    sc.PlayerModel.inject({
+        onVarAccess(path, keys) {
+            if (multi.server) {
+                if (keys[0] == 'player' && keys[1] == 'username') return null
+            }
+            return this.parent(path, keys)
+        },
+    })
     dummy.PlayerModel.inject({
         onVarAccess(path, keys) {
             if (multi.server) {
