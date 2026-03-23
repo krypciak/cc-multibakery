@@ -36,11 +36,10 @@ declare global {
 prestart(() => {
     ig.EVENT_STEP.FOR_EACH_PLAYER = ig.EventStepBase.extend({
         init(settings) {
-            this.players = settings.players
+            this.players = settings.players ?? { varName: 'game.entities.type.Player' }
             this.noWait = settings.noWait
             this.indexVarName = settings.indexVarName
 
-            assert(settings.players, 'ig.EVENT_STEP.FOR_EACH_PLAYER "players" missing!')
             assert(settings.steps, 'ig.EVENT_STEP.FOR_EACH_PLAYER "steps" missing!')
             this.event = new ig.Event({ steps: settings.steps })
         },
