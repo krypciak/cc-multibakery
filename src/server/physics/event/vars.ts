@@ -54,9 +54,11 @@ prestart(() => {
             const client = player.getClient(true)
             if (!client) return this.parent(path)
 
-            const newPath = ig.VarPathResolver.resolve(path)
-            if (!newPath) return null
-            return runTask(client.inst, () => ig.vars._getVariable(newPath, true))
+            return runTask(client.inst, () => {
+                const newPath = ig.VarPathResolver.resolve(path)
+                if (!newPath) return null
+                return ig.vars._getVariable(newPath, true)
+            })
         },
     })
 })
