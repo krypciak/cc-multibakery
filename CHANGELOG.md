@@ -10,6 +10,7 @@
 - Remove `tmp.client` and `map.client` special access variables. Use `tmp.clients[player.username]` instead.
 - Make the default argument `players` in `FOR_EACH_PLAYER` be `{ "varName": "game.entities.type.Player" }`
 - Simplify new variables graph in docs/GAME-VARIABLED.md
+- Let each client have their own timers
 
 ### Fixed
 

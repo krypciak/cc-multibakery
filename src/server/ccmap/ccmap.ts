@@ -55,7 +55,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     private link() {
-        const toLink = [linkMapVars, linkOptions, linkMapModel, linkTimersModel]
+        const toLink = [linkMapVars, linkOptions, linkMapModel]
         for (const link of toLink) link(this.inst, multi.server.inst)
     }
 
@@ -183,11 +183,4 @@ function linkMapModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorIn
     to.areas = from.areas
     to.areasVisited = from.areasVisited
     to.activeLandmarks = from.activeLandmarks
-}
-
-export function linkTimersModel(toInst: InstanceinatorInstance, fromInst: InstanceinatorInstance) {
-    const to = toInst.sc.timers
-    const from = fromInst.sc.timers
-
-    to.timers = from.timers
 }

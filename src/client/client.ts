@@ -1,6 +1,5 @@
 import { assert } from '../misc/assert'
 import type { CCMap } from '../server/ccmap/ccmap'
-import { linkTimersModel } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../dummy/box/box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
@@ -285,7 +284,6 @@ export class Client extends InstanceUpdateable {
             ig.weather = mig.weather
 
             linkClientVars(this, map.inst)
-            linkTimersModel(this.inst, map.inst)
 
             removeAddon(ig.screenBlur, ig.game)
             ig.screenBlur = mig.screenBlur
