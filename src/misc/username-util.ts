@@ -5,7 +5,9 @@ export function isUsernameValid(username: Username): boolean {
         username.length >= 3 &&
         username.length <= 12 &&
         /^[a-zA-Z0-9-_ ]+$/.test(username) &&
-        (!sc.party || !sc.party.models[username])
+        (!sc.party || !sc.party.models[username]) &&
+        username != 'null' &&
+        username != 'undefined'
     )
 }
 
