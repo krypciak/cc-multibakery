@@ -8,7 +8,11 @@ When getting/setting a game variable, the request goes through a chain:
 
 For example:
 - if a client instance requests a variable `tmp.var`, the map instance will capture the request and return the correct value.  
-- all clients on the same map share all variables except `map.client.` and `tmp.client.`
+- all clients on the same map share all variables
+- if a client instance requests a variable `plot.line`, the server instance will capture the request.
+- if you want each client instance to have their own unique variable storage, use:  
+  `tmp.clients[player.username].something` - no special rules apply here.  
+   When run on a client instance, `player.username` returns the client username, otherwise `null`.  
 
 
 ## New variables

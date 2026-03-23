@@ -524,13 +524,13 @@
                 "mapId": 35
             }
         },
-        { "type": "Enemy", "x": 1315, "y": 233, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 51, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "meerkat-alt", "group": "cage", "varIncrease": "tmp.client.score" } } },
+        { "type": "Enemy", "x": 1315, "y": 233, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 51, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "meerkat-alt", "group": "cage", "varIncrease": "tmp.clients[player.username].score" } } },
         { "type": "Enemy", "x": 1050, "y": 470, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 3, "enemyInfo": { "type": "baggy-kun", "face": "SOUTH", "party": "ENEMY" } } },
         { "type": "Enemy", "x": 1185, "y": 210, "level": 2, "settings": { "name": "bot1", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 18 } },
         { "type": "Enemy", "x": 1151, "y": 211, "level": 2, "settings": { "name": "bot2", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 19 } },
         { "type": "Enemy", "x": 1113, "y": 210, "level": 2, "settings": { "name": "bot3", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_NOT_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 20 } },
         { "type": "Enemy", "x": 1016, "y": 211, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 52, "enemyInfo": { "party": "PLAYER", "level": 1, "face": "SOUTH", "state": "", "type": "heat.special.brew-machine" } } },
-        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage", "varIncrease": "tmp.client.score" } } }
+        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage", "varIncrease": "tmp.clients[player.username].score" } } }
     ],
     "layer": [
         {

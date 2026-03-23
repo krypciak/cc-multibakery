@@ -7,6 +7,7 @@
 ### Changed
 
 - Read only var `multi.players` now returns an array of player entities instead of player models
+- Remove `tmp.client` and `map.client` special access variables. Use `tmp.clients[player.username]` instead.
 - Simplify new variables graph in docs/GAME-VARIABLED.md
 
 ### Fixed
