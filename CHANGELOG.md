@@ -7,6 +7,7 @@
 ### Changed
 
 - Read only var `multi.players` now returns an array of player entities instead of player models
+- Simplify new variables graph in docs/GAME-VARIABLED.md
 
 ### Fixed
 
