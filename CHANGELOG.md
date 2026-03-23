@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Read only var `multi.players` now returns an array of player entities instead of player models
+
 ### Fixed
 
 - Fix map interact entries sometimes duplicating

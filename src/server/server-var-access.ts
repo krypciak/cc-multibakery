@@ -23,15 +23,15 @@ class MultiVarAccessor implements ig.Vars.Accessor {
                 const name = keys[2]
                 const client = multi.server.clients.get(name)
                 if (!client) return
-                const model = client.inst.sc.model.player
-                return ig.Vars.forwardVar(model, keys, 3)
+                const player = client.dummy
+                return ig.Vars.forwardVar(player, keys, 3)
             } else {
                 const clients: Client[] = onMap
                     ? runTaskInMapInst(() => ig.ccmap!.clients)
                     : [...multi.server.clients.values()]
 
-                const playerModels = clients.map(c => c.dummy?.model).filter(Boolean)
-                return ig.Vars.arrayVarAccess(playerModels, keys.slice(2))
+                const players = clients.map(c => c.dummy).filter(Boolean)
+                return ig.Vars.arrayVarAccess(players, keys.slice(2))
             }
         }
 

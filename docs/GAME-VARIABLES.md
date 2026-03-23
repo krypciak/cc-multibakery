@@ -24,9 +24,9 @@ Notes:
 Examples:
 - `multi.players.length` - count of players on the server
 - `multi.playersOnMap.length` - count of players on the current map
-- `multi.players[0].player.username` - username of the first player on the server
-- `multi.players[0].player.entity.username` - username of the first player on the server
-- `multi.playersByName[tmp.username].item.3.amount` - amount of `Sweet Berry Tea` (id 3)
+- `multi.players[0].username` - username of the first player on the server
+- `multi.players[0].model.player.username` - username of the first player on the server
+- `multi.playersByName[tmp.username].model.item.3.amount` - amount of `Sweet Berry Tea` (id 3)
   that player with username located in `tmp.username` has
 - `multi.parties.length` - amount of parties
 - `multi.parties[0].title` - title of the first party
