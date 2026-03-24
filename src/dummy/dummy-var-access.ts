@@ -3,16 +3,15 @@ import { prestart } from '../loading-stages'
 prestart(() => {
     sc.PlayerModel.inject({
         onVarAccess(path, keys) {
-            if (multi.server) {
-                if (keys[0] == 'player' && keys[1] == 'username') return null
-            }
+            if (keys[0] == 'player' && keys[1] == 'username') return null
             return this.parent(path, keys)
         },
     })
     dummy.PlayerModel.inject({
         onVarAccess(path, keys) {
-            if (multi.server) {
-                if (keys[0] == 'player' && keys[1] == 'username') return this.dummy.data.username
+            if (keys[0] == 'player' && keys[1] == 'username') {
+                if (multi.server) return this.dummy.data.username
+                else return null
             }
             return this.parent(path, keys)
         },
@@ -20,8 +19,8 @@ prestart(() => {
     dummy.DummyPlayer.inject({
         onVarAccess(path, keys) {
             if (multi.server) {
-                if (keys[1] == 'model') return this.model.onVarAccess(keys.slice(2).join('.'), keys.slice(2))
                 if (keys[1] == 'username') return this.data.username
+                if (keys[1] == 'model') return this.model.onVarAccess(keys.slice(2).join('.'), keys.slice(2))
             }
             return this.parent(path, keys)
         },

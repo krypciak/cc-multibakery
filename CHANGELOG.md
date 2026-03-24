@@ -18,7 +18,8 @@
 - Return null when accessing `player.username` on map instance instead of crashing
 - Disallow "null" and "undefined" player usernames
 - Fix variable resolving not running in client instance on event chain vars
-- Dont crash on `pvp.multiActive` when server is off
+- Don't crash on `pvp.multiActive` access when server is off
+- Don't crash on `player.username` access when server is off
 
 ## [0.7.6] 2026-03-11
 
