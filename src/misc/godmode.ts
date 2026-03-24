@@ -21,7 +21,7 @@ export interface GodmodeSettings {
 }
 
 prestart(() => {
-    ig.godmode = (model = sc.model.player, { circuitBranch = false }: GodmodeSettings = {}) => {
+    ig.godmode = (model = sc.model.player, { circuitBranch = true }: GodmodeSettings = {}) => {
         Object.keysT = Object.keys as any
 
         sc.stats.statsEnabled = true
