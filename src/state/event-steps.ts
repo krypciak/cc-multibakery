@@ -244,6 +244,7 @@ prestart(() => {
             ig.EVENT_STEP.START_NPC_TRADE_MENU,
 
             ig.EVENT_STEP.SHOW_INPUT_DIALOG,
+            ig.EVENT_STEP.SHOW_OBJECT_SLIDER_DIALOG,
         ].map(clazz => clazz.classId)
     )
 }, 2000)

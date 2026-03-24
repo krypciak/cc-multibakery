@@ -409,11 +409,13 @@
                                         "condition": "pvp.parties.length > 1",
                                         "thenStep": [
                                             { 
-                                                "type": "SHOW_INPUT_DIALOG",
+                                                "type": "SHOW_OBJECT_SLIDER_DIALOG",
                                                 "title": "Win points",
                                                 "initialValue": 2,
                                                 "saveToVar": "tmp.pvpWinPoints",
-                                                "validRegex": "^(?:[1-9]|[1-5][0-9]|6[0-3])$",
+                                                "min": 1,
+                                                "max": 20,
+                                                "step": 1,
                                                 "accepted": [
                                                     { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
                                                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": true },

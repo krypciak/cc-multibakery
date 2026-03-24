@@ -34,7 +34,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
-        version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c
+        version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/a7e3c67394ce4183b55e4dc62241b01c985d24f9
       cc-variable-charge-time:
         specifier: github:krypciak/cc-variable-charge-time
         version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/3f12e1a0591f951f6a9050f8d1090a0aee50aade
@@ -455,9 +455,9 @@ packages:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f}
     version: 1.0.5
 
-  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c}
-    version: 1.1.0
+  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/a7e3c67394ce4183b55e4dc62241b01c985d24f9:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/a7e3c67394ce4183b55e4dc62241b01c985d24f9}
+    version: 1.1.2
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/3f12e1a0591f951f6a9050f8d1090a0aee50aade:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/3f12e1a0591f951f6a9050f8d1090a0aee50aade}
@@ -1352,7 +1352,7 @@ snapshots:
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f: {}
 
-  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/f4226b39989356e3c8601c1f09c8e92fe2fcfc4c: {}
+  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/a7e3c67394ce4183b55e4dc62241b01c985d24f9: {}
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/3f12e1a0591f951f6a9050f8d1090a0aee50aade: {}
 

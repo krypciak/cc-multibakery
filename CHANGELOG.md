@@ -11,6 +11,7 @@
 - Make the default argument `players` in `FOR_EACH_PLAYER` be `{ "varName": "game.entities.type.Player" }`
 - Simplify new variables graph in docs/GAME-VARIABLED.md
 - Let each client have their own timers
+- Use new `SHOW_OBJECT_SLIDER_DIALOG` from cc-krypek-lib for pvp round selection
 
 ### Fixed
 
