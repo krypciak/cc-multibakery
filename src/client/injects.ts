@@ -13,18 +13,19 @@ prestart(() => {
     })
 })
 
-prestart(() => {
-    ig.Game.inject({
-        deferredMapEntityUpdate() {
-            if (ig.client) return
-            this.parent()
-        },
-        varsChanged() {
-            if (ig.client) return
-            this.parent()
-        },
-    })
-})
+// idk why its there, it breaks guis that lister to vars
+// prestart(() => {
+//     ig.Game.inject({
+//         deferredMapEntityUpdate() {
+//             if (ig.client) return
+//             this.parent()
+//         },
+//         varsChanged() {
+//             if (ig.client) return
+//             this.parent()
+//         },
+//     })
+// })
 
 prestart(() => {
     ig.Game.inject({
