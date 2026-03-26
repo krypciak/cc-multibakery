@@ -22,6 +22,7 @@
 - Don't crash on `pvp.multiActive` access when server is off
 - Don't crash on `player.username` access when server is off
 - Fix client guis not receiving var change updates
+- Fix crash when an event is redirected to a client
 
 ## [0.7.6] 2026-03-11
 

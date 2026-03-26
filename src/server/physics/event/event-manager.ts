@@ -27,9 +27,15 @@ function isConditionTriggeredAtMapEnter(code: string): boolean {
 prestart(() => {
     if (!PHYSICS) return
 
+    let redirectedOnce = false
+
     ig.EventManager.inject({
         callEvent(...args) {
             if (!isPhysics(multi.server)) return this.parent(...args)
+            if (redirectedOnce) {
+                redirectedOnce = false
+                return this.parent(...args)
+            }
 
             let player: ig.Entity | undefined
             if (this.nextTriggeredBy) {
@@ -49,6 +55,7 @@ prestart(() => {
             const client = player.getClient(true)
             if (!client) return this.parent(...args)
 
+            redirectedOnce = true
             return runTask(client.inst, () => ig.game.events.callEvent(...args))
         },
     })
