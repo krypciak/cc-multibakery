@@ -58,7 +58,12 @@ function serializeStepSettingsRecursive(data: any) {
                     if (value instanceof ig.Entity) {
                         assert(value.netid)
                         data[key] = { netid: value.netid }
-                    } else if (value instanceof sc.InputFieldDialog || value instanceof ig.Action) {
+                    } else if (
+                        value instanceof sc.InputFieldDialog ||
+                        value instanceof sc.ObjectSliderDialog ||
+                        value instanceof ig.Action ||
+                        value instanceof ig.EventCall
+                    ) {
                         data[key] = undefined
                     } else {
                         assert(false)
