@@ -23,6 +23,7 @@
 - Don't crash on `player.username` access when server is off
 - Fix client guis not receiving var change updates
 - Fix crash when an event is redirected to a client
+- Fix bgm steps not working on remote
 
 ## [0.7.6] 2026-03-11
 

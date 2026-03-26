@@ -238,6 +238,15 @@ prestart(() => {
             ig.EVENT_STEP.SET_ZOOM_BLUR,
             ig.EVENT_STEP.FADE_OUT_ZOOM_BLUR,
 
+            ig.EVENT_STEP.PLAY_BGM,
+            ig.EVENT_STEP.POP_BGM,
+            ig.EVENT_STEP.PUSH_BGM,
+            ig.EVENT_STEP.PAUSE_BGM,
+            ig.EVENT_STEP.RESUME_BGM,
+            ig.EVENT_STEP.SET_DEFAULT_BGM,
+            ig.EVENT_STEP.RESUME_DEFAULT_BGM,
+            ig.EVENT_STEP.PLAY_IN_BETWEEN_BGM,
+
             ig.EVENT_STEP.SET_OVERLAY,
             ig.EVENT_STEP.SHOW_AR_MSG,
 
