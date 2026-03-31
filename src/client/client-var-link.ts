@@ -1,9 +1,10 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import type { Client } from './client'
+import { assert } from '../misc/assert'
 
-export function linkClientVars(client: Client, mapInst: InstanceinatorInstance) {
+export function linkClientVars(mapInst: InstanceinatorInstance) {
+    assert(ig.client)
     const from = mapInst.ig.vars
-    const to = client.inst.ig.vars
+    const to = ig.vars
 
     to.currentLevelName = from.currentLevelName
     to.varsSetBy = from.varsSetBy

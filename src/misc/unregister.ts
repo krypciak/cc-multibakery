@@ -14,3 +14,18 @@ prestart(() => {
         },
     })
 })
+
+declare global {
+    namespace ig {
+        interface Storage {
+            unregister(this: this, listener: ig.Storage.Listener): void
+        }
+    }
+}
+prestart(() => {
+    ig.Storage.inject({
+        unregister(listener) {
+            this.listeners.erase(listener)
+        },
+    })
+})

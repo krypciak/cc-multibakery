@@ -17,6 +17,7 @@ import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
 import type { MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
+import { linkClientOptionModel } from './client-option-model-link'
 import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
@@ -283,7 +284,7 @@ export class Client extends InstanceUpdateable {
 
             ig.weather = mig.weather
 
-            linkClientVars(this, map.inst)
+            linkClientVars(map.inst)
 
             removeAddon(ig.screenBlur, ig.game)
             ig.screenBlur = mig.screenBlur
@@ -308,7 +309,8 @@ export class Client extends InstanceUpdateable {
             sc.pvp = msc.pvp
             ig.vars.registerVarAccessor('pvp', sc.pvp)
 
-            sc.options = msc.options
+            linkClientOptionModel(map.inst)
+
             sc.combat.activeCombatants = msc.combat.activeCombatants
 
             /* TODO: do these observers get removed? */
@@ -451,7 +453,7 @@ export class Client extends InstanceUpdateable {
     }
 }
 
-function rehookObservers(to: sc.Model, from: sc.Model) {
+export function rehookObservers(to: sc.Model, from: sc.Model) {
     const toObservers = new Set(to.observers)
     for (const fromObserver of from.observers) {
         toObservers.add(fromObserver)
@@ -464,5 +466,5 @@ export function runTaskInMapInst<T>(task: () => T): T {
         return runTask(ig.client.getMap().inst, task)
     } else if (ig.ccmap) {
         return task()
-    } else assert(false, "runTaskInMapInst ran in server instance!")
+    } else assert(false, 'runTaskInMapInst ran in server instance!')
 }

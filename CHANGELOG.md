@@ -25,6 +25,7 @@
 - Fix crash when an event is redirected to a client
 - Fix bgm steps not working on remote
 - Fix crash when serializing steps with data polluted by ig.EVENT_STEP.FOR_EACH_PLAYER
+- Fix game options often not saving
 
 ## [0.7.6] 2026-03-11
 
