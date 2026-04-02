@@ -1,10 +1,10 @@
 {
-    "include": ["src", "node_modules/ultimate-crosscode-typedefs/crosscode-ccloader-all.d.ts"],
     "compilerOptions": {
         "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
 
+        "types": ["node", "chrome", "jquery"],
+
         "module": "preserve" /* Specify what module code is generated. */,
-        "rootDir": "./src/" /* Specify the root folder within your source files. */,
         "moduleResolution": "bundler" /* Specify how TypeScript looks up a file from a given module specifier. */,
 
         "allowJs": true /* Allow JavaScript files to be a part of your program. Use the 'checkJS' option to get errors from these files. */,
