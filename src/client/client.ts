@@ -320,7 +320,6 @@ export class Client extends InstanceUpdateable {
 
             sc.combat.activeCombatants = msc.combat.activeCombatants
 
-            /* TODO: do these observers get removed? */
             rehookObservers(msc.map, sc.map)
             removeAddon(sc.map, ig.game)
             ig.storage.unregister(sc.map)
@@ -447,15 +446,18 @@ export class Client extends InstanceUpdateable {
 
         multi.server.party.onClientDestroy(this)
 
-        const map = multi.server.maps.get(this.tpInfo.map)
-        map?.leave(this)
+        const map = this.getMap(false)
+        if (map) {
+            map.leave(this)
+            map.inst.sc.map.observers = filterInstanceObjectsFromArray(map.inst.sc.map.observers, this.inst.id)
+        }
 
         multi.server.inst.apply()
         super.destroy()
     }
 }
 
-export function rehookObservers(to: sc.Model, from: sc.Model) {
+function rehookObservers(to: sc.Model, from: sc.Model) {
     const toObservers = new Set(to.observers)
     for (const fromObserver of from.observers) {
         toObservers.add(fromObserver)
