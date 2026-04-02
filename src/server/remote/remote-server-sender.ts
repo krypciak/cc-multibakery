@@ -1,3 +1,9 @@
+import type { f64 } from 'ts-binarifier/src/type-aliases'
+import {
+    filterClientOptionModelValues,
+    type ClientOptionModelValues,
+    type KeyType,
+} from '../../client/client-option-model-link'
 import {
     disallowedInputActions,
     type GamepadManagerData,
@@ -46,10 +52,15 @@ export function sendRemoteServerPacket() {
             const memory = StateMemory.get(ig.remoteSenderStateMemory)
             ig.remoteSenderStateMemory ??= memory
 
+            const options = filterClientOptionModelValues(
+                (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
+            )
+
             packet = {
                 input,
                 gamepad,
                 inputFieldText: memory.diff(inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)),
+                options: memory.diffRecord(options),
             }
         }
 
@@ -88,6 +99,7 @@ export interface RemoteServerClientPacket {
     input?: InputData
     gamepad?: GamepadManagerData
     inputFieldText?: string
+    options?: PartialRecord<KeyType, f64> // ClientOptionModelValues
 }
 export function isRemoteServerUpdatePacket(_data: unknown): _data is RemoteServerUpdatePacket {
     const data = _data as RemoteServerUpdatePacket

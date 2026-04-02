@@ -20,6 +20,7 @@ import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
+import { loadClientOptionModelState } from '../../client/client-option-model-link'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -223,6 +224,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 runTask(client.inst, () => {
                     ig.shownInputDialog?.setText(text)
                 })
+            }
+
+            if (packet.options) {
+                loadClientOptionModelState(client, packet.options)
             }
         }
     }

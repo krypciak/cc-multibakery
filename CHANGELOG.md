@@ -7,6 +7,7 @@
 ### Added
 
 - Allow clients to have unique interface options
+- Sync client game options for remote clients
 
 ### Changed
 

@@ -1,6 +1,8 @@
+import type { f64 } from 'ts-binarifier/src/type-aliases'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
 import type { Client } from './client'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 export const clientOptionModelKeysArray = [
     // general
@@ -85,10 +87,11 @@ export const clientOptionModelKeysArray = [
     // 'keys-wave',
     // 'keys-neutral',
 ] as const
-type KeyType = (typeof clientOptionModelKeysArray)[number]
+export type KeyType = (typeof clientOptionModelKeysArray)[number]
 export const clientOptionModelKeysSet = new Set(clientOptionModelKeysArray)
 
-export type ClientOptionModelValues = PartialRecord<KeyType, any>
+// when changing, remember to change in remote-server-sender.ts !!!
+export type ClientOptionModelValues = PartialRecord<KeyType, f64>
 
 declare global {
     namespace sc {
@@ -128,13 +131,22 @@ export function linkClientOptionModel(mapInst: InstanceinatorInstance) {
     )
 }
 
-export function filterClientOptionModelValues(values: ClientOptionModelValues) {
+export function filterClientOptionModelValues(
+    values: sc.OptionModel['values'] | ClientOptionModelValues
+): ClientOptionModelValues {
     return Object.fromEntries(Object.entries(values).filter(([k]) => clientOptionModelKeysSet.has(k as KeyType)))
 }
 
-export function loadClientOptionModelState(client: Client, values: ClientOptionModelValues) {
-    values = filterClientOptionModelValues(values)
+export function loadClientOptionModelState(
+    client: Client,
+    unfilteredValues: sc.OptionModel['values'] | ClientOptionModelValues
+) {
+    const values = filterClientOptionModelValues(unfilteredValues)
     for (const key in values) {
-        client.inst.sc.options.clientValues[key as KeyType] = values[key as KeyType]
+        const value = values[key as KeyType]
+        client.inst.sc.options.clientValues[key as KeyType] = value
     }
+    runTask(client.inst, () => {
+        sc.Model.notifyObserver(sc.options, sc.OPTIONS_EVENT.OPTION_CHANGED)
+    })
 }
