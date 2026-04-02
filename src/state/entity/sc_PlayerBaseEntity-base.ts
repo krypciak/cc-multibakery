@@ -2,27 +2,8 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import type { u10, u7 } from 'ts-binarifier/src/type-aliases'
-import type { ArmorType, ExpType, LevelType } from '../../net/binary/binary-types'
 import { assert } from '../../misc/assert'
 import { isRemote } from '../../server/remote/is-remote-server'
-
-declare global {
-    namespace sc {
-        namespace PlayerModel {
-            interface Equip {
-                head: ArmorType
-                leftArm: ArmorType
-                rightArm: ArmorType
-                torso: ArmorType
-                feet: ArmorType
-            }
-        }
-        interface PlayerModel {
-            level: LevelType
-            exp: ExpType
-        }
-    }
-}
 
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory) {

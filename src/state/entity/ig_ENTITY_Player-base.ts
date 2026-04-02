@@ -4,18 +4,12 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import * as scPlayerBaseEntity from './sc_PlayerBaseEntity-base'
-import type { RecordSize, u10, u11, u3, u8 } from 'ts-binarifier/src/type-aliases'
+import type { RecordSize, u10, u11, u3 } from 'ts-binarifier/src/type-aliases'
 import type { ItemType } from '../../net/binary/binary-types'
 
 declare global {
     namespace ig.ENTITY {
         interface Player extends StateMemory.MapHolder<StateKey> {}
-    }
-
-    namespace sc {
-        interface PlayerModel {
-            skillPoints: u8[]
-        }
     }
 }
 

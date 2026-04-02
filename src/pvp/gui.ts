@@ -58,7 +58,14 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
         if (sc.pvp.winPoints != 1) {
             x += 4
             if (left) x += (sc.pvp.winPoints - 2) * 5
-            this._renderPoints(renderer, x, left ? -1 : 1, sc.pvp.winPoints, sc.pvp.points[party.combatantParty]!, 0)
+            this._renderPoints(
+                renderer,
+                x,
+                left ? -1 : 1,
+                sc.pvp.winPoints,
+                sc.pvp.points[party.combatantParty as sc.COMBATANT_PARTY]!,
+                0
+            )
 
             if (left) x += 5
             else x += sc.pvp.winPoints * 5

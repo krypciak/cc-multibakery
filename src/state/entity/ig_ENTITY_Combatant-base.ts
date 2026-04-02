@@ -2,45 +2,9 @@ import { StateMemory } from '../state-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
-import type { f64 } from 'ts-binarifier/src/type-aliases'
-import type {
-    AttackType,
-    COMBATANT_PARTY,
-    DefenceType,
-    FocusType,
-    HpType,
-    SpLevelType,
-    SpType,
-} from '../../net/binary/binary-types'
+import type { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 import { isRemote } from '../../server/remote/is-remote-server'
-
-declare global {
-    namespace sc {
-        namespace CombatParams {
-            interface Params {
-                hp: HpType
-                attack: AttackType
-                defense: DefenceType
-                focus: FocusType
-
-                elemFactor?: f64[]
-                statusInflict?: f64[]
-                statusEffect?: f64[]
-            }
-        }
-        interface CombatParams {
-            currentHp: HpType
-            maxSp: SpLevelType
-            currentSp: SpType
-        }
-    }
-    namespace ig.ENTITY {
-        interface Combatant {
-            // party: COMBATANT_PARTY
-        }
-    }
-}
 
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {

@@ -34,7 +34,7 @@ prestart(() => {
                         const partyId = keys[2]
                         const party = multi.server.party.parties[partyId]
                         if (!party) return
-                        return this.points[party.combatantParty]
+                        return this.points[party.combatantParty as sc.COMBATANT_PARTY]
                     }
                     if (keys[1] == 'lastWinPartyId') {
                         return sc.pvp.lastWinPartyId

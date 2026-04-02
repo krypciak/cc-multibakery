@@ -5,7 +5,6 @@ import type { CCMap } from '../server/ccmap/ccmap'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
 import { runTaskInMapInst } from '../client/client'
-import type { COMBATANT_PARTY as COMBATANT_PARTY1 } from '../net/binary/binary-types'
 import { isPhysics } from '../server/physics/is-physics-server'
 
 import './gui'
@@ -20,7 +19,6 @@ declare global {
             roundGuis: Record<number, sc.PvpRoundGui>
             map: CCMap
             hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
-            points: PartialRecord<COMBATANT_PARTY1, number>
             justRearrangedHpBars?: boolean
             lastWinPartyId?: string
 
@@ -82,7 +80,7 @@ prestart(() => {
             this.points[sc.COMBATANT_PARTY.ENEMY] = 0
 
             for (const party of this.parties) {
-                this.points[party.combatantParty] = 0
+                this.points[party.combatantParty as sc.COMBATANT_PARTY] = 0
             }
 
             this.enemies = []
@@ -173,7 +171,7 @@ prestart(() => {
                         const onlyPartyAlive = this.getOnlyPartyAlive()
                         if (onlyPartyAlive) {
                             if (this.parties.length == 1) {
-                                this.points[onlyPartyAlive.combatantParty] = this.winPoints
+                                this.points[onlyPartyAlive.combatantParty as sc.COMBATANT_PARTY] = this.winPoints
                             }
                             this.onPostKO(onlyPartyAlive.combatantParty)
                         }

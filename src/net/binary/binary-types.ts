@@ -1,4 +1,4 @@
-import type { f32, u16, u10, u14, u6, i11, u7, i32 } from 'ts-binarifier/src/type-aliases'
+import type { f32, u16, u10, u14, u6, i11, u7, i32, f64, u8 } from 'ts-binarifier/src/type-aliases'
 
 export {}
 declare global {
@@ -30,3 +30,40 @@ export type FocusType = u14
 export type SpLevelType = u6
 export type SpType = f32
 export type ExpType = u10
+
+export {}
+declare global {
+    namespace sc {
+        namespace CombatParams {
+            interface Params {
+                hp: HpType
+                attack: AttackType
+                defense: DefenceType
+                focus: FocusType
+
+                elemFactor?: f64[]
+                statusInflict?: f64[]
+                statusEffect?: f64[]
+            }
+        }
+        interface CombatParams {
+            currentHp: HpType
+            maxSp: SpLevelType
+            currentSp: SpType
+        }
+        namespace PlayerModel {
+            interface Equip {
+                head: ArmorType
+                leftArm: ArmorType
+                rightArm: ArmorType
+                torso: ArmorType
+                feet: ArmorType
+            }
+        }
+        interface PlayerModel {
+            level: LevelType
+            exp: ExpType
+            skillPoints: u8[]
+        }
+    }
+}
