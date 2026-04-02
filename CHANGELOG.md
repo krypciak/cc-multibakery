@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Allow clients to have unique interface options
+
 ### Changed
 
 - Read only var `multi.players` now returns an array of player entities instead of player models

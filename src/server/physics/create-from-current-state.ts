@@ -2,13 +2,19 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
 import { Opts } from '../../options'
 import { PhysicsServer } from './physics-server'
+import { filterClientOptionModelValues } from '../../client/client-option-model-link'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
-    multi.storage.savePlayerState(username, ig.game.playerEntity, {
-        map: ig.game.mapName.toPath('', ''),
-        marker: ig.game.marker,
-    })
+    multi.storage.savePlayerState(
+        username,
+        ig.game.playerEntity,
+        {
+            map: ig.game.mapName.toPath('', ''),
+            marker: ig.game.marker,
+        },
+        filterClientOptionModelValues(sc.options.values)
+    )
 
     const playerDataBackup = {
         pos: Vec3.create(ig.game.playerEntity.coll.pos),

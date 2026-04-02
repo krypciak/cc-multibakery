@@ -7,12 +7,19 @@ import type { MapTpInfo } from '../../server'
 import type { Username } from '../../../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../is-physics-server'
 import { copy } from '../../../misc/object-copy'
+import type { ClientOptionModelValues } from '../../../client/client-option-model-link'
 
 import './save-slot-button'
 import './pause-screen-save-button'
+import type { Client } from '../../../client/client'
 
 type PlayerGetStateReturn = ReturnType<typeof getEntityState>
-type PlayerState = PlayerGetStateReturn & MapTpInfo
+type PlayerEntityState = PlayerGetStateReturn
+type PlayerState = {
+    entityState: PlayerEntityState
+    tpInfo: MapTpInfo
+    optionModelValues: ClientOptionModelValues
+}
 
 export interface MultibakerySaveData {
     players?: Record<Username, PlayerState>
@@ -54,17 +61,15 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     wrapFilterListeners<T>(func: () => T): T {
         const listenersBackup = ig.storage.listeners
 
-        const instId = ig.client?.getMap().inst.id ?? instanceinator.id
-        let relevantListeners = ig.storage.listeners.filter(
+        const instId = instanceinator.id
+        const relevantListeners = ig.storage.listeners.filter(
             listener => !('_instanceId' in listener) || listener._instanceId == instId
         )
-
         if (ig.client) {
-            const clientListeners = [sc.map, sc.party, sc.message, sc.menu, sc.model]
-            relevantListeners = relevantListeners.filter(
-                l => !('classId' in l) || clientListeners.every(cl => l.classId != cl.classId)
-            )
-            relevantListeners.push(...clientListeners)
+            /* these listeners are linked directly to map class and therefore
+             * dont get filtered out but they are important for saving */
+            const mapListeners = [sc.map]
+            relevantListeners.push(...mapListeners)
         }
 
         ig.storage.listeners = relevantListeners
@@ -76,6 +81,15 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         return ret
     }
 
+    wrapFilterListenersInMasterClient<T>(func: () => T) {
+        const masterInstance = multi.server.getMasterClient()?.inst ?? ig.ccmap?.inst ?? multi.server.inst
+        assert(masterInstance)
+
+        return runTask(masterInstance, () => {
+            return this.wrapFilterListeners(() => func())
+        })
+    }
+
     getSaveSlotData(): ig.SaveSlot.Data {
         const partialSave: Partial<ig.SaveSlot.Data> = {}
         this.saving = true
@@ -85,12 +99,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     private getMultiSaveSlotData() {
-        const masterInstance = multi.server.getMasterClient()?.inst ?? multi.server.inst
-        assert(masterInstance)
-
-        return runTask(masterInstance, () => {
-            return this.wrapFilterListeners(() => this.getSaveSlotData())
-        })
+        return this.wrapFilterListenersInMasterClient(() => this.getSaveSlotData())
     }
 
     private commitSave(save: ig.SaveSlot.Data, slotId?: number) {
@@ -132,15 +141,39 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.commitSave(save, slotId)
     }
 
-    savePlayerState(username: Username, player: ig.ENTITY.Player, tpInfo: MapTpInfo): PlayerState {
+    // creates state with no references (deep copy)
+    private createPlayerState(
+        player: ig.ENTITY.Player,
+        tpInfo: MapTpInfo,
+        optionModelValues: ClientOptionModelValues
+    ): PlayerState {
+        return {
+            entityState: {
+                ...copy(player.getEntityState!() as PlayerGetStateReturn),
+                animAlpha: 1,
+            },
+            tpInfo: { ...tpInfo },
+            optionModelValues: { ...optionModelValues },
+        }
+    }
+
+    savePlayerState(
+        username: Username,
+        player: ig.ENTITY.Player,
+        tpInfo: MapTpInfo,
+        optionModelValues: ClientOptionModelValues
+    ): PlayerState {
         this.currentData ??= {}
         this.currentData.players ??= {}
-        const playerState = copy(player.getEntityState!() as PlayerGetStateReturn)
-        return (this.currentData.players[username] = {
-            ...playerState,
-            animAlpha: 1,
-            ...tpInfo,
-        })
+        return (this.currentData.players[username] = this.createPlayerState(player, tpInfo, optionModelValues))
+    }
+
+    savePlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
+        return this.savePlayerState(client.username, client.dummy, tpInfo, client.inst.sc.options.clientValues)
+    }
+
+    createPlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
+        return this.createPlayerState(client.dummy, tpInfo, client.inst.sc.options.clientValues)
     }
 
     private savePlayerStates() {
@@ -149,7 +182,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                 for (const client of map.clients) {
                     if (!client.ready) continue
 
-                    this.savePlayerState(client.username, client.dummy, client.tpInfo)
+                    this.savePlayerStateWithClient(client)
                 }
             })
         }
@@ -248,6 +281,11 @@ prestart(() => {
                     assert(multi.storage.saving)
                 }
                 return this.parent(output, mapName, teleportPositionSettings)
+            },
+            _saveToStorage() {
+                if (!multi.server) return this.parent()
+
+                return multi.storage.wrapFilterListenersInMasterClient(() => this.parent())
             },
         })
     }

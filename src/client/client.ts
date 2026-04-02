@@ -17,11 +17,10 @@ import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
 import type { MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
-import { linkClientOptionModel } from './client-option-model-link'
+import { initClientOptionModel, linkClientOptionModel, loadClientOptionModelState } from './client-option-model-link'
 import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
-import { copy } from '../misc/object-copy'
 
 import './injects'
 import './menu/server-list-menu'
@@ -84,6 +83,7 @@ export class Client extends InstanceUpdateable {
             }
         )
         assert(this.inst.ig.game)
+        this.initOptionModel()
 
         this.inputManager = this.initInputManager()
 
@@ -119,6 +119,12 @@ export class Client extends InstanceUpdateable {
         this.inst.ig.input.currentDevice = inputManager.inputType ?? ig.INPUT_DEVICES.KEYBOARD_AND_MOUSE
 
         return inputManager
+    }
+
+    private initOptionModel() {
+        initClientOptionModel(this)
+        const playerState = multi.storage.getPlayerState(this.username)
+        loadClientOptionModelState(this, playerState?.optionModelValues ?? multi.server.inst.sc.options.values)
     }
 
     protected attemptRecovery(e: unknown) {
@@ -171,7 +177,7 @@ export class Client extends InstanceUpdateable {
         const state = this.getSaveState(false)
 
         const tpInfo: MapTpInfo = tpInfoOverride ??
-            state ??
+            state?.tpInfo ??
             multi.server.settings.defaultMap ??
             multi.server.getMasterClient()?.tpInfo ?? { map: 'multibakery/dev', marker: 'entrance' }
         await this.teleport(tpInfo)
@@ -202,7 +208,7 @@ export class Client extends InstanceUpdateable {
 
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
-            multi.storage.savePlayerState(this.username, this.dummy, tpInfo)
+            multi.storage.savePlayerStateWithClient(this, tpInfo)
         }
 
         this.nextTpInfo = tpInfo
@@ -303,6 +309,7 @@ export class Client extends InstanceUpdateable {
 
             rehookObservers(this.dummy.model.params, sc.model.player.params)
             rehookObservers(this.dummy.model, sc.model.player)
+            ig.vars.unregisterVarAccessor(sc.model.player)
             sc.model.player = this.dummy.model
 
             ig.vars.unregisterVarAccessor(sc.pvp)
@@ -316,7 +323,7 @@ export class Client extends InstanceUpdateable {
             /* TODO: do these observers get removed? */
             rehookObservers(msc.map, sc.map)
             removeAddon(sc.map, ig.game)
-            ig.storage.listeners.erase(sc.map)
+            ig.storage.unregister(sc.map)
             sc.map = msc.map
             addAddon(sc.map, ig.game)
 
@@ -378,20 +385,15 @@ export class Client extends InstanceUpdateable {
             assert(ig.ccmap)
             const referenceClient = ig.ccmap.clients[0]
             if (referenceClient?.dummy) {
-                const referenceClientState = multi.storage.savePlayerState(
-                    referenceClient.username,
-                    referenceClient.dummy,
-                    referenceClient.tpInfo
-                )
-                state = copy(referenceClientState)
+                state = multi.storage.createPlayerStateWithClient(referenceClient)
             }
         }
         return state
     }
 
-    private loadState() {
+    private loadPlayerEntityState() {
         assertPhysics(multi.server)
-        const state = this.getSaveState(true)
+        const state = this.getSaveState(true)?.entityState
         if (state) {
             applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
         }
@@ -415,7 +417,7 @@ export class Client extends InstanceUpdateable {
                 ig.godmode(this.dummy.model, { circuitBranch: true })
             }
 
-            this.loadState()
+            this.loadPlayerEntityState()
         } else {
             this.dummy =
                 (this.getMap().inst.ig.game.entities.find(
@@ -441,7 +443,7 @@ export class Client extends InstanceUpdateable {
 
         this.inputManager?.destroy()
 
-        if (this.dummy) multi.storage.savePlayerState(this.username, this.dummy, this.tpInfo)
+        if (this.dummy) multi.storage.savePlayerStateWithClient(this)
 
         multi.server.party.onClientDestroy(this)
 
