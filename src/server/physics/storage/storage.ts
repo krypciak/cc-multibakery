@@ -1,4 +1,4 @@
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { filterInstanceObjectsFromArray, runTask } from 'cc-instanceinator/src/inst-util'
 import { poststart, prestart } from '../../../loading-stages'
 import type { getEntityState } from '../../../state/entity/ig_ENTITY_Player-base'
 import { assert } from '../../../misc/assert'
@@ -61,10 +61,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     wrapFilterListeners<T>(func: () => T): T {
         const listenersBackup = ig.storage.listeners
 
-        const instId = instanceinator.id
-        const relevantListeners = ig.storage.listeners.filter(
-            listener => !('_instanceId' in listener) || listener._instanceId == instId
-        )
+        const relevantListeners = filterInstanceObjectsFromArray(ig.storage.listeners, instanceinator.id)
         if (ig.client) {
             /* these listeners are linked directly to map class and therefore
              * dont get filtered out but they are important for saving */

@@ -3,7 +3,7 @@ import type { CCMap } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../dummy/box/box-addon'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, filterInstanceObjectsFromArray } from 'cc-instanceinator/src/inst-util'
 import {
     createClientConnectionInfoLabel,
     createClientNetworkPacketTrafficLabel,

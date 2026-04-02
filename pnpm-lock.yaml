@@ -28,7 +28,7 @@ importers:
         version: 1.3.11
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/610a4fc0b08ff000ce464033eeeb579c46784cc6
       cc-jetpack-widget:
         specifier: github:krypciak/cc-jetpack-widget
         version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f
@@ -447,9 +447,9 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0}
-    version: 1.0.8
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/610a4fc0b08ff000ce464033eeeb579c46784cc6:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/610a4fc0b08ff000ce464033eeeb579c46784cc6}
+    version: 1.1.0
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f:
     resolution: {tarball: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f}
@@ -1348,7 +1348,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d5bf88114347a3fc6a39dff2a7d0c0401fb1b3c0: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/610a4fc0b08ff000ce464033eeeb579c46784cc6: {}
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f: {}
 
