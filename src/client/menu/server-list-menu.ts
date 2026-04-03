@@ -27,7 +27,7 @@ prestart(() => {
 declare global {
     namespace sc {
         enum MENU_SUBMENU {
-            MULTIBAKERY_LOGIN,
+            MULTIBAKERY_LOGIN = 378943,
         }
     }
     namespace multi.class.ServerList {
@@ -315,7 +315,7 @@ prestart(() => {
     })
 
     // @ts-expect-error
-    sc.MENU_SUBMENU.MULTIBAKERY_LOGIN = Math.max(...Object.values(sc.MENU_SUBMENU)) + 1
+    sc.MENU_SUBMENU.MULTIBAKERY_LOGIN = 378943
 
     sc.SUB_MENU_INFO[sc.MENU_SUBMENU.MULTIBAKERY_LOGIN] = {
         Clazz: multi.class.ServerList.Menu,

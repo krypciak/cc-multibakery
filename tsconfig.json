@@ -1,16 +1,19 @@
 {
     "include": [
         "src",
+        "build"
     ],
+    "exclude": ["node_modules"],
     "compilerOptions": {
         "target": "ES2020",
         "types": [
             "node",
             "chrome",
-            "jquery"
+            "jquery",
+            "typescript"
         ],
         "module": "preserve",
-        "rootDir": "./src",
+        "rootDir": ".",
         "moduleResolution": "bundler",
         "allowJs": true,
         "noEmit": true,
