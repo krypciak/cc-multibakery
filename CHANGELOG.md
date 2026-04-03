@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Improve server startup performance
+
 ## [0.7.7] 2026-04-03
 
 ### Added

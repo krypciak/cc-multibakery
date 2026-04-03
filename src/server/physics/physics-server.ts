@@ -82,6 +82,12 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         multi.storage.load()
         this.registerVariableChargeTime()
 
+        void this.startNet()
+
+        if (window.crossnode && !window.crossnode.tests) startRepl()
+    }
+
+    private async startNet() {
         const netInfo = this.settings.netInfo
         if (PHYSICSNET && netInfo) {
             this.httpServer = new PhysicsHttpServer(netInfo)
@@ -95,9 +101,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (this.netManager) {
             await this.netManager.start()
         }
-
-        if (window.crossnode && !window.crossnode.tests) startRepl()
     }
+
     update() {
         super.update()
 

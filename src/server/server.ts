@@ -11,6 +11,7 @@ import { linkOptions } from './physics/storage/storage'
 import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
+import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
 
 import './server-var-access'
 
@@ -110,7 +111,19 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         assert(!isErrorPopupShown())
 
         this.baseInst = instanceinator.instances[0]
-        this.inst = await instanceinator.copy(this.baseInst, { name: 'server', display: this.isVisible() })
+
+        PROFILE && console.time('creating instances non await')
+        instanceinator.createCachedInstances(
+            this.baseInst,
+            new Array(3).fill(null).map(_ => instanceinatorCopyInstanceConfig())
+        )
+        PROFILE && console.timeEnd('creating instances non await')
+
+        this.inst = await instanceinator.copy(
+            this.baseInst,
+            { name: 'server', display: this.isVisible() },
+            instanceinatorCopyInstanceConfig()
+        )
         this.inst.apply()
         this.safeguardInst()
         this.link()
@@ -275,6 +288,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
         instanceinator.retile()
     }
+}
+
+export function instanceinatorCopyInstanceConfig(): InstanceinatorCopyInstanceConfig {
+    return { cacheKey: 'multibakery', hideTitleScreen: true }
 }
 
 export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: ClientJoinAckData) {

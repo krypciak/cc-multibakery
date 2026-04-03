@@ -9,6 +9,7 @@ import { linkMapVars } from './map-var-link'
 import { linkOptions } from '../physics/storage/storage'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapName } from '../../net/binary/binary-types'
+import { instanceinatorCopyInstanceConfig } from '../server'
 
 import './injects'
 
@@ -64,11 +65,15 @@ export class CCMap extends InstanceUpdateable {
         this.display = new CCMapDisplay(this)
 
         const levelDataPromise = this.readLevelData()
-        this.inst = await instanceinator.copy(multi.server.inst, {
-            name: `map-${this.name}`,
-            display: this.isVisible(),
-            soundPlayCondition: () => this.clients.some(c => c.inst.display),
-        })
+        this.inst = await instanceinator.copy(
+            multi.server.inst,
+            {
+                name: `map-${this.name}`,
+                display: this.isVisible(),
+                soundPlayCondition: () => this.clients.some(c => c.inst.display),
+            },
+            instanceinatorCopyInstanceConfig()
+        )
         this.inst.ig.ccmap = this
         forceConditionalLightOnInst(this.inst.id)
         this.link()

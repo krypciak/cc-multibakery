@@ -58,20 +58,6 @@ poststart(() => {
 })
 
 prestart(() => {
-    /* dont show title screen when client gets created, instead show a black screen */
-    sc.TitleScreenGui.inject({
-        init() {
-            this.parent()
-            if (!ig.client) return
-            this.introGui.timeLine = [
-                { time: 10000, gui: 'baseBG', state: 'DEFAULT' },
-                { time: 0, end: true },
-            ]
-        },
-    })
-})
-
-prestart(() => {
     // @ts-expect-error
     sc.Model.notifyObserver = function (model: sc.Model & ig.Class, message: number, data?: unknown) {
         // console.log('nofifyObserver', findClassName(model), message, data)

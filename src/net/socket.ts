@@ -62,6 +62,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         private netInfo: NetServerInfoPhysics,
         private httpServer: HttpServer
     ) {
+        assert(httpServer)
         setIntervalWorkaround()
     }
 

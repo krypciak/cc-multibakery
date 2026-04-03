@@ -15,7 +15,7 @@ import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
 import { initMapsAndLevels } from '../server/ccmap/data-load'
-import type { MapTpInfo } from '../server/server'
+import { instanceinatorCopyInstanceConfig, type MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
 import { initClientOptionModel, linkClientOptionModel, loadClientOptionModelState } from './client-option-model-link'
 import type { Username } from '../net/binary/binary-types'
@@ -78,12 +78,9 @@ export class Client extends InstanceUpdateable {
         this.inst = await instanceinator.copy(
             multi.server.inst,
             { name: 'client-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
-            {
-                preLoad: inst => {
-                    inst.ig.client = this
-                },
-            }
+            instanceinatorCopyInstanceConfig()
         )
+        this.inst.ig.client = this
         assert(this.inst.ig.game)
         this.initOptionModel()
 

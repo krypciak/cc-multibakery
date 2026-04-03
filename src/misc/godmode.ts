@@ -38,11 +38,13 @@ prestart(() => {
             model.core[k] = true
         }
 
-        // model.setSpLevel(1)
-        model.setSpLevel(4)
         sc.newgame.setActive(true)
         if (!sc.newgame.get('infinite-sp')) sc.newgame.toggle('infinite-sp')
-        model.setLevel(99)
+        /* model.setSpLevel(4) */
+        model.spLevel = 4
+        model.params.setMaxSp(sc.SP_LEVEL[model.spLevel])
+        /* model.setLevel */
+        model.level = 99
         model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
 
         model.skillPoints.fill(200)
@@ -53,10 +55,11 @@ prestart(() => {
         const branchB = [0, 1, 2, 3, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 18, 20, 22, 23, 24, 25, 26, 27, 28, 30, 32, 34, 35, 36, 37, 38, 39, 40, 41, 43, 45, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 58, 60, 62, 64, 66, 68, 69, 70, 71, 73, 75, 77, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88, 89, 90, 92, 94, 96, 98, 100, 102, 103, 104, 105, 106, 107, 108, 109, 110, 112, 114, 116, 117, 119, 121, 123, 124, 125, 126, 127, 129, 131, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 144, 146, 148, 149, 150, 152, 154, 156, 157, 158, 159, 161, 163, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 177, 178, 180, 182, 184, 186, 188, 190, 191, 192, 193, 194, 195, 196, 197, 198, 200, 202, 204, 205, 207, 209, 211, 212, 213, 215, 217, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 232, 234, 236, 237, 239, 241, 243, 244, 245, 247, 249, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 265, 267, 269, 271, 273, 275, 277, 278, 279, 280, 281, 282, 283, 284, 286, 288, 290, 291, 292, 294, 296, 298, 299, 300, 301, 303, 305, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 318, 320, 322, 323, 325, 327, 329, 330, 331, 332, 333, 335, 337, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 353, 355, 357, 359, 361, 363, 364, 365, 366, 367, 368, 369, 370, 371, 372, 374, 376, 378, 380, 382, 384, 385, 386, 387, 389, 391, 393, 394, 395, 396, 397, 398, 399]
         const branch = circuitBranch ? branchA : branchB
 
-        for (const i of branch) {
+        for (const id of branch) {
             // @ts-expect-error
-            if (sc.skilltree.skills[i].statType == 'SPIKE_DMG') continue
-            model.learnSkill(i)
+            if (sc.skilltree.skills[id].statType == 'SPIKE_DMG') continue
+            // model.learnSkill
+            model.skills[id] = sc.skilltree.skills[id]
         }
         model.skillPoints.fill(3)
 
@@ -67,7 +70,6 @@ prestart(() => {
             model.items[i] = 90
             model._addNewItem(i)
         }
-        model.updateStats()
 
         /* disable new circuit tree animaition on first time circuit menu opening */
         const startCircuits = (((ig.vars.storage.menu ??= {}).circuit ??= {}).start ??= {})
@@ -86,11 +88,12 @@ prestart(() => {
         /* unlock all maps */
         for (const areaName in sc.map.areas) {
             const area = new sc.AreaLoadable(areaName)
+            const vars = ig.vars
             area.load(() => {
                 for (const floor of area.data.floors) {
                     for (const map of floor.maps) {
                         const mapPath = map.path.toCamel().toPath('', '')
-                        if (!ig.vars.storage.maps[mapPath]) ig.vars.set(`maps.${mapPath}`, {})
+                        if (!vars.storage.maps[mapPath]) vars.set(`maps.${mapPath}`, {})
                     }
                 }
             })
@@ -106,6 +109,11 @@ prestart(() => {
 
         /* add money */
         model.addCredit(1e7)
+
+        sc.Model.notifyObserver(model, sc.PARTY_MEMBER_MSG.LEVEL_CHANGE)
+        sc.Model.notifyObserver(model.params, sc.COMBAT_PARAM_MSG.MAX_SP_CHANGED)
+        sc.Model.notifyObserver(model, sc.PLAYER_MSG.SKILL_CHANGED)
+        model.updateStats()
 
         PROFILE && console.timeEnd('godmode')
     }
