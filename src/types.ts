@@ -10,7 +10,6 @@ import type {} from 'cc-krypek-lib/src/plugin'
 import type {} from 'cc-jetpack-widget/src/plugin'
 import 'ts-binarifier/src/type-aliases'
 import './net/binary/binary-types'
-import 'typescript'
 
 declare global {
     /* build constants */

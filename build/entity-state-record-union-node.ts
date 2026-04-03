@@ -1,8 +1,8 @@
 import ts from 'typescript'
 import { Node } from 'ts-binarifier/src/nodes/node'
 import { gray, yellow } from 'ts-binarifier/src/colors'
-import type { TypeParser } from 'ts-binarifier/src/type-parser';
-import { getRecordKeyType, getRecordValueType } from 'ts-binarifier/src/type-parser'
+import type { TypeParser } from 'ts-binarifier/src/type-parser'
+import { getRecordKeyType } from 'ts-binarifier/src/type-parser'
 import { assert } from 'ts-binarifier/src/assert'
 import { NumberNode, NumberType } from 'ts-binarifier/src/nodes/number'
 

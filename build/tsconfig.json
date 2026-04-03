@@ -1,16 +1,11 @@
 {
-    "include": [
-        "src"
-    ],
     "compilerOptions": {
-        "target": "ES2020",
+        "target": "esnext",
         "types": [
             "node",
-            "chrome",
-            "jquery",
         ],
         "module": "preserve",
-        "rootDir": "./src",
+        "rootDir": ".",
         "moduleResolution": "bundler",
         "allowJs": true,
         "noEmit": true,
