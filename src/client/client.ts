@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import type { CCMap } from '../server/ccmap/ccmap'
-import { addAddon, removeAddon } from '../dummy/box/box-addon'
+import { addAddon, removeAddon } from '../misc/game-addon-util'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
 import { runTask, filterInstanceObjectsFromArray } from 'cc-instanceinator/src/inst-util'

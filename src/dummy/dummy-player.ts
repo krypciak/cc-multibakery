@@ -10,6 +10,7 @@ import { isRemote } from '../server/remote/is-remote-server'
 
 import './dummy-skins'
 import './dummy-var-access'
+import './box/box-addon'
 
 declare global {
     namespace NodeJS {
