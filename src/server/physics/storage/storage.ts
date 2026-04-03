@@ -258,12 +258,14 @@ prestart(() => {
             multi.storage.save(slot)
         },
         onLevelLoadStart(data) {
+            if (!multi.server) return this.parent?.(data)
             if (ig.ccmap || ig.client) return
             multi.storage.wrapFilterListeners(() => {
                 this.parent!(data)
             })
         },
         onLevelLoaded(data) {
+            if (!multi.server) return this.parent?.(data)
             if (ig.ccmap || ig.client) return
             multi.storage.wrapFilterListeners(() => {
                 this.parent!(data)
@@ -274,9 +276,7 @@ prestart(() => {
     if (ASSERT) {
         ig.Storage.inject({
             _saveState(output, mapName, teleportPositionSettings) {
-                if (multi.server) {
-                    assert(multi.storage.saving)
-                }
+                if (multi.server) assert(multi.storage.saving)
                 return this.parent(output, mapName, teleportPositionSettings)
             },
             _saveToStorage() {
