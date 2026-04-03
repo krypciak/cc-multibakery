@@ -17,6 +17,7 @@
 - Simplify new variables graph in docs/GAME-VARIABLED.md
 - Let each client have their own timers
 - Use new `SHOW_OBJECT_SLIDER_DIALOG` from cc-krypek-lib for pvp round selection
+- Don't override pvp damage factor, let cc-krypek-lib handle that
 
 ### Fixed
 

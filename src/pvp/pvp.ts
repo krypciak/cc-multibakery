@@ -230,10 +230,7 @@ prestart(() => {
             this.points = {}
             this.parent(winPoints, enemies)
         },
-        getDmgFactor() {
-            if (!this.multiplayerPvp) return this.parent()
-            return 1
-        },
+        // getDmgFactor should be handled by cc-krypek-lib damage factor override variable
         isOver() {
             if (!this.multiplayerPvp) return this.parent()
             return Object.values(this.points).some(points => points == this.winPoints)
