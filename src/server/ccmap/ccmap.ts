@@ -60,6 +60,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     async init() {
+        PROFILE && console.time('map init')
         this.display = new CCMapDisplay(this)
 
         const levelDataPromise = this.readLevelData()
@@ -72,11 +73,15 @@ export class CCMap extends InstanceUpdateable {
         forceConditionalLightOnInst(this.inst.id)
         this.link()
 
+        PROFILE && console.time('await level data')
         const levelData = await levelDataPromise
+        PROFILE && console.timeEnd('await level data')
         this.rawLevelData = levelData
 
         await runTask(this.inst, async () => {
+            PROFILE && console.time('setDataFromLevelData')
             await setDataFromLevelData.call(ig.game, this.name, this.copyRawLevelData())
+            PROFILE && console.timeEnd('setDataFromLevelData')
             runTask(this.inst, () => {
                 sc.model.enterNewGame()
                 sc.model.enterGame()
@@ -87,6 +92,7 @@ export class CCMap extends InstanceUpdateable {
             })
         })
         this.readyResolve()
+        PROFILE && console.timeEnd('map init')
     }
 
     attemptRecovery(e: unknown) {

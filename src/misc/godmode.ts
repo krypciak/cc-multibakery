@@ -22,6 +22,7 @@ export interface GodmodeSettings {
 
 prestart(() => {
     ig.godmode = (model = sc.model.player, { circuitBranch = true }: GodmodeSettings = {}) => {
+        PROFILE && console.time('godmode')
         Object.keysT = Object.keys as any
 
         sc.stats.statsEnabled = true
@@ -105,6 +106,8 @@ prestart(() => {
 
         /* add money */
         model.addCredit(1e7)
+
+        PROFILE && console.timeEnd('godmode')
     }
 })
 

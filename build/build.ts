@@ -15,6 +15,7 @@ interface Options {
     extraTreeShaking?: boolean
     target?: string
     dropAssert?: boolean
+    dropProfiling?: boolean
     noWrite?: boolean
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
 }
@@ -35,6 +36,7 @@ async function run(
         extraTreeShaking = false,
         target = 'es2018',
         dropAssert = false,
+        dropProfiling = true,
         noWrite = false,
         forceRegenerateBinaryEncodeDecodeScripts = false,
     }: Options
@@ -99,7 +101,7 @@ async function run(
                 }
             })
 
-            if (dropAssert || !remote || !physics) {
+            if (dropAssert || dropProfiling || !remote || !physics) {
                 build.onLoad({ filter: /src.+\.(js|ts)$/ }, async args => {
                     let code = await fs.promises.readFile(args.path, 'utf8')
                     let sp = code.split('\n')
@@ -158,6 +160,7 @@ async function run(
             REMOTE: String(remote),
             BROWSER: String(browser),
             ASSERT: String(!dropAssert),
+            PROFILE: String(!dropProfiling)
         },
         plugins: [plugin],
         // metafile: true,

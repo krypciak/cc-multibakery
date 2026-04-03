@@ -73,6 +73,8 @@ export class Client extends InstanceUpdateable {
     }
 
     private async init(settings: ClientSettings) {
+        PROFILE && console.time('client init')
+
         this.inst = await instanceinator.copy(
             multi.server.inst,
             { name: 'client-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
@@ -96,6 +98,8 @@ export class Client extends InstanceUpdateable {
         }
 
         removeAddon(this.inst.sc.npcRunner, this.inst.ig.game)
+
+        PROFILE && console.timeEnd('client init')
     }
 
     private initInputManager() {
@@ -174,6 +178,8 @@ export class Client extends InstanceUpdateable {
     }
 
     async teleportInitial(tpInfoOverride?: MapTpInfo) {
+        PROFILE && console.time('client teleportInitial')
+
         const state = this.getSaveState(false)
 
         const tpInfo: MapTpInfo = tpInfoOverride ??
@@ -181,6 +187,8 @@ export class Client extends InstanceUpdateable {
             multi.server.settings.defaultMap ??
             multi.server.getMasterClient()?.tpInfo ?? { map: 'multibakery/dev', marker: 'entrance' }
         await this.teleport(tpInfo)
+
+        PROFILE && console.timeEnd('client teleportInitial')
     }
 
     private startTeleportOverlay() {
@@ -204,6 +212,7 @@ export class Client extends InstanceUpdateable {
     }
 
     async teleport(tpInfo: MapTpInfo) {
+        PROFILE && console.time('client teleport')
         this.startTeleportOverlay()
 
         assert(instanceinator.id == multi.server.inst.id)
@@ -235,7 +244,9 @@ export class Client extends InstanceUpdateable {
 
         this.tpInfo = tpInfo
 
+        PROFILE && console.time('createPlayer')
         await runTask(map.inst, () => this.createPlayer())
+        PROFILE && console.timeEnd('createPlayer')
         map.enter(this)
 
         if (isPhysics(multi.server)) {
@@ -246,7 +257,9 @@ export class Client extends InstanceUpdateable {
         this.ready = true
         this.nextTpInfo = { map: '' }
 
+        PROFILE && console.time('link to map')
         this.linkMapToInstance(map)
+        PROFILE && console.timeEnd('link to map')
 
         this.inst.ig.game.events.clear()
 
@@ -255,6 +268,7 @@ export class Client extends InstanceUpdateable {
         multi.storage.save()
 
         this.stopTeleportOverlay()
+        PROFILE && console.timeEnd('client teleport')
     }
 
     private linkMapToInstance(map: CCMap) {
@@ -394,7 +408,9 @@ export class Client extends InstanceUpdateable {
         assertPhysics(multi.server)
         const state = this.getSaveState(true)?.entityState
         if (state) {
+            PROFILE && console.time('applyStateUpdatePacket')
             applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
+            PROFILE && console.timeEnd('applyStateUpdatePacket')
         }
     }
 

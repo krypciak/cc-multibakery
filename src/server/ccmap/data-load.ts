@@ -75,6 +75,8 @@ function prepareCollision(this: ig.Game) {
 export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.MapModel.Map): Promise<void> {
     /* mostly stolen from ig.Game#loadLevel */
 
+    PROFILE && console.time('setDataFromLevelData setup')
+
     ig.game.mapName = mapName
     ig.game.marker = ''
     for (const addon of this.addons.teleport) addon.onTeleport(mapName, new ig.TeleportPosition(), undefined)
@@ -95,9 +97,13 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
     }
     this.renderer.mapCleared()
 
+    PROFILE && console.timeEnd('setDataFromLevelData setup')
+
     const loader = new (this.mapLoader || ig.Loader)()
     return new Promise<void>(resolve => {
+        PROFILE && console.time('setDataFromLevelData loading')
         loader.onEnd = function (this: ig.Loader) {
+            PROFILE && console.timeEnd('setDataFromLevelData loading')
             scheduleTask(instanceinator.instances[this._instanceId], () => {
                 /* this.finalize() */
                 this.prevResourcesCnt = ig.resources.length
@@ -106,6 +112,7 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
 
                 ig.ready = true
 
+                PROFILE && console.time('setDataFromLevelData post')
                 ig.game.preDrawMaps()
                 // ig.game.loadingComplete()
                 prepareCollision.call(ig.game)
@@ -117,6 +124,7 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
                 ig.loading = false
 
                 resolve()
+                PROFILE && console.timeEnd('setDataFromLevelData post')
             })
         }.bind(loader)
 

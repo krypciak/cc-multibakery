@@ -133,9 +133,11 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     save(slotId?: number) {
+        PROFILE && console.time('storage save')
         const save = this.getMultiSaveSlotData()
         this.addPrettyTextToSave(save)
         this.commitSave(save, slotId)
+        PROFILE && console.timeEnd('storage save')
     }
 
     // creates state with no references (deep copy)
@@ -207,6 +209,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     load() {
+        PROFILE && console.time('storage load')
         assertPhysics(multi.server)
         const settings = multi.server.settings.save
         if (!settings) return
@@ -228,6 +231,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         if (data) {
             this.loadSlotData(data)
         }
+        PROFILE && console.timeEnd('storage load')
     }
 }
 
