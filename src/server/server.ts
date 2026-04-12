@@ -12,6 +12,7 @@ import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
 import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
+import { removeUnnecessarySystemsForServerInstance } from './game-systems-cleanup'
 
 import './server-var-access'
 
@@ -125,6 +126,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
             instanceinatorCopyInstanceConfig()
         )
         this.inst.apply()
+        removeUnnecessarySystemsForServerInstance()
         this.safeguardInst()
         this.link()
         this.updateMusicInstance()

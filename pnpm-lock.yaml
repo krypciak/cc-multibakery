@@ -28,7 +28,7 @@ importers:
         version: 1.3.11
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d1b6d408053bec4ffed89529b3a3cd87e9ea44f3
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/79aa2ad3588c7af598fc33e3f940af7c3e3408d4
       cc-jetpack-widget:
         specifier: github:krypciak/cc-jetpack-widget
         version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f
@@ -91,7 +91,7 @@ importers:
         version: 6.0.2
       ultimate-crosscode-typedefs:
         specifier: github:krypciak/ultimate-crosscode-typedefs
-        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/94bbd7a6831f449658d0dfddb0be6fd38dc9ebbc
+        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/6dbccdd94f371bd02de34b791a69e34f2ff7543f
 
 packages:
 
@@ -447,8 +447,8 @@ packages:
     resolution: {integrity: sha512-Gmy6FhYlCY7uOElZUSbxo2UCDH8owEk996gkbrpsgGtrJLM3J7jGxl9Ic7Qwwj4ivOE5AWZWRMecDdF7hqGjFA==}
     engines: {node: '>=10'}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d1b6d408053bec4ffed89529b3a3cd87e9ea44f3:
-    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d1b6d408053bec4ffed89529b3a3cd87e9ea44f3}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/79aa2ad3588c7af598fc33e3f940af7c3e3408d4:
+    resolution: {tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/79aa2ad3588c7af598fc33e3f940af7c3e3408d4}
     version: 1.1.1
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f:
@@ -1004,8 +1004,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/94bbd7a6831f449658d0dfddb0be6fd38dc9ebbc:
-    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/94bbd7a6831f449658d0dfddb0be6fd38dc9ebbc}
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/6dbccdd94f371bd02de34b791a69e34f2ff7543f:
+    resolution: {tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/6dbccdd94f371bd02de34b791a69e34f2ff7543f}
     version: 0.0.1
     engines: {node: '>=10.0.0'}
 
@@ -1346,7 +1346,7 @@ snapshots:
 
   camelcase@6.3.0: {}
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/d1b6d408053bec4ffed89529b3a3cd87e9ea44f3: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/79aa2ad3588c7af598fc33e3f940af7c3e3408d4: {}
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f: {}
 
@@ -1964,7 +1964,7 @@ snapshots:
 
   typescript@6.0.2: {}
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/94bbd7a6831f449658d0dfddb0be6fd38dc9ebbc:
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/6dbccdd94f371bd02de34b791a69e34f2ff7543f:
     dependencies:
       '@types/jquery': 1.10.45
       '@types/node': 25.5.0

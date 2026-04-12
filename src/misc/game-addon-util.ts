@@ -5,6 +5,19 @@ export function removeAddon(addon: ig.GameAddon, game: ig.Game) {
     }
 }
 
+export function removeAddons(addons: ig.GameAddon[], game: ig.Game) {
+    const addonsSet = new Set(addons)
+    for (const key in game.addons) {
+        const arr = game.addons[key as keyof ig.Game['addons']]
+        for (let i = arr.length - 1; i >= 0; i--) {
+            const addon = arr[i] as ig.GameAddon
+            if (addonsSet.has(addon)) {
+                arr.splice(i, 1)
+            }
+        }
+    }
+}
+
 export function addAddon(addon: ig.GameAddon, game: ig.Game) {
     game.addons.all.push(addon)
     if (addon.onLevelLoadStart) game.addons.levelLoadStart.push(addon as any)

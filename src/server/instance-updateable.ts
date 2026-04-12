@@ -12,10 +12,13 @@ export abstract class InstanceUpdateable {
     protected abstract attemptRecovery(e: unknown): void
 
     preUpdate() {
+        // PROFILE && console.time(`${this.inst.name} preUpdate`)
         for (const addon of ig.game.addons.preUpdate) addon.onPreUpdate()
+        // PROFILE && console.timeEnd(`${this.inst.name} preUpdate`)
     }
 
     update() {
+        // PROFILE && console.time(`${this.inst.name} update`)
         const addonsPreUpdateBackup = ig.game.addons.preUpdate
         ig.game.addons.preUpdate = []
         try {
@@ -28,15 +31,18 @@ export abstract class InstanceUpdateable {
                 ig.game.addons.preUpdate = addonsPreUpdateBackup
             }
         }
+        // PROFILE && console.timeEnd(`${this.inst.name} update`)
     }
 
     deferredUpdate() {
+        // PROFILE && console.time(`${this.inst.name} deferredUpdate`)
         try {
             ig.game.deferredUpdate()
             ig.input.clearPressed()
         } catch (e) {
             this.attemptRecovery(e)
         }
+        // PROFILE && console.timeEnd(`${this.inst.name} deferredUpdate`)
     }
 
     destroy() {
