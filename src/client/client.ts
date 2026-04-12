@@ -76,7 +76,7 @@ export class Client extends InstanceUpdateable {
         PROFILE && console.time('client init')
 
         this.inst = await instanceinator.copy(
-            multi.server.inst,
+            multi.server.baseInst,
             { name: 'client-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
             instanceinatorCopyInstanceConfig()
         )

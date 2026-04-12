@@ -66,7 +66,7 @@ export class CCMap extends InstanceUpdateable {
 
         const levelDataPromise = this.readLevelData()
         this.inst = await instanceinator.copy(
-            multi.server.inst,
+            multi.server.baseInst,
             {
                 name: `map-${this.name}`,
                 display: this.isVisible(),
@@ -125,10 +125,11 @@ export class CCMap extends InstanceUpdateable {
     }
 
     private async readLevelData() {
+        const path = ig.getFilePath(this.name.toPath(ig.root + 'data/maps/', '.json') + ig.getCacheSuffix())
         return new Promise<sc.MapModel.Map>(resolve => {
             $.ajax({
                 dataType: 'json',
-                url: ig.getFilePath(this.name.toPath(ig.root + 'data/maps/', '.json') + ig.getCacheSuffix()),
+                url: path,
                 context: this,
                 success: resolve,
                 error: (b, c, e) => {
