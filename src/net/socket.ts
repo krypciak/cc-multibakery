@@ -14,7 +14,6 @@ import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
 import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
-import type { Username } from './binary/binary-types'
 import { assertPhysics } from '../server/physics/is-physics-server'
 import { assertRemote } from '../server/remote/is-remote-server'
 
@@ -99,8 +98,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             socket.on('update', data => server.onNetReceiveUpdate(connection, data))
             socket.on('join', async (data, callback) => {
                 if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-                const { client, ackData } = await server.tryJoinClient(data, connection)
-                if (ackData.status == 'ok') connection.join(client!)
+                const ackData = await server.onNetClientJoinRequest(data, connection)
                 callback(ackData)
             })
             socket.on('leave', data => {
@@ -135,8 +133,6 @@ export class SocketNetManagerRemoteServer {
     conn?: SocketNetConnection
     timeOffset: number = 0
 
-    private joinActCallbacks: Record<Username, (data: ClientJoinAckData) => void> = {}
-
     constructor(public connectionSettings: RemoteServerConnectionSettings) {}
 
     async connect() {
@@ -164,19 +160,29 @@ export class SocketNetManagerRemoteServer {
             parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
         }) as ClientSocket
 
-        socket.on('update', data => server.onNetReceive(this.conn!, data))
+        socket.on('update', data => {
+            server.onNetReceive(this.conn!, data)
+        })
         socket.on('disconnect', () => {
             this.stop()
             if (!multi.server || multi.server != server || server.destroyed) return
 
             server.onNetDisconnect()
         })
+        socket.on('connect_error', error => {
+            if (!socket.active) {
+                console.log(error.message)
+            }
+        })
+
         return new Promise<void>(resolve => {
             socket.on('connect', () => {
                 const conn = new SocketNetConnection(socket)
                 this.conn = conn
 
-                this.measureClockOffset()
+                try {
+                    this.measureClockOffset()
+                } catch (e) {}
 
                 resolve()
             })
@@ -224,7 +230,6 @@ export class SocketNetManagerRemoteServer {
         const ack = await new Promise<ClientJoinAckData>(resolve => {
             assert(this.conn)
             assertRemote(multi.server)
-            this.joinActCallbacks[data.username] = resolve
             this.conn.socket.emit('join', data, resolve)
         })
         return ack

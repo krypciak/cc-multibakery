@@ -236,8 +236,8 @@ if (REMOTE) {
                     initialInputType: ig.input.currentDevice,
                     prefferedTpInfo: ig.client?.tpInfo,
                 })
-                const resp = REMOTE && (await tryJoinRemote(this.serverInfo, joinData))
-                showTryNetJoinResponseDialog(joinData, resp)
+                const ackData = REMOTE && (await tryJoinRemote(this.serverInfo, joinData))
+                showTryNetJoinResponseDialog(joinData, ackData)
             },
             async updateConnectionStatus() {
                 this.isServerReachable = false

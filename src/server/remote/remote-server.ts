@@ -4,7 +4,7 @@ import { SocketNetManagerRemoteServer } from '../../net/socket'
 import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import { type ClientJoinAckData, type ClientJoinData, Server, type ServerSettings } from '../server'
-import type { Client } from '../../client/client'
+import { Client, type ClientSettings } from '../../client/client'
 import { Opts } from '../../options'
 import { TemporarySet } from '../../misc/temporary-set'
 import { runTask } from 'cc-instanceinator/src/inst-util'
@@ -60,6 +60,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         if (this.settings.modCompatibility) applyModCompatibilityList(this.inst, this.settings.modCompatibility)
 
+        TemporarySet.resetAll()
+    }
+
+    async startNet() {
         const connS = this.settings.connection
         if (connS.type == 'socket') {
             this.netManager = new SocketNetManagerRemoteServer(connS)
@@ -67,8 +71,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         await this.netManager.connect()
         this.measureTraffic = Opts.showPacketNetworkTraffic
-
-        TemporarySet.resetAll()
     }
 
     update() {
@@ -76,28 +78,34 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         sendRemoteServerPacket()
     }
 
-    async tryJoinClient(
-        joinData: ClientJoinData,
-        connection?: NetConnection
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
-        assert(!connection)
-
+    async tryJoinClient(joinData: ClientJoinData): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        PROFILE && console.time('sendJoin')
         const ackData = await this.netManager.sendJoin(joinData)
-        let client: Client | undefined
-        if (ackData.status == 'ok') {
-            this.baseInst.display = false
-            client = await this.createAndJoinClient({
-                username: joinData.username,
-                inputType: 'clone',
-                remote: false,
-                initialInputType: joinData.initialInputType,
-                tpInfo: { map: ackData.mapName! },
-            })
-            assert(this.netManager.conn)
-            this.netManager.conn.join(client)
-        }
+        PROFILE && console.timeEnd('sendJoin')
+
+        if (ackData.status != 'ok') return { ackData }
+
+        const client = await this.createClientWithAckData(joinData, ackData)
 
         return { client, ackData }
+    }
+
+    async createClientWithAckData(joinData: ClientJoinData, ackData: ClientJoinAckData) {
+        this.baseInst.display = false
+
+        const settings: ClientSettings = {
+            username: joinData.username,
+            inputType: 'clone',
+            remote: false,
+            initialInputType: joinData.initialInputType,
+            tpInfo: ackData.tpInfo,
+        }
+        const client = new Client(settings)
+        await this.initAndJoinClient(client)
+        assert(this.netManager.conn)
+        this.netManager.conn.join(client)
+
+        return client
     }
 
     async onNetDisconnect() {

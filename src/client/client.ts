@@ -60,24 +60,18 @@ export class Client extends InstanceUpdateable {
     ready: boolean = false
     playerAttachResolve?: (player: dummy.DummyPlayer) => void
 
-    static async create(settings: ClientSettings): Promise<Client> {
-        const client = new Client(settings)
-        await client.init(settings)
-        return client
-    }
-
-    private constructor(public settings: ClientSettings) {
+    constructor(public settings: ClientSettings) {
         super()
         assert(isUsernameValid(settings.username))
         this.username = settings.username
     }
 
-    private async init(settings: ClientSettings) {
+    async init() {
         PROFILE && console.time('client init')
 
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
-            { name: 'client-' + settings.username, display: this.isVisible(), forceDraw: settings.forceDraw },
+            { name: 'client-' + this.settings.username, display: this.isVisible(), forceDraw: this.settings.forceDraw },
             instanceinatorCopyInstanceConfig()
         )
         this.inst.ig.client = this
@@ -174,15 +168,19 @@ export class Client extends InstanceUpdateable {
         }
     }
 
+    getInitialTpInfo() {
+        const state = this.getSaveState(false)
+
+        const tpInfo: MapTpInfo = state?.tpInfo ??
+            multi.server.settings.defaultMap ??
+            multi.server.getMasterClient()?.tpInfo ?? { map: 'multibakery/dev', marker: 'entrance' }
+        return tpInfo
+    }
+
     async teleportInitial(tpInfoOverride?: MapTpInfo) {
         PROFILE && console.time('client teleportInitial')
 
-        const state = this.getSaveState(false)
-
-        const tpInfo: MapTpInfo = tpInfoOverride ??
-            state?.tpInfo ??
-            multi.server.settings.defaultMap ??
-            multi.server.getMasterClient()?.tpInfo ?? { map: 'multibakery/dev', marker: 'entrance' }
+        const tpInfo: MapTpInfo = tpInfoOverride ?? this.getInitialTpInfo()
         await this.teleport(tpInfo)
 
         PROFILE && console.timeEnd('client teleportInitial')

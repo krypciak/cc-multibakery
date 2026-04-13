@@ -7,6 +7,7 @@ import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { Client } from '../../client/client'
 import type { CCMap } from '../ccmap/ccmap'
 import type { EntityNetid } from '../../misc/entity-netid'
+import { isPhysics } from '../physics/is-physics-server'
 
 declare global {
     namespace ig.ENTITY {
@@ -323,7 +324,8 @@ function genTest(name: string, moves: string, map: string, expected: number, par
             await multi.server.start()
         },
         async postSetup() {
-            this.client = await multi.server.createAndJoinClient({
+            assert(isPhysics(multi.server))
+            this.client = await multi.server.forceCreateClient({
                 username: 'aoc',
                 inputType: 'puppet',
                 remote: false,

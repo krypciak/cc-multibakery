@@ -6,7 +6,8 @@
 
 ### Fixed
 
-- Improve server startup performance
+- Improve server startup time
+- Improve remote server join time
 
 ## [0.7.7] 2026-04-03
 

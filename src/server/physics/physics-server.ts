@@ -5,7 +5,7 @@ import { isRemoteServerUpdatePacket, type RemoteServerUpdatePacket } from '../re
 import { assert } from '../../misc/assert'
 import type { NetServerInfoPhysics } from '../../client/menu/server-info'
 import { PhysicsHttpServer } from '../../net/web-server'
-import type { Client } from '../../client/client'
+import { Client, type ClientSettings } from '../../client/client'
 import { startRepl } from './shell'
 import { isUsernameValid } from '../../misc/username-util'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
@@ -109,6 +109,62 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         sendPhysicsServerPacket()
     }
 
+    async onNetClientJoinRequest(joinData: ClientJoinData, connection: NetConnection) {
+        const { ackData, client } = await this.requestClientJoin(joinData, connection)
+
+        if (client) {
+            /* setTimeout to let socket.io send ackData to the client this blocks the thread */
+            setTimeout(() => {
+                this.initAndJoinClient(client).then(() => {
+                    connection.join(client)
+                })
+            }, 40)
+        }
+
+        return ackData
+    }
+
+    async tryJoinClient(joinData: ClientJoinData) {
+        const { ackData, client } = await this.requestClientJoin(joinData)
+
+        if (client) this.initAndJoinClient(client)
+
+        return { ackData, client }
+    }
+
+    async forceCreateClient(clientSettings: ClientSettings) {
+        const client = new Client(clientSettings)
+
+        await this.initAndJoinClient(client)
+
+        return client
+    }
+
+    private async requestClientJoin(
+        joinData: ClientJoinData,
+        connection?: NetConnection
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        assert(instanceinator.id == this.inst.id)
+        const username = joinData.username
+
+        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
+        if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
+
+        let tpInfo = this.validatePrefferedMap(joinData.prefferedTpInfo, connection)
+
+        const settings: ClientSettings = {
+            username,
+            inputType: connection ? 'puppet' : 'clone',
+            remote: !!connection,
+            initialInputType: joinData.initialInputType,
+            tpInfo,
+        }
+        const client = new Client(settings)
+        tpInfo = client.getInitialTpInfo()
+
+        return { ackData: { status: 'ok', tpInfo }, client }
+    }
+
     private validatePrefferedMap(
         tpInfo: MapTpInfo | undefined,
         connection: NetConnection | undefined
@@ -124,29 +180,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
 
         return tpInfo
-    }
-
-    async tryJoinClient(
-        joinData: ClientJoinData,
-        connection: NetConnection
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
-        assert(instanceinator.id == this.inst.id)
-        const username = joinData.username
-
-        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
-        if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
-
-        const tpInfo = this.validatePrefferedMap(joinData.prefferedTpInfo, connection)
-
-        const client = await this.createAndJoinClient({
-            username,
-            inputType: connection ? 'puppet' : 'clone',
-            remote: !!connection,
-            initialInputType: joinData.initialInputType,
-            tpInfo,
-        })
-
-        return { client, ackData: { status: 'ok', mapName: client.tpInfo.map } }
     }
 
     private updateAnyRemoteClientsOn() {

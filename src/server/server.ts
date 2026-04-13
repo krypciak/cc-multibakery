@@ -1,12 +1,11 @@
 import { startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { Client, type ClientSettings } from '../client/client'
+import { Client } from '../client/client'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
 import { removeAddon } from '../misc/game-addon-util'
-import type { NetConnection } from '../net/connection'
 import { linkOptions } from './physics/storage/storage'
 import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
@@ -58,7 +57,7 @@ export function isClientJoinData(_data: unknown): _data is ClientJoinData {
 }
 export interface ClientJoinAckData {
     status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
-    mapName?: MapName
+    tpInfo?: MapTpInfo
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
@@ -80,6 +79,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     constructor(public settings: S) {
         super()
+
+        this.baseInst = instanceinator.instances[0]
     }
 
     isActive() {
@@ -110,8 +111,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
-
-        this.baseInst = instanceinator.instances[0]
 
         PROFILE && console.time('creating instances non await')
         instanceinator.createCachedInstances(
@@ -210,18 +209,16 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.clients.set(client.username, client)
     }
 
-    async createAndJoinClient(settings: ClientSettings) {
-        const client = await Client.create(settings)
+    protected async initAndJoinClient(client: Client) {
+        await client.init()
+
         this.joinClient(client)
-        await client.teleportInitial(settings.tpInfo)
+        await client.teleportInitial(client.settings.tpInfo)
 
         return client
     }
 
-    abstract tryJoinClient(
-        joinData: ClientJoinData,
-        connection?: NetConnection
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
+    abstract tryJoinClient(joinData: ClientJoinData): Promise<{ ackData: ClientJoinAckData; client?: Client }>
 
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */
@@ -267,7 +264,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         if (this.destroyed) return
         this.postUpdateCallback = undefined
 
-        this.inst.apply()
+        this.inst?.apply()
 
         for (const client of this.clients.values()) {
             this.leaveClient(client)

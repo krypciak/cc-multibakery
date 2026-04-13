@@ -16,6 +16,8 @@ export async function tryJoinRemote(
 
     serverInfo.connection.forceJsonCommunication = serverInfo.details.forceJsonCommunication
 
+    PROFILE && console.time('tryJoinRemote')
+
     const server = new RemoteServer({
         displayServerInstance: Opts.serverDisplayServerInstance,
         displayMaps: Opts.serverDisplayMaps,
@@ -29,12 +31,27 @@ export async function tryJoinRemote(
         mapSwitchDelay: serverInfo.details.mapSwitchDelay,
     })
     multi.setServer(server)
-    await server.start()
 
-    const { client, ackData } = await server.tryJoinClient(joinData)
-    if (client) server.setMasterClient(client)
+    PROFILE && console.time('startNet')
+    await server.startNet()
+    PROFILE && console.timeEnd('startNet')
+
+    PROFILE && console.time('sendJoin')
+    const ackData = await server.netManager.sendJoin(joinData)
+    PROFILE && console.timeEnd('sendJoin')
+
     if (ackData.status != 'ok') {
-        await multi.destroyNextFrameAndStartLoop()
+        multi.destroyAndStartLoop()
+    } else {
+        PROFILE && console.time('server start')
+        await server.start()
+        PROFILE && console.timeEnd('server start')
+
+        const client = await server.createClientWithAckData(joinData, ackData)
+        server.setMasterClient(client)
     }
+
+    PROFILE && console.timeEnd('tryJoinRemote')
+
     return ackData
 }

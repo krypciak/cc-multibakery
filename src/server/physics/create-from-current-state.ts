@@ -66,7 +66,7 @@ export async function createPhysicsServerFromCurrentState() {
     await server.start()
 
     const client = server.setMasterClient(
-        await server.createAndJoinClient({
+        await server.forceCreateClient({
             username,
             inputType: 'clone',
             remote: false,
