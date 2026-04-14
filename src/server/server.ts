@@ -109,15 +109,22 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         linkOptions(this.inst, this.baseInst)
     }
 
+    private createCachedInstances() {
+        PROFILE && console.time('creating instances non await')
+        const toCreate = 3 - instanceinator.getCachedInstanceCount(instanceinatorCopyInstanceConfig().cacheKey)
+        if (toCreate > 0) {
+            instanceinator.createCachedInstances(
+                this.baseInst,
+                new Array(toCreate).fill(null).map(_ => instanceinatorCopyInstanceConfig())
+            )
+        }
+        PROFILE && console.timeEnd('creating instances non await')
+    }
+
     async start(useAnimationFrame = false) {
         assert(!isErrorPopupShown())
 
-        PROFILE && console.time('creating instances non await')
-        instanceinator.createCachedInstances(
-            this.baseInst,
-            new Array(3).fill(null).map(_ => instanceinatorCopyInstanceConfig())
-        )
-        PROFILE && console.timeEnd('creating instances non await')
+        this.createCachedInstances()
 
         this.inst = await instanceinator.copy(
             this.baseInst,

@@ -304,6 +304,7 @@ export class Client extends InstanceUpdateable {
             removeAddon(ig.screenBlur, ig.game)
             ig.screenBlur = mig.screenBlur
             addAddon(ig.screenBlur, ig.game)
+            if (ig.perf.draw) ig.screenBlur.initBuffers()
 
             removeAddon(ig.rumble, ig.game)
             ig.rumble = mig.rumble
