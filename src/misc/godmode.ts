@@ -110,6 +110,7 @@ prestart(() => {
         /* add money */
         model.addCredit(1e7)
 
+        sc.inventory.updateScaledEquipment(model.level)
         sc.Model.notifyObserver(model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
         sc.Model.notifyObserver(model, sc.PARTY_MEMBER_MSG.LEVEL_CHANGE)
         sc.Model.notifyObserver(model.params, sc.COMBAT_PARAM_MSG.MAX_SP_CHANGED)
