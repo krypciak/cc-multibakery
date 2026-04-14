@@ -2,7 +2,7 @@
     "id": "cc-multibakery",
     "version": "0.7.7",
     "title": "Multibakery",
-    "description": "Multiplayer and split-screen co-op mod for CrossCode!",
+    "description": "Online multiplayer and split-screen co-op mod for CrossCode!",
     "repository": "https://github.com/krypciak/cc-multibakery",
     "tags": ["fun"],
     "authors": ["krypek"],
