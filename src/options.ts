@@ -67,6 +67,12 @@ function registerOpts() {
                         name: 'Check NW.js version',
                         description: 'Check for problems related to outdated NW.js version',
                     },
+                    useClosestSoundPos: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Closest player for sound',
+                        description: 'Determine the sound volume based on the closest player to the sound',
+                    },
                     serverList: {
                         type: 'JSON_DATA',
                         init: serverListDefault,
@@ -157,7 +163,7 @@ function registerOpts() {
                 server: {
                     info: {
                         type: 'INFO',
-                        name: `Advanced configuration below, don't touch if you don't know what you're doing!`
+                        name: `Advanced configuration below, don't touch if you don't know what you're doing!`,
                     },
                     serverDisplayServerInstance: {
                         type: 'CHECKBOX',

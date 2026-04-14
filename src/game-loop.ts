@@ -155,7 +155,6 @@ prestart(() => {
                 multi.server.runDeferredUpdate()
                 assert(instanceinator.instances[instanceinator.id])
             }
-            ig.soundManager.update()
         },
     })
 })

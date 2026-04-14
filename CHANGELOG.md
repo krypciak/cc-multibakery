@@ -4,10 +4,15 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add `Closest player for sound` game option
+
 ### Fixed
 
 - Improve server startup time
 - Improve remote server join time
+- Fix sound volumes not caculating properly across multiple maps
 
 ## [0.7.7] 2026-04-03
 

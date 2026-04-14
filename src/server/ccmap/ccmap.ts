@@ -170,6 +170,11 @@ export class CCMap extends InstanceUpdateable {
         if (this.forceUpdateForFrames > 0) this.forceUpdateForFrames--
     }
 
+    deferredUpdate() {
+        super.deferredUpdate()
+        ig.soundManager.update()
+    }
+
     getAllInstances(includeMapInst?: boolean) {
         const insts = this.clients.map(client => client.inst)
         if (includeMapInst) insts.push(this.inst)

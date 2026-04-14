@@ -4,6 +4,8 @@ import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
 import { isPhysics } from '../physics/is-physics-server'
 
+import './sound-position-fix'
+
 prestart(() => {
     const backup = ig.CollTools.isInScreen
     ig.CollTools.isInScreen = function (e: ig.Entity, x?: number, y?: number) {

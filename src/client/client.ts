@@ -310,6 +310,9 @@ export class Client extends InstanceUpdateable {
             ig.rumble = mig.rumble
             addAddon(ig.rumble, ig.game)
 
+            ig.soundManager.reset()
+            ig.soundManager = mig.soundManager
+
             /* cc-variable-charge-time */
             ig.chargeTimings = mig.chargeTimings
 
