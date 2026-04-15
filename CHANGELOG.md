@@ -13,6 +13,7 @@
 - Improve server startup time
 - Improve remote server join time
 - Fix sound volumes not caculating properly across multiple maps
+- Fix storage slot saving not working properly
 
 ## [0.7.7] 2026-04-03
 

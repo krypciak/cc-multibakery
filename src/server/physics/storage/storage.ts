@@ -1,4 +1,4 @@
-import { filterInstanceObjectsFromArray, runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { poststart, prestart } from '../../../loading-stages'
 import type { getEntityState } from '../../../state/entity/ig_ENTITY_Player-base'
 import { assert } from '../../../misc/assert'
@@ -8,10 +8,10 @@ import type { Username } from '../../../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../is-physics-server'
 import { copy } from '../../../misc/object-copy'
 import type { ClientOptionModelValues } from '../../../client/client-option-model-link'
+import type { Client } from '../../../client/client'
 
 import './save-slot-button'
 import './pause-screen-save-button'
-import type { Client } from '../../../client/client'
 
 type PlayerGetStateReturn = ReturnType<typeof getEntityState>
 type PlayerEntityState = PlayerGetStateReturn
@@ -61,7 +61,9 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     wrapFilterListeners<T>(func: () => T): T {
         const listenersBackup = ig.storage.listeners
 
-        const relevantListeners = filterInstanceObjectsFromArray(ig.storage.listeners, instanceinator.id)
+        const relevantListeners = ig.storage.listeners.filter(
+            c => !('_instanceId' in c) || c._instanceId == instanceinator.id
+        )
         if (ig.client) {
             /* these listeners are linked directly to map class and therefore
              * dont get filtered out but they are important for saving */
@@ -275,6 +277,11 @@ prestart(() => {
                 this.parent!(data)
             })
         },
+        _saveToStorage() {
+            if (!multi.server) return this.parent()
+
+            return multi.storage.wrapFilterListenersInMasterClient(() => this.parent())
+        },
     })
 
     if (ASSERT) {
@@ -282,11 +289,6 @@ prestart(() => {
             _saveState(output, mapName, teleportPositionSettings) {
                 if (multi.server) assert(multi.storage.saving)
                 return this.parent(output, mapName, teleportPositionSettings)
-            },
-            _saveToStorage() {
-                if (!multi.server) return this.parent()
-
-                return multi.storage.wrapFilterListenersInMasterClient(() => this.parent())
             },
         })
     }
