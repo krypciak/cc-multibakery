@@ -260,7 +260,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     private updateMusicInstance() {
         const masterClient = this.getMasterClient()
-        instanceinator.setMusicInstanceId(masterClient?.inst.id ?? this.inst.id)
+        instanceinator.musicInstanceId = masterClient?.inst.id ?? this.inst.id
     }
 
     abstract getPlayerInfoOf(username: Username): PlayerInfoEntry
@@ -290,7 +290,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId
         instanceinator.displayFps = modmanager.options['cc-instanceinator'].displayFps
-        instanceinator.setMusicInstanceId(this.baseInst.id)
+        instanceinator.musicInstanceId = this.baseInst.id
 
         instanceinator.retile()
     }
