@@ -33,7 +33,8 @@ prestart(() => {
         onload(data) {
             this.parent(data)
             for (const key in this.proxies) {
-                addProxy(`${this.name}_${key}`, this.proxies[key])
+                /* this.name is sometimes undefined so i picked some random other identifiers */
+                addProxy(`${this.name ?? data.anims ?? data.aiGroup}_${key}`, this.proxies[key])
             }
         },
     })
