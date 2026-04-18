@@ -28,7 +28,7 @@ prestart(() => {
             assert(map)
 
             this.statusGuis = {}
-            runTasks(map.getAllInstances(), () => this.createStatusGui())
+            runTasks(map.getClientInstances(), () => this.createStatusGui())
             this.statusGuis[instanceinator.id] = this.statusGui
 
             const self = this

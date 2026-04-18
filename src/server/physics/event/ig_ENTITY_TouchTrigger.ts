@@ -10,7 +10,7 @@ prestart(() => {
         update() {
             if (!isPhysics(multi.server) || !ig.ccmap) return this.parent()
 
-            runTasks(ig.ccmap.getAllInstances(), () => {
+            runTasks(ig.ccmap.getClientInstances(), () => {
                 this.parent()
             })
         },

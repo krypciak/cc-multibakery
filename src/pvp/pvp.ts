@@ -87,7 +87,7 @@ prestart(() => {
 
             this.map = getCCMap()
 
-            runTasks(this.map.getAllInstances(true), () => {
+            runTasks(this.map.getClientInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
                 sc.model.setCombatMode(true, true)
             })
@@ -95,7 +95,7 @@ prestart(() => {
             this.map.onLinkChange.push(this)
         },
         removeRoundGuis() {
-            runTasks(this.map.getAllInstances(true), () => {
+            runTasks(this.map.getClientInstances(true), () => {
                 const id = instanceinator.id
                 this.roundGuis[id]?.remove()
             })
@@ -218,7 +218,7 @@ prestart(() => {
             this.removeRoundGuis()
         },
         showKOGuis() {
-            runTasks(this.map.getAllInstances(true), () => {
+            runTasks(this.map.getClientInstances(true), () => {
                 const koGui = new sc.PvpKoGui()
                 ig.gui.addGuiElement(koGui)
             })
@@ -291,7 +291,7 @@ prestart(() => {
             this.round += 1
 
             this.roundGuis = Object.fromEntries(
-                runTasks(this.map.getAllInstances(true), () => {
+                runTasks(this.map.getClientInstances(true), () => {
                     const roundGui = new sc.PvpRoundGui(this.round, autoContinue)
                     ig.gui.addGuiElement(roundGui)
                     return [instanceinator.id, roundGui]
@@ -333,7 +333,7 @@ prestart(() => {
                 this.resetMultiState()
             })
 
-            runTasks(this.map.getAllInstances(true), () => {
+            runTasks(this.map.getClientInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
                 sc.model.setCombatMode(false, true)
             })
@@ -342,7 +342,7 @@ prestart(() => {
             this.parent()
             if (!multi.server) return
 
-            runTasks(this.map.getAllInstances(), () => {
+            runTasks(this.map.getClientInstances(), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
             })
 

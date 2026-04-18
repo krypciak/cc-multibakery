@@ -92,7 +92,7 @@ prestart(() => {
             }
             if (isBroadcasting()) return this.parent(entry)
 
-            broadcastAcrossInstances(getCCMap().getAllInstances(true), () => {
+            broadcastAcrossInstances(getCCMap().getClientInstances(true), () => {
                 const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
                 if (hasAlready) return
                 sc.mapInteract.addEntry(entry)
@@ -101,7 +101,7 @@ prestart(() => {
         removeEntry(entry) {
             if (!multi.server || isBroadcasting()) return this.parent(entry)
 
-            broadcastAcrossInstances(getCCMap().getAllInstances(true), () => {
+            broadcastAcrossInstances(getCCMap().getClientInstances(true), () => {
                 const newEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
                 if (newEntry) sc.mapInteract.removeEntry(newEntry)
             })
@@ -123,7 +123,7 @@ prestart(() => {
         setIcon(icon) {
             if (!multi.server) return this.parent(icon)
             this.parent(icon)
-            broadcastAcrossInstances(getCCMap().getAllInstances(true), () => {
+            broadcastAcrossInstances(getCCMap().getClientInstances(true), () => {
                 findEntry(this)?.setIcon(icon)
             })
         },

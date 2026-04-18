@@ -24,7 +24,7 @@ prestart(() => {
         return { vec, dist }
     }
     function closestDist(point: Vec2, range: number, rangeType: ig.SOUND_RANGE_TYPE | undefined) {
-        const clients = getCCMap().getAllInstances()
+        const clients = getCCMap().getClientInstances()
 
         let { dist: smallestDist, vec: smallestVec } = calcDist(point, ig.game.soundPos, range, rangeType)
 

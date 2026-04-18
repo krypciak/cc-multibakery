@@ -68,7 +68,7 @@ prestart(() => {
         varsChangedDeferred() {
             this.parent()
             if (!ig.ccmap) return
-            for (const inst of ig.ccmap.getAllInstances()) inst.ig.game._deferredVarChanged = true
+            for (const inst of ig.ccmap.getClientInstances()) inst.ig.game._deferredVarChanged = true
         },
     })
 })
@@ -80,7 +80,7 @@ prestart(() => {
             if (!ig.client) return
             const map = ig.client.getMap(true)
             if (!map) return
-            for (const inst of map.getAllInstances(true)) inst.ig.game._deferredVarChanged = true
+            for (const inst of map.getClientInstances(true)) inst.ig.game._deferredVarChanged = true
         },
     })
 })

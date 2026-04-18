@@ -137,7 +137,7 @@ export function notifyMapAndPlayerInsts(model: sc.Model, msg: number, data?: unk
     notify()
 
     if (ig.ccmap) {
-        runTasks(ig.ccmap.getAllInstances(), notify)
+        runTasks(ig.ccmap.getClientInstances(), notify)
     }
 }
 
@@ -165,7 +165,7 @@ prestart(() => {
         update() {
             if (!ig.ccmap) return this.parent()
 
-            runTasks(ig.ccmap.getAllInstances(), () => {
+            runTasks(ig.ccmap.getClientInstances(), () => {
                 this.parent()
             })
         },

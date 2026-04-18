@@ -175,7 +175,7 @@ export class CCMap extends InstanceUpdateable {
         ig.soundManager.update()
     }
 
-    getAllInstances(includeMapInst?: boolean) {
+    getClientInstances(includeMapInst?: boolean) {
         const insts = this.clients.map(client => client.inst)
         if (includeMapInst) insts.push(this.inst)
         return insts
