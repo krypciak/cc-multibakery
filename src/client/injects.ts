@@ -1,6 +1,7 @@
 import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import type { Client } from './client'
+import { type Client } from './client'
+import { broadcastAcrossInstances } from './client-map-util'
 import { isPhysics } from '../server/physics/is-physics-server'
 import { assert } from '../misc/assert'
 
@@ -165,6 +166,26 @@ prestart(() => {
             if (ig.game.pausedVirtual) return
 
             return this.parent(...args)
+        },
+    })
+})
+
+prestart(() => {
+    ig.System.inject({
+        setMasterVolume(volume) {
+            this.parent(volume)
+            if (!multi.server) return
+            broadcastAcrossInstances(multi.server.getAllInstances(), () => ig.system?.setMasterVolume(volume))
+        },
+        setSoundVolume(volume) {
+            this.parent(volume)
+            if (!multi.server) return
+            broadcastAcrossInstances(multi.server.getAllInstances(), () => ig.system?.setSoundVolume(volume))
+        },
+        setMusicVolume(volume) {
+            this.parent(volume)
+            if (!multi.server) return
+            broadcastAcrossInstances(multi.server.getAllInstances(), () => ig.system?.setMusicVolume(volume))
         },
     })
 })
