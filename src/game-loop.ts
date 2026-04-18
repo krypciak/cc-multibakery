@@ -75,7 +75,7 @@ prestart(() => {
 })
 
 function draw() {
-    runTasks(Object.values(instanceinator.instances), () => {
+    runTasks(multi.server.getAllInstances(), () => {
         if (!ig.system.hasFocusLost() && ig.game && !ig.game.fullyStopped && ig.perf.draw) {
             ig.game.draw()
             ig.game.finalDraw()

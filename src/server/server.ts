@@ -267,6 +267,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     abstract getPlayerInfoEntries(): Record<Username, PlayerInfoEntry>
 
+    getAllInstances(): InstanceinatorInstance[] {
+        return [this.inst, ...[...this.maps.values(), ...this.clients.values()].map(obj => obj.inst)].filter(Boolean)
+    }
+
     destroy() {
         if (this.destroyed) return
         this.postUpdateCallback = undefined
