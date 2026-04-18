@@ -1,10 +1,10 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
-import { runTask, runTasks, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
 import { isPhysics } from '../server/physics/is-physics-server'
-import { runTaskInMapInst } from './client'
+import { broadcastAcrossInstances, getCCMap, isBroadcasting, setIsBroadcasting } from './client-map-util'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -65,9 +65,8 @@ function cloneMapInteractEntry(e: sc.MapInteractEntry): sc.MapInteractEntry {
     return ne
 }
 
-let isBroadcasting = false
 export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
-    isBroadcasting = true
+    setIsBroadcasting(true)
     assert(!ig.ccmap)
     for (const entry of sc.mapInteract.entries) {
         sc.mapInteract.removeEntry(entry)
@@ -76,24 +75,10 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
         if (entry.gui.subGui instanceof sc.XenoDialogIcon) continue
         sc.mapInteract.addEntry(entry)
     }
-    isBroadcasting = false
+    setIsBroadcasting(false)
 }
 
 prestart(() => {
-    function broadcastFunction(broadcast: () => void, func: () => void) {
-        if (isBroadcasting) {
-            func()
-            return
-        }
-        isBroadcasting = true
-        runTaskInMapInst(() => {
-            runTasks(ig.ccmap!.getAllInstances(true), () => {
-                broadcast()
-            })
-        })
-        isBroadcasting = false
-    }
-
     function findEntry(entry: sc.MapInteractEntry) {
         return sc.mapInteract.entries.find(a => a.entity == entry.entity)
     }
@@ -101,27 +86,25 @@ prestart(() => {
     sc.MapInteract.inject({
         addEntry(entry) {
             if (!multi.server) return this.parent(entry)
-            broadcastFunction(
-                () => sc.mapInteract.addEntry(entry),
-                () => {
-                    const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
-                    if (hasAlready) return
+            if (entry._instanceId != this._instanceId) {
+                entry = cloneMapInteractEntry(entry)
+                if (!entry) return
+            }
+            if (isBroadcasting()) return this.parent(entry)
 
-                    const newEntry = entry._instanceId == this._instanceId ? entry : cloneMapInteractEntry(entry)
-                    if (newEntry) this.parent(newEntry)
-                }
-            )
+            broadcastAcrossInstances(getCCMap().getAllInstances(true), () => {
+                const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
+                if (hasAlready) return
+                sc.mapInteract.addEntry(entry)
+            })
         },
         removeEntry(entry) {
-            if (!multi.server) return this.parent(entry)
+            if (!multi.server || isBroadcasting()) return this.parent(entry)
 
-            broadcastFunction(
-                () => sc.mapInteract.removeEntry(entry),
-                () => {
-                    const newEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
-                    if (newEntry) this.parent(newEntry)
-                }
-            )
+            broadcastAcrossInstances(getCCMap().getAllInstances(true), () => {
+                const newEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
+                if (newEntry) sc.mapInteract.removeEntry(newEntry)
+            })
         },
         onPreUpdate() {
             if (!multi.server || ig.ccmap || !ig.client || !ig.client.dummy) return this.parent()
@@ -140,10 +123,9 @@ prestart(() => {
         setIcon(icon) {
             if (!multi.server) return this.parent(icon)
             this.parent(icon)
-            broadcastFunction(
-                () => findEntry(this)?.setIcon(icon),
-                () => this.parent(icon)
-            )
+            broadcastAcrossInstances(getCCMap().getAllInstances(true), () => {
+                findEntry(this)?.setIcon(icon)
+            })
         },
     })
 })
