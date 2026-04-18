@@ -22,6 +22,7 @@ type SocketData = never
 interface ClientToServerEvents {
     update(data: unknown): void
     join(data: ClientJoinData, callback: (data: ClientJoinAckData) => void): void
+    ready(): void
     ping1(callback: (date: number) => void): void
     leave(data: ClientLeaveData): void
 }
@@ -83,31 +84,39 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             pingTimeout: this.netInfo.connection.pingTimeout ?? Opts.flatOpts.serverPingTimeout.init,
         })
 
+        this.io.on('connection', async socket => {
+            this.registerSocketEvents(socket)
+        })
+    }
+
+    private async registerSocketEvents(socket: Socket) {
         const server = multi.server
         assertPhysics(server)
-        this.io.on('connection', async socket => {
-            const connection = new SocketNetConnection(socket, () => {
-                this.connections.erase(connection)
 
-                if (!multi.server || multi.server != server || server.destroyed) return
+        const connection = new SocketNetConnection(socket, () => {
+            this.connections.erase(connection)
 
-                server.onNetClientLeave(connection)
-            })
-            this.connections.push(connection)
+            if (!multi.server || multi.server != server || server.destroyed) return
 
-            socket.on('update', data => server.onNetReceiveUpdate(connection, data))
-            socket.on('join', async (data, callback) => {
-                if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-                const ackData = await server.onNetClientJoinRequest(data, connection)
-                callback(ackData)
-            })
-            socket.on('leave', data => {
-                if (!isClientLeaveData(data)) return
-                server.onNetClientLeave(connection, data)
-            })
-            socket.on('ping1', callback => {
-                callback(Date.now())
-            })
+            server.onNetClientLeave(connection)
+        })
+        this.connections.push(connection)
+
+        socket.on('update', data => server.onNetReceiveUpdate(connection, data))
+        socket.on('join', async (data, callback) => {
+            if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
+            const ackData = await server.onNetClientJoinRequest(data, connection)
+            callback(ackData)
+        })
+        socket.on('ready', () => {
+            connection.ready = true
+        })
+        socket.on('leave', data => {
+            if (!isClientLeaveData(data)) return
+            server.onNetClientLeave(connection, data)
+        })
+        socket.on('ping1', callback => {
+            callback(Date.now())
         })
     }
 
@@ -178,6 +187,7 @@ export class SocketNetManagerRemoteServer {
         return new Promise<void>(resolve => {
             socket.on('connect', () => {
                 const conn = new SocketNetConnection(socket)
+                conn.ready = true
                 this.conn = conn
 
                 try {
@@ -235,6 +245,10 @@ export class SocketNetManagerRemoteServer {
         return ack
     }
 
+    async sendReady() {
+        this.conn?.socket.emit('ready')
+    }
+
     async sendLeave(data: ClientLeaveData): Promise<void> {
         assert(this.conn)
         assertRemote(multi.server)
@@ -255,6 +269,7 @@ export class SocketNetManagerRemoteServer {
 export class SocketNetConnection implements NetConnection {
     clients: Client[] = []
     closed: boolean = false
+    ready: boolean = false
 
     bytesSent: bigint = 0n
     bytesReceived: bigint = 0n
@@ -298,6 +313,7 @@ export class SocketNetConnection implements NetConnection {
     }
 
     send(type: string, data: unknown) {
+        assert(this.ready)
         this.socket.emit(type, data)
     }
 

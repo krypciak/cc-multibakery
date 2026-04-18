@@ -47,6 +47,8 @@ export async function tryJoinRemote(
         await server.start()
         PROFILE && console.timeEnd('server start')
 
+        await server.netManager.sendReady()
+
         const client = await server.createClientWithAckData(joinData, ackData)
         server.setMasterClient(client)
     }
