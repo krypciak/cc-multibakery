@@ -155,6 +155,11 @@ export class Client extends InstanceUpdateable {
         updateDummyData(this)
     }
 
+    deferredUpdate() {
+        super.deferredUpdate()
+        ig.soundManager.update()
+    }
+
     updateGamepadForcer() {
         assert(instanceinator.id == this.inst.id)
         if (this.inputManager instanceof dummy.input.Puppet.InputManager) return
@@ -310,8 +315,8 @@ export class Client extends InstanceUpdateable {
             ig.rumble = mig.rumble
             addAddon(ig.rumble, ig.game)
 
-            ig.soundManager.reset()
-            ig.soundManager = mig.soundManager
+            removeAddon(ig.mapSounds, ig.game)
+            ig.mapSounds = mig.mapSounds
 
             /* cc-variable-charge-time */
             ig.chargeTimings = mig.chargeTimings

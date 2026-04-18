@@ -1,6 +1,6 @@
-import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { Opts } from '../../options'
+import { runTaskInMapInst } from '../../client/client'
 
 prestart(() => {
     function calcDist(point: Vec2, soundPos: Vec2, range: number, rangeType: ig.SOUND_RANGE_TYPE | undefined) {
@@ -24,8 +24,7 @@ prestart(() => {
         return { vec, dist }
     }
     function closestDist(point: Vec2, range: number, rangeType: ig.SOUND_RANGE_TYPE | undefined) {
-        assert(ig.ccmap)
-        const clients = ig.ccmap.getAllInstances()
+        const clients = runTaskInMapInst(() => ig.ccmap!.getAllInstances())
 
         let { dist: smallestDist, vec: smallestVec } = calcDist(point, ig.game.soundPos, range, rangeType)
 

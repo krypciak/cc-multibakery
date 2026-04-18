@@ -70,7 +70,7 @@ export class CCMap extends InstanceUpdateable {
             {
                 name: `map-${this.name}`,
                 display: this.isVisible(),
-                soundPlayCondition: () => this.clients.some(c => c.inst.display),
+                soundPlayCondition: () => this.isVisible() || this.clients.some(c => c.inst.display),
             },
             instanceinatorCopyInstanceConfig()
         )
