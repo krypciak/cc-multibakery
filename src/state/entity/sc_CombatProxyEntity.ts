@@ -6,7 +6,7 @@ import { shouldCollectStateData, StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import { resolveProxyFromType } from './proxy-util'
 import * as scActorEntity from './sc_ActorEntity-base'
-import { runTaskInMapInst } from '../../client/client'
+import { runTaskInMapInst } from '../../client/client-map-util'
 import { isRemote } from '../../server/remote/is-remote-server'
 
 declare global {

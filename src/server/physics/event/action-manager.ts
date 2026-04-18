@@ -2,7 +2,8 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../../misc/assert'
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../is-physics-server'
-import { Client, runTaskInMapInst } from '../../../client/client'
+import { type Client } from '../../../client/client'
+import { runTaskInMapInst } from '../../../client/client-map-util'
 
 declare global {
     namespace ig {

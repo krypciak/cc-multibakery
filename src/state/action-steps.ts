@@ -4,7 +4,7 @@ import type { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { shouldCollectStateData } from './state-util'
-import { runTaskInMapInst } from '../client/client'
+import { runTaskInMapInst } from '../client/client-map-util'
 
 interface StepObj {
     settings: any //ig.ActionStepBase.Settings

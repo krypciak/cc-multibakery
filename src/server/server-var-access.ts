@@ -1,4 +1,5 @@
-import { runTaskInMapInst, type Client } from '../client/client'
+import { runTaskInMapInst } from '../client/client-map-util'
+import { type Client } from '../client/client'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { checkAndCutPrefix, checkAndCutSuffix } from '../misc/check-and-cut'

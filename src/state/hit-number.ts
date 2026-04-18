@@ -3,7 +3,7 @@ import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
-import { runTaskInMapInst } from '../client/client'
+import { runTaskInMapInst } from '../client/client-map-util'
 
 interface HitNumberConfig {
     isHealing?: boolean

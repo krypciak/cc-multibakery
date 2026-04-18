@@ -4,7 +4,7 @@ import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
 import type { CCMap } from '../server/ccmap/ccmap'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
-import { runTaskInMapInst } from '../client/client'
+import { runTaskInMapInst } from '../client/client-map-util'
 import { isPhysics } from '../server/physics/is-physics-server'
 
 import './gui'

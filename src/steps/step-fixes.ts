@@ -1,6 +1,6 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
-import { runTaskInMapInst } from '../client/client'
+import { runTaskInMapInst } from '../client/client-map-util'
 import { assert } from '../misc/assert'
 import { assertPhysics } from '../server/physics/is-physics-server'
 

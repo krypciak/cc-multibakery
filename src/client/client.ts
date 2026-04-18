@@ -484,11 +484,3 @@ function rehookObservers(to: sc.Model, from: sc.Model) {
     }
     to.observers = [...toObservers]
 }
-
-export function runTaskInMapInst<T>(task: () => T): T {
-    if (ig.client) {
-        return runTask(ig.client.getMap().inst, task)
-    } else if (ig.ccmap) {
-        return task()
-    } else assert(false, 'runTaskInMapInst ran in server instance!')
-}

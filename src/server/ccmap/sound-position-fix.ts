@@ -1,6 +1,6 @@
 import { prestart } from '../../loading-stages'
 import { Opts } from '../../options'
-import { runTaskInMapInst } from '../../client/client'
+import { runTaskInMapInst } from '../../client/client-map-util'
 
 prestart(() => {
     function calcDist(point: Vec2, soundPos: Vec2, range: number, rangeType: ig.SOUND_RANGE_TYPE | undefined) {

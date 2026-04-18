@@ -4,7 +4,7 @@ import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, type StateKey } from '../states'
 import type { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
-import { runTaskInMapInst } from '../../client/client'
+import { runTaskInMapInst } from '../../client/client-map-util'
 
 type EntityDeathsObj = Record<EntityNetid, u4>
 
