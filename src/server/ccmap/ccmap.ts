@@ -97,6 +97,9 @@ export class CCMap extends InstanceUpdateable {
             })
         })
         this.readyResolve()
+
+        instanceinator.retile()
+
         PROFILE && console.timeEnd('map init')
     }
 

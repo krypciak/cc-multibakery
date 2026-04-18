@@ -90,6 +90,8 @@ export class Client extends InstanceUpdateable {
 
         removeAddon(this.inst.sc.npcRunner, this.inst.ig.game)
 
+        instanceinator.retile()
+
         PROFILE && console.timeEnd('client init')
     }
 

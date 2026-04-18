@@ -49,9 +49,7 @@ export abstract class InstanceUpdateable {
         if (this.destroyed) return
         this.destroyed = true
 
-        if (this.inst) {
-            instanceinator.destroy(this.inst)
-        }
+        this.inst?.destroy()
     }
 }
 

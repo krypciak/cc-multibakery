@@ -14,8 +14,9 @@ export function addCombatantParty(name: string, forceId?: number): sc.COMBATANT_
     // @ts-expect-error
     sc.COMBATANT_PARTY[key] = id
 
-    for (const inst of instanceinator.allInstances) {
-        const combatModel = inst.sc.combat
+    for (const inst of Object.values(instanceinator.instances)) {
+        const combatModel = inst.sc?.combat
+        if (!combatModel) continue
         combatModel.activeCombatants[id] = []
     }
 
