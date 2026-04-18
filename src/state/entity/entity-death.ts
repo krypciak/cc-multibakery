@@ -4,7 +4,8 @@ import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, type StateKey } from '../states'
 import type { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
-import { runTaskInMapInst } from '../../client/client-map-util'
+import { getCCMap } from '../../client/client-map-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 type EntityDeathsObj = Record<EntityNetid, u4>
 
@@ -57,10 +58,9 @@ prestart(() => {
             if (entityIgnoreDeath.has(typeId)) return
 
             if (shouldCollectStateData()) {
-                runTaskInMapInst(() => {
-                    ig.entityDeaths ??= {}
-                    ig.entityDeaths[this.netid] = ((ig.entityDeaths[this.netid] ?? 0) + 1) % 16
-                })
+                const map = getCCMap()
+                const deaths = (map.inst.ig.entityDeaths ??= {})
+                deaths[this.netid] = ((deaths[this.netid] ?? 0) + 1) % 16
             }
         },
     })

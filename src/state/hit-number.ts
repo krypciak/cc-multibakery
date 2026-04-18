@@ -3,7 +3,7 @@ import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
-import { runTaskInMapInst } from '../client/client-map-util'
+import { getCCMap } from '../client/client-map-util'
 
 interface HitNumberConfig {
     isHealing?: boolean
@@ -83,20 +83,19 @@ prestart(() => {
             appenix
         ) {
             if (shouldCollectStateData()) {
-                runTaskInMapInst(() => {
-                    ig.hitNumberSpawned ??= []
-                    const netid = combatant.netid
-                    assert(netid)
-                    ig.hitNumberSpawned.push({
-                        pos,
-                        combatant: netid,
-                        damage,
-                        size,
-                        strength,
-                        shieldResult,
-                        isCrit,
-                        appenix: appenix ? appenix : undefined,
-                    })
+                const map = getCCMap()
+                map.inst.ig.hitNumberSpawned ??= []
+                const netid = combatant.netid
+                assert(netid)
+                map.inst.ig.hitNumberSpawned.push({
+                    pos,
+                    combatant: netid,
+                    damage,
+                    size,
+                    strength,
+                    shieldResult,
+                    isCrit,
+                    appenix: appenix ? appenix : undefined,
                 })
             }
 
@@ -105,16 +104,15 @@ prestart(() => {
 
         ig.ENTITY.HitNumber.spawnHealingNumber = function (pos, combatant, healAmount) {
             if (shouldCollectStateData()) {
-                runTaskInMapInst(() => {
-                    ig.hitNumberSpawned ??= []
-                    const netid = combatant.netid
-                    assert(netid)
-                    ig.hitNumberSpawned.push({
-                        isHealing: true,
-                        pos,
-                        combatant: netid,
-                        damage: healAmount,
-                    })
+                const map = getCCMap()
+                map.inst.ig.hitNumberSpawned ??= []
+                const netid = combatant.netid
+                assert(netid)
+                map.inst.ig.hitNumberSpawned.push({
+                    isHealing: true,
+                    pos,
+                    combatant: netid,
+                    damage: healAmount,
                 })
             }
 
@@ -158,11 +156,10 @@ prestart(() => {
             clearDamageSum() {
                 this.parent()
                 if (shouldCollectStateData()) {
-                    runTaskInMapInst(() => {
-                        ig.hitNumberClear ??= []
-                        assert(this.netid)
-                        ig.hitNumberClear.push(this.netid)
-                    })
+                    const map = getCCMap()
+                    map.inst.ig.hitNumberClear ??= []
+                    assert(this.netid)
+                    map.inst.ig.hitNumberClear.push(this.netid)
                 }
             },
         })

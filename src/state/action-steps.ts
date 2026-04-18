@@ -4,7 +4,7 @@ import type { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { shouldCollectStateData } from './state-util'
-import { runTaskInMapInst } from '../client/client-map-util'
+import { getCCMap } from '../client/client-map-util'
 
 interface StepObj {
     settings: any //ig.ActionStepBase.Settings
@@ -88,11 +88,10 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
     }
 
     if (shouldCollectStateData()) {
-        runTaskInMapInst(() => {
-            ig.actionStepsFired ??= {}
-            ;(ig.actionStepsFired[actor.netid] ??= []).push({
-                settings: ig.StepHelpers.getStepSettings(step) as ig.ActionStepBase.Settings,
-            })
+        const map = getCCMap()
+        map.inst.ig.actionStepsFired ??= {}
+        ;(map.inst.ig.actionStepsFired[actor.netid] ??= []).push({
+            settings: ig.StepHelpers.getStepSettings(step) as ig.ActionStepBase.Settings,
         })
     }
 }
@@ -144,10 +143,9 @@ prestart(() => {
                 // console.log('clearActionAttached', this.actionAttached.map(fcn), condition, secondConditionArg)
                 assert(!secondConditionArg)
                 assert(ig.client)
-                runTaskInMapInst(() => {
-                    ig.clearActionAttached ??= {}
-                    ig.clearActionAttached[this.netid] = true
-                })
+                const map = getCCMap()
+                map.inst.ig.clearActionAttached ??= {}
+                map.inst.ig.clearActionAttached[this.netid] = true
             }
 
             this.parent(condition)

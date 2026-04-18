@@ -3,7 +3,7 @@ import { assert } from '../../../misc/assert'
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../is-physics-server'
 import { type Client } from '../../../client/client'
-import { runTaskInMapInst } from '../../../client/client-map-util'
+import { getCCMap } from '../../../client/client-map-util'
 
 declare global {
     namespace ig {
@@ -27,7 +27,7 @@ prestart(() => {
 
     ig.ActorEntity.inject({
         getClientFromBoundAction() {
-            return this.actionBoundToPlayer?.getClient(true) ?? runTaskInMapInst(() => ig.ccmap?.clients[0])
+            return this.actionBoundToPlayer?.getClient(true) ?? getCCMap().clients[0]
         },
         setAction(action, keepState, noStateReset) {
             if (action && isPhysics(multi.server) && !(this instanceof dummy.DummyPlayer)) {

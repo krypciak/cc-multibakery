@@ -4,7 +4,7 @@ import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
-import { runTaskInMapInst } from '../client/client-map-util'
+import { getCCMap } from '../client/client-map-util'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import type { MapName } from '../net/binary/binary-types'
 import { fromCamel } from '../misc/from-camel'
@@ -137,10 +137,9 @@ prestart(() => {
                 globalVarsChanged ??= {}
                 globalVarsChanged[path] = newValue
             } else if (path.startsWith('tmp.')) {
-                runTaskInMapInst(() => {
-                    ig.vars.varsChanged ??= {}
-                    ig.vars.varsChanged[path] = newValue
-                })
+                const map = getCCMap()
+                map.inst.ig.vars.varsChanged ??= {}
+                map.inst.ig.vars.varsChanged[path] = newValue
             }
         })
     }

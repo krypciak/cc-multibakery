@@ -4,7 +4,7 @@ import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
 import type { CCMap } from '../server/ccmap/ccmap'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
-import { runTaskInMapInst } from '../client/client-map-util'
+import { getCCMap } from '../client/client-map-util'
 import { isPhysics } from '../server/physics/is-physics-server'
 
 import './gui'
@@ -85,9 +85,7 @@ prestart(() => {
 
             this.enemies = []
 
-            runTaskInMapInst(() => {
-                this.map = ig.ccmap!
-            })
+            this.map = getCCMap()
 
             runTasks(this.map.getAllInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)

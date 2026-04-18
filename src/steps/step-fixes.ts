@@ -1,6 +1,6 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
-import { runTaskInMapInst } from '../client/client-map-util'
+import { getCCMap } from '../client/client-map-util'
 import { assert } from '../misc/assert'
 import { assertPhysics } from '../server/physics/is-physics-server'
 
@@ -46,7 +46,7 @@ prestart(() => {
         ...args: ARGS
     ): R {
         if (!ig.client) return this.parent(...args)
-        return runTaskInMapInst(() => this.parent(...args))
+        return runTask(getCCMap().inst, () => this.parent(...args))
     }
 
     ig.EVENT_STEP.MANUAL_COMBATANT_KILL.inject({ start: runStepOnMap })

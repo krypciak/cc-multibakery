@@ -1,4 +1,4 @@
-import { runTaskInMapInst } from '../client/client-map-util'
+import { getCCMap } from '../client/client-map-util'
 import { type Client } from '../client/client'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
@@ -27,9 +27,7 @@ class MultiVarAccessor implements ig.Vars.Accessor {
                 const player = client.dummy
                 return ig.Vars.forwardVar(player, keys, 3)
             } else {
-                const clients: Client[] = onMap
-                    ? runTaskInMapInst(() => ig.ccmap!.clients)
-                    : [...multi.server.clients.values()]
+                const clients: Client[] = onMap ? getCCMap().clients : [...multi.server.clients.values()]
 
                 const players = clients.map(c => c.dummy).filter(Boolean)
                 return ig.Vars.arrayVarAccess(players, keys.slice(2))

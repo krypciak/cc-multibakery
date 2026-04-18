@@ -1,11 +1,11 @@
-import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import type { CCMap } from '../server/ccmap/ccmap'
 
-export function runTaskInMapInst<T>(task: () => T): T {
-    if (ig.client) {
-        return runTask(ig.client.getMap().inst, task)
-    } else if (ig.ccmap) {
-        return task()
-    } else assert(false, 'runTaskInMapInst ran in server instance!')
+export function getCCMap(): CCMap {
+    if (ig.ccmap) return ig.ccmap
+    if (ig.client) return ig.client.getMap()
+    assert(false, 'getCCMap ran in server instance!')
 }
 

@@ -5,7 +5,7 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import type { StateKey } from '../states'
 import type { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
-import { runTaskInMapInst } from '../../client/client-map-util'
+import { getCCMap } from '../../client/client-map-util'
 import { isPhysics } from '../../server/physics/is-physics-server'
 
 declare global {
@@ -179,10 +179,10 @@ prestart(() => {
         orig(entity, withTheSameGroup)
         if (!entity.netid || !shouldCollectStateData()) return
         if (withTheSameGroup == 'modeAura') return
-        runTaskInMapInst(() => {
-            ig.clearEffects ??= []
-            ig.clearEffects.push([entity.netid, withTheSameGroup])
-        })
+
+        const map = getCCMap()
+        map.inst.ig.clearEffects ??= []
+        map.inst.ig.clearEffects.push([entity.netid, withTheSameGroup])
     }
 }, 0)
 
@@ -222,10 +222,9 @@ prestart(() => {
         stop() {
             this.parent()
             if (!shouldCollectStateData() || !this.netid) return
-            runTaskInMapInst(() => {
-                ig.stopEffects ??= []
-                ig.stopEffects.push(this.netid)
-            })
+            const map = getCCMap()
+            map.inst.ig.stopEffects ??= []
+            map.inst.ig.stopEffects.push(this.netid)
         },
     })
 }, 0)
