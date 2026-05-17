@@ -3,7 +3,6 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { type Client } from './client'
 import { broadcastAcrossInstances } from './client-map-util'
 import { isPhysics } from '../server/physics/is-physics-server'
-import { assert } from '../misc/assert'
 
 prestart(() => {
     ig.Physics.inject({
@@ -19,21 +18,6 @@ prestart(() => {
         deferredMapEntityUpdate() {
             if (ig.client) return
             this.parent()
-        },
-        // idk why its there, it breaks guis that lister to vars
-        // varsChanged() {
-        //     if (ig.client) return
-        //     this.parent()
-        // },
-    })
-})
-
-prestart(() => {
-    ig.Game.inject({
-        spawnEntity(...args) {
-            if (!multi.server || ig.ccmap) return this.parent(...args)
-            assert(ig.client)
-            return runTask(ig.client.getMap().inst, () => this.parent(...args))
         },
     })
 })
@@ -191,10 +175,34 @@ prestart(() => {
 })
 
 prestart(() => {
-    sc.PlayerCameraFocusHandle.inject({
-        onActionEndDetach(entity) {
-            if (!multi.server) return this.parent(entity)
-            runTask(instanceinator.instances[this._instanceId], () => this.parent(entity))
+    ig.EVENT_STEP.SHOW_TUTORIAL_START.inject({
+        start(data, eventCall) {
+            if (!multi.server) return this.parent(data, eventCall)
+            ;(data as any).done = true
+            ;(data as any).accept = false
+        },
+    })
+})
+
+prestart(() => {
+    ig.EVENT_STEP.SHOW_PARALLAX.inject({
+        start(data, eventCall) {
+            if (!ig.client) return this.parent(data, eventCall)
+
+            this.parallaxGui = ig.gui.createEventGui(
+                '__parallaxGui__',
+                'Parallax',
+                this.parallaxGui.hook.mapGuiInfo!.settings
+            )
+            return this.parent(data, eventCall)
+        },
+    })
+
+    ig.EVENT_STEP.ADD_GUI.inject({
+        start(data, eventCall) {
+            if (!ig.client) return this.parent(data, eventCall)
+            this.guiElement = ig.gui.createEventGui(this.name!, this.guiInfo.type, this.guiInfo.settings)
+            return this.parent(data, eventCall)
         },
     })
 })

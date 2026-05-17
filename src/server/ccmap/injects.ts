@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
 import { isPhysics } from '../physics/is-physics-server'
 
@@ -12,17 +12,6 @@ prestart(() => {
         if (multi.server && !ig.client) return true
         return backup(e, x, y)
     }
-
-    sc.Combat.inject({
-        getPartyHpFactor(party) {
-            if (!multi.server || !ig.ccmap) return this.parent(party)
-
-            ig.game.playerEntity = ig.ccmap.clients[0].dummy
-            const ret = this.parent(party)
-            ig.game.playerEntity = undefined as any
-            return ret
-        },
-    })
 
     ig.SlowMotion.inject({
         /* fix slow motion (by disabling it) */
@@ -39,16 +28,6 @@ prestart(() => {
                 this.namedSlowMotions[name] = handle
             }
             return handle
-        },
-    })
-
-    sc.EnemyType.inject({
-        resolveItemDrops(enemyEntity) {
-            if (!ig.ccmap) return this.parent(enemyEntity)
-            assert(!ig.game.playerEntity)
-            const player = enemyEntity.getLastDamagingPlayer() ?? ig.ccmap.clients[0]?.dummy
-            if (!player) return
-            inputBackup(player.inputManager, () => this.parent(enemyEntity))
         },
     })
 
@@ -150,17 +129,6 @@ prestart(() => {
 })
 
 prestart(() => {
-    dummy.DummyPlayer.inject({
-        _removeTargetedBy(combatant) {
-            if (!multi.server || !ig.ccmap) return this.parent(combatant)
-
-            const client = this.getClient(true)
-            if (client) runTask(client.inst, () => this.parent(combatant))
-        },
-    })
-})
-
-prestart(() => {
     ig.ENTITY.TeleportCentral.inject({
         update() {
             if (!ig.ccmap) return this.parent()
@@ -215,6 +183,16 @@ declare global {
 
 prestart(() => {
     if (!PHYSICS) return
+
+    sc.EnemyType.inject({
+        resolveItemDrops(enemyEntity) {
+            if (!ig.ccmap) return this.parent(enemyEntity)
+            assert(!ig.game.playerEntity)
+            const player = enemyEntity.getLastDamagingPlayer() ?? ig.ccmap.clients[0]?.dummy
+            if (!player) return
+            inputBackup(player.inputManager, () => this.parent(enemyEntity))
+        },
+    })
 
     ig.ENTITY.ItemDestruct.inject({
         ballHit(ballLike, blockDir) {

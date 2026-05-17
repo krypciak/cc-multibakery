@@ -14,6 +14,7 @@ import './pvp/pvp'
 import './steps/all'
 import './misc/icons'
 import './mod-compatibility/nax-art-switch'
+import './server/instance-redirect-fixes'
 
 declare global {
     namespace multi {
