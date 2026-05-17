@@ -16,6 +16,7 @@
 - Fix sound volumes not caculating properly across multiple maps
 - Fix storage slot saving not working properly
 - Fix sounds not clearing properly when hiding instances
+- Fix random crashes when throwing mjolnir
 
 ## [0.7.7] 2026-04-03
 

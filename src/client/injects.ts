@@ -189,3 +189,12 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.PlayerCameraFocusHandle.inject({
+        onActionEndDetach(entity) {
+            if (!multi.server) return this.parent(entity)
+            runTask(instanceinator.instances[this._instanceId], () => this.parent(entity))
+        },
+    })
+})
