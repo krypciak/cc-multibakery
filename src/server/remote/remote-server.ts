@@ -14,11 +14,11 @@ import { applyModCompatibilityList, type ModCompatibilityList } from '../mod-com
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 import type { CCMap } from '../ccmap/ccmap'
 import type { MapName, Username } from '../../net/binary/binary-types'
+import type { PlayerInfoEntry } from '../../state/player-info'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import type { PlayerInfoEntry } from '../../state/player-info'
 
 export interface RemoteServerConnectionSettings {
     host: string
@@ -26,6 +26,14 @@ export interface RemoteServerConnectionSettings {
     https?: boolean
     type: 'socket'
     forceJsonCommunication?: boolean
+}
+export function isRemoteServerConnectionSettings(data: unknown): data is RemoteServerConnectionSettings {
+    if (!data || typeof data !== 'object') return false
+    if (!('type' in data) || data.type !== 'socket') return false
+    if (!('host' in data) || typeof data.host !== 'string') return false
+    if (!('port' in data) || typeof data.port !== 'number') return false
+
+    return true
 }
 
 export interface RemoteServerSettings extends ServerSettings {

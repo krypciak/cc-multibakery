@@ -53,6 +53,7 @@ export async function createPhysicsServerFromCurrentState() {
                       description: Opts.serverDescription,
                       forceJsonCommunication: Opts.serverForceJsonCommunication,
                   },
+                  discovery: Opts.serverPhysicsDiscovery,
               }
             : undefined,
         save: {

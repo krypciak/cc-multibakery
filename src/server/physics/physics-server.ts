@@ -15,12 +15,13 @@ import { startGameLoop } from '../../game-loop'
 import { sendPhysicsServerPacket } from './physics-server-sender'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import type { MapName, Username } from '../../net/binary/binary-types'
+import { loadClientOptionModelState } from '../../client/client-option-model-link'
+import { ServerDiscoveryServer } from '../../net/server-discovery'
 
 import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
-import { loadClientOptionModelState } from '../../client/client-option-model-link'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
@@ -54,6 +55,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     physics: boolean = true
     netManager?: NetManagerPhysicsServer
     httpServer?: PhysicsHttpServer
+    serverDiscovery?: ServerDiscoveryServer
     anyRemoteClientsOn: boolean = false
 
     connectionReadyMaps: WeakMap<NetConnection, Set<MapName>> = new WeakMap()
@@ -100,6 +102,11 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         if (this.netManager) {
             await this.netManager.start()
+
+            if (netInfo?.discovery) {
+                this.serverDiscovery = new ServerDiscoveryServer()
+                await this.serverDiscovery.start()
+            }
         }
     }
 
@@ -332,6 +339,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         super.destroy()
         this.netManager?.destroy()
         this.httpServer?.destroy()
+        this.serverDiscovery?.destroy()
     }
 
     private registerVariableChargeTime() {

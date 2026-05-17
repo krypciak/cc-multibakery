@@ -1,5 +1,5 @@
 import type { Server, IncomingMessage, ServerResponse } from 'http'
-import type { NetServerInfoPhysics, ServerDetailsRemote } from '../client/menu/server-info'
+import { isServerDetailsRemote, type NetServerInfoPhysics, type ServerDetailsRemote } from '../client/menu/server-info'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
 import { getCCBundlerHttpModules } from './crosscode-web-http-modules'
@@ -8,9 +8,11 @@ import { getModCompatibilityList } from '../server/mod-compatibility-list'
 export class PhysicsHttpServer {
     private stopFunc = () => this.stop()
 
+    serverDetails!: ServerDetailsRemote
+
     httpServer!: Server
 
-    constructor(public netInfo: NetServerInfoPhysics) {}
+    constructor(private netInfo: NetServerInfoPhysics) {}
 
     async start() {
         assert(PHYSICS)
@@ -24,7 +26,7 @@ export class PhysicsHttpServer {
             icon = await fs.promises.readFile(this.netInfo.details.iconPath)
         }
 
-        const serverDetails: ServerDetailsRemote = {
+        this.serverDetails = {
             title: this.netInfo.details.title,
             description: this.netInfo.details.description,
             forceJsonCommunication: this.netInfo.details.forceJsonCommunication,
@@ -35,7 +37,8 @@ export class PhysicsHttpServer {
             modCompatibility: getModCompatibilityList(),
             mapSwitchDelay: multi.server.settings.mapSwitchDelay,
         }
-        const serverDetailsString: string = JSON.stringify(serverDetails)
+        assert(isServerDetailsRemote(this.serverDetails))
+        const serverDetailsString: string = JSON.stringify(this.serverDetails)
 
         const httpRoot = this.netInfo.connection.httpRoot
 
@@ -129,14 +132,19 @@ async function setHttps(connection: RemoteServerConnectionSettings): Promise<boo
     }
 }
 
-export async function getServerDetailsAndPing(connection: RemoteServerConnectionSettings) {
+export async function getServerDetailsAndPing(
+    connection: RemoteServerConnectionSettings
+): Promise<{ ping: number; details: ServerDetailsRemote } | undefined> {
     if (connection.https === undefined && (await setHttps(connection))) return
 
     const obj = await fetchUrlWithPing(getDetailsUrl(connection))
     if (!obj) return
+    const details: unknown = await obj.res.json()
+    if (!isServerDetailsRemote(details)) return
+
     return {
         ping: obj.ping,
-        details: await obj.res.json(),
+        details,
     }
 }
 

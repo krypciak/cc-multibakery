@@ -7,6 +7,7 @@
 ### Added
 
 - Add `Closest player for sound` game option
+- Add LAN server discovery
 
 ### Fixed
 

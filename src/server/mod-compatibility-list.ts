@@ -3,10 +3,17 @@ import type { MultiPageButtonGuiButtons } from 'cc-krypek-lib/src/input-field-di
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { semver } from '../misc/nwjs-version-popup'
 import Multibakery from '../plugin'
+import { assert } from '../misc/assert'
 
 export interface ModVersionEntry {
     id: string
     version: string
+}
+function isModVersionEntry(data: unknown): data is ModVersionEntry {
+    if (!data || typeof data !== 'object') return false
+    if (!('id' in data) || typeof data.id !== 'string') return false
+    if (!('version' in data) || typeof data.version !== 'string') return false
+    return true
 }
 type AddonId =
     | 'fish-gear'
@@ -22,6 +29,23 @@ export interface ModCompatibilityList {
     incompatible: ModVersionEntry[]
     ccuilibWidgets: string[]
     requiredAddons: AddonId[]
+}
+export function isModCompatibilityList(data: unknown): data is ModCompatibilityList {
+    if (!data || typeof data !== 'object') return false
+    if (!('required' in data) || !Array.isArray(data.required) || data.required.some(e => !isModVersionEntry(e))) {
+        return false
+    }
+    if (
+        !('incompatible' in data) ||
+        !Array.isArray(data.incompatible) ||
+        data.incompatible.some(e => !isModVersionEntry(e))
+    ) {
+        return false
+    }
+    if (!('ccuilibWidgets' in data) || !Array.isArray(data.ccuilibWidgets)) return false
+    if (!('requiredAddons' in data) || !Array.isArray(data.requiredAddons)) return false
+
+    return true
 }
 
 const knownClientModsWithJson = ['menu-ui-replacer', 'extendable-severed-heads', 'bobrank', 'NamedSaves', 'xpc-litter']
@@ -63,12 +87,14 @@ export function getModCompatibilityList(): ModCompatibilityList {
         ['fish-gear', 'flying-hedgehag', 'scorpion-robo', 'snowman-tank', 'post-game'] as const
     ).filter(addonName => ig.extensions.enabled[addonName])
 
-    return {
+    const list: ModCompatibilityList = {
         required,
         incompatible: [],
         ccuilibWidgets: widgets,
         requiredAddons: addons,
     }
+    assert(isModCompatibilityList(list))
+    return list
 }
 
 type ModCompatibilityErrorList = {

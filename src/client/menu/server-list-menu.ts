@@ -45,10 +45,8 @@ declare global {
             initRemoveEntryButton(this: this): void
             initEditEntryButton(this: this): void
             initUpDownButtons(this: this): void
-            getEntryList(this: this): multi.class.ServerList.ListEntry[]
             onBackButtonPress(this: this): void
             setAllVisibility(this: this, visible: boolean): void
-            getCurrentlyFocusedEntryIndex(this: this): number
         }
         interface MenuConstructor extends ImpactClass<Menu> {
             new (): Menu
@@ -187,7 +185,7 @@ prestart(() => {
             this.removeEntryButton.setPos(this.addEntryButton.hook.pos.x + this.addEntryButton.hook.size.x + 5, 22)
             this.removeEntryButton.keepMouseFocus = true
             this.removeEntryButton.onButtonPress = () => {
-                const entryIndex = this.getCurrentlyFocusedEntryIndex()
+                const entryIndex = this.list.getCurrentlyFocusedEntryIndex()
                 if (entryIndex == -1) return
                 removeServerListEntry(entryIndex)
                 this.list.reloadEntries()
@@ -201,9 +199,9 @@ prestart(() => {
             this.editEntryButton.setPos(this.removeEntryButton.hook.pos.x + this.removeEntryButton.hook.size.x + 5, 22)
             this.editEntryButton.keepMouseFocus = true
             this.editEntryButton.onButtonPress = () => {
-                const entryIndex = this.getCurrentlyFocusedEntryIndex()
+                const entryIndex = this.list.getCurrentlyFocusedEntryIndex()
                 if (entryIndex == -1) return
-                const entry = this.getEntryList()[entryIndex]
+                const entry = this.list.getEntryList()[entryIndex]
 
                 addServerDialog(entry.serverInfo).then(data => {
                     if (!data) return
@@ -220,7 +218,7 @@ prestart(() => {
             this.upButton.setPos(this.editEntryButton.hook.pos.x + this.editEntryButton.hook.size.x + 5, 22)
             this.upButton.keepMouseFocus = true
             this.upButton.onButtonPress = () => {
-                const entryIndex = this.getCurrentlyFocusedEntryIndex()
+                const entryIndex = this.list.getCurrentlyFocusedEntryIndex()
                 if (entryIndex == -1) return
                 if (moveServerEntry(entryIndex, -1)) {
                     this.list.reloadEntries()
@@ -234,7 +232,7 @@ prestart(() => {
             this.downButton.setPos(this.upButton.hook.pos.x + this.upButton.hook.size.x + 5, 22)
             this.downButton.keepMouseFocus = true
             this.downButton.onButtonPress = () => {
-                const entryIndex = this.getCurrentlyFocusedEntryIndex()
+                const entryIndex = this.list.getCurrentlyFocusedEntryIndex()
                 if (entryIndex == -1) return
                 if (moveServerEntry(entryIndex, 1)) {
                     this.list.reloadEntries()
@@ -242,9 +240,6 @@ prestart(() => {
             }
             this.downButton.setActive(false)
             this.addChildGui(this.downButton)
-        },
-        getEntryList() {
-            return this.list.currentList.buttonGroup.elements[0] as multi.class.ServerList.ListEntry[]
         },
         commitHotKeysToTopBar(longTransition) {
             sc.menu.addHotkey(() => this.accountButton)
@@ -300,17 +295,18 @@ prestart(() => {
                     active = false
                 }
                 if (active !== undefined) {
-                    this.removeEntryButton.setActive(active)
-                    this.editEntryButton.setActive(active)
-                    const index = this.getCurrentlyFocusedEntryIndex()
+                    const editableEntryList = this.list.getEntryList(true)
 
-                    this.upButton.setActive(active && index != 0)
-                    this.downButton.setActive(active && index != this.getEntryList().length - 1)
+                    const index = this.list.getCurrentlyFocusedEntryIndex()
+                    const canEdit = index < editableEntryList.length
+
+                    this.removeEntryButton.setActive(active && canEdit)
+                    this.editEntryButton.setActive(active && canEdit)
+
+                    this.upButton.setActive(active && canEdit && index != 0)
+                    this.downButton.setActive(active && canEdit && index != editableEntryList.length - 1)
                 }
             }
-        },
-        getCurrentlyFocusedEntryIndex() {
-            return this.getEntryList().findIndex((b: ig.FocusGui) => b.focus)
         },
     })
 

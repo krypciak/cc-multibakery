@@ -159,6 +159,12 @@ function registerOpts() {
                         description: 'Server description',
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
+                    serverPhysicsDiscovery: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Enable LAN discovery',
+                        description: 'Allow remote clients to find this server on a local network',
+                    },
                 },
                 server: {
                     info: {
@@ -347,6 +353,12 @@ function registerOpts() {
                         init: true,
                         name: 'Synchronize time',
                         description: 'Required for accurate ping measurements',
+                    },
+                    serverRemoteDiscovery: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Look for LAN servers',
+                        description: 'Search for servers to join on the local network',
                     },
                 },
             },

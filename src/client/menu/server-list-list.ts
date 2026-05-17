@@ -1,4 +1,5 @@
 import { prestart } from '../../loading-stages'
+import { ServerDiscoveryClient, type ServerDiscoveryListener } from '../../net/server-discovery'
 import { getServerListInfo, type NetServerInfoRemote } from './server-info'
 import './server-list-entry'
 
@@ -12,7 +13,7 @@ declare global {
             SERVERS: number
         }
 
-        interface List extends sc.ListTabbedPane, sc.Model.Observer {
+        interface List extends sc.ListTabbedPane, sc.Model.Observer, ServerDiscoveryListener {
             tabz: {
                 name: string
                 icon: string
@@ -23,6 +24,7 @@ declare global {
                 ) => void
             }[]
             currentSort: multi.class.ServerList.SORT_ORDER
+            discoveredServers: NetServerInfoRemote[]
 
             sortModEntries(this: this, servers: NetServerInfoRemote[], sort: multi.class.ServerList.SORT_ORDER): void
             populateServers(
@@ -33,6 +35,8 @@ declare global {
             ): void
             populateListFromServers(this: this, servers: NetServerInfoRemote[], list: sc.ButtonListBox): void
             reloadEntries(this: this): void
+            getEntryList(this: this, excludeDiscovered?: boolean): multi.class.ServerList.ListEntry[]
+            getCurrentlyFocusedEntryIndex(this: this): number
         }
         interface ListConstructor extends ImpactClass<List> {
             new (): List
@@ -72,6 +76,8 @@ prestart(() => {
             for (let i = 0; i < this.tabz.length; i++) {
                 this.addTab(this.tabz[i].name, i, {})
             }
+
+            this.discoveredServers = []
         },
         show(_tabIndex) {
             this.parent()
@@ -119,9 +125,11 @@ prestart(() => {
         },
         addObservers() {
             sc.Model.addObserver(sc.menu, this)
+            ServerDiscoveryClient.addListener(this)
         },
         removeObservers() {
             sc.Model.removeObserver(sc.menu, this)
+            ServerDiscoveryClient.removeListener(this)
         },
         modelChanged(model, message, data) {
             if (model == sc.menu) {
@@ -131,6 +139,14 @@ prestart(() => {
                     this.reloadEntries()
                 }
             }
+        },
+
+        onServerDiscoveryUpdate(servers) {
+            this.discoveredServers = servers
+            this.reloadEntries()
+        },
+        serverDiscoveryUpdateCondition() {
+            return instanceinator.instances[this._instanceId].display
         },
 
         sortModEntries(servers, sort) {
@@ -145,6 +161,7 @@ prestart(() => {
         populateServers(list, _, sort) {
             const servers = getServerListInfo()
             this.sortModEntries(servers, sort)
+            servers.push(...this.discoveredServers)
             this.populateListFromServers(servers, list)
         },
         populateListFromServers(servers, list) {
@@ -158,6 +175,14 @@ prestart(() => {
 
         reloadEntries() {
             this.setTab(this.currentTabIndex, true, { skipSounds: true })
+        },
+        getEntryList(excludeDiscovered) {
+            let entries = this.currentList!.buttonGroup.elements[0] as multi.class.ServerList.ListEntry[]
+            if (excludeDiscovered) entries = entries.slice(0, -this.discoveredServers.length)
+            return entries
+        },
+        getCurrentlyFocusedEntryIndex() {
+            return this.getEntryList().findIndex((b: ig.FocusGui) => b.focus)
         },
     })
 })

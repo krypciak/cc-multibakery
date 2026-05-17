@@ -1,7 +1,10 @@
-import type { RemoteServerConnectionSettings } from '../../server/remote/remote-server'
+import {
+    isRemoteServerConnectionSettings,
+    type RemoteServerConnectionSettings,
+} from '../../server/remote/remote-server'
 import type { PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
 import { Opts } from '../../options'
-import type { ModCompatibilityList } from '../../server/mod-compatibility-list'
+import { isModCompatibilityList, type ModCompatibilityList } from '../../server/mod-compatibility-list'
 
 interface ServerDetailsBase {
     title: string
@@ -10,6 +13,13 @@ interface ServerDetailsBase {
     /* disables binary encoding */
     forceJsonCommunication?: boolean
 }
+function isServerDetailsBase(data: unknown): data is ServerDetailsBase {
+    if (!data || typeof data !== 'object') return false
+    if (!('title' in data) || typeof data.title !== 'string') return false
+    if (!('description' in data) || typeof data.description !== 'string') return false
+    return true
+}
+
 export interface ServerDetailsRemote extends ServerDetailsBase {
     hasIcon?: boolean
     globalTps: number
@@ -17,10 +27,24 @@ export interface ServerDetailsRemote extends ServerDetailsBase {
     modCompatibility: ModCompatibilityList
     mapSwitchDelay?: number
 }
+export function isServerDetailsRemote(data: unknown): data is ServerDetailsRemote {
+    if (!isServerDetailsBase(data)) return false
+    if (!('globalTps' in data) || typeof data.globalTps !== 'number') return false
+    if (!('modCompatibility' in data) || !isModCompatibilityList(data.modCompatibility)) return false
+    return true
+}
 
 export interface NetServerInfoRemote {
     connection: RemoteServerConnectionSettings
     details?: ServerDetailsRemote
+}
+export function isNetServerInfoRemote(data: unknown): data is NetServerInfoRemote {
+    if (!data || typeof data !== 'object') return false
+    if (!('connection' in data) || !isRemoteServerConnectionSettings(data.connection)) return false
+    if ('details' in data) {
+        if (!isServerDetailsRemote(data.details)) return false
+    }
+    return true
 }
 
 export interface ServerDetailsPhysics extends ServerDetailsBase {
@@ -30,6 +54,7 @@ export interface ServerDetailsPhysics extends ServerDetailsBase {
 export interface NetServerInfoPhysics {
     connection: PhysicsServerConnectionSettings
     details: ServerDetailsPhysics
+    discovery?: boolean
 }
 
 export function getServerListInfo(): NetServerInfoRemote[] {
