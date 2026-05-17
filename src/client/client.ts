@@ -468,7 +468,7 @@ export class Client extends InstanceUpdateable {
 
         multi.server.party.onClientDestroy(this)
 
-        const map = this.getMap(false)
+        const map = this.getMap(true)
         if (map) {
             map.leave(this)
             map.inst.sc.map.observers = filterInstanceObjectsFromArray(map.inst.sc.map.observers, this.inst.id)
