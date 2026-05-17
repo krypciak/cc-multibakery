@@ -146,12 +146,16 @@ if (REMOTE) {
             },
             async getIconConfig() {
                 if (this.serverInfo.details?.hasIcon) {
-                    return {
-                        pathOrData: await getServerIcon(this.serverInfo.connection),
-                        offsetX: 0,
-                        offsetY: 0,
-                        sizeX: 24,
-                        sizeY: 24,
+                    try {
+                        return {
+                            pathOrData: await getServerIcon(this.serverInfo.connection),
+                            offsetX: 0,
+                            offsetY: 0,
+                            sizeX: 24,
+                            sizeY: 24,
+                        }
+                    } catch (e) {
+                        console.error(`failed to fetch icon of ${JSON.stringify(this.serverInfo.connection)}`)
                     }
                 }
                 return {
@@ -221,7 +225,7 @@ if (REMOTE) {
 
                 await this.updateConnectionStatus()
                 if (!this.isServerReachable) {
-                    return sc.Dialogs.showErrorDialog('Unable to reach the server.')
+                    return sc.Dialogs.showErrorDialog(`Unable to reach the server.`)
                 }
                 const modCompatibilityList = this.serverInfo.details!.modCompatibility
                 const { satisfied, errors } = isModCompatibilityListSatisfied(modCompatibilityList)
