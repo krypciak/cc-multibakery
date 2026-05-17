@@ -17,6 +17,7 @@
 - Fix storage slot saving not working properly
 - Fix sounds not clearing properly when hiding instances
 - Fix random crashes when throwing mjolnir
+- Fix remote Entity NetID Overlap crash
 
 ## [0.7.7] 2026-04-03
 

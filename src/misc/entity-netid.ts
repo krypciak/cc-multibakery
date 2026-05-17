@@ -32,12 +32,20 @@ declare global {
 }
 
 export type EntityNetid = u20
+// 21111111111987654321
+// 09876543210
+// ttttttsccccccccccccc
+// t - type
+// s - special
+// c - counter
 // u1 for special bit
-const typeidSizeBits = 6
+const netidSizeBits = 13
+const netidCounterSize = 8192 // u13
+
+const specialBit = 1 << netidSizeBits
+
 const typeidSize = 64 // u6
-export const entityNetidCounterSize = 8192 // 13
-const typeidShift = 16 - typeidSizeBits + 1
-const specialBit = 1 << (typeidShift - 1)
+const typeidShift = netidSizeBits + 1
 
 let netidTypeCounter = 1
 function nextNetidType(): number {
@@ -114,7 +122,7 @@ prestart(() => {
             let overflowCount = 0
             do {
                 let add = ++ig.game.entityTypeIdCounterMap[typeid]
-                if (add >= entityNetidCounterSize) {
+                if (add >= netidCounterSize) {
                     add = 1
                     ig.game.entityTypeIdCounterMap[typeid] = 0
                     if (++overflowCount >= 2)
@@ -122,6 +130,7 @@ prestart(() => {
                 }
                 netid = baseId + add
             } while (ig.game.entitiesByNetid[netid])
+
             return netid
         },
         setNetid(override) {
