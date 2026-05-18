@@ -2,6 +2,7 @@ import * as esbuild from 'esbuild'
 import * as fs from 'fs'
 import * as path from 'path'
 import { isMissingFiles, generateBinaryTypes } from './generate-binary-encode-decode-scripts'
+import { fileURLToPath } from 'url'
 
 interface Options {
     sourcemap?: boolean
@@ -20,7 +21,7 @@ interface Options {
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
 }
 
-const projectRoot = new URL('..', import.meta.url).pathname
+const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 
 async function run(
     type: 'build' | 'watch',

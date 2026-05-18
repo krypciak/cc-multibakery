@@ -130,7 +130,7 @@ import * as fs from 'fs'
 const entityImportOrder = (await fs.promises.readFile('src/state/entity.ts', 'utf8'))
     .split('\n')
     .filter(line => line.startsWith("import './entity/"))
-    .map(line => line.slice("import './entity/".length, -1))
+    .map(line => line.trim().slice("import './entity/".length, -1))
     .filter(line => line.startsWith('sc') || line.startsWith('ig') || line.startsWith('dummy'))
     .map(line => line.replace(/_/g, '.'))
 
