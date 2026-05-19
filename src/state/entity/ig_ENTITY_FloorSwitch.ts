@@ -1,9 +1,9 @@
-import { assert } from '../../misc/assert'
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import { isRemote } from '../../server/remote/is-remote-server'
+import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {
     namespace ig.ENTITY {
@@ -56,16 +56,10 @@ prestart(() => {
     if (PHYSICSNET) {
         ig.ENTITY.FloorSwitch.inject({
             activate(noDelay) {
-                assert(!ig.ignoreEffectNetid)
-                ig.ignoreEffectNetid = true
-                this.parent(noDelay)
-                ig.ignoreEffectNetid = false
+                wrapIgnoreEffectNetid(() => this.parent(noDelay))
             },
             deactivate() {
-                assert(!ig.ignoreEffectNetid)
-                ig.ignoreEffectNetid = true
-                this.parent()
-                ig.ignoreEffectNetid = false
+                wrapIgnoreEffectNetid(() => this.parent())
             },
         })
     }

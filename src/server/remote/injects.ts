@@ -1,4 +1,5 @@
 import { prestart } from '../../loading-stages'
+import { wrapIgnoreEffectNetid } from '../../state/entity/effect-netid'
 import { isRemote } from './is-remote-server'
 
 prestart(() => {
@@ -44,9 +45,7 @@ prestart(() => {
     sc.NPCRunnerEntity.forceRemotePhysics = true
     sc.NPCRunnerEntity.inject({
         initAction(enter, exit, waypoints, partyIdx) {
-            ig.ignoreEffectNetid = true
-            this.parent(enter, exit, waypoints, partyIdx)
-            ig.ignoreEffectNetid = false
+            wrapIgnoreEffectNetid(() => this.parent(enter, exit, waypoints, partyIdx))
         },
     })
 

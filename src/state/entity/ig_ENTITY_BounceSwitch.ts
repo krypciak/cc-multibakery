@@ -2,6 +2,7 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
+import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {
     namespace ig.ENTITY {
@@ -49,9 +50,7 @@ prestart(() => {
 
     ig.ENTITY.BounceSwitch.inject({
         animationEnded(animation) {
-            ig.ignoreEffectNetid = true
-            this.parent(animation)
-            ig.ignoreEffectNetid = false
+            wrapIgnoreEffectNetid(() => this.parent(animation))
         },
     })
 }, 2)

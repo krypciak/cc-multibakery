@@ -8,6 +8,7 @@ import { resolveProxyFromType } from './proxy-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { getCCMap } from '../../client/client-map-util'
 import { isRemote } from '../../server/remote/is-remote-server'
+import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {
     namespace sc {
@@ -114,9 +115,7 @@ prestart(() => {
                     map.inst.ig.destroyCombatProxies ??= []
                     map.inst.ig.destroyCombatProxies.push(this.netid)
                 }
-                ig.ignoreEffectNetid = true
-                this.parent(type)
-                ig.ignoreEffectNetid = false
+                wrapIgnoreEffectNetid(() => this.parent(type))
             },
         })
     }

@@ -19,6 +19,7 @@
 - Fix random crashes when throwing mjolnir
 - Fix remote Entity NetID Overlap crash
 - Fix server crash when non-ready client performs an action
+- Fix double effects on remote sometimes
 
 ## [0.7.7] 2026-04-03
 

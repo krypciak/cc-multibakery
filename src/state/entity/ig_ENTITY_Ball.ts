@@ -5,6 +5,7 @@ import { resolveProxyFromType } from './proxy-util'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import { isRemote } from '../../server/remote/is-remote-server'
+import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {
     namespace ig.ENTITY {
@@ -97,9 +98,7 @@ prestart(() => {
             setBallInfo(ballInfo, setFactors) {
                 if (!isRemote(multi.server)) return this.parent(ballInfo, setFactors)
 
-                ig.ignoreEffectNetid = true
-                this.parent(ballInfo, setFactors)
-                ig.ignoreEffectNetid = false
+                wrapIgnoreEffectNetid(() => this.parent(ballInfo, setFactors))
             },
         })
     }

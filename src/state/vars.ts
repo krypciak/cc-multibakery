@@ -8,6 +8,7 @@ import { getCCMap } from '../client/client-map-util'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import type { MapName } from '../net/binary/binary-types'
 import { fromCamel } from '../misc/from-camel'
+import { wrapIgnoreEffectNetid } from './entity/effect-netid'
 
 type VarObj = Record<string, unknown> & RecordSize<u16>
 
@@ -147,10 +148,7 @@ prestart(() => {
     if (REMOTE) {
         ig.Game.inject({
             varsChanged() {
-                assert(!ig.ignoreEffectNetid)
-                ig.ignoreEffectNetid = true
-                this.parent()
-                ig.ignoreEffectNetid = false
+                wrapIgnoreEffectNetid(() => this.parent())
             },
         })
     }

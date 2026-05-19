@@ -4,7 +4,7 @@ import { addStateHandler } from '../states'
 import type { u16 } from 'ts-binarifier/src/type-aliases'
 import type { EntityNetid } from '../../misc/entity-netid'
 import { getCCMap } from '../../client/client-map-util'
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { wrapIgnoreEffectNetid } from './effect-netid'
 
 interface HitConfig {
     entity: EntityNetid
@@ -82,18 +82,9 @@ prestart(() => {
                     spriteFilter
                 )
 
-            ig.ignoreEffectNetid = true
-            const handle = this.parent(
-                entity,
-                hitPos,
-                hitDegree,
-                hitElement,
-                shieldResult,
-                critical,
-                ignoreSounds,
-                spriteFilter
+            const handle = wrapIgnoreEffectNetid(() =>
+                this.parent(entity, hitPos, hitDegree, hitElement, shieldResult, critical, ignoreSounds, spriteFilter)
             )
-            ig.ignoreEffectNetid = false
 
             if (entity.netid === undefined) {
                 console.warn(

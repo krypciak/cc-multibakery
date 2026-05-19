@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { createNetidSpecialBit, type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
+import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
@@ -11,9 +11,6 @@ import { isPhysics } from '../../server/physics/is-physics-server'
 declare global {
     namespace ig.ENTITY {
         interface Effect extends StateMemory.MapHolder<StateKey> {}
-    }
-    namespace ig {
-        var ignoreEffectNetid: boolean | undefined
     }
 
     interface EntityStates {
@@ -82,10 +79,6 @@ prestart(() => {
     ig.ENTITY.Effect.inject({
         getEntityState,
         setEntityState,
-        createNetid() {
-            if (ig.ignoreEffectNetid) return
-            return createNetidSpecialBit.call(this)
-        },
         reset(x, y, z, settings) {
             this.effect = undefined
             this.parent(x, y, z, settings)

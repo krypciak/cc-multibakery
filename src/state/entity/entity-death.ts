@@ -5,7 +5,6 @@ import { shouldCollectStateData, StateMemory } from '../state-util'
 import { addStateHandler, type StateKey } from '../states'
 import type { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
 import { getCCMap } from '../../client/client-map-util'
-import { runTask } from 'cc-instanceinator/src/inst-util'
 
 type EntityDeathsObj = Record<EntityNetid, u4>
 
