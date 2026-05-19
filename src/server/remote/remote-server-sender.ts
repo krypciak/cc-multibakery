@@ -16,6 +16,7 @@ import type { MapName, Username } from '../../net/binary/binary-types'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { assertRemote } from './is-remote-server'
+import { packetDeepEqual } from '../../net/packet-deep-equal'
 
 declare global {
     namespace ig {
@@ -79,12 +80,18 @@ export function sendRemoteServerPacket() {
     multi.server.notifyReadyMaps = undefined
 
     const cleanPacket = cleanRecord(packet)
-    if (cleanPacket) {
-        const toSend = multi.server.settings.connection.forceJsonCommunication
-            ? cleanPacket
-            : RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
-        conn.send('update', toSend)
+    if (!cleanPacket) return
+
+    const toSend = multi.server.settings.connection.forceJsonCommunication
+        ? cleanPacket
+        : RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
+
+    if (DEV && toSend instanceof Uint8Array) {
+        const decoded = RemoteUpdatePacketEncoderDecoder.decode(toSend)
+        assert(packetDeepEqual(packet, decoded), 'remote packet decoding mismatch!')
     }
+
+    conn.send('update', toSend)
 }
 
 export interface RemoteServerUpdatePacket {

@@ -12,6 +12,8 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import type { f64 } from 'ts-binarifier/src/type-aliases'
 import type { MapName } from '../../net/binary/binary-types'
 import { assertPhysics } from './is-physics-server'
+import { assert } from '../../misc/assert'
+import { packetDeepEqual } from '../../net/packet-deep-equal'
 
 declare global {
     interface StateUpdatePacket {
@@ -76,9 +78,11 @@ export function sendPhysicsServerPacket() {
         const toSend = multi.server.settings.netInfo!.details.forceJsonCommunication
             ? data
             : PhysicsUpdatePacketEncoderDecoder.encode(data)
-        // if (ASSERT && toSend instanceof Uint8Array) {
-        //     PhysicsUpdatePacketEncoderDecoder.decode(toSend)
-        // }
+
+        if (DEV && toSend instanceof Uint8Array) {
+            const decoded = PhysicsUpdatePacketEncoderDecoder.decode(toSend)
+            assert(packetDeepEqual(data, decoded), 'physics packet decoding mismatch!')
+        }
         conn.send('update', toSend)
     }
 
