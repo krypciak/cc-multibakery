@@ -20,6 +20,7 @@
 - Fix remote Entity NetID Overlap crash
 - Fix server crash when non-ready client performs an action
 - Fix double effects on remote sometimes
+- Fix remote map var changes not working
 
 ## [0.7.7] 2026-04-03
 

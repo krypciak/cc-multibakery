@@ -101,12 +101,22 @@ prestart(() => {
             if (!packet.vars) return
 
             const mapsToNotify = new Set<MapName>()
-            for (const path in packet.vars) {
+            for (let path in packet.vars) {
                 const value = packet.vars[path]
-
                 const obj = ig.vars._getAccessObject(path)
                 assert(obj)
-                obj.obj[obj.key] = value
+
+                const oldValue = obj.obj[obj.key]
+                /* do not override object so references are not broken (ig.vars.storage.map) */
+                if (oldValue && typeof oldValue === 'object' && value && typeof value === 'object') {
+                    /* value should always be an empty object, but just in case */
+                    for (const [k, v] of Object.entries(value)) {
+                        oldValue[k] = v
+                    }
+                } else {
+                    obj.obj[obj.key] = value
+                }
+
                 if (path.startsWith('maps')) {
                     mapsToNotify.add(extractMapNameOutOfMapsVar(path))
                 }
