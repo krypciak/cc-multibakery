@@ -18,6 +18,7 @@
 - Fix sounds not clearing properly when hiding instances
 - Fix random crashes when throwing mjolnir
 - Fix remote Entity NetID Overlap crash
+- Fix server crash when non-ready client performs an action
 
 ## [0.7.7] 2026-04-03
 

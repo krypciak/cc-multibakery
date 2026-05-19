@@ -27,7 +27,10 @@ prestart(() => {
 
     ig.ActorEntity.inject({
         getClientFromBoundAction() {
-            return this.actionBoundToPlayer?.getClient(true) ?? getCCMap().clients[0]
+            let client = this.actionBoundToPlayer?.getClient(true)
+            if (!client?.ready) client = getCCMap().clients[0]
+            assert(client.ready)
+            return client
         },
         setAction(action, keepState, noStateReset) {
             if (action && isPhysics(multi.server) && !(this instanceof dummy.DummyPlayer)) {
