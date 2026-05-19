@@ -16,6 +16,7 @@ interface Options {
     extraTreeShaking?: boolean
     target?: string
     dropAssert?: boolean
+    dev?: boolean
     dropProfiling?: boolean
     noWrite?: boolean
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
@@ -37,6 +38,7 @@ async function run(
         extraTreeShaking = false,
         target = 'es2018',
         dropAssert = false,
+        dev = true,
         dropProfiling = true,
         noWrite = false,
         forceRegenerateBinaryEncodeDecodeScripts = false,
@@ -161,7 +163,8 @@ async function run(
             REMOTE: String(remote),
             BROWSER: String(browser),
             ASSERT: String(!dropAssert),
-            PROFILE: String(!dropProfiling)
+            DEV: String(dev),
+            PROFILE: String(!dropProfiling),
         },
         plugins: [plugin],
         // metafile: true,

@@ -5,12 +5,12 @@
     "scripts": {
         "start": "bun build/build.ts build",
         "watch": "bun build/build.ts watch",
-        "build": "bun build/build.ts build",
+        "build": "bun build/build.ts build dev=false extraTreeShaking=true",
         "regenerateBin": "bun build/build.ts build forceRegenerateBinaryEncodeDecodeScripts=true",
-        "buildRemote": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false extraTreeShaking=true",
-        "buildRemoteBrowser": "bun build/build.ts build minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
-        "buildPhysics": "bun build/build.ts build minifySyntax=true minifyWhitespace=true remote=false extraTreeShaking=true",
-        "buildPhysicsNetless": "bun build/build.ts build minifySyntax=true minifyWhitespace=true remote=false physicsnet=false extraTreeShaking=true",
+        "buildRemote": "bun build/build.ts build dev=false minifySyntax=true minifyWhitespace=true physics=false extraTreeShaking=true",
+        "buildRemoteBrowser": "bun build/build.ts build dev=false minifySyntax=true minifyWhitespace=true physics=false browser=true target=es2024 extraTreeShaking=true",
+        "buildPhysics": "bun build/build.ts build dev=false minifySyntax=true minifyWhitespace=true remote=false extraTreeShaking=true",
+        "buildPhysicsNetless": "bun build/build.ts build dev=false minifySyntax=true minifyWhitespace=true remote=false physicsnet=false extraTreeShaking=true",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 400 --bracket-same-line",
         "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"

@@ -18,6 +18,7 @@ declare global {
     const REMOTE: boolean
     const BROWSER: boolean
     const ASSERT: boolean
+    const DEV: boolean
     const PROFILE: boolean
 
     namespace NodeJS {
