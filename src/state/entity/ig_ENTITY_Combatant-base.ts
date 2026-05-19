@@ -44,7 +44,7 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
                 this.params.baseParams,
                 Object.fromEntries(Object.entries(state.baseParams).filter(([_, v]) => v)) as typeof state.baseParams
             )
-            notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED, ig.settingStateImmediately)
+            notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED, ig.shared.settingStateImmediately)
         }
 
         if (state.spLevel !== undefined) {

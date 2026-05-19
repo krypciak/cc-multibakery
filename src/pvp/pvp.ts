@@ -1,7 +1,6 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
-import type { CCMap } from '../server/ccmap/ccmap'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
 import { isPhysics } from '../server/physics/is-physics-server'
@@ -16,7 +15,6 @@ declare global {
             multiplayerPvp?: boolean
             parties: MultiParty[]
             roundGuis: Record<number, sc.PvpRoundGui>
-            map: CCMap
             hpBars: Record<number, sc.SUB_HP_EDITOR.PVP[]>
             justRearrangedHpBars?: boolean
             lastWinPartyId?: string
@@ -84,17 +82,15 @@ prestart(() => {
 
             this.enemies = []
 
-            this.map = ig.mapShared.ccmap
-
-            runTasks(this.map.getClientInstances(true), () => {
+            runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STARTED, null)
                 sc.model.setCombatMode(true, true)
             })
 
-            this.map.onLinkChange.push(this)
+            ig.mapShared.ccmap.onLinkChange.push(this)
         },
         removeRoundGuis() {
-            runTasks(this.map.getClientInstances(true), () => {
+            runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
                 const id = instanceinator.id
                 this.roundGuis[id]?.remove()
             })
@@ -196,7 +192,6 @@ prestart(() => {
             this.multiplayerPvp = false
             this.parties = []
             this.points = {}
-            this.map = undefined as any
             this.lastWinPartyId = undefined
         },
         removePvpGuis() {
@@ -217,7 +212,7 @@ prestart(() => {
             this.removeRoundGuis()
         },
         showKOGuis() {
-            runTasks(this.map.getClientInstances(true), () => {
+            runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
                 const koGui = new sc.PvpKoGui()
                 ig.gui.addGuiElement(koGui)
             })
@@ -290,7 +285,7 @@ prestart(() => {
             this.round += 1
 
             this.roundGuis = Object.fromEntries(
-                runTasks(this.map.getClientInstances(true), () => {
+                runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
                     const roundGui = new sc.PvpRoundGui(this.round, autoContinue)
                     ig.gui.addGuiElement(roundGui)
                     return [instanceinator.id, roundGui]
@@ -328,11 +323,11 @@ prestart(() => {
 
             this.removePvpGuis()
             /* wait for sc.CombatUpperHud.CONTENT_GUI.PVP to hide */
-            wait(this.map.inst, 1).then(() => {
+            wait(ig.mapShared.ccmap.inst, 1).then(() => {
                 this.resetMultiState()
             })
 
-            runTasks(this.map.getClientInstances(true), () => {
+            runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
                 sc.model.setCombatMode(false, true)
             })
@@ -341,7 +336,7 @@ prestart(() => {
             this.parent()
             if (!multi.server) return
 
-            runTasks(this.map.getClientInstances(), () => {
+            runTasks(ig.mapShared.ccmap.getClientInstances(), () => {
                 sc.Model.notifyObserver(this, sc.PVP_MESSAGE.STOPPED, null)
             })
 

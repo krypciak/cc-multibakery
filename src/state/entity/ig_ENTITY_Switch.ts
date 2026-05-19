@@ -33,7 +33,7 @@ function setEntityState(this: ig.ENTITY.Switch, state: Return) {
         const anim = this.isOn ? 'switchOn' : 'switchOff'
         const followUpAnim = this.isOn ? 'on' : 'off'
 
-        if (ig.settingStateImmediately) {
+        if (ig.shared.settingStateImmediately) {
             this.setCurrentAnim(followUpAnim, true, null, true)
         } else {
             this.setCurrentAnim(anim, true, followUpAnim, true)

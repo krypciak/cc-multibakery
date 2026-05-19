@@ -72,7 +72,7 @@ prestart(() => {
                 if (!isRemote(multi.server)) return this.parent()
             },
             _showNextMessage() {
-                if (!isRemote(multi.server) || ig.settingState) return this.parent()
+                if (!isRemote(multi.server) || ig.shared.settingState) return this.parent()
                 return false
             },
         })

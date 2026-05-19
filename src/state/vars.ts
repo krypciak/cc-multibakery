@@ -19,9 +19,9 @@ declare global {
         vars?: VarObj
     }
     namespace ig {
-        interface Vars {
+        interface MapSharedVars {
             varsChanged?: VarObj
-            everSent?: WeakSet<StateKey>
+            varsEverSent?: WeakSet<StateKey>
         }
     }
 }
@@ -49,19 +49,19 @@ function extractMapNameOutOfMapsVar(path: string): MapName {
 prestart(() => {
     addStateHandler({
         get(packet, client) {
-            ig.vars.everSent ??= new WeakSet()
+            ig.mapShared.varsEverSent ??= new WeakSet()
 
-            packet.vars = ig.vars.varsChanged
+            packet.vars = ig.mapShared.varsChanged
 
-            if (!client || !ig.vars.everSent.has(client)) {
-                if (client) ig.vars.everSent.add(client)
+            if (!client || !ig.mapShared.varsEverSent.has(client)) {
+                if (client) ig.mapShared.varsEverSent.add(client)
 
                 packet.vars ??= {}
                 flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
             }
         },
         clear() {
-            ig.vars.varsChanged = undefined
+            ig.mapShared.varsChanged = undefined
         },
         set(packet) {
             if (!packet.vars) return
@@ -127,8 +127,9 @@ prestart(() => {
                 !shouldCollectStateData() ||
                 newValue instanceof ig.Class ||
                 (Array.isArray(newValue) && newValue.some(v => v instanceof ig.Class))
-            )
+            ) {
                 return
+            }
 
             if (path.startsWith('map.')) {
                 path = 'maps.' + ig.vars.currentLevelName + path.substring(3)
@@ -137,9 +138,8 @@ prestart(() => {
                 globalVarsChanged ??= {}
                 globalVarsChanged[path] = newValue
             } else if (path.startsWith('tmp.')) {
-                const map = ig.mapShared.ccmap
-                map.inst.ig.vars.varsChanged ??= {}
-                map.inst.ig.vars.varsChanged[path] = newValue
+                ig.mapShared.varsChanged ??= {}
+                ig.mapShared.varsChanged[path] = newValue
             }
         })
     }

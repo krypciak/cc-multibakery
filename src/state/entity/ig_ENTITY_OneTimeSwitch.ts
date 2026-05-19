@@ -25,7 +25,7 @@ function setEntityState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
     if (state.isOn !== undefined && this.isOn != state.isOn) {
         this.isOn = state.isOn
         if (this.isOn) {
-            if (ig.settingStateImmediately) {
+            if (ig.shared.settingStateImmediately) {
                 this.finalizeOn()
             } else {
                 this.setOn()

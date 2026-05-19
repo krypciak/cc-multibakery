@@ -24,7 +24,7 @@ function getEntityState(this: ig.ENTITY.PushPullBlock, player?: StateKey) {
 function setEntityState(this: ig.ENTITY.PushPullBlock, state: Return) {
     if (state.pos) {
         this.setPos(state.pos.x, state.pos.y, state.pos.z)
-        if (!ig.settingStateImmediately) {
+        if (!ig.shared.settingStateImmediately) {
             if (!this.pushPullable.soundHandle) {
                 this.pushPullable.soundHandle = sc.PushPullSounds.Loop.play(true)
             }
@@ -47,7 +47,7 @@ prestart(() => {
     ig.ENTITY.PushPullBlock.inject({
         update() {
             if (!isRemote(multi.server)) return this.parent()
-            if (!ig.lastStatePacket?.states?.[this.netid]) this.pushPullable.stopSound()
+            if (!ig.mapShared.lastStatePacket?.states?.[this.netid]) this.pushPullable.stopSound()
         },
         deferredUpdate() {
             if (!isRemote(multi.server)) return this.parent()

@@ -14,16 +14,18 @@ declare global {
         gameModelState?: GameModelState
     }
     namespace ig {
-        var gameModelStateMemory: StateMemory | undefined
-        var gameModelStatePlayerMemory: StateMemory.MapHolder<StateKey> | undefined
+        interface MapSharedVars {
+            gameModelStateMemory?: StateMemory
+            gameModelStatePlayerMemory?: StateMemory.MapHolder<StateKey>
+        }
     }
 }
 
 prestart(() => {
     addStateHandler({
         get(packet, client) {
-            const mapMemory = StateMemory.get(ig.gameModelStateMemory)
-            ig.gameModelStateMemory ??= mapMemory
+            const mapMemory = StateMemory.get(ig.mapShared.gameModelStateMemory)
+            ig.mapShared.gameModelStateMemory ??= mapMemory
 
             const mapState = mapMemory.diff(sc.model.currentState)
             if (mapState !== undefined) {
@@ -32,8 +34,8 @@ prestart(() => {
             }
 
             if (client) {
-                ig.gameModelStatePlayerMemory ??= {}
-                const playerMemory = StateMemory.getBy(ig.gameModelStatePlayerMemory, client)
+                ig.mapShared.gameModelStatePlayerMemory ??= {}
+                const playerMemory = StateMemory.getBy(ig.mapShared.gameModelStatePlayerMemory, client)
                 const playerState = playerMemory.diff(client.inst.sc.model.currentState)
                 if (playerState !== undefined) {
                     packet.gameModelState ??= {}

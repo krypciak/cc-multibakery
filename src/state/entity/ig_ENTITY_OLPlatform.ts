@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.OLPlatform, state: Return) {
 
         if (platformState && platformState != this.currentState) {
             Vec3.assign(this._lastPos, this.coll.pos)
-            if (ig.settingStateImmediately) {
+            if (ig.shared.settingStateImmediately) {
                 this.setPos(platformState.pos.x, platformState.pos.y, platformState.pos.z)
             } else {
                 const sound = this.sound.move.play() as ig.SoundHandleWebAudio

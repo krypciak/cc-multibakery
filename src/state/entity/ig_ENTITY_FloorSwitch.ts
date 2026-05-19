@@ -28,7 +28,7 @@ function setEntityState(this: ig.ENTITY.FloorSwitch, state: Return) {
         const anim = this.isOn ? 'on' : 'off'
 
         this.setCurrentAnim(anim)
-        if (!ig.settingStateImmediately)
+        if (!ig.shared.settingStateImmediately)
             this.effects.sheet.spawnOnTarget(this.isOn ? 'floorSwitchActivate' : 'floorSwitchDeactivate', this)
     }
 }

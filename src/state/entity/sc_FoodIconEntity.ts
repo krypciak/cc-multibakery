@@ -22,7 +22,7 @@ function getEntityState(this: sc.FoodIconEntity, player?: StateKey) {
         combatant: memory.onlyOnce(this.combatant.netid),
         icon: memory.onlyOnce(this.icon),
         state: memory.diff(this.state),
-        offset: memory.diffVec2(this.offset)
+        offset: memory.diffVec2(this.offset),
     }
 }
 

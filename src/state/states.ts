@@ -26,9 +26,13 @@ import './party'
 
 declare global {
     namespace ig {
-        var settingState: boolean | undefined
-        var settingStateImmediately: boolean | undefined
-        var lastStatePacket: StateUpdatePacket | undefined
+        interface InstanceShared {
+            settingState?: boolean
+            settingStateImmediately?: boolean
+        }
+        interface MapSharedVars {
+            lastStatePacket?: StateUpdatePacket
+        }
     }
 }
 
@@ -74,23 +78,23 @@ export function clearCollectedState() {
 }
 
 export function applyStateUpdatePacket(packet: StateUpdatePacket, tick: number, immediately: boolean) {
-    ig.settingState = true
+    ig.shared.settingState = true
     const backup = ig.system.tick
     ig.system.tick = tick
-    ig.settingStateImmediately = immediately
+    ig.shared.settingStateImmediately = immediately
 
     for (const { set } of handlers) set(packet)
 
     ig.system.tick = backup
-    ig.settingState = false
-    ig.settingStateImmediately = false
-    ig.lastStatePacket = packet
+    ig.shared.settingState = false
+    ig.shared.settingStateImmediately = false
+    ig.mapShared.lastStatePacket = packet
 }
 
 export function applyGlobalStateUpdatePacket(packet: GlobalStateUpdatePacket) {
-    ig.settingState = true
+    ig.shared.settingState = true
 
     for (const { set } of globalHandlers) set(packet)
 
-    ig.settingState = false
+    ig.shared.settingState = false
 }

@@ -14,7 +14,9 @@ declare global {
         actionSteps?: Record<EntityNetid, StepObj[]>
     }
     namespace ig {
-        var actionStepsFired: Record<EntityNetid, StepObj[]> | undefined
+        interface MapSharedVars {
+            actionStepsFired?: Record<EntityNetid, StepObj[]>
+        }
     }
 }
 
@@ -23,14 +25,14 @@ prestart(() => {
         get(packet, client) {
             if (!client) return
             const netid = client.dummy.netid
-            const entry = ig.actionStepsFired?.[netid]
+            const entry = ig.mapShared.actionStepsFired?.[netid]
             if (!entry) return
 
             packet.actionSteps ??= {}
             packet.actionSteps[netid] = entry
         },
         clear() {
-            ig.actionStepsFired = undefined
+            ig.mapShared.actionStepsFired = undefined
         },
         set(packet) {
             if (!packet.actionSteps) return
@@ -87,9 +89,8 @@ export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity
     }
 
     if (shouldCollectStateData()) {
-        const map = ig.mapShared.ccmap
-        map.inst.ig.actionStepsFired ??= {}
-        ;(map.inst.ig.actionStepsFired[actor.netid] ??= []).push({
+        ig.mapShared.actionStepsFired ??= {}
+        ;(ig.mapShared.actionStepsFired[actor.netid] ??= []).push({
             settings: ig.StepHelpers.getStepSettings(step) as ig.ActionStepBase.Settings,
         })
     }
@@ -100,22 +101,24 @@ declare global {
         clearActionAttached?: Record<EntityNetid, true>
     }
     namespace ig {
-        var clearActionAttached: Record<EntityNetid, true> | undefined
+        interface MapSharedVars {
+            clearActionAttached?: Record<EntityNetid, true>
+        }
     }
 }
 
 prestart(() => {
     addStateHandler({
         get(packet, client) {
-            if (!client || !ig.clearActionAttached) return
+            if (!client || !ig.mapShared.clearActionAttached) return
             const netid = client.dummy.netid
-            if (!ig.clearActionAttached[netid]) return
+            if (!ig.mapShared.clearActionAttached[netid]) return
 
             packet.clearActionAttached ??= {}
-            packet.clearActionAttached[netid] = ig.clearActionAttached[netid]
+            packet.clearActionAttached[netid] = ig.mapShared.clearActionAttached[netid]
         },
         clear() {
-            ig.clearActionAttached = undefined
+            ig.mapShared.clearActionAttached = undefined
         },
         set(packet) {
             if (!packet.clearActionAttached) return
@@ -142,9 +145,8 @@ prestart(() => {
                 // console.log('clearActionAttached', this.actionAttached.map(fcn), condition, secondConditionArg)
                 assert(!secondConditionArg)
                 assert(ig.client)
-                const map = ig.mapShared.ccmap
-                map.inst.ig.clearActionAttached ??= {}
-                map.inst.ig.clearActionAttached[this.netid] = true
+                ig.mapShared.clearActionAttached ??= {}
+                ig.mapShared.clearActionAttached[this.netid] = true
             }
 
             this.parent(condition)

@@ -67,20 +67,10 @@ prestart(() => {
     ig.Game.inject({
         varsChangedDeferred() {
             this.parent()
-            if (!ig.ccmap) return
-            for (const inst of ig.ccmap.getClientInstances()) inst.ig.game._deferredVarChanged = true
-        },
-    })
-})
-
-prestart(() => {
-    ig.Game.inject({
-        varsChangedDeferred() {
-            this.parent()
-            if (!ig.client) return
-            const map = ig.client.getMap(true)
-            if (!map) return
-            for (const inst of map.getClientInstances(true)) inst.ig.game._deferredVarChanged = true
+            if (!ig.mapShared) return
+            for (const inst of ig.mapShared.ccmap.getClientInstances(true)) {
+                inst.ig.game._deferredVarChanged = true
+            }
         },
     })
 })

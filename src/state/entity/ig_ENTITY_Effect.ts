@@ -135,16 +135,18 @@ declare global {
         clearEffects?: [EntityNetid, string | undefined][]
     }
     namespace ig {
-        var clearEffects: [EntityNetid, string | undefined][] | undefined
+        interface MapSharedVars {
+            clearEffects?: [EntityNetid, string | undefined][]
+        }
     }
 }
 prestart(() => {
     addStateHandler({
         get(packet) {
-            packet.clearEffects = ig.clearEffects
+            packet.clearEffects = ig.mapShared.clearEffects
         },
         clear() {
-            ig.clearEffects = undefined
+            ig.mapShared.clearEffects = undefined
         },
         set(packet) {
             for (const player of ig.game.entities) {
@@ -172,9 +174,8 @@ prestart(() => {
         if (!entity.netid || !shouldCollectStateData()) return
         if (withTheSameGroup == 'modeAura') return
 
-        const map = ig.mapShared.ccmap
-        map.inst.ig.clearEffects ??= []
-        map.inst.ig.clearEffects.push([entity.netid, withTheSameGroup])
+        ig.mapShared.clearEffects ??= []
+        ig.mapShared.clearEffects.push([entity.netid, withTheSameGroup])
     }
 }, 0)
 
@@ -183,16 +184,18 @@ declare global {
         stopEffects?: EntityNetid[]
     }
     namespace ig {
-        var stopEffects: EntityNetid[] | undefined
+        interface MapSharedVars {
+            stopEffects?: EntityNetid[]
+        }
     }
 }
 prestart(() => {
     addStateHandler({
         get(packet) {
-            packet.stopEffects = ig.stopEffects
+            packet.stopEffects = ig.mapShared.stopEffects
         },
         clear() {
-            ig.stopEffects = undefined
+            ig.mapShared.stopEffects = undefined
         },
         set(packet) {
             if (!packet.stopEffects) return
@@ -214,9 +217,8 @@ prestart(() => {
         stop() {
             this.parent()
             if (!shouldCollectStateData() || !this.netid) return
-            const map = ig.mapShared.ccmap
-            map.inst.ig.stopEffects ??= []
-            map.inst.ig.stopEffects.push(this.netid)
+            ig.mapShared.stopEffects ??= []
+            ig.mapShared.stopEffects.push(this.netid)
         },
     })
 }, 0)

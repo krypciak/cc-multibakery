@@ -24,7 +24,7 @@ function getEntityState(this: ig.ENTITY.BounceSwitch, player?: StateKey) {
 function setEntityState(this: ig.ENTITY.BounceSwitch, state: Return) {
     if (state.isOn !== undefined) {
         this.isOn = state.isOn
-        if (ig.settingStateImmediately) {
+        if (ig.shared.settingStateImmediately) {
             this.setCurrentAnim(this.isOn ? 'on' : 'off')
         } else {
             if (this.isOn) {

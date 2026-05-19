@@ -44,7 +44,7 @@ prestart(() => {
         ig.ENTITY.DynamicPlatform.inject({
             update() {
                 if (!isRemote(multi.server)) return this.parent()
-                if (!ig.settingState) return
+                if (!ig.shared.settingState) return
 
                 this.parent()
             },

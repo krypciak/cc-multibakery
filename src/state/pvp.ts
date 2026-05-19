@@ -21,7 +21,9 @@ declare global {
         pvp?: PvpObj
     }
     namespace ig {
-        var pvpStatePlayerMemory: StateMemory.MapHolder<StateKey> | undefined
+        interface MapSharedVars {
+            pvpStatePlayerMemory?: StateMemory.MapHolder<StateKey>
+        }
     }
 }
 
@@ -30,8 +32,8 @@ prestart(() => {
         get(packet, client) {
             if (packet.pvp) return
 
-            ig.pvpStatePlayerMemory ??= {}
-            const memory = StateMemory.getBy(ig.pvpStatePlayerMemory, client)
+            ig.mapShared.pvpStatePlayerMemory ??= {}
+            const memory = StateMemory.getBy(ig.mapShared.pvpStatePlayerMemory, client)
 
             const parties = sc.pvp.parties?.map(p => p.id)
 

@@ -80,7 +80,7 @@ export class CCMap extends InstanceUpdateable {
             instanceinatorCopyInstanceConfig()
         )
         this.inst.ig.ccmap = this
-        this.inst.ig.mapShared = { ccmap: this }
+        this.inst.ig.mapShared = { ccmap: this } as any
         forceConditionalLightOnInst(this.inst.id)
         this.link()
 

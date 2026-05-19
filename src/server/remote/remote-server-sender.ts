@@ -18,11 +18,7 @@ import { cleanRecord, StateMemory } from '../../state/state-util'
 import { assertRemote } from './is-remote-server'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
 
-declare global {
-    namespace ig {
-        var remoteSenderStateMemory: StateMemory | undefined
-    }
-}
+let remoteSenderStateMemory: StateMemory | undefined
 
 const maxInputFieldTextLength = 50
 
@@ -50,8 +46,8 @@ export function sendRemoteServerPacket() {
 
             const gamepad = inst.ig.gamepad.getInput()
 
-            const memory = StateMemory.get(ig.remoteSenderStateMemory)
-            ig.remoteSenderStateMemory ??= memory
+            const memory = StateMemory.get(remoteSenderStateMemory)
+            remoteSenderStateMemory ??= memory
 
             const options = filterClientOptionModelValues(
                 (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}

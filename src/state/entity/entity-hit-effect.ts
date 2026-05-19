@@ -21,17 +21,19 @@ declare global {
         entityHitPackets?: HitConfig[]
     }
     namespace ig {
-        var entityHitPackets: HitConfig[] | undefined
+        interface MapSharedVars {
+            entityHitPackets?: HitConfig[]
+        }
     }
 }
 
 prestart(() => {
     addStateHandler({
         get(packet) {
-            packet.entityHitPackets = ig.entityHitPackets
+            packet.entityHitPackets = ig.mapShared.entityHitPackets
         },
         clear() {
-            ig.entityHitPackets = undefined
+            ig.mapShared.entityHitPackets = undefined
         },
         set(packet) {
             if (!packet.entityHitPackets) return
@@ -90,9 +92,8 @@ prestart(() => {
                     `sc.Combat#showHitEffect entity (${findClassName(entity)}) is not an net entity! remote clients will crash!`
                 )
             }
-            const map = ig.mapShared.ccmap
-            map.inst.ig.entityHitPackets ??= []
-            map.inst.ig.entityHitPackets.push({
+            ig.mapShared.entityHitPackets ??= []
+            ig.mapShared.entityHitPackets.push({
                 entity: entity.netid,
                 hitPos,
                 hitDegree,

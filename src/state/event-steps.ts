@@ -268,7 +268,9 @@ declare global {
         interface EventCall {
             eventCallId: number
         }
-        var ignoreEventStepsCollection: boolean | undefined
+        interface MapSharedVars {
+            ignoreEventStepsCollection?: boolean
+        }
     }
 }
 
@@ -292,7 +294,12 @@ export function onEventStepStart(
     call: ig.EventCall,
     { currentStep: step, stepData: data, vars }: ig.EventCall.StackEntry
 ) {
-    if (!step || !eventStepWhitelist.has(step.classId) || !shouldCollectStateData() || ig.ignoreEventStepsCollection)
+    if (
+        !step ||
+        !eventStepWhitelist.has(step.classId) ||
+        !shouldCollectStateData() ||
+        ig.mapShared.ignoreEventStepsCollection
+    )
         return
 
     const group = getGroup(call)

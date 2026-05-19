@@ -83,16 +83,18 @@ declare global {
         destroyCombatProxies?: EntityNetid[]
     }
     namespace ig {
-        var destroyCombatProxies: EntityNetid[] | undefined
+        interface MapSharedVars {
+            destroyCombatProxies?: EntityNetid[]
+        }
     }
 }
 prestart(() => {
     addStateHandler({
         get(packet) {
-            packet.destroyCombatProxies = ig.destroyCombatProxies
+            packet.destroyCombatProxies = ig.mapShared.destroyCombatProxies
         },
         clear() {
-            ig.destroyCombatProxies = undefined
+            ig.mapShared.destroyCombatProxies = undefined
         },
         set(packet) {
             if (!packet.destroyCombatProxies) return
@@ -110,9 +112,8 @@ prestart(() => {
         sc.CombatProxyEntity.inject({
             destroy(type) {
                 if (shouldCollectStateData() && !this.destroyType) {
-                    const map = ig.mapShared.ccmap
-                    map.inst.ig.destroyCombatProxies ??= []
-                    map.inst.ig.destroyCombatProxies.push(this.netid)
+                    ig.mapShared.destroyCombatProxies ??= []
+                    ig.mapShared.destroyCombatProxies.push(this.netid)
                 }
                 wrapIgnoreEffectNetid(() => this.parent(type))
             },
@@ -129,7 +130,7 @@ prestart(() => {
             },
             update() {
                 if (!isRemote(multi.server)) return this.parent()
-                if (!ig.settingState && !ig.lastStatePacket?.states?.[this.netid]) return
+                if (!ig.shared.settingState && !ig.mapShared.lastStatePacket?.states?.[this.netid]) return
 
                 ignoreDestroy = true
                 this.parent()

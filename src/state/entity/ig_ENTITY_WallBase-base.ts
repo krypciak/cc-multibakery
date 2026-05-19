@@ -41,7 +41,7 @@ prestart(() => {
 
     ig.ENTITY.WallBlocker.inject({
         setActive(active, noEffects) {
-            return this.parent(active, noEffects || ig.settingStateImmediately)
+            return this.parent(active, noEffects || ig.shared.settingStateImmediately)
         },
     })
 

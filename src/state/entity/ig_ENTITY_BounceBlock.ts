@@ -25,7 +25,7 @@ function getEntityState(this: ig.ENTITY.BounceBlock, player?: StateKey) {
 function setEntityState(this: ig.ENTITY.BounceBlock, state: Return) {
     if (state.blockState !== undefined) {
         this.blockState = state.blockState as 0 | 1 | 2
-        if (ig.settingStateImmediately) {
+        if (ig.shared.settingStateImmediately) {
             if (this.blockState) {
                 this.onGroupResolve(true)
             } else {

@@ -29,7 +29,7 @@ function setEntityState(this: ig.ENTITY.EnemyCounter, state: Return) {
         if (this.postCount == 0) {
             this.done = true
         }
-        if (!ig.settingStateImmediately) {
+        if (!ig.shared.settingStateImmediately) {
             if (this.done) {
                 ig.SoundHelper.playAtEntity(this.sounds.done, this)
             } else {

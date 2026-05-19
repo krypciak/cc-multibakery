@@ -12,20 +12,22 @@ declare global {
         entityDeaths?: EntityDeathsObj & RecordSize<u16>
     }
     namespace ig {
-        var entityDeaths: EntityDeathsObj | undefined
-        var entityDeathsStateMemory: StateMemory.MapHolder<StateKey>
+        interface MapSharedVars {
+            entityDeaths?: EntityDeathsObj
+            entityDeathsStateMemory?: StateMemory.MapHolder<StateKey>
+        }
     }
 }
 
 prestart(() => {
     addStateHandler({
         get(packet, client) {
-            if (!ig.entityDeaths) return
+            if (!ig.mapShared.entityDeaths) return
 
-            ig.entityDeathsStateMemory ??= {}
-            const memory = StateMemory.getBy(ig.entityDeathsStateMemory, client)
+            ig.mapShared.entityDeathsStateMemory ??= {}
+            const memory = StateMemory.getBy(ig.mapShared.entityDeathsStateMemory, client)
 
-            packet.entityDeaths = memory.diffRecord(ig.entityDeaths)
+            packet.entityDeaths = memory.diffRecord(ig.mapShared.entityDeaths)
         },
         set(packet) {
             if (!packet.entityDeaths) return
@@ -45,9 +47,9 @@ prestart(() => {
 
     ig.Entity.inject({
         setNetid(override) {
-            if (ig.entityDeaths) delete ig.entityDeaths[this.netid]
+            if (ig.mapShared.entityDeaths) delete ig.mapShared.entityDeaths[this.netid]
             this.parent(override)
-            if (ig.entityDeaths) delete ig.entityDeaths[this.netid]
+            if (ig.mapShared.entityDeaths) delete ig.mapShared.entityDeaths[this.netid]
         },
         kill(levelChange) {
             this.parent(levelChange)
@@ -56,8 +58,7 @@ prestart(() => {
             if (entityIgnoreDeath.has(typeId)) return
 
             if (shouldCollectStateData()) {
-                const map = ig.mapShared.ccmap
-                const deaths = (map.inst.ig.entityDeaths ??= {})
+                const deaths = (ig.mapShared.entityDeaths ??= {})
                 deaths[this.netid] = ((deaths[this.netid] ?? 0) + 1) % 16
             }
         },

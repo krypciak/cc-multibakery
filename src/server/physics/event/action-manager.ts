@@ -6,7 +6,9 @@ import { type Client } from '../../../client/client'
 
 declare global {
     namespace ig {
-        var actionNextTriggeredBy: dummy.DummyPlayer | undefined
+        interface MapSharedVars {
+            actionNextTriggeredBy?: dummy.DummyPlayer
+        }
 
         interface ActorEntity {
             actionBoundToPlayer?: dummy.DummyPlayer
@@ -18,7 +20,7 @@ declare global {
 
 export function setActionNextTriggeredBy(player: dummy.DummyPlayer) {
     assert(player)
-    ig.actionNextTriggeredBy = player
+    ig.mapShared.actionNextTriggeredBy = player
 }
 
 prestart(() => {
@@ -33,7 +35,7 @@ prestart(() => {
         },
         setAction(action, keepState, noStateReset) {
             if (action && isPhysics(multi.server) && !(this instanceof dummy.DummyPlayer)) {
-                const player = ig.actionNextTriggeredBy || ig.client?.dummy
+                const player = ig.mapShared.actionNextTriggeredBy || ig.client?.dummy
                 if (player) this.actionBoundToPlayer = player
             }
             return this.parent(action, keepState, noStateReset)

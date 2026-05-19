@@ -21,7 +21,9 @@ declare global {
         hitNumber?: HitNumberConfig[]
     }
     namespace ig {
-        var hitNumberSpawned: HitNumberConfig[] | undefined
+        interface MapSharedVars {
+            hitNumberSpawned?: HitNumberConfig[]
+        }
     }
 }
 
@@ -30,10 +32,10 @@ prestart(() => {
 
     addStateHandler({
         get(packet) {
-            packet.hitNumber = ig.hitNumberSpawned
+            packet.hitNumber = ig.mapShared.hitNumberSpawned
         },
         clear() {
-            ig.hitNumberSpawned = undefined
+            ig.mapShared.hitNumberSpawned = undefined
         },
         set(packet) {
             if (!packet.hitNumber) return
@@ -82,11 +84,10 @@ prestart(() => {
             appenix
         ) {
             if (shouldCollectStateData()) {
-                const map = ig.mapShared.ccmap
-                map.inst.ig.hitNumberSpawned ??= []
+                ig.mapShared.hitNumberSpawned ??= []
                 const netid = combatant.netid
                 assert(netid)
-                map.inst.ig.hitNumberSpawned.push({
+                ig.mapShared.hitNumberSpawned.push({
                     pos,
                     combatant: netid,
                     damage,
@@ -103,11 +104,10 @@ prestart(() => {
 
         ig.ENTITY.HitNumber.spawnHealingNumber = function (pos, combatant, healAmount) {
             if (shouldCollectStateData()) {
-                const map = ig.mapShared.ccmap
-                map.inst.ig.hitNumberSpawned ??= []
+                ig.mapShared.hitNumberSpawned ??= []
                 const netid = combatant.netid
                 assert(netid)
-                map.inst.ig.hitNumberSpawned.push({
+                ig.mapShared.hitNumberSpawned.push({
                     isHealing: true,
                     pos,
                     combatant: netid,
@@ -125,17 +125,19 @@ declare global {
         hitNumberClear?: EntityNetid[]
     }
     namespace ig {
-        var hitNumberClear: EntityNetid[] | undefined
+        interface MapSharedVars {
+            hitNumberClear?: EntityNetid[]
+        }
     }
 }
 
 prestart(() => {
     addStateHandler({
         get(packet) {
-            packet.hitNumberClear = ig.hitNumberClear
+            packet.hitNumberClear = ig.mapShared.hitNumberClear
         },
         clear() {
-            ig.hitNumberClear = undefined
+            ig.mapShared.hitNumberClear = undefined
         },
         set(packet) {
             if (!packet.hitNumberClear) return
@@ -155,10 +157,9 @@ prestart(() => {
             clearDamageSum() {
                 this.parent()
                 if (shouldCollectStateData()) {
-                    const map = ig.mapShared.ccmap
-                    map.inst.ig.hitNumberClear ??= []
                     assert(this.netid)
-                    map.inst.ig.hitNumberClear.push(this.netid)
+                    ig.mapShared.hitNumberClear ??= []
+                    ig.mapShared.hitNumberClear.push(this.netid)
                 }
             },
         })

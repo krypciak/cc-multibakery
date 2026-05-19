@@ -67,7 +67,7 @@ const popupConfigs: {
             return clickedPlayerInfo.username == ownPlayerInfo.username && ownParty.owner == ownPlayerInfo.username
         },
         execute(_clickedPlayerInfo, _ownPlayerInfo, clickedParty) {
-            ig.ignoreEventStepsCollection = true
+            ig.mapShared.ignoreEventStepsCollection = true
             runEvent(
                 new ig.Event({
                     steps: [
@@ -92,7 +92,7 @@ const popupConfigs: {
                 }),
                 ig.EventRunType.BLOCKING
             )
-            ig.ignoreEventStepsCollection = false
+            ig.mapShared.ignoreEventStepsCollection = false
         },
     },
     {

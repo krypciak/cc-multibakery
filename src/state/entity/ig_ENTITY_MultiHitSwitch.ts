@@ -29,7 +29,7 @@ function setEntityState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
         this.currentHits = hits
 
         if (hits >= this.hitsToActive) {
-            if (ig.settingStateImmediately) {
+            if (ig.shared.settingStateImmediately) {
                 this.animationEnded('switch')
             } else {
                 this.setCurrentAnim('switch', true, null, true, true)
@@ -37,7 +37,7 @@ function setEntityState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
             }
         } else {
             this._setAnimation()
-            if (hits > oldHits && !ig.settingStateImmediately) ig.SoundHelper.playAtEntity(this.countSound, this)
+            if (hits > oldHits && !ig.shared.settingStateImmediately) ig.SoundHelper.playAtEntity(this.countSound, this)
         }
     }
 }
