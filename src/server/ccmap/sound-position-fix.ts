@@ -1,6 +1,5 @@
 import { prestart } from '../../loading-stages'
 import { Opts } from '../../options'
-import { getCCMap } from '../../client/client-map-util'
 
 prestart(() => {
     function calcDist(point: Vec2, soundPos: Vec2, range: number, rangeType: ig.SOUND_RANGE_TYPE | undefined) {
@@ -24,7 +23,7 @@ prestart(() => {
         return { vec, dist }
     }
     function closestDist(point: Vec2, range: number, rangeType: ig.SOUND_RANGE_TYPE | undefined) {
-        const clients = getCCMap().getClientInstances()
+        const clients = ig.mapShared.ccmap.getClientInstances()
 
         let { dist: smallestDist, vec: smallestVec } = calcDist(point, ig.game.soundPos, range, rangeType)
 

@@ -1,6 +1,5 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
-import { getCCMap } from '../client/client-map-util'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 /* client -> map */
@@ -12,7 +11,7 @@ prestart(() => {
         ...args: ARGS
     ): R {
         if (!ig.client) return this.parent(...args)
-        return runTask(getCCMap().inst, () => this.parent(...args))
+        return runTask(ig.mapShared.ccmap.inst, () => this.parent(...args))
     }
 
     ig.EVENT_STEP.MANUAL_COMBATANT_KILL.inject({ start: runOnMap })

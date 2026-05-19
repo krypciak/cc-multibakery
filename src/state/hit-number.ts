@@ -3,7 +3,6 @@ import { addStateHandler } from './states'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
-import { getCCMap } from '../client/client-map-util'
 
 interface HitNumberConfig {
     isHealing?: boolean
@@ -83,7 +82,7 @@ prestart(() => {
             appenix
         ) {
             if (shouldCollectStateData()) {
-                const map = getCCMap()
+                const map = ig.mapShared.ccmap
                 map.inst.ig.hitNumberSpawned ??= []
                 const netid = combatant.netid
                 assert(netid)
@@ -104,7 +103,7 @@ prestart(() => {
 
         ig.ENTITY.HitNumber.spawnHealingNumber = function (pos, combatant, healAmount) {
             if (shouldCollectStateData()) {
-                const map = getCCMap()
+                const map = ig.mapShared.ccmap
                 map.inst.ig.hitNumberSpawned ??= []
                 const netid = combatant.netid
                 assert(netid)
@@ -156,7 +155,7 @@ prestart(() => {
             clearDamageSum() {
                 this.parent()
                 if (shouldCollectStateData()) {
-                    const map = getCCMap()
+                    const map = ig.mapShared.ccmap
                     map.inst.ig.hitNumberClear ??= []
                     assert(this.netid)
                     map.inst.ig.hitNumberClear.push(this.netid)

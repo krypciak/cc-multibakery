@@ -16,6 +16,11 @@ import './injects'
 declare global {
     namespace ig {
         var ccmap: CCMap | undefined
+
+        interface MapSharedVars {
+            ccmap: CCMap
+        }
+        var mapShared: MapSharedVars
     }
 }
 
@@ -75,6 +80,7 @@ export class CCMap extends InstanceUpdateable {
             instanceinatorCopyInstanceConfig()
         )
         this.inst.ig.ccmap = this
+        this.inst.ig.mapShared = { ccmap: this }
         forceConditionalLightOnInst(this.inst.id)
         this.link()
 

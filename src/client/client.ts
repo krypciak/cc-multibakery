@@ -277,6 +277,8 @@ export class Client extends InstanceUpdateable {
         runTask(this.inst, () => {
             const mig = map.inst.ig
 
+            ig.mapShared = mig.mapShared
+
             ig.game.mapName = mig.game.mapName
             ig.game.entities = mig.game.entities
             ig.game.entitiesByNetid = mig.game.entitiesByNetid

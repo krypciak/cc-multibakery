@@ -3,7 +3,6 @@ import { shouldCollectStateData } from '../state-util'
 import { addStateHandler } from '../states'
 import type { u16 } from 'ts-binarifier/src/type-aliases'
 import type { EntityNetid } from '../../misc/entity-netid'
-import { getCCMap } from '../../client/client-map-util'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 
 interface HitConfig {
@@ -91,7 +90,7 @@ prestart(() => {
                     `sc.Combat#showHitEffect entity (${findClassName(entity)}) is not an net entity! remote clients will crash!`
                 )
             }
-            const map = getCCMap()
+            const map = ig.mapShared.ccmap
             map.inst.ig.entityHitPackets ??= []
             map.inst.ig.entityHitPackets.push({
                 entity: entity.netid,

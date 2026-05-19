@@ -5,7 +5,6 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import type { StateKey } from '../states'
 import type { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
-import { getCCMap } from '../../client/client-map-util'
 import { isPhysics } from '../../server/physics/is-physics-server'
 
 declare global {
@@ -173,7 +172,7 @@ prestart(() => {
         if (!entity.netid || !shouldCollectStateData()) return
         if (withTheSameGroup == 'modeAura') return
 
-        const map = getCCMap()
+        const map = ig.mapShared.ccmap
         map.inst.ig.clearEffects ??= []
         map.inst.ig.clearEffects.push([entity.netid, withTheSameGroup])
     }
@@ -215,7 +214,7 @@ prestart(() => {
         stop() {
             this.parent()
             if (!shouldCollectStateData() || !this.netid) return
-            const map = getCCMap()
+            const map = ig.mapShared.ccmap
             map.inst.ig.stopEffects ??= []
             map.inst.ig.stopEffects.push(this.netid)
         },

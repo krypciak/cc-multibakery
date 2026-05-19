@@ -1,5 +1,4 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { getCCMap } from '../client/client-map-util'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { assertPhysics } from '../server/physics/is-physics-server'
@@ -49,7 +48,7 @@ prestart(() => {
             const party = multi.server.party.getPartyOfEntity(player)
 
             pickModelFromInst = instanceinator.id
-            runTask(getCCMap().inst, () => {
+            runTask(ig.mapShared.ccmap.inst, () => {
                 ig.game.playerEntity = player
                 this.parent(name, showEffects, idx, npc)
                 ig.game.playerEntity = null as any

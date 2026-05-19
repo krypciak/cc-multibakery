@@ -6,7 +6,6 @@ import { shouldCollectStateData, StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import { resolveProxyFromType } from './proxy-util'
 import * as scActorEntity from './sc_ActorEntity-base'
-import { getCCMap } from '../../client/client-map-util'
 import { isRemote } from '../../server/remote/is-remote-server'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 
@@ -111,7 +110,7 @@ prestart(() => {
         sc.CombatProxyEntity.inject({
             destroy(type) {
                 if (shouldCollectStateData() && !this.destroyType) {
-                    const map = getCCMap()
+                    const map = ig.mapShared.ccmap
                     map.inst.ig.destroyCombatProxies ??= []
                     map.inst.ig.destroyCombatProxies.push(this.netid)
                 }

@@ -4,7 +4,7 @@ import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
 import { isPhysics } from '../server/physics/is-physics-server'
-import { broadcastAcrossInstances, getCCMap, isBroadcasting, setIsBroadcasting } from './client-map-util'
+import { broadcastAcrossInstances, isBroadcasting, setIsBroadcasting } from './client-map-util'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {
     let title: string | undefined
@@ -92,7 +92,7 @@ prestart(() => {
             }
             if (isBroadcasting()) return this.parent(entry)
 
-            broadcastAcrossInstances(getCCMap().getClientInstances(true), () => {
+            broadcastAcrossInstances(ig.mapShared.ccmap.getClientInstances(true), () => {
                 const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
                 if (hasAlready) return
                 sc.mapInteract.addEntry(entry)
@@ -101,7 +101,7 @@ prestart(() => {
         removeEntry(entry) {
             if (!multi.server || isBroadcasting()) return this.parent(entry)
 
-            broadcastAcrossInstances(getCCMap().getClientInstances(true), () => {
+            broadcastAcrossInstances(ig.mapShared.ccmap.getClientInstances(true), () => {
                 const newEntry = sc.mapInteract.entries.find(a => a.entity == entry.entity)
                 if (newEntry) sc.mapInteract.removeEntry(newEntry)
             })
@@ -123,7 +123,7 @@ prestart(() => {
         setIcon(icon) {
             if (!multi.server) return this.parent(icon)
             this.parent(icon)
-            broadcastAcrossInstances(getCCMap().getClientInstances(true), () => {
+            broadcastAcrossInstances(ig.mapShared.ccmap.getClientInstances(true), () => {
                 findEntry(this)?.setIcon(icon)
             })
         },

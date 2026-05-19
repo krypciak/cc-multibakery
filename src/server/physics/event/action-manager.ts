@@ -3,7 +3,6 @@ import { assert } from '../../../misc/assert'
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../is-physics-server'
 import { type Client } from '../../../client/client'
-import { getCCMap } from '../../../client/client-map-util'
 
 declare global {
     namespace ig {
@@ -28,7 +27,7 @@ prestart(() => {
     ig.ActorEntity.inject({
         getClientFromBoundAction() {
             let client = this.actionBoundToPlayer?.getClient(true)
-            if (!client?.ready) client = getCCMap().clients[0]
+            if (!client?.ready) client = ig.mapShared.ccmap.clients[0]
             assert(client.ready)
             return client
         },
