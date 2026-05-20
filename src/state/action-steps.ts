@@ -65,10 +65,17 @@ prestart(() => {
     actionStepWhitelist = new Set(
         [
             ig.ACTION_STEP.PLAY_SOUND,
+
             ig.ACTION_STEP.FOCUS_CAMERA,
-            ig.ACTION_STEP.SET_ZOOM_BLUR,
             ig.ACTION_STEP.SET_CAMERA_ZOOM,
+            ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET,
+            ig.ACTION_STEP.REMOVE_PLAYER_CAMERA_TARGET,
             ig.ACTION_STEP.RESET_CAMERA,
+
+            ig.ACTION_STEP.SET_ZOOM_BLUR,
+            ig.ACTION_STEP.FADE_OUT_ZOOM_BLUR,
+
+            ig.ACTION_STEP.SHOW_AR_MSG,
 
             /* this.clearActionAttached() callers */
             ig.ACTION_STEP.CLEAR_STUN_LOCKED,
@@ -79,9 +86,16 @@ prestart(() => {
     )
 }, 2000)
 
-export function onActionStepStart(step: ig.ActionStepBase, actor: ig.ActorEntity) {
+export function onActionStepStart(step: ig.ActionStepBase, _actor: ig.ActorEntity) {
+    let actor = _actor as ig.ActorEntity & sc.GetCombatantRoot
     if (!actionStepWhitelist.has(step.classId)) return
-    if (actor instanceof dummy.DummyPlayer) assert(ig.client)
+    if (actor.getCombatantRoot) {
+        const old = actor
+        actor = actor.getCombatantRoot()
+        if (fcn(old) != fcn(actor)) {
+            console.log('getcombatantroot', fcn(old), fcn(actor))
+        }
+    }
 
     if (!actor.netid) {
         console.warn('action started on actor', window.fcn?.(actor), 'that doesnt have netid!')
