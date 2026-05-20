@@ -71,7 +71,12 @@ export class Client extends InstanceUpdateable {
 
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
-            { name: 'client-' + this.settings.username, display: this.isVisible(), forceDraw: this.settings.forceDraw },
+            {
+                name: 'client-' + this.settings.username,
+                display: this.isVisible(),
+                soundPlayCondition: () => this.isVisible() || this.inst?.ig?.mapShared?.ccmap?.inst?.soundPlayCondition(),
+                forceDraw: this.settings.forceDraw,
+            },
             instanceinatorCopyInstanceConfig()
         )
         this.inst.ig.client = this
