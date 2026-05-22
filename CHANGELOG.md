@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix crash on game enter
+
 ## [0.7.8] 2026-05-20
 
 ### Added
