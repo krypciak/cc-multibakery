@@ -17,6 +17,7 @@ export function packetDeepEqual(a: any, b: any, map = new WeakMap()) {
     if ((typeof a === 'boolean' && typeof b === 'number') || (typeof a === 'number' && typeof b === 'boolean')) {
         return !!a == !!b
     }
+    if (a === null && b == 'null') return true
 
     if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
         debugger
