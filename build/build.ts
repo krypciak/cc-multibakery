@@ -24,6 +24,16 @@ interface Options {
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 
+function requireFix(code: string): string {
+    code = code.replace(
+        new RegExp(`import \\{\\s*([^}]*)\\s*\\} from "(.*)"`, 'g'),
+        (_, imports, mod) => `var { ${imports.trim().replace(/\s+as\s+/g, ': ')} } = __require("${mod}")`
+    )
+    code = code.replace(new RegExp(`import \\* as (.*) from "(.*)"`, 'g'), `var $1 = __require("$2")`)
+    code = code.replace(new RegExp(`import (.*) from "(.*)"`, 'g'), `var $1 = __require("$2")`)
+    return code
+}
+
 async function run(
     type: 'build' | 'watch',
     {
@@ -81,11 +91,8 @@ async function run(
                     const result = await esbuild.transform(output, commonOptions)
                     output = result.code as string
                 }
-                /* fflate fix */
-                output = output.replace(
-                    /import\s*\{\s*createRequire\s*\}\s*from\s*"module";/,
-                    'const { createRequire } = require("module");'
-                )
+
+                output = requireFix(output)
 
                 if (noWrite) {
                     console.log(output)
