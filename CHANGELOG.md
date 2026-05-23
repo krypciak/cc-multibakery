@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix some client actions not preserving event chain
+
 ## [0.7.9] 2026-05-22
 
 ### Fixed

@@ -28,6 +28,11 @@ addVarModifyListener(path => {
         ig.vars.nextSetBy.pop()
     }
 })
+addVarModifyListener(path => {
+    if (!ig.client) return
+    ig.vars.varsSetBy[path] = ig.game.playerEntity
+})
+
 export function setNextSetBy(entity: ig.Entity) {
     assert(entity)
     ig.vars.nextSetBy.push(entity)
