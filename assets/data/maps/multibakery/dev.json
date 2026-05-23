@@ -426,7 +426,7 @@
                                                     { "type": "PREPARE_PVP_ROUND", "autoContinue": true },
                                                     { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" }
                                                 ],
-                                                "rejected": [
+                                                "declined": [
                                                     { "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" }
                                                 ]
                                             }
