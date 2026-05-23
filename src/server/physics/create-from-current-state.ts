@@ -93,7 +93,7 @@ export async function closePhysicsServerAndSaveState() {
     ig.system.setMusicVolume(sc.options.values['volume-music'])
     ig.system.setSoundVolume(sc.options.values['volume-sound'])
 
-    if (!ig.game.playerEntity) return
+    if (!sc.model.isGame()) return
 
     sc.model.enterRunning()
     ig.storage.loadAutosave()
