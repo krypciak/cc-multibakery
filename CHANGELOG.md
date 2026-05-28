@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix some client actions not preserving event chain
+- Fix enemy pvp points rendering as blue instead of red
 
 ## [0.7.9] 2026-05-22
 

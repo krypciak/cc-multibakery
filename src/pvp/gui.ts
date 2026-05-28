@@ -54,7 +54,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
         x += 8
     }
 
-    function drawTeamPoints(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean) {
+    function drawTeamPoints(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean, ally: boolean) {
         if (sc.pvp.winPoints != 1) {
             x += 4
             if (left) x += (sc.pvp.winPoints - 2) * 5
@@ -64,7 +64,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
                 left ? -1 : 1,
                 sc.pvp.winPoints,
                 sc.pvp.points[party.combatantParty as sc.COMBATANT_PARTY]!,
-                0
+                ally ? 0 : 8
             )
 
             if (left) x += 5
@@ -78,13 +78,13 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
         x += 16
     }
 
-    function drawTeam(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean) {
+    function drawTeam(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean, ally: boolean) {
         if (left) {
             drawTeamName(party)
             drawTeamHeads.call(this, party, left)
-            drawTeamPoints.call(this, party, left)
+            drawTeamPoints.call(this, party, left, ally)
         } else {
-            drawTeamPoints.call(this, party, left)
+            drawTeamPoints.call(this, party, left, ally)
             drawTeamHeads.call(this, party, left)
             drawTeamName(party)
         }
@@ -97,11 +97,14 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
             x = 0
             renderer = renderer1
 
-            drawTeam.call(this, sc.pvp.parties[0], sc.pvp.parties.length == 2)
+            const allyParty = ig.game.playerEntity?.multiParty
+
+            drawTeam.call(this, sc.pvp.parties[0], sc.pvp.parties.length == 2, sc.pvp.parties[0] == allyParty)
 
             for (let i = 1; i < sc.pvp.parties.length; i++) {
                 drawVsGfx.call(this)
-                drawTeam.call(this, sc.pvp.parties[i], false)
+                const party = sc.pvp.parties[i]
+                drawTeam.call(this, party, false, party == allyParty)
             }
 
             this.setSize(x + 5, 20)
