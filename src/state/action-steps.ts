@@ -163,7 +163,7 @@ prestart(() => {
                 ig.mapShared.clearActionAttached[this.netid] = true
             }
 
-            this.parent(condition)
+            this.parent(condition, secondConditionArg)
         },
     })
 })
