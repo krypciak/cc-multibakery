@@ -74,7 +74,8 @@ export class Client extends InstanceUpdateable {
             {
                 name: 'client-' + this.settings.username,
                 display: this.isVisible(),
-                soundPlayCondition: () => this.isVisible() || this.inst?.ig?.mapShared?.ccmap?.inst?.soundPlayCondition(),
+                soundPlayCondition: () =>
+                    this.isVisible() || this.inst?.ig?.mapShared?.ccmap?.inst?.soundPlayCondition(),
                 forceDraw: this.settings.forceDraw,
             },
             instanceinatorCopyInstanceConfig()
@@ -189,11 +190,11 @@ export class Client extends InstanceUpdateable {
         return tpInfo
     }
 
-    async teleportInitial(tpInfoOverride?: MapTpInfo) {
+    async teleportInitial(tpInfoOverride?: MapTpInfo, noDelay?: boolean) {
         PROFILE && console.time('client teleportInitial')
 
         const tpInfo: MapTpInfo = tpInfoOverride ?? this.getInitialTpInfo()
-        await this.teleport(tpInfo)
+        await this.teleport(tpInfo, noDelay)
 
         PROFILE && console.timeEnd('client teleportInitial')
     }
@@ -218,7 +219,7 @@ export class Client extends InstanceUpdateable {
         })
     }
 
-    async teleport(tpInfo: MapTpInfo) {
+    async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
         PROFILE && console.time('client teleport')
         this.startTeleportOverlay()
 
@@ -238,7 +239,7 @@ export class Client extends InstanceUpdateable {
                 map ??= await multi.server.loadMap(tpInfo.map)
                 await map.readyPromise
             })(),
-            new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
+            noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
         ])
         assert(map)
 

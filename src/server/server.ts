@@ -216,11 +216,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.clients.set(client.username, client)
     }
 
-    protected async initAndJoinClient(client: Client) {
+    protected async initAndJoinClient(client: Client, noDelay?: boolean) {
         await client.init()
 
         this.joinClient(client)
-        await client.teleportInitial(client.settings.tpInfo)
+        await client.teleportInitial(client.settings.tpInfo, noDelay)
 
         return client
     }

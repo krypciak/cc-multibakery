@@ -122,7 +122,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (client) {
             /* setTimeout to let socket.io send ackData to the client this blocks the thread */
             setTimeout(() => {
-                this.initAndJoinClient(client).then(() => {
+                this.initAndJoinClient(client, true).then(() => {
                     connection.join(client)
                 })
             }, 40)
@@ -134,7 +134,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     async tryJoinClient(joinData: ClientJoinData) {
         const { ackData, client } = await this.requestClientJoin(joinData)
 
-        if (client) this.initAndJoinClient(client)
+        if (client) this.initAndJoinClient(client, true)
 
         return { ackData, client }
     }
@@ -142,7 +142,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     async forceCreateClient(clientSettings: ClientSettings) {
         const client = new Client(clientSettings)
 
-        await this.initAndJoinClient(client)
+        await this.initAndJoinClient(client, true)
 
         return client
     }
