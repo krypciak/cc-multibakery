@@ -232,19 +232,14 @@ export class Client extends InstanceUpdateable {
 
         this.ready = false
 
-        let map: CCMap | undefined
-        await Promise.all([
-            (async () => {
-                map = multi.server.maps.get(tpInfo.map)
-                map ??= await multi.server.loadMap(tpInfo.map)
-                await map.readyPromise
-            })(),
+        let [map] = await Promise.all([
+            multi.server.getMap(tpInfo.map),
             noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
         ])
         assert(map)
+        assert(map.initialized)
 
         const oldMap = multi.server.maps.get(this.tpInfo.map)
-
         if (oldMap) {
             oldMap.leave(this)
             for (const obj of oldMap.onLinkChange) obj.onClientUnlink?.(this)
@@ -255,6 +250,7 @@ export class Client extends InstanceUpdateable {
         PROFILE && console.time('createPlayer')
         await runTask(map.inst, () => this.createPlayer())
         PROFILE && console.timeEnd('createPlayer')
+
         map.enter(this)
 
         if (isPhysics(multi.server)) {
@@ -262,12 +258,19 @@ export class Client extends InstanceUpdateable {
                 teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker, undefined, true)
             })
         }
+
+        PROFILE && console.time('linkMapToInstanceStage1')
+        this.linkMapToInstanceStage1(map)
+        PROFILE && console.timeEnd('linkMapToInstanceStage1')
+
+        await map.loadResources()
+
         this.ready = true
         this.nextTpInfo = { map: '' }
 
-        PROFILE && console.time('link to map')
-        this.linkMapToInstance(map)
-        PROFILE && console.timeEnd('link to map')
+        PROFILE && console.time('linkMapToInstanceStage2')
+        this.linkMapToInstanceStage2(map)
+        PROFILE && console.timeEnd('linkMapToInstanceStage2')
 
         this.inst.ig.game.events.clear()
 
@@ -279,7 +282,7 @@ export class Client extends InstanceUpdateable {
         PROFILE && console.timeEnd('client teleport')
     }
 
-    private linkMapToInstance(map: CCMap) {
+    private linkMapToInstanceStage1(map: CCMap) {
         runTask(this.inst, () => {
             const mig = map.inst.ig
 
@@ -367,6 +370,12 @@ export class Client extends InstanceUpdateable {
 
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
             for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(data)
+        })
+    }
+
+    private linkMapToInstanceStage2(map: CCMap) {
+        runTask(this.inst, () => {
+            const mig = map.inst.ig
 
             ig.ready = true
             // const loader = new ig.Loader()

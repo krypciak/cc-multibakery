@@ -197,9 +197,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return [...this.maps.values()].filter(map => map.ready && map.isActive())
     }
 
-    async loadMap(name: MapName): Promise<CCMap> {
-        this.maps.get(name)?.destroy()
-        const map = new CCMap(name)
+    async getMap(name: MapName): Promise<CCMap> {
+        let map: CCMap | undefined = this.maps.get(name)
+        if (map) {
+            await map.initPromise
+            return map
+        }
+        map = new CCMap(name)
         this.maps.set(name, map)
         await map.init()
         return map

@@ -72,7 +72,7 @@ function prepareCollision(this: ig.Game) {
     }
 }
 
-export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.MapModel.Map): Promise<void> {
+export function setMapDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.MapModel.Map) {
     /* mostly stolen from ig.Game#loadLevel */
 
     PROFILE && console.time('setDataFromLevelData setup')
@@ -96,7 +96,9 @@ export function setDataFromLevelData(this: ig.Game, mapName: MapName, data: sc.M
         ig.game.spawnEntity(entity.type, entity.x, entity.y, z, entity.settings)
     }
     this.renderer.mapCleared()
+}
 
+export function loadMapResources(this: ig.Game): Promise<void> {
     PROFILE && console.timeEnd('setDataFromLevelData setup')
 
     const loader = new (this.mapLoader || ig.Loader)()

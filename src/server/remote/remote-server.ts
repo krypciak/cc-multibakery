@@ -195,7 +195,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const stateUpdatePacket = data.mapPackets[mapName]
 
             const map = multi.server.maps.get(mapName)
-            assert(map?.ready)
+            assert(map?.initialized)
 
             if (stateUpdatePacket.crash) {
                 if (stateUpdatePacket.crash.tryReconnect) {
@@ -213,12 +213,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 map.noStateAppliedYet = false
             })
         }
-    }
-
-    async loadMap(name: string) {
-        const map = await super.loadMap(name)
-        ;(this.notifyReadyMaps ??= []).push(name)
-        return map
     }
 
     async leaveClient(client: Client) {

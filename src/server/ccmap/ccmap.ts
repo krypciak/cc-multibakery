@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { CCMapDisplay } from './display'
-import { setDataFromLevelData } from './data-load'
+import { setMapDataFromLevelData, loadMapResources } from './data-load'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import type { Client } from '../../client/client'
 import { runTask } from 'cc-instanceinator/src/inst-util'
@@ -36,21 +36,20 @@ export class CCMap extends InstanceUpdateable {
 
     display!: CCMapDisplay
 
+    initialized: boolean = false
+    initPromise!: Promise<void>
+    private initResolve!: () => void
+
     ready: boolean = false
-    readyPromise: Promise<void>
+    private readyPromise!: Promise<void>
     private readyResolve!: () => void
+
     noStateAppliedYet: boolean = true
     onLinkChange: OnLinkChange[] = []
     forceUpdateForFrames: number = 0
 
     constructor(public name: MapName) {
         super()
-        this.readyPromise = new Promise<void>(resolve => {
-            this.readyResolve = () => {
-                this.ready = true
-                resolve()
-            }
-        })
     }
 
     copyRawLevelData(): sc.MapModel.Map {
@@ -67,6 +66,15 @@ export class CCMap extends InstanceUpdateable {
 
     async init() {
         PROFILE && console.time('map init')
+
+        assert(!this.initPromise)
+        this.initPromise = new Promise<void>(resolve => {
+            this.initResolve = () => {
+                this.initialized = true
+                resolve()
+            }
+        })
+
         this.display = new CCMapDisplay(this)
 
         const levelDataPromise = this.readLevelData()
@@ -89,10 +97,33 @@ export class CCMap extends InstanceUpdateable {
         PROFILE && console.timeEnd('await level data')
         this.rawLevelData = levelData
 
-        await runTask(this.inst, async () => {
+        runTask(this.inst, () => {
             PROFILE && console.time('setDataFromLevelData')
-            await setDataFromLevelData.call(ig.game, this.name, this.copyRawLevelData())
+            setMapDataFromLevelData.call(ig.game, this.name, this.copyRawLevelData())
             PROFILE && console.timeEnd('setDataFromLevelData')
+        })
+
+        this.initResolve()
+
+        PROFILE && console.timeEnd('map init')
+    }
+
+    async loadResources() {
+        if (this.readyPromise) return this.readyPromise
+
+        PROFILE && console.time('map loadResources')
+
+        assert(!this.readyPromise)
+        this.readyPromise = new Promise<void>(resolve => {
+            this.readyResolve = () => {
+                this.ready = true
+                resolve()
+            }
+        })
+
+        await runTask(this.inst, async () => {
+            await loadMapResources.call(ig.game)
+
             runTask(this.inst, () => {
                 sc.model.enterNewGame()
                 sc.model.enterGame()
@@ -106,7 +137,7 @@ export class CCMap extends InstanceUpdateable {
 
         instanceinator.retile()
 
-        PROFILE && console.timeEnd('map init')
+        PROFILE && console.timeEnd('map loadResources')
     }
 
     attemptRecovery(e: unknown) {
@@ -119,7 +150,7 @@ export class CCMap extends InstanceUpdateable {
     isActive() {
         return (
             multi.server.settings.forceMapsActive ||
-            !this.ready ||
+            !this.initialized ||
             this.forceUpdateForFrames != 0 ||
             this.clients.length > 0
         )
@@ -128,7 +159,7 @@ export class CCMap extends InstanceUpdateable {
     isVisible() {
         return (
             !!multi.server.settings.displayMaps &&
-            this.ready &&
+            this.initialized &&
             (multi.server.settings.displayInactiveMaps || this.isActive())
         )
     }
@@ -175,6 +206,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     update() {
+        // console.log('map update')
         super.update()
         if (this.forceUpdateForFrames > 0) this.forceUpdateForFrames--
     }
