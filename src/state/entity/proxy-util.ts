@@ -10,7 +10,7 @@ declare global {
 }
 
 const proxyTypeToSpawner: Map<string, sc.ProxySpawnerBase> = new Map()
-function addProxy(key: string, proxy: sc.ProxySpawnerBase) {
+export function addProxy(key: string, proxy: sc.ProxySpawnerBase) {
     proxy.proxyType = key
     proxyTypeToSpawner.set(key, proxy)
 }

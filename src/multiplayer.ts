@@ -13,7 +13,7 @@ import './misc/unregister'
 import './pvp/pvp'
 import './steps/all'
 import './misc/icons'
-import './mod-compatibility/nax-art-switch'
+import './mod-compatibility/all'
 import './server/instance-redirect-fixes'
 
 declare global {

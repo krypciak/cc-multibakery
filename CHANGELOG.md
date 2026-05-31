@@ -14,6 +14,7 @@
 - Fix some client actions not preserving event chain
 - Fix enemy pvp points rendering as blue instead of red
 - Initialize player in the correct moment when loading the map
+- Fix compatibility with lqm-joern-mod custom assault projectiles
 
 ## [0.7.9] 2026-05-22
 
