@@ -39,7 +39,7 @@ prestart(() => {
 
             let player: ig.Entity | undefined
             if (this.nextTriggeredBy) {
-                player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? [])
+                player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? []) ?? ig.client?.dummy
                 if (!player && isConditionTriggeredAtMapEnter(this.nextTriggeredBy.pretty)) {
                     assert(ig.ccmap)
                     assert(ig.ccmap.clients.length > 0)
