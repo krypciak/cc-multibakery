@@ -134,12 +134,12 @@ function genTest(name: string, moves: string, map: string, expected: number, par
         },
         async postSetup() {
             assert(isPhysics(multi.server))
-            this.client = await multi.server.forceCreateClient({
-                username: 'aoc',
-                inputType: 'puppet',
-                remote: false,
-                tpInfo: { map },
-            })
+            const { client } = await multi.server.createAndJoinClient(
+                { username: 'aoc', prefferedTpInfo: { map } },
+                { awaitClientJoin: true, clientSettingsOverride: { inputType: 'puppet' } }
+            )
+            assert(client)
+            this.client = client
             this.map = multi.server.maps.get(map)!
             assert(this.map)
         },

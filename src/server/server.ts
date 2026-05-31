@@ -1,7 +1,7 @@
 import { startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { Client } from '../client/client'
+import { Client, type ClientSettings } from '../client/client'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
@@ -12,6 +12,10 @@ import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
 import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
 import { removeUnnecessarySystemsForServerInstance } from './game-systems-cleanup'
+import type { EntityNetid } from '../misc/entity-netid'
+import type { NetConnection } from '../net/connection'
+import { isUsernameValid } from '../misc/username-util'
+import { executeWithStrategy } from '../misc/function-execute-strategy'
 
 import './server-var-access'
 
@@ -38,26 +42,33 @@ export interface ServerSettings {
 
 export interface ClientJoinData {
     username: Username
-    initialInputType: ig.INPUT_DEVICES
+    initialInputType?: ig.INPUT_DEVICES
     prefferedTpInfo?: MapTpInfo
-}
-export function createClientJoinData(options: ClientJoinData): ClientJoinData {
-    return options
 }
 export function isClientJoinData(_data: unknown): _data is ClientJoinData {
     const data = _data as ClientJoinData
-    return (
-        !!data &&
-        typeof data == 'object' &&
-        !!data.username &&
-        typeof data.username == 'string' &&
-        typeof data.initialInputType == 'number' &&
-        Object.values(ig.INPUT_DEVICES).includes(data.initialInputType)
-    )
+    if (!data || typeof data !== 'object') return false
+    if (!data.username || typeof data.username !== 'string') return false
+    if (data.initialInputType !== undefined) {
+        if (typeof data.initialInputType !== 'number') return false
+        if (!Object.values(ig.INPUT_DEVICES).includes(data.initialInputType)) return false
+    }
+    return true
 }
-export interface ClientJoinAckData {
-    status: 'ok' | 'username_taken' | 'invalid_join_data' | 'invalid_username'
-    tpInfo?: MapTpInfo
+export type ClientJoinAckData =
+    | {
+          status: 'username_taken' | 'invalid_join_data' | 'invalid_username'
+      }
+    | {
+          status: 'ok'
+          tpInfo?: MapTpInfo
+      }
+
+export interface ClientCreateAndJoinSettings {
+    connection?: NetConnection
+    awaitClientJoin?: boolean
+    clientSettingsOverride?: Partial<ClientSettings>
+    ackDataOverride?: ClientJoinAckData
 }
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
@@ -220,16 +231,57 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.clients.set(client.username, client)
     }
 
-    protected async initAndJoinClient(client: Client, noDelay?: boolean) {
-        await client.init()
+    protected validatePrefferedMap(
+        tpInfo: MapTpInfo | undefined,
+        connection: NetConnection | undefined
+    ): MapTpInfo | undefined {
+        const map = tpInfo?.map
+        if (!map || !this.maps.has(map)) return
 
-        this.joinClient(client)
-        await client.teleportInitial(client.settings.tpInfo, noDelay)
+        if (
+            connection &&
+            !connection.clients.some(client => client.tpInfo.map == tpInfo.map && client.tpInfo.marker == tpInfo.marker)
+        ) {
+            return
+        }
 
-        return client
+        return tpInfo
     }
 
-    abstract tryJoinClient(joinData: ClientJoinData): Promise<{ ackData: ClientJoinAckData; client?: Client }>
+    protected createAndJoinClientInitialChecks(joinData: ClientJoinData) {
+        assert(instanceinator.id == this.inst.id)
+        assert(isClientJoinData(joinData))
+        const username = joinData.username
+        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
+        if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
+    }
+
+    private async initAndJoinClient(client: Client, tpInfo: MapTpInfo) {
+        await client.init()
+        this.joinClient(client)
+        await client.teleport(tpInfo, true)
+    }
+
+    protected async initAndJoinClientStrategy(
+        client: Client,
+        tpInfo: MapTpInfo,
+        connection: NetConnection | undefined,
+        awaitClientJoin: boolean | undefined
+    ) {
+        return executeWithStrategy(
+            () => this.initAndJoinClient(client, tpInfo),
+            connection
+                ? { type: 'delayNoAwait', delay: 40, then: () => connection.join(client) }
+                : awaitClientJoin
+                  ? { type: 'await' }
+                  : { type: 'noAwait' }
+        )
+    }
+
+    abstract createAndJoinClient(
+        joinData: ClientJoinData,
+        settings?: ClientCreateAndJoinSettings
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
 
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */
@@ -251,6 +303,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     }
 
     setMasterClient(client: Client): Client {
+        assert(client.ready)
         this.masterUsername = client.username
         this.updateMusicInstance()
         multi.storage.save()

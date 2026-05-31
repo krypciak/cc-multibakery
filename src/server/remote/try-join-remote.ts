@@ -36,9 +36,7 @@ export async function tryJoinRemote(
     await server.startNet()
     PROFILE && console.timeEnd('startNet')
 
-    PROFILE && console.time('sendJoin')
     const ackData = await server.netManager.sendJoin(joinData)
-    PROFILE && console.timeEnd('sendJoin')
 
     if (ackData.status != 'ok') {
         multi.destroyAndStartLoop()
@@ -49,7 +47,11 @@ export async function tryJoinRemote(
 
         await server.netManager.sendReady()
 
-        const client = await server.createClientWithAckData(joinData, ackData)
+        const { client } = await server.createAndJoinClient(joinData, {
+            awaitClientJoin: true,
+            ackDataOverride: ackData,
+        })
+        assert(client)
         server.setMasterClient(client)
     }
 

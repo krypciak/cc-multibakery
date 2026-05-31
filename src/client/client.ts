@@ -190,15 +190,6 @@ export class Client extends InstanceUpdateable {
         return tpInfo
     }
 
-    async teleportInitial(tpInfoOverride?: MapTpInfo, noDelay?: boolean) {
-        PROFILE && console.time('client teleportInitial')
-
-        const tpInfo: MapTpInfo = tpInfoOverride ?? this.getInitialTpInfo()
-        await this.teleport(tpInfo, noDelay)
-
-        PROFILE && console.timeEnd('client teleportInitial')
-    }
-
     private startTeleportOverlay() {
         runTask(this.inst, () => {
             const { r, g, b, timeIn, lighter } = ig.game.teleportColor
@@ -247,9 +238,7 @@ export class Client extends InstanceUpdateable {
 
         this.tpInfo = tpInfo
 
-        PROFILE && console.time('createPlayer')
         await runTask(map.inst, () => this.createPlayer())
-        PROFILE && console.timeEnd('createPlayer')
 
         map.enter(this)
 
@@ -438,6 +427,8 @@ export class Client extends InstanceUpdateable {
     }
 
     private async createPlayer() {
+        PROFILE && console.time('createPlayer')
+
         if (isPhysics(multi.server)) {
             if (this.dummy && !this.dummy._killed) {
                 runTask(instanceinator.instances[this.dummy._instanceId], () => {
@@ -466,6 +457,8 @@ export class Client extends InstanceUpdateable {
         }
 
         this.dummy.setInputManager(this.inputManager)
+
+        PROFILE && console.timeEnd('createPlayer')
     }
 
     getMap(noAssert: true): CCMap | undefined

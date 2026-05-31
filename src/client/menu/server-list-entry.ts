@@ -4,7 +4,7 @@ import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../loading-stages'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'
-import { createClientJoinData, showTryNetJoinResponseDialog } from '../../server/server'
+import { showTryNetJoinResponseDialog, type ClientJoinData } from '../../server/server'
 import type { NetServerInfoRemote } from './server-info'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { isModCompatibilityListSatisfied, showModCompatibilityListPopup } from '../../server/mod-compatibility-list'
@@ -235,11 +235,11 @@ if (REMOTE) {
                 }
 
                 const username = Opts.clientLogin
-                const joinData = createClientJoinData({
+                const joinData: ClientJoinData = {
                     username,
                     initialInputType: ig.input.currentDevice,
                     prefferedTpInfo: ig.client?.tpInfo,
-                })
+                }
                 const ackData = REMOTE && (await tryJoinRemote(this.serverInfo, joinData))
                 showTryNetJoinResponseDialog(joinData, ackData)
             },

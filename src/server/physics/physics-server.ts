@@ -1,13 +1,18 @@
 import type { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
-import { type ClientJoinAckData, type ClientJoinData, type MapTpInfo, Server, type ServerSettings } from '../server'
+import {
+    Server,
+    type ClientCreateAndJoinSettings,
+    type ClientJoinAckData,
+    type ClientJoinData,
+    type ServerSettings,
+} from '../server'
 import { isRemoteServerUpdatePacket, type RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import type { NetServerInfoPhysics } from '../../client/menu/server-info'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client, type ClientSettings } from '../../client/client'
 import { startRepl } from './shell'
-import { isUsernameValid } from '../../misc/username-util'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import type { CCBundlerModuleOptions } from '../../net/crosscode-web-http-modules'
 import type { ClientLeaveData } from '../remote/remote-server'
@@ -105,7 +110,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
             if (netInfo?.discovery) {
                 this.serverDiscovery = new ServerDiscoveryServer()
-                await this.serverDiscovery.start()
+                this.serverDiscovery.start()
             }
         }
     }
@@ -114,79 +119,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         super.update()
 
         sendPhysicsServerPacket()
-    }
-
-    async onNetClientJoinRequest(joinData: ClientJoinData, connection: NetConnection) {
-        const { ackData, client } = await this.requestClientJoin(joinData, connection)
-
-        if (client) {
-            /* setTimeout to let socket.io send ackData to the client this blocks the thread */
-            setTimeout(() => {
-                this.initAndJoinClient(client, true).then(() => {
-                    connection.join(client)
-                })
-            }, 40)
-        }
-
-        return ackData
-    }
-
-    async tryJoinClient(joinData: ClientJoinData) {
-        const { ackData, client } = await this.requestClientJoin(joinData)
-
-        if (client) this.initAndJoinClient(client, true)
-
-        return { ackData, client }
-    }
-
-    async forceCreateClient(clientSettings: ClientSettings) {
-        const client = new Client(clientSettings)
-
-        await this.initAndJoinClient(client, true)
-
-        return client
-    }
-
-    private async requestClientJoin(
-        joinData: ClientJoinData,
-        connection?: NetConnection
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
-        assert(instanceinator.id == this.inst.id)
-        const username = joinData.username
-
-        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
-        if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
-
-        let tpInfo = this.validatePrefferedMap(joinData.prefferedTpInfo, connection)
-
-        const settings: ClientSettings = {
-            username,
-            inputType: connection ? 'puppet' : 'clone',
-            remote: !!connection,
-            initialInputType: joinData.initialInputType,
-            tpInfo,
-        }
-        const client = new Client(settings)
-        tpInfo = client.getInitialTpInfo()
-
-        return { ackData: { status: 'ok', tpInfo }, client }
-    }
-
-    private validatePrefferedMap(
-        tpInfo: MapTpInfo | undefined,
-        connection: NetConnection | undefined
-    ): MapTpInfo | undefined {
-        const map = tpInfo?.map
-        if (!map || !this.maps.has(map)) return
-
-        if (
-            connection &&
-            !connection.clients.some(client => client.tpInfo.map == tpInfo.map && client.tpInfo.marker == tpInfo.marker)
-        ) {
-            return
-        }
-
-        return tpInfo
     }
 
     private updateAnyRemoteClientsOn() {
@@ -201,9 +133,35 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    protected joinClient(client: Client) {
+    joinClient(client: Client) {
         super.joinClient(client)
         this.updateAnyRemoteClientsOn()
+    }
+
+    async createAndJoinClient(
+        joinData: ClientJoinData,
+        { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        this.createAndJoinClientInitialChecks(joinData)
+        assert(!ackDataOverride)
+
+        const settings: ClientSettings = {
+            username: joinData.username,
+            inputType: connection ? 'puppet' : 'clone',
+            remote: !!connection,
+            initialInputType: joinData.initialInputType,
+            tpInfo: this.validatePrefferedMap(joinData.prefferedTpInfo, connection),
+            ...(clientSettingsOverride ?? {}),
+        }
+
+        const client = new Client(settings)
+        const tpInfo = client.getInitialTpInfo()
+        const map = this.getMap(tpInfo.map)
+
+
+        await this.initAndJoinClientStrategy(client, tpInfo, connection, awaitClientJoin)
+
+        return { client, ackData: { status: 'ok', tpInfo } }
     }
 
     leaveClient(client: Client) {

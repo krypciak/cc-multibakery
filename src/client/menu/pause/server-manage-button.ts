@@ -5,9 +5,9 @@ import {
     closePhysicsServerAndSaveState,
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
-import { createClientJoinData, showTryNetJoinResponseDialog } from '../../../server/server'
+import { showTryNetJoinResponseDialog, type ClientJoinData } from '../../../server/server'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../../misc/nwjs-version-popup'
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
 import { isPhysics } from '../../../server/physics/is-physics-server'
 import type { MultiPageButtonGuiButtons } from 'cc-krypek-lib/src/input-field-dialog'
 
@@ -122,7 +122,7 @@ prestart(() => {
             if (isMaster) {
                 buttons.push({
                     name: 'Create client',
-                    async onPress() {
+                    onPress() {
                         const buttons: MultiPageButtonGuiButtons = []
                         buttons.push({
                             name: 'Ok',
@@ -130,18 +130,16 @@ prestart(() => {
                                 dialog.closeMenu()
                                 const username = dialog.getText()
 
-                                const joinData = createClientJoinData({
+                                const joinData: ClientJoinData = {
                                     username,
                                     initialInputType: inputButton.inputType,
                                     prefferedTpInfo: ig.client?.tpInfo,
-                                })
-                                const igBackup = ig
+                                }
+                                const inst = instanceinator.instances[instanceinator.id]
                                 const { ackData } = await runTask(multi.server.inst, () =>
-                                    multi.server.tryJoinClient(joinData)
+                                    multi.server.createAndJoinClient(joinData)
                                 )
-                                igBackup.game.scheduledTasks.push(() => {
-                                    showTryNetJoinResponseDialog(joinData, ackData)
-                                })
+                                scheduleNextTask(inst, () => showTryNetJoinResponseDialog(joinData, ackData))
                             },
                         })
 

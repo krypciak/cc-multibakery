@@ -103,9 +103,9 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         this.connections.push(connection)
 
         socket.on('update', data => server.onNetReceiveUpdate(connection, data))
-        socket.on('join', async (data, callback) => {
-            if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-            const ackData = await server.onNetClientJoinRequest(data, connection)
+        socket.on('join', async (joinData, callback) => {
+            if (!isClientJoinData(joinData)) return callback({ status: 'invalid_join_data' })
+            const { ackData } = await server.createAndJoinClient(joinData, { connection })
             callback(ackData)
         })
         socket.on('ready', () => {
@@ -237,11 +237,13 @@ export class SocketNetManagerRemoteServer {
     }
 
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
+        PROFILE && console.time('sendJoin')
         const ack = await new Promise<ClientJoinAckData>(resolve => {
             assert(this.conn)
             assertRemote(multi.server)
             this.conn.socket.emit('join', data, resolve)
         })
+        PROFILE && console.timeEnd('sendJoin')
         return ack
     }
 

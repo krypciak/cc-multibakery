@@ -3,6 +3,7 @@ import { openManagerServerPopup } from '../../client/menu/pause/server-manage-bu
 import { Opts } from '../../options'
 import { PhysicsServer } from './physics-server'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
+import { assert } from '../../misc/assert'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
@@ -66,14 +67,12 @@ export async function createPhysicsServerFromCurrentState() {
 
     await server.start()
 
-    const client = server.setMasterClient(
-        await server.forceCreateClient({
-            username,
-            inputType: 'clone',
-            remote: false,
-            initialInputType: origInputType,
-        })
+    const { client } = await server.createAndJoinClient(
+        { username, initialInputType: origInputType },
+        { awaitClientJoin: true }
     )
+    assert(client)
+    server.setMasterClient(client)
 
     runTask(client.inst, () => {
         const { x, y, z } = playerDataBackup.pos

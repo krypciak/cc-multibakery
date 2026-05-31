@@ -3,7 +3,13 @@ import type { NetConnection } from '../../net/connection'
 import { SocketNetManagerRemoteServer } from '../../net/socket'
 import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
-import { type ClientJoinAckData, type ClientJoinData, Server, type ServerSettings } from '../server'
+import {
+    type ClientCreateAndJoinSettings,
+    type ClientJoinAckData,
+    type ClientJoinData,
+    Server,
+    type ServerSettings,
+} from '../server'
 import { Client, type ClientSettings } from '../../client/client'
 import { Opts } from '../../options'
 import { TemporarySet } from '../../misc/temporary-set'
@@ -84,36 +90,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     update() {
         super.update()
         sendRemoteServerPacket()
-    }
-
-    async tryJoinClient(joinData: ClientJoinData): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
-        PROFILE && console.time('sendJoin')
-        const ackData = await this.netManager.sendJoin(joinData)
-        PROFILE && console.timeEnd('sendJoin')
-
-        if (ackData.status != 'ok') return { ackData }
-
-        const client = await this.createClientWithAckData(joinData, ackData)
-
-        return { client, ackData }
-    }
-
-    async createClientWithAckData(joinData: ClientJoinData, ackData: ClientJoinAckData) {
-        this.baseInst.display = false
-
-        const settings: ClientSettings = {
-            username: joinData.username,
-            inputType: 'clone',
-            remote: false,
-            initialInputType: joinData.initialInputType,
-            tpInfo: ackData.tpInfo,
-        }
-        const client = new Client(settings)
-        await this.initAndJoinClient(client)
-        assert(this.netManager.conn)
-        this.netManager.conn.join(client)
-
-        return client
     }
 
     async onNetDisconnect() {
@@ -213,6 +189,39 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                 map.noStateAppliedYet = false
             })
         }
+    }
+
+    async createAndJoinClient(
+        joinData: ClientJoinData,
+        { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+        this.createAndJoinClientInitialChecks(joinData)
+
+        assert(!clientSettingsOverride)
+
+        const ackData = ackDataOverride ?? (await this.netManager.sendJoin(joinData))
+        if (ackData.status != 'ok') return { ackData }
+
+        const settings: ClientSettings = {
+            username: joinData.username,
+            inputType: 'clone',
+            remote: false,
+            initialInputType: joinData.initialInputType,
+            tpInfo: ackData.tpInfo,
+        }
+
+        const client = new Client(settings)
+        const tpInfo = client.getInitialTpInfo()
+        const map = this.getMap(tpInfo.map)
+
+        this.baseInst.display = false
+
+        await this.initAndJoinClientStrategy(client, tpInfo, connection, awaitClientJoin)
+
+        assert(this.netManager.conn)
+        this.netManager.conn.join(client)
+
+        return { client, ackData }
     }
 
     async leaveClient(client: Client) {
