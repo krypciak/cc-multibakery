@@ -23,6 +23,7 @@ prestart(() => {
 })
 
 addVarModifyListener(path => {
+    if (!ig.vars.nextSetBy) return
     if (ig.vars.nextSetBy.length > 0) {
         ig.vars.varsSetBy[path] = ig.vars.nextSetBy.last()
         ig.vars.nextSetBy.pop()

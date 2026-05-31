@@ -15,6 +15,7 @@
 - Fix enemy pvp points rendering as blue instead of red
 - Initialize player in the correct moment when loading the map
 - Fix compatibility with lqm-joern-mod custom assault projectiles
+- Fix random error message on vanilla startup
 
 ## [0.7.9] 2026-05-22
 

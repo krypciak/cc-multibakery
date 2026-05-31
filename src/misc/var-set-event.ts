@@ -13,7 +13,7 @@ function createInject(isSet: boolean = false) {
         path: string,
         value: unknown
     ): void {
-        if (!path) return this.parent(path, value)
+        if (!multi.server || !path) return this.parent(path, value)
 
         const changedBackup = ig.game._deferredVarChanged
         ig.game._deferredVarChanged = false
