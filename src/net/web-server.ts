@@ -1,9 +1,10 @@
-import type { Server, IncomingMessage, ServerResponse } from 'http'
+import type { Server, IncomingMessage, ServerResponse, RequestListener } from 'http'
 import { isServerDetailsRemote, type NetServerInfoPhysics, type ServerDetailsRemote } from '../client/menu/server-info'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
-import { getCCBundlerHttpModules } from './crosscode-web-http-modules'
+import { getCrosscodeWebHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
+import { createChain } from 'crosscode-web/src/http-server/http-misc'
 
 export class PhysicsHttpServer {
     private stopFunc = () => this.stop()
@@ -20,6 +21,7 @@ export class PhysicsHttpServer {
         if (!PHYSICS || !PHYSICSNET) return
 
         const fs: typeof import('fs') = (0, eval)('require("fs")')
+        const https: typeof import('https') = (0, eval)('require("https")')
 
         let icon: Buffer | undefined
         if (this.netInfo.details.iconPath) {
@@ -40,11 +42,7 @@ export class PhysicsHttpServer {
         assert(isServerDetailsRemote(this.serverDetails))
         const serverDetailsString: string = JSON.stringify(this.serverDetails)
 
-        const httpRoot = this.netInfo.connection.httpRoot
-
-        const { createServer } = PHYSICSNET && (await import('http-server'))
-
-        const serverHandleFunction = (req: IncomingMessage, res: ServerResponse) => {
+        const serverHandle: RequestListener = (req: IncomingMessage, res: ServerResponse) => {
             if (req.url == '/details') {
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
@@ -58,7 +56,7 @@ export class PhysicsHttpServer {
                 res.write(icon)
                 res.end()
             } else {
-                if (httpRoot) res.emit('next')
+                if (this.netInfo.connection.crosscodeWeb?.httpRoot) res.emit('next')
                 else if (req.url == '/') {
                     res.writeHead(200)
                     res.write('crosscode server')
@@ -70,21 +68,18 @@ export class PhysicsHttpServer {
             }
         }
 
-        const httpServer = createServer({
-            root: httpRoot,
-            cache: -1,
-            cors: true,
-            showDotfiles: false,
-            showDir: 'false',
-            https: this.netInfo.connection.https,
-            before: [
-                //
-                ...(await getCCBundlerHttpModules(this.netInfo.connection.ccbundler)),
-                serverHandleFunction,
-            ],
-        })
-        // @ts-expect-error for some reason http-server typedefs are wrong
-        this.httpServer = httpServer.server
+        const [cert, key] = this.netInfo.connection.https
+            ? await Promise.all([
+                  fs.promises.readFile(this.netInfo.connection.https.cert),
+                  fs.promises.readFile(this.netInfo.connection.https.key),
+              ])
+            : []
+
+        const httpServer = https.createServer(
+            { cert, key },
+            createChain(serverHandle, ...(await getCrosscodeWebHttpModules(this.netInfo.connection.crosscodeWeb)))
+        )
+        this.httpServer = httpServer
 
         process.on('exit', this.stopFunc)
         window.addEventListener('beforeunload', this.stopFunc)

@@ -1,17 +1,27 @@
-import type { HandleFunction } from 'crosscode-web/src/http-server/http-module-mod-proxy'
+import type { RequestListener } from 'http'
 import { assert } from '../misc/assert'
 
-export interface CCBundlerModuleOptions {
+export interface CrosscodeWebModuleOptions {
+    httpRoot?: string
     modProxy?: boolean
     liveModUpdates?: boolean
 }
 
-export async function getCCBundlerHttpModules(options: CCBundlerModuleOptions = {}) {
-    const promises: Promise<HandleFunction>[] = []
+export async function getCrosscodeWebHttpModules(options: CrosscodeWebModuleOptions = {}) {
+    const promises: Promise<RequestListener>[] = []
     if (options.modProxy) promises.push(modProxy())
     if (options.liveModUpdates) promises.push(liveModUpdates())
+    if (options.httpRoot) promises.push(fsProxy(options.httpRoot))
 
     return Promise.all(promises)
+}
+
+async function fsProxy(httpRoot: string) {
+    assert(PHYSICSNET)
+    const fsProxy = PHYSICSNET && (await import('crosscode-web/src/http-server/http-module-fs'))
+    fsProxy.setHttpRoot(httpRoot)
+
+    return fsProxy.handleFunction
 }
 
 async function modProxy() {
@@ -21,6 +31,7 @@ async function modProxy() {
     modProxy.setAllowedDbs([
         'https://raw.githubusercontent.com/CCDirectLink/CCModDB/stable',
         'https://raw.githubusercontent.com/CCDirectLink/CCModDB/testing',
+        'https://raw.githubusercontent.com/krypciak/CCModDB/multi',
     ])
 
     await modProxy.updateValidUrlSet()
@@ -85,8 +96,8 @@ async function liveModUpdates() {
             buildArguments: commonEsbuildOpts,
         },
         {
-            id: 'cc-ts-template-esbuild',
-            repoPath: './assets/mods/cc-ts-template-esbuild',
+            id: 'cc-krypek-lib',
+            repoPath: './assets/mods/cc-krypek-lib',
             buildCmd: 'esbuild',
             buildArguments: commonEsbuildOpts,
         },

@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Decrease bundle size by removing dependency on http-server
+
 ### Fixed
 
 - Fix some client actions not preserving event chain

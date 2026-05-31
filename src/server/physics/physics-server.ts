@@ -14,7 +14,7 @@ import { PhysicsHttpServer } from '../../net/web-server'
 import { Client, type ClientSettings } from '../../client/client'
 import { startRepl } from './shell'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
-import type { CCBundlerModuleOptions } from '../../net/crosscode-web-http-modules'
+import type { CrosscodeWebModuleOptions } from '../../net/crosscode-web-http-modules'
 import type { ClientLeaveData } from '../remote/remote-server'
 import { startGameLoop } from '../../game-loop'
 import { sendPhysicsServerPacket } from './physics-server-sender'
@@ -31,9 +31,8 @@ import './event/event'
 
 export interface PhysicsServerConnectionSettings {
     httpPort: number
-    httpRoot?: string
-    ccbundler?: CCBundlerModuleOptions
-    https?: import('https').ServerOptions
+    crosscodeWeb?: CrosscodeWebModuleOptions
+    https?: { cert: string; key: string }
 
     pingInterval?: number
     pingTimeout?: number
