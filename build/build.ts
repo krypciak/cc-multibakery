@@ -13,7 +13,6 @@ interface Options {
     minifySyntax?: boolean
     minifyWhitespace?: boolean
     minifyIdentifiers?: boolean
-    extraTreeShaking?: boolean
     target?: string
     dropAssert?: boolean
     dev?: boolean
@@ -45,7 +44,6 @@ async function run(
         minifySyntax = false,
         minifyWhitespace = false,
         minifyIdentifiers = false,
-        extraTreeShaking = false,
         target = 'es2018',
         dropAssert = false,
         dev = true,
@@ -86,11 +84,6 @@ async function run(
             build.onEnd(async res => {
                 let output = res.outputFiles?.[0]?.text
                 if (!output) return
-
-                if (extraTreeShaking) {
-                    const result = await esbuild.transform(output, commonOptions)
-                    output = result.code as string
-                }
 
                 output = requireFix(output)
 
