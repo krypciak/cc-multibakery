@@ -19,6 +19,7 @@ interface Options {
     dropProfiling?: boolean
     noWrite?: boolean
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
+    metafile?: boolean
 }
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
@@ -50,6 +51,7 @@ async function run(
         dropProfiling = true,
         noWrite = false,
         forceRegenerateBinaryEncodeDecodeScripts = false,
+        metafile = false,
     }: Options
 ) {
     if (!physics) physicsnet = false
@@ -167,7 +169,7 @@ async function run(
             PROFILE: String(!dropProfiling),
         },
         plugins: [plugin],
-        // metafile: true,
+        metafile,
     })
 
     if (type == 'build') {
