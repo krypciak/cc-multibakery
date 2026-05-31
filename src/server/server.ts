@@ -62,6 +62,7 @@ export type ClientJoinAckData =
     | {
           status: 'ok'
           tpInfo?: MapTpInfo
+          reservedNetid?: EntityNetid
       }
 
 export interface ClientCreateAndJoinSettings {
@@ -208,15 +209,11 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return [...this.maps.values()].filter(map => map.ready && map.isActive())
     }
 
-    async getMap(name: MapName): Promise<CCMap> {
+    getMap(name: MapName): CCMap {
         let map: CCMap | undefined = this.maps.get(name)
-        if (map) {
-            await map.initPromise
-            return map
-        }
+        if (map) return map
         map = new CCMap(name)
         this.maps.set(name, map)
-        await map.init()
         return map
     }
 

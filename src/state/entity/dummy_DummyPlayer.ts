@@ -11,6 +11,9 @@ import { wrapIgnoreEffectNetid } from './effect-netid'
 declare global {
     namespace dummy {
         interface DummyPlayer extends StateMemory.MapHolder<StateKey> {}
+        interface DummyPlayerConstructor {
+            create(netid: EntityNetid, state: Partial<Return>): dummy.DummyPlayer
+        }
     }
     interface EntityStates {
         'dummy.DummyPlayer': Return
@@ -66,10 +69,6 @@ prestart(() => {
     dummy.DummyPlayer.inject({
         getEntityState,
         setEntityState,
-        createNetid() {
-            if (isRemote(multi.server)) return
-            return this.parent()
-        },
     })
     dummy.DummyPlayer.create = (netid: EntityNetid, state: Return) => {
         const username = state.username
@@ -80,9 +79,6 @@ prestart(() => {
             data: { username },
             inputManager: new dummy.input.Puppet.InputManager(),
         })
-
-        const client = multi.server.clients.get(username)
-        client?.playerAttachResolve?.(player)
 
         return player
     }

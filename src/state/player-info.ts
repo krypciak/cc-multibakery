@@ -16,12 +16,14 @@ import type {
     Username,
 } from '../net/binary/binary-types'
 import type { MapTpInfo } from '../server/server'
+import type { EntityNetid } from '../misc/entity-netid'
 
 export interface PlayerInfoEntry {
     username: Username
     character: string
     tpInfo: MapTpInfo
     nextTpInfo?: MapTpInfo
+    netid: EntityNetid
     pos: Vec2
 
     stats: {
@@ -50,6 +52,7 @@ interface PartialPlayerInfoEntry {
     character?: string
     tpInfo?: MapTpInfo
     nextTpInfo?: MapTpInfo
+    netid?: EntityNetid
     pos?: Vec2
 
     stats?: {
@@ -155,7 +158,10 @@ prestart(() => {
                     for (const keyRaw in playerInfo) {
                         const key = keyRaw as keyof PlayerInfoEntry
                         const v = playerInfo[key]
-                        if (v !== undefined) entry[key] = v as any
+                        if (v !== undefined) {
+                            // @ts-expect-error
+                            entry[key] = v
+                        }
                     }
 
                     if (entry.nextTpInfo) {
@@ -164,6 +170,7 @@ prestart(() => {
                         if (!entry.nextTpInfo.map) {
                             client.nextTpInfo = entry.nextTpInfo
                         } else {
+                            client.reservedNetid = entry.netid
                             client.teleport(entry.nextTpInfo)
                         }
                     }

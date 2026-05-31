@@ -212,7 +212,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         const client = new Client(settings)
         const tpInfo = client.getInitialTpInfo()
-        const map = this.getMap(tpInfo.map)
+        this.getMap(tpInfo.map)
+
+        assert(ackData.reservedNetid)
+        client.reservedNetid = ackData.reservedNetid
 
         this.baseInst.display = false
 
@@ -222,6 +225,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.netManager.conn.join(client)
 
         return { client, ackData }
+    }
+
+    onMapReady(map: CCMap) {
+        ;(this.notifyReadyMaps ??= []).push(map.name)
     }
 
     async leaveClient(client: Client) {

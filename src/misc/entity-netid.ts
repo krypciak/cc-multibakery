@@ -95,6 +95,29 @@ export function registerNetEntity({ entityClass, applyPriority, ignoreDeath, isS
     if (isStatic) entityStatic.add(typeid)
 }
 
+export function createNetid(
+    classId: number,
+    entityTypeIdCounterMap: ig.Game['entityTypeIdCounterMap'],
+    entitiesByNetid: ig.Game['entitiesByNetid']
+): EntityNetid {
+    const typeid = classIdToTypeid[classId]
+    entityTypeIdCounterMap[typeid] ??= 0
+    let netid: EntityNetid = 0
+    const baseId = baseNetidFromTypeId(typeid)
+    let overflowCount = 0
+    do {
+        let add = ++entityTypeIdCounterMap[typeid]
+        if (add >= netidCounterSize) {
+            add = 1
+            entityTypeIdCounterMap[typeid] = 0
+            if (++overflowCount >= 2) throw new Error(`Netid pool exsausted for typeid: ${typeid}}`)
+        }
+        netid = baseId + add
+    } while (entitiesByNetid[netid])
+
+    return netid
+}
+
 prestart(() => {
     ig.Game.inject({
         init() {
@@ -115,23 +138,7 @@ prestart(() => {
             this.setNetid(settings.netid)
         },
         createNetid() {
-            const typeid = classIdToTypeid[this.classId]
-            ig.game.entityTypeIdCounterMap[typeid] ??= 0
-            let netid: EntityNetid = 0
-            const baseId = baseNetidFromTypeId(typeid)
-            let overflowCount = 0
-            do {
-                let add = ++ig.game.entityTypeIdCounterMap[typeid]
-                if (add >= netidCounterSize) {
-                    add = 1
-                    ig.game.entityTypeIdCounterMap[typeid] = 0
-                    if (++overflowCount >= 2)
-                        throw new Error(`Netid pool exsausted for typeid: ${typeid}, entity: ${fcn(this)}`)
-                }
-                netid = baseId + add
-            } while (ig.game.entitiesByNetid[netid])
-
-            return netid
+            return createNetid(this.classId, ig.game.entityTypeIdCounterMap, ig.game.entitiesByNetid)
         },
         setNetid(override) {
             if (!classIdToTypeid[this.classId]) return

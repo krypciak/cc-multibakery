@@ -22,6 +22,7 @@ import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update
 import type { MapName, Username } from '../../net/binary/binary-types'
 import { loadClientOptionModelState } from '../../client/client-option-model-link'
 import { ServerDiscoveryServer } from '../../net/server-discovery'
+import type { PlayerInfoEntry } from '../../state/player-info'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -158,10 +159,11 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         const tpInfo = client.getInitialTpInfo()
         const map = this.getMap(tpInfo.map)
 
+        client.reservedNetid = map.reservePlayerNetid()
 
         await this.initAndJoinClientStrategy(client, tpInfo, connection, awaitClientJoin)
 
-        return { client, ackData: { status: 'ok', tpInfo } }
+        return { client, ackData: { status: 'ok', tpInfo, reservedNetid: client.reservedNetid } }
     }
 
     leaveClient(client: Client) {
@@ -254,7 +256,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         }
     }
 
-    getPlayerInfoOf(username: Username) {
+    getPlayerInfoOf(username: Username): PlayerInfoEntry {
         const client = multi.server.clients.get(username)
         assert(client?.dummy)
         const model = client.dummy.model
@@ -264,6 +266,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             character: model.name,
             tpInfo: client.tpInfo,
             nextTpInfo: client.nextTpInfo,
+            netid: client.reservedNetid ?? client.dummy?.netid,
             pos: {
                 x: client.dummy.coll.pos.x / mapSize.x,
                 y: (client.dummy.coll.pos.y - client.dummy.coll.pos.z) / mapSize.y,

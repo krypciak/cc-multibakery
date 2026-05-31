@@ -7,37 +7,19 @@ export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity:
 
 export function teleportPlayerToProperMarker(
     player: ig.ENTITY.Player | undefined,
-    inputMarker: Nullable<string> | undefined,
-    tpPos: ig.TeleportPosition | undefined,
-    whateverMarkerYouFind: boolean = false
+    inputMarker: Nullable<string> | undefined
 ): string | undefined {
     let marker: string | undefined
     if (!player) return marker
 
-    if (!tpPos || tpPos.marker) {
-        const markerLikes: MarkerLike[] = ig.game.shownEntities.filter(
-            e => e && 'applyMarkerPosition' in e
-        ) as MarkerLike[]
+    const markerLikes: MarkerLike[] = ig.game.shownEntities.filter(e => e && 'applyMarkerPosition' in e) as MarkerLike[]
 
-        let found: MarkerLike | undefined = markerLikes.find(e => e.name == inputMarker)
-        if (!found && whateverMarkerYouFind) found = markerLikes[0]
+    let found: MarkerLike | undefined = markerLikes.find(e => e.name == inputMarker)
+    if (!found) found = markerLikes[0]
 
-        if (found && player) {
-            marker = found.name
-            found.applyMarkerPosition(player)
-        }
-    } else {
-        if (!tpPos) throw new Error('advancedTeleportMarkerBs what')
-        marker = undefined
-        player.coll.level = tpPos.level.toString()
-        player.coll.baseZPos = tpPos.baseZPos
-        player.coll.pos.z = tpPos.pos!.z
-        player.face.x = tpPos.face!.x
-        player.face.y = tpPos.face!.y
-        player.setPos(
-            tpPos.pos!.x + tpPos.size!.x / 2 - player.coll.size.x / 2,
-            tpPos.pos!.y + tpPos.size!.y / 2 - player.coll.size.y / 2
-        )
+    if (found && player) {
+        marker = found.name
+        found.applyMarkerPosition(player)
     }
     return marker
 }

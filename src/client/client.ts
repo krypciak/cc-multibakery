@@ -21,6 +21,7 @@ import { initClientOptionModel, linkClientOptionModel, loadClientOptionModelStat
 import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
+import type { EntityNetid } from '../misc/entity-netid'
 
 import './injects'
 import './menu/server-list-menu'
@@ -58,7 +59,7 @@ export class Client extends InstanceUpdateable {
     tpInfo: MapTpInfo = { map: '' }
     nextTpInfo?: MapTpInfo
     ready: boolean = false
-    playerAttachResolve?: (player: dummy.DummyPlayer) => void
+    reservedNetid?: EntityNetid
 
     constructor(public settings: ClientSettings) {
         super()
@@ -184,7 +185,8 @@ export class Client extends InstanceUpdateable {
     getInitialTpInfo() {
         const state = this.getSaveState(false)
 
-        const tpInfo: MapTpInfo = state?.tpInfo ??
+        const tpInfo: MapTpInfo = this.settings.tpInfo ??
+            state?.tpInfo ??
             multi.server.settings.defaultMap ??
             multi.server.getMasterClient()?.tpInfo ?? { map: 'multibakery/dev', marker: 'entrance' }
         return tpInfo
@@ -213,6 +215,7 @@ export class Client extends InstanceUpdateable {
     async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
         PROFILE && console.time('client teleport')
         this.startTeleportOverlay()
+        runTask(this.inst, () => sc.model.enterTeleport())
 
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
@@ -220,11 +223,13 @@ export class Client extends InstanceUpdateable {
         }
 
         this.nextTpInfo = tpInfo
+        const map = multi.server.getMap(tpInfo.map)
+        if (isPhysics(multi.server)) this.reservedNetid ??= map.reservePlayerNetid()
 
         this.ready = false
 
-        let [map] = await Promise.all([
-            multi.server.getMap(tpInfo.map),
+        await Promise.all([
+            map.init(),
             noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
         ])
         assert(map)
@@ -240,17 +245,19 @@ export class Client extends InstanceUpdateable {
 
         await runTask(map.inst, () => this.createPlayer())
 
+        this.reservedNetid = undefined
+
         map.enter(this)
 
-        if (isPhysics(multi.server)) {
-            runTask(map.inst, () => {
-                teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker, undefined, true)
-            })
-        }
+        runTask(map.inst, () => {
+            teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
+        })
 
         PROFILE && console.time('linkMapToInstanceStage1')
         this.linkMapToInstanceStage1(map)
         PROFILE && console.timeEnd('linkMapToInstanceStage1')
+
+        runTask(this.inst, () => sc.model.enterLoading())
 
         await map.loadResources()
 
@@ -350,7 +357,7 @@ export class Client extends InstanceUpdateable {
             multi.server.party.createPersonalParty(this.username)
 
             sc.model.enterNewGame()
-            if (isPhysics(multi.server)) sc.model.enterGame()
+            sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
 
             /* unlink cond lights because ig.Light clears it */
@@ -381,7 +388,7 @@ export class Client extends InstanceUpdateable {
 
             this.updateGamepadForcer()
 
-            if (isPhysics(multi.server)) sc.model.enterGame()
+            sc.model.enterGame()
 
             sc.Model.notifyObserver(sc.model.player.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
 
@@ -429,6 +436,7 @@ export class Client extends InstanceUpdateable {
     private async createPlayer() {
         PROFILE && console.time('createPlayer')
 
+        assert(this.reservedNetid)
         if (isPhysics(multi.server)) {
             if (this.dummy && !this.dummy._killed) {
                 runTask(instanceinator.instances[this.dummy._instanceId], () => {
@@ -438,6 +446,7 @@ export class Client extends InstanceUpdateable {
             }
 
             this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, {
+                netid: this.reservedNetid,
                 inputManager: this.inputManager,
                 data: { username: this.username },
             })
@@ -448,12 +457,12 @@ export class Client extends InstanceUpdateable {
 
             this.loadPlayerEntityState()
         } else {
-            this.dummy =
-                (this.getMap().inst.ig.game.entities.find(
-                    e => e instanceof dummy.DummyPlayer && !e._killed && e.data.username == this.username
-                ) as dummy.DummyPlayer | undefined) ??
-                (await new Promise<dummy.DummyPlayer>(resolve => (this.playerAttachResolve = resolve)))
-            this.playerAttachResolve = undefined
+            let player = this.getMap().inst.ig.game.entities.find(
+                e => e instanceof dummy.DummyPlayer && !e._killed && e.data.username == this.username
+            ) as dummy.DummyPlayer | undefined
+
+            player ??= dummy.DummyPlayer.create(this.reservedNetid, { username: this.username })
+            this.dummy = player
         }
 
         this.dummy.setInputManager(this.inputManager)

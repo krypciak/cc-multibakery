@@ -10,8 +10,11 @@ import { linkOptions } from '../physics/storage/storage'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapName } from '../../net/binary/binary-types'
 import { instanceinatorCopyInstanceConfig } from '../server'
+import { createNetid, type EntityNetid } from '../../misc/entity-netid'
 
 import './injects'
+import { isRemote } from '../remote/is-remote-server'
+import { assertPhysics } from '../physics/is-physics-server'
 
 declare global {
     namespace ig {
@@ -48,8 +51,22 @@ export class CCMap extends InstanceUpdateable {
     onLinkChange: OnLinkChange[] = []
     forceUpdateForFrames: number = 0
 
+    private netidReserve = {
+        entityTypeIdCounterMap: {} as ig.Game['entityTypeIdCounterMap'],
+        entitiesByNetid: {} as ig.Game['entitiesByNetid'],
+    }
+
     constructor(public name: MapName) {
         super()
+    }
+
+    reservePlayerNetid(): EntityNetid {
+        assertPhysics(multi.server)
+        return createNetid(
+            dummy.DummyPlayer.classId,
+            this.netidReserve.entityTypeIdCounterMap,
+            this.netidReserve.entitiesByNetid
+        )
     }
 
     copyRawLevelData(): sc.MapModel.Map {
@@ -65,9 +82,9 @@ export class CCMap extends InstanceUpdateable {
     }
 
     async init() {
+        if (this.initPromise) return this.initPromise
         PROFILE && console.time('map init')
 
-        assert(!this.initPromise)
         this.initPromise = new Promise<void>(resolve => {
             this.initResolve = () => {
                 this.initialized = true
@@ -91,6 +108,9 @@ export class CCMap extends InstanceUpdateable {
         this.inst.ig.mapShared = { ccmap: this } as any
         forceConditionalLightOnInst(this.inst.id)
         this.link()
+
+        this.inst.ig.game.entityTypeIdCounterMap = this.netidReserve.entityTypeIdCounterMap
+        this.inst.ig.game.entitiesByNetid = this.netidReserve.entitiesByNetid
 
         PROFILE && console.time('await level data')
         const levelData = await levelDataPromise
@@ -136,6 +156,10 @@ export class CCMap extends InstanceUpdateable {
         this.readyResolve()
 
         instanceinator.retile()
+
+        if (isRemote(multi.server)) {
+            multi.server.onMapReady(this)
+        }
 
         PROFILE && console.timeEnd('map loadResources')
     }
