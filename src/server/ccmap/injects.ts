@@ -255,6 +255,9 @@ prestart(() => {
         validateCurrentPlayerFloor() {
             if (ig.game.playerEntity) return this.parent()
         },
+        validateCurrentFloor() {
+            if (ig.game.playerEntity) return this.parent()
+        },
     })
 })
 
