@@ -1,4 +1,4 @@
-import type { RequestListener } from 'http'
+import type { Http2ServerRequest, Http2ServerResponse } from 'http2'
 import { assert } from '../misc/assert'
 
 export interface CrosscodeWebModuleOptions {
@@ -7,8 +7,10 @@ export interface CrosscodeWebModuleOptions {
     liveModUpdates?: boolean
 }
 
+type Handler = (req: Http2ServerRequest, res: Http2ServerResponse) => void
+
 export async function getCrosscodeWebHttpModules(options: CrosscodeWebModuleOptions = {}) {
-    const promises: Promise<RequestListener>[] = []
+    const promises: Promise<Handler>[] = []
     if (options.modProxy) promises.push(modProxy())
     if (options.liveModUpdates) promises.push(liveModUpdates())
     if (options.httpRoot) promises.push(fsProxy(options.httpRoot))

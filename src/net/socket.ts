@@ -8,7 +8,7 @@ import {
     type RemoteServerConnectionSettings,
 } from '../server/remote/remote-server'
 import type { Client } from '../client/client'
-import type { Server as HttpServer } from 'http'
+import type { Http2Server } from 'http2'
 import { type ClientJoinAckData, type ClientJoinData, isClientJoinData } from '../server/server'
 import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
@@ -60,7 +60,7 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
 
     constructor(
         private netInfo: NetServerInfoPhysics,
-        private httpServer: HttpServer
+        private httpServer: Http2Server
     ) {
         assert(httpServer)
         setIntervalWorkaround()

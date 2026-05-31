@@ -1,4 +1,4 @@
-import type { Server, IncomingMessage, ServerResponse, RequestListener } from 'http'
+import type { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
 import { isServerDetailsRemote, type NetServerInfoPhysics, type ServerDetailsRemote } from '../client/menu/server-info'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
@@ -6,12 +6,14 @@ import { getCrosscodeWebHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 import { createChain } from 'crosscode-web/src/http-server/http-misc'
 
+type Http2Handler = (req: Http2ServerRequest, res: Http2ServerResponse) => void
+
 export class PhysicsHttpServer {
     private stopFunc = () => this.stop()
 
     serverDetails!: ServerDetailsRemote
 
-    httpServer!: Server
+    httpServer!: Http2Server
 
     constructor(private netInfo: NetServerInfoPhysics) {}
 
@@ -21,7 +23,6 @@ export class PhysicsHttpServer {
         if (!PHYSICS || !PHYSICSNET) return
 
         const fs: typeof import('fs') = (0, eval)('require("fs")')
-        const https: typeof import('https') = (0, eval)('require("https")')
 
         let icon: Buffer | undefined
         if (this.netInfo.details.iconPath) {
@@ -42,7 +43,7 @@ export class PhysicsHttpServer {
         assert(isServerDetailsRemote(this.serverDetails))
         const serverDetailsString: string = JSON.stringify(this.serverDetails)
 
-        const serverHandle: RequestListener = (req: IncomingMessage, res: ServerResponse) => {
+        const serverHandle: Http2Handler = (req, res) => {
             if (req.url == '/details') {
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
@@ -68,18 +69,30 @@ export class PhysicsHttpServer {
             }
         }
 
-        const [cert, key] = this.netInfo.connection.https
-            ? await Promise.all([
-                  fs.promises.readFile(this.netInfo.connection.https.cert),
-                  fs.promises.readFile(this.netInfo.connection.https.key),
-              ])
-            : []
-
-        const httpServer = https.createServer(
-            { cert, key },
-            createChain(serverHandle, ...(await getCrosscodeWebHttpModules(this.netInfo.connection.crosscodeWeb)))
+        const respFunc = createChain(
+            serverHandle,
+            ...(await getCrosscodeWebHttpModules(this.netInfo.connection.crosscodeWeb))
         )
-        this.httpServer = httpServer
+
+        if (this.netInfo.connection.https) {
+            const http2: typeof import('http2') = (0, eval)('require("http2")')
+            const [cert, key] = await Promise.all([
+                fs.promises.readFile(this.netInfo.connection.https.cert),
+                fs.promises.readFile(this.netInfo.connection.https.key),
+            ])
+            this.httpServer = http2.createSecureServer(
+                {
+                    allowHTTP1: true /* for socket.io to work */,
+                    cert,
+                    key,
+                },
+                respFunc
+            )
+        } else {
+            const http1: typeof import('http') = (0, eval)('require("http")')
+            const server = http1.createServer({}, respFunc as any)
+            this.httpServer = server as unknown as Http2Server
+        }
 
         process.on('exit', this.stopFunc)
         window.addEventListener('beforeunload', this.stopFunc)

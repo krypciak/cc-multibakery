@@ -43,7 +43,7 @@ importers:
         version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/40f10d1789cd91a0ec99fe242cbda35f35964375
       crosscode-web:
         specifier: github:krypciak/crosscode-web
-        version: https://codeload.github.com/krypciak/crosscode-web/tar.gz/0b1c50afc891fc0cfca90c9809e286c3749ddbb0
+        version: https://codeload.github.com/krypciak/crosscode-web/tar.gz/045475ada49d6678dffa2faf92a6cffcfddc6521
       crossnode:
         specifier: github:krypciak/crossnode
         version: https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374
@@ -408,8 +408,8 @@ packages:
     resolution: {integrity: sha512-tJtZBBHA6vjIAaF6EnIaq6laBBP9aq/Y3ouVJjEfoHbRBcHBAHYcMh/w8LDrk2PvIMMq8gmopa5D4V8RmbrxGw==}
     engines: {node: '>= 0.10'}
 
-  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/0b1c50afc891fc0cfca90c9809e286c3749ddbb0:
-    resolution: {gitHosted: true, integrity: sha512-b1+alrHejzK0gu7rfS6BRBFl8WiZltDwAykWz3mlz5GIHSftKJpx9aicdhuUbQgPt9itaQJL3Mz8RalQ3cn0xg==, tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/0b1c50afc891fc0cfca90c9809e286c3749ddbb0}
+  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/045475ada49d6678dffa2faf92a6cffcfddc6521:
+    resolution: {gitHosted: true, integrity: sha512-50j5J82NMEVsM77zdAnOhV6jQfIiT98BueRfxn9moQmsDsZRvjfy/uSy+fKMkVkr5hj7fGQRNO0eA9tjthbjpA==, tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/045475ada49d6678dffa2faf92a6cffcfddc6521}
     version: 1.0.0
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374:
@@ -834,7 +834,7 @@ snapshots:
       object-assign: 4.1.1
       vary: 1.1.2
 
-  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/0b1c50afc891fc0cfca90c9809e286c3749ddbb0: {}
+  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/045475ada49d6678dffa2faf92a6cffcfddc6521: {}
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/f797ccfe24a27abc45bf42b4bd58659d88050374: {}
 
