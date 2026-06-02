@@ -83,11 +83,11 @@ export function sendPhysicsServerPacket() {
             const decoded = PhysicsUpdatePacketEncoderDecoder.decode(toSend)
             assert(packetDeepEqual(data, decoded), 'physics packet decoding mismatch!')
         }
-        conn.send('update', toSend)
+        conn.middleware.send('update', toSend)
     }
 
     runTasks(
-        [...multi.server.maps.values()].map(map => map.inst),
+        [...multi.server.maps.values()].filter(map => map.ready).map(map => map.inst),
         () => {
             clearCollectedState()
         }

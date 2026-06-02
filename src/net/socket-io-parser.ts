@@ -1,4 +1,4 @@
-import type { RecordSize, u24, u32, u8 } from 'ts-binarifier/src/type-aliases'
+import type { RecordSize, u24, u8 } from 'ts-binarifier/src/type-aliases'
 import { Decoder as BinaryDecoder } from 'ts-binarifier/src/decoder'
 import { assert } from '../misc/assert'
 import { SocketIoPacketEncoderDecoder } from './binary/socket-io-packet-encoder-decoder.generated'
@@ -8,16 +8,11 @@ enum PacketType {
     CONNECT,
     DISCONNECT,
     EVENT,
-    ACK,
     CONNECT_ERROR,
 }
 
 interface SocketIoPacket {
     type: PacketType
-    ackData?: {
-        id: u32
-        data: any[]
-    }
     ids?: { pid: string; sid: string }
     otherEventsData?: any
     updateEventData?: {
@@ -48,20 +43,14 @@ class Encoder {
 }
 
 function converIntoNewFormat(packet: SocketIoOrigianlPacket): SocketIoPacket {
-    const hasId = packet.id !== undefined
+    assert(!packet.id)
     const hasSessionIds = !Array.isArray(packet.data)
-    const isOtherData = !hasId && !hasSessionIds && packet.data[0] != 'update'
-    assert(Number(hasId) + Number(hasSessionIds) + Number(isOtherData) <= 1)
+    const isOtherData = !hasSessionIds && packet.data[0] != 'update'
+    assert(Number(hasSessionIds) + Number(isOtherData) <= 1)
     return {
         type: packet.type,
-        ackData: hasId
-            ? {
-                  id: Number(packet.id),
-                  data: packet.data,
-              }
-            : undefined,
         updateEventData:
-            !hasId && !hasSessionIds && !isOtherData
+            !hasSessionIds && !isOtherData
                 ? {
                       data: packet.data[1],
                   }
@@ -91,9 +80,8 @@ function convertFromNewFormat(packet: SocketIoPacket): SocketIoOrigianlPacket {
 
     return {
         type: packet.type,
-        data: packet.ids ?? packet.ackData?.data ?? data,
+        data: packet.ids ?? data,
         nsp: '/',
-        id: packet.ackData?.id,
     }
 }
 
@@ -127,15 +115,13 @@ class Decoder {
             return false
         }
         switch (type) {
-            case 0: // CONNECT
+            case PacketType.CONNECT:
                 return data === undefined || isObject(data)
-            case 1: // DISCONNECT
+            case PacketType.DISCONNECT:
                 return data === undefined
-            case 2: // EVENT
+            case PacketType.EVENT:
                 return Array.isArray(data) && typeof data[0] === 'string'
-            case 3: // ACK
-                return Array.isArray(data)
-            case 4: // CONNECT_ERROR
+            case PacketType.CONNECT_ERROR:
                 return isObject(data)
             default:
                 return false

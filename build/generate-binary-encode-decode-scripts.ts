@@ -1,4 +1,4 @@
-import type { Config, SingleConfig } from 'ts-binarifier/src/index';
+import type { Config, SingleConfig } from 'ts-binarifier/src/index'
 import { generateEncodeDecodeScripts } from 'ts-binarifier/src/index'
 import { createEntityStateRecordUnionNode } from './entity-state-record-union-node'
 import fs from 'fs'
@@ -35,6 +35,12 @@ const config: Config = {
             path: 'src/net/socket-io-parser.ts',
             outPath: projectRoot + '/src/net/binary/socket-io-packet-encoder-decoder.generated.ts',
             outClassName: 'SocketIoPacketEncoderDecoder',
+        },
+        {
+            ...configBase,
+            path: 'src/net/packet.ts',
+            outPath: projectRoot + '/src/net/binary/packet-encoder-decoder.generated.ts',
+            outClassName: 'PacketEncoderDecoder',
         },
     ],
 }

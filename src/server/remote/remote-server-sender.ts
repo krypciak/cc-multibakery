@@ -87,7 +87,7 @@ export function sendRemoteServerPacket() {
         assert(packetDeepEqual(packet, decoded), 'remote packet decoding mismatch!')
     }
 
-    conn.send('update', toSend)
+    conn.middleware.send('update', toSend)
 }
 
 export interface RemoteServerUpdatePacket {

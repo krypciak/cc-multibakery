@@ -16,6 +16,7 @@ import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
 import { assertPhysics } from '../server/physics/is-physics-server'
 import { assertRemote } from '../server/remote/is-remote-server'
+import { PacketMiddleware, type PacketEventType } from './packet'
 
 type SocketData = never
 
@@ -93,7 +94,27 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         const server = multi.server
         assertPhysics(server)
 
-        const connection = new SocketNetConnection(socket, () => {
+        const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
+            if (type == 'update') {
+                server.onNetReceiveUpdate(connection, data)
+            } else if (type == 'join') {
+                if (!callback) return
+                if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
+                const { ackData } = await server.createAndJoinClient(data, { connection })
+                callback(ackData)
+            } else if (type == 'ready') {
+                connection.ready = true
+            } else if (type == 'leave') {
+                if (!isClientLeaveData(data)) return
+                server.onNetClientLeave(connection, data)
+            } else if (type == 'ping1') {
+                if (!callback) return
+                callback(Date.now())
+            }
+        }
+        const middleware = new PacketMiddleware(buf => connection.send(buf), onData)
+
+        const connection = new SocketNetConnection(middleware, socket, () => {
             this.connections.erase(connection)
 
             if (!multi.server || multi.server != server || server.destroyed) return
@@ -101,23 +122,6 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
             server.onNetClientLeave(connection)
         })
         this.connections.push(connection)
-
-        socket.on('update', data => server.onNetReceiveUpdate(connection, data))
-        socket.on('join', async (joinData, callback) => {
-            if (!isClientJoinData(joinData)) return callback({ status: 'invalid_join_data' })
-            const { ackData } = await server.createAndJoinClient(joinData, { connection })
-            callback(ackData)
-        })
-        socket.on('ready', () => {
-            connection.ready = true
-        })
-        socket.on('leave', data => {
-            if (!isClientLeaveData(data)) return
-            server.onNetClientLeave(connection, data)
-        })
-        socket.on('ping1', callback => {
-            callback(Date.now())
-        })
     }
 
     async stop() {
@@ -169,9 +173,6 @@ export class SocketNetManagerRemoteServer {
             parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
         }) as ClientSocket
 
-        socket.on('update', data => {
-            server.onNetReceive(this.conn!, data)
-        })
         socket.on('disconnect', () => {
             this.stop()
             if (!multi.server || multi.server != server || server.destroyed) return
@@ -186,9 +187,15 @@ export class SocketNetManagerRemoteServer {
 
         return new Promise<void>(resolve => {
             socket.on('connect', () => {
-                const conn = new SocketNetConnection(socket)
-                conn.ready = true
-                this.conn = conn
+                const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
+                    if (type != 'update') return
+                    server.onNetReceive(this.conn!, data)
+                }
+                const middleware = new PacketMiddleware(buf => connection.send(buf), onData)
+
+                const connection = new SocketNetConnection(middleware, socket)
+                connection.ready = true
+                this.conn = connection
 
                 try {
                     this.measureClockOffset()
@@ -203,7 +210,7 @@ export class SocketNetManagerRemoteServer {
         assert(this.conn)
         const clientDate = Date.now()
         const clientTimeStart = performance.now()
-        const serverDate: number = await this.conn.socket.emitWithAck('ping1')
+        const serverDate: number = await this.conn.middleware.sendWithAck('ping1')
         const clientTimeEnd = performance.now()
 
         const timeTook = clientTimeEnd - clientTimeStart
@@ -238,23 +245,21 @@ export class SocketNetManagerRemoteServer {
 
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
         PROFILE && console.time('sendJoin')
-        const ack = await new Promise<ClientJoinAckData>(resolve => {
-            assert(this.conn)
-            assertRemote(multi.server)
-            this.conn.socket.emit('join', data, resolve)
-        })
+        assert(this.conn)
+        assertRemote(multi.server)
+        const ack: ClientJoinAckData = await this.conn.middleware.sendWithAck('join', data)
         PROFILE && console.timeEnd('sendJoin')
         return ack
     }
 
     async sendReady() {
-        this.conn?.socket.emit('ready')
+        this.conn?.middleware.send('ready')
     }
 
     async sendLeave(data: ClientLeaveData): Promise<void> {
         assert(this.conn)
         assertRemote(multi.server)
-        this.conn.socket.emit('leave', data)
+        this.conn.middleware.send('leave', data)
     }
 
     stop() {
@@ -277,13 +282,15 @@ export class SocketNetConnection implements NetConnection {
     bytesReceived: bigint = 0n
 
     constructor(
-        public socket: ClientSocket | Socket,
+        public middleware: PacketMiddleware,
+        private socket: ClientSocket | Socket,
         public onDisconnect?: () => void
     ) {
         socket.on('disconnect', () => {
             this.close()
             // this.onDisconnect?.()
         })
+        socket.on('update', data => middleware.receive(data))
 
         function bytesFromData(data: any): bigint {
             if (multi.server?.measureTraffic && data) {
@@ -314,9 +321,8 @@ export class SocketNetConnection implements NetConnection {
         return this.socket.connected
     }
 
-    send(type: string, data: unknown) {
-        assert(this.ready)
-        this.socket.emit(type, data)
+    send(data: unknown) {
+        this.socket.emit('update', data)
     }
 
     close(): void {
