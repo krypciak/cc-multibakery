@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add raw websocket network transport method (experimental, disabled by default)
+
 ### Changed
 
 - Decrease bundle size by removing dependency on http-server

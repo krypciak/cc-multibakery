@@ -7,14 +7,28 @@ import {
     type SocketIoNetTransportClientSettings,
     type SocketIoNetTransportServerSettings,
 } from './socket-io'
+import {
+    WsNetTransportClient,
+    WsNetTransportServer,
+    type WsNetTransportClientSettings,
+    type WsNetTransportServerSettings,
+} from './websocket'
 
-export type NetTransportServerSettings = {
-    type: 'socket.io'
-} & SocketIoNetTransportServerSettings
+export type NetTransportServerSettings =
+    | ({
+          type: 'socket.io'
+      } & SocketIoNetTransportServerSettings)
+    | ({
+          type: 'websocket'
+      } & WsNetTransportServerSettings)
 
-export type NetTransportClientSettings = {
-    type: 'socket.io'
-} & SocketIoNetTransportClientSettings
+export type NetTransportClientSettings =
+    | ({
+          type: 'socket.io'
+      } & SocketIoNetTransportClientSettings)
+    | ({
+          type: 'websocket'
+      } & WsNetTransportClientSettings)
 
 export function isNetTransportSettigns(data: unknown): data is NetTransportServerSettings | NetTransportClientSettings {
     if (!data || typeof data !== 'object') return false
@@ -38,6 +52,7 @@ export const defaultNetTransport: NetTransportType = 'socket.io'
 
 const netTransportMap = {
     'socket.io': { client: SocketIoNetTransportClient, server: SocketIoNetTransportServer },
+    websocket: { client: WsNetTransportClient, server: WsNetTransportServer },
 } as const
 
 export type NetTransportType = keyof typeof netTransportMap

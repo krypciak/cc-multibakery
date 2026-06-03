@@ -20,6 +20,7 @@
         "@types/chrome": "^0.1.38",
         "@types/jquery": "^4.0.0",
         "@types/node": "^25.5.0",
+        "@types/ws": "^8.18.1",
         "bun": "^1.3.11",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "cc-jetpack-widget": "github:krypciak/cc-jetpack-widget",
@@ -41,6 +42,7 @@
         "spdy": "^4.0.2",
         "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^6.0.2",
-        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs"
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
+        "ws": "^8.21.0"
     }
 }

@@ -51,7 +51,8 @@ async function startDevServer() {
                             },
                       pingTimeout: 10000e3,
                       transport: {
-                          type: 'socket.io',
+                          // type: 'socket.io',
+                          type: 'websocket',
                           // disableBinaryParser: true,
                       },
                   },
