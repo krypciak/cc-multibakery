@@ -2,7 +2,7 @@ import type { Server as _Server, Socket as _Socket } from 'socket.io'
 import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
 import { type ClientLeaveData } from '../server/remote/remote-server'
-import type { Http2Server } from 'http2'
+import type { Server as HttpServer } from 'http'
 import { type ClientJoinAckData, type ClientJoinData } from '../server/server'
 import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
@@ -51,7 +51,7 @@ function setIntervalWorkaround() {
 export class SocketNetManagerPhysicsServer extends NetManagerPhysicsServer {
     io!: SocketServer
 
-    constructor(netInfo: NetServerInfoPhysics, httpServer: Http2Server) {
+    constructor(netInfo: NetServerInfoPhysics, httpServer: HttpServer) {
         super(netInfo, httpServer)
         setIntervalWorkaround()
     }

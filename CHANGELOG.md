@@ -7,7 +7,6 @@
 ### Changed
 
 - Decrease bundle size by removing dependency on http-server
-- Use http2 when using https certificates
 
 ### Fixed
 

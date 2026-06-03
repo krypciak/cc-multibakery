@@ -1,4 +1,4 @@
-import type { Http2Server, Http2ServerRequest, Http2ServerResponse } from 'http2'
+import type { Server as HttpServer, RequestListener } from 'http'
 import { isServerDetailsRemote, type NetServerInfoPhysics, type ServerDetailsRemote } from '../client/menu/server-info'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { assert } from '../misc/assert'
@@ -6,14 +6,14 @@ import { getCrosscodeWebHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 import { createChain } from 'crosscode-web/src/http-server/http-misc'
 
-type Http2Handler = (req: Http2ServerRequest, res: Http2ServerResponse) => void
+type HttpHandler = RequestListener
 
 export class PhysicsHttpServer {
     private stopFunc = () => this.stop()
 
     serverDetails!: ServerDetailsRemote
 
-    httpServer!: Http2Server
+    httpServer!: HttpServer
 
     constructor(private netInfo: NetServerInfoPhysics) {}
 
@@ -43,7 +43,7 @@ export class PhysicsHttpServer {
         assert(isServerDetailsRemote(this.serverDetails))
         const serverDetailsString: string = JSON.stringify(this.serverDetails)
 
-        const serverHandle: Http2Handler = (req, res) => {
+        const serverHandle: HttpHandler = (req, res) => {
             if (req.url == '/details') {
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
@@ -75,23 +75,16 @@ export class PhysicsHttpServer {
         )
 
         if (this.netInfo.connection.https) {
-            const http2: typeof import('http2') = (0, eval)('require("http2")')
+            const https: typeof import('https') = (0, eval)('require("https")')
             const [cert, key] = await Promise.all([
                 fs.promises.readFile(this.netInfo.connection.https.cert),
                 fs.promises.readFile(this.netInfo.connection.https.key),
             ])
-            this.httpServer = http2.createSecureServer(
-                {
-                    allowHTTP1: true /* for socket.io to work */,
-                    cert,
-                    key,
-                },
-                respFunc
-            )
+            this.httpServer = https.createServer({ cert, key }, respFunc)
         } else {
             const http1: typeof import('http') = (0, eval)('require("http")')
             const server = http1.createServer({}, respFunc as any)
-            this.httpServer = server as unknown as Http2Server
+            this.httpServer = server
         }
 
         process.on('exit', this.stopFunc)

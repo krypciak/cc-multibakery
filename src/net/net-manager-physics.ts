@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import { isClientLeaveData } from '../server/remote/remote-server'
-import type { Http2Server } from 'http2'
+import type { Server as HttpServer } from 'http'
 import { isClientJoinData } from '../server/server'
 import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import { assertPhysics } from '../server/physics/is-physics-server'
@@ -14,7 +14,7 @@ export abstract class NetManagerPhysicsServer {
 
     constructor(
         protected netInfo: NetServerInfoPhysics,
-        protected httpServer: Http2Server
+        protected httpServer: HttpServer
     ) {
         assert(httpServer)
     }
