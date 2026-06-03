@@ -1,22 +1,17 @@
 import type { Server as _Server, Socket as _Socket } from 'socket.io'
 import type * as ioclient from 'socket.io-client'
 import { assert } from '../misc/assert'
-import type { NetConnection, NetManagerPhysicsServer } from './connection'
-import {
-    type ClientLeaveData,
-    isClientLeaveData,
-    type RemoteServerConnectionSettings,
-} from '../server/remote/remote-server'
-import type { Client } from '../client/client'
+import { type ClientLeaveData } from '../server/remote/remote-server'
 import type { Http2Server } from 'http2'
-import { type ClientJoinAckData, type ClientJoinData, isClientJoinData } from '../server/server'
+import { type ClientJoinAckData, type ClientJoinData } from '../server/server'
 import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
 import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import { Opts } from '../options'
-import { assertPhysics } from '../server/physics/is-physics-server'
-import { assertRemote } from '../server/remote/is-remote-server'
-import { PacketMiddleware, type PacketEventType } from './packet'
+import { PacketMiddleware } from './packet'
+import { NetManagerRemoteServer } from './net-manager-remote'
+import { NetConnection } from './net-connection'
+import { NetManagerPhysicsServer } from './net-manager-physics'
 
 type SocketData = never
 
@@ -53,27 +48,16 @@ function setIntervalWorkaround() {
     }
 }
 
-export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
-    private stopFunc = () => this.stop()
-
-    connections: SocketNetConnection[] = []
+export class SocketNetManagerPhysicsServer extends NetManagerPhysicsServer {
     io!: SocketServer
 
-    constructor(
-        private netInfo: NetServerInfoPhysics,
-        private httpServer: Http2Server
-    ) {
-        assert(httpServer)
+    constructor(netInfo: NetServerInfoPhysics, httpServer: Http2Server) {
+        super(netInfo, httpServer)
         setIntervalWorkaround()
     }
 
-    async start() {
-        assert(PHYSICS)
+    protected async startServer(): Promise<void> {
         assert(PHYSICSNET)
-        if (!PHYSICSNET) return
-        process.on('exit', this.stopFunc)
-        window.addEventListener('beforeunload', this.stopFunc)
-
         const { Server } = PHYSICSNET && (await import('socket.io'))
         this.io = new Server(this.httpServer, {
             connectionStateRecovery: {},
@@ -86,209 +70,62 @@ export class SocketNetManagerPhysicsServer implements NetManagerPhysicsServer {
         })
 
         this.io.on('connection', async socket => {
-            this.registerSocketEvents(socket)
+            this.registerEvents(
+                (middleware, onDisconnect) => new SocketNetConnection(middleware, socket, onDisconnect)
+            )
         })
     }
 
-    private async registerSocketEvents(socket: Socket) {
-        const server = multi.server
-        assertPhysics(server)
-
-        const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
-            if (type == 'update') {
-                server.onNetReceiveUpdate(connection, data)
-            } else if (type == 'join') {
-                if (!callback) return
-                if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-                const { ackData } = await server.createAndJoinClient(data, { connection })
-                callback(ackData)
-            } else if (type == 'ready') {
-                connection.ready = true
-            } else if (type == 'leave') {
-                if (!isClientLeaveData(data)) return
-                server.onNetClientLeave(connection, data)
-            } else if (type == 'ping1') {
-                if (!callback) return
-                callback(Date.now())
-            }
-        }
-        const middleware = new PacketMiddleware(buf => connection.send(buf), onData)
-
-        const connection = new SocketNetConnection(middleware, socket, () => {
-            this.connections.erase(connection)
-
-            if (!multi.server || multi.server != server || server.destroyed) return
-
-            server.onNetClientLeave(connection)
-        })
-        this.connections.push(connection)
-    }
-
-    async stop() {
-        process.off('exit', this.stopFunc)
-
-        for (const connection of this.connections) {
-            connection.close()
-        }
-        this.connections = []
+    protected async stopConnector(): Promise<void> {
         await this.io.close()
-    }
-
-    destroy() {
-        this.stop()
-        window.removeEventListener('beforeunload', this.stopFunc)
     }
 }
 
-export class SocketNetManagerRemoteServer {
-    private stopFunc = () => this.stop()
+export class SocketNetManagerRemoteServer extends NetManagerRemoteServer {
+    private socket!: ClientSocket
 
-    conn?: SocketNetConnection
-    timeOffset: number = 0
+    protected createNetConnection(middleware: PacketMiddleware): NetConnection {
+        return new SocketNetConnection(middleware, this.socket)
+    }
 
-    constructor(public connectionSettings: RemoteServerConnectionSettings) {}
-
-    async connect() {
-        assert(REMOTE)
-        if (!REMOTE) return
-
-        process.on('exit', this.stopFunc)
-        window.addEventListener('beforeunload', this.stopFunc)
-
-        const server = multi.server
-        assertRemote(server)
-
-        let ioclient: typeof import('socket.io-client')
+    private async getIoClient(): Promise<typeof import('socket.io-client')> {
         if ('io' in window) {
             // @ts-expect-error
-            ioclient = window.io
+            return window.io
         } else if (ig.platform == ig.PLATFORM_TYPES.DESKTOP) {
             assert(!BROWSER)
-            ioclient = REMOTE && !BROWSER && (await import('socket.io-client'))
+            assert(REMOTE)
+            return REMOTE && !BROWSER && (await import('socket.io-client'))
         } else assert(false, 'Unsupported platform')
+    }
 
-        const socket = ioclient.io(getServerUrl(this.connectionSettings), {
+    protected async connect() {
+        const ioclient = await this.getIoClient()
+
+        this.socket = ioclient.io(getServerUrl(this.connectionSettings), {
             secure: this.connectionSettings.https,
             rejectUnauthorized: false,
             parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
         }) as ClientSocket
 
-        socket.on('disconnect', () => {
-            this.stop()
-            if (!multi.server || multi.server != server || server.destroyed) return
-
-            server.onNetDisconnect()
-        })
-        socket.on('connect_error', error => {
-            if (!socket.active) {
-                console.log(error.message)
-            }
+        this.socket.on('disconnect', () => this.onDisconnect())
+        this.socket.on('connect_error', error => {
+            if (!this.socket.active) console.log(error.message)
         })
 
-        return new Promise<void>(resolve => {
-            socket.on('connect', () => {
-                const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
-                    if (type != 'update') return
-                    server.onNetReceive(this.conn!, data)
-                }
-                const middleware = new PacketMiddleware(buf => connection.send(buf), onData)
-
-                const connection = new SocketNetConnection(middleware, socket)
-                connection.ready = true
-                this.conn = connection
-
-                try {
-                    this.measureClockOffset()
-                } catch (e) {}
-
-                resolve()
-            })
-        })
-    }
-
-    private async probeTimeOffset(): Promise<{ timeTook: number; timeDiff: number }> {
-        assert(this.conn)
-        const clientDate = Date.now()
-        const clientTimeStart = performance.now()
-        const serverDate: number = await this.conn.middleware.sendWithAck('ping1')
-        const clientTimeEnd = performance.now()
-
-        const timeTook = clientTimeEnd - clientTimeStart
-
-        return { timeTook, timeDiff: serverDate - clientDate }
-    }
-
-    private async measureClockOffset() {
-        if (!Opts.serverTimeSynchronization) return
-
-        const probeFor = 1e3
-        const start = performance.now()
-
-        let minTimeTook = 100000
-        let minRawDiff = 100000
-
-        while (true) {
-            if (!this.conn || this.conn.closed) return
-
-            const { timeTook, timeDiff: rawDiff } = await this.probeTimeOffset()
-            minTimeTook = Math.min(minTimeTook, timeTook)
-            minRawDiff = Math.min(minRawDiff, rawDiff)
-            this.timeOffset = minRawDiff - minTimeTook / 2
-
-            if (performance.now() - start >= probeFor) break
-        }
-    }
-
-    calculatePing(serverTime: number): number {
-        return Date.now() - serverTime + this.timeOffset
-    }
-
-    async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
-        PROFILE && console.time('sendJoin')
-        assert(this.conn)
-        assertRemote(multi.server)
-        const ack: ClientJoinAckData = await this.conn.middleware.sendWithAck('join', data)
-        PROFILE && console.timeEnd('sendJoin')
-        return ack
-    }
-
-    async sendReady() {
-        this.conn?.middleware.send('ready')
-    }
-
-    async sendLeave(data: ClientLeaveData): Promise<void> {
-        assert(this.conn)
-        assertRemote(multi.server)
-        this.conn.middleware.send('leave', data)
-    }
-
-    stop() {
-        process.off('exit', this.stopFunc)
-        this.conn?.close()
-    }
-
-    destroy() {
-        this.stop()
-        window.removeEventListener('beforeunload', this.stopFunc)
+        return new Promise<void>(resolve => this.socket.on('connect', resolve))
     }
 }
 
-export class SocketNetConnection implements NetConnection {
-    clients: Client[] = []
-    closed: boolean = false
-    ready: boolean = false
+export class SocketNetConnection extends NetConnection {
+    private socket: ClientSocket | Socket
 
-    bytesSent: bigint = 0n
-    bytesReceived: bigint = 0n
+    constructor(middleware: PacketMiddleware, socket: ClientSocket | Socket, onDisconnect?: () => void) {
+        super(middleware, onDisconnect)
+        this.socket = socket
 
-    constructor(
-        public middleware: PacketMiddleware,
-        private socket: ClientSocket | Socket,
-        public onDisconnect?: () => void
-    ) {
         socket.on('disconnect', () => {
             this.close()
-            // this.onDisconnect?.()
         })
         socket.on('update', data => middleware.receive(data))
 
@@ -302,19 +139,8 @@ export class SocketNetConnection implements NetConnection {
         // @ts-expect-error
         const engine: Socket = 'conn' in socket ? socket.conn : socket.io.engine
 
-        engine.on('packetCreate', packet => {
-            this.bytesSent += bytesFromData(packet.data)
-        })
-        engine.on('packet', packet => {
-            this.bytesReceived += bytesFromData(packet.data)
-        })
-    }
-
-    join(client: Client) {
-        this.clients.push(client)
-    }
-    leave(client: Client) {
-        this.clients.erase(client)
+        engine.on('packetCreate', packet => this.onBytesSent(bytesFromData(packet.data)))
+        engine.on('packet', packet => this.onBytesReceived(bytesFromData(packet.data)))
     }
 
     isConnected() {
@@ -325,16 +151,8 @@ export class SocketNetConnection implements NetConnection {
         this.socket.emit('update', data)
     }
 
-    close(): void {
-        if (this.closed) return
-        this.closed = true
+    protected closeConnector(): void {
         if (!this.socket.disconnected) this.socket.disconnect()
-
-        this.onDisconnect?.()
-
-        for (const client of this.clients) {
-            this.leave(client)
-        }
         // @ts-expect-error idk
         this.socket.removeAllListeners()
     }

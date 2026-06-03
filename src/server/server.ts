@@ -13,7 +13,7 @@ import type { PlayerInfoEntry } from '../state/player-info'
 import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
 import { removeUnnecessarySystemsForServerInstance } from './game-systems-cleanup'
 import type { EntityNetid } from '../misc/entity-netid'
-import type { NetConnection } from '../net/connection'
+import type { NetConnection } from '../net/net-connection'
 import { isUsernameValid } from '../misc/username-util'
 import { executeWithStrategy } from '../misc/function-execute-strategy'
 

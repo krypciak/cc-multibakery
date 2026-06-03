@@ -1,6 +1,7 @@
 import { assert } from '../../misc/assert'
-import type { NetConnection } from '../../net/connection'
+import type { NetConnection } from '../../net/net-connection'
 import { SocketNetManagerRemoteServer } from '../../net/socket'
+import type { NetManagerRemoteServer } from '../../net/net-manager-remote'
 import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import {
@@ -56,7 +57,7 @@ export function isClientLeaveData(data: unknown): data is ClientLeaveData {
 
 export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
-    netManager!: SocketNetManagerRemoteServer
+    netManager!: NetManagerRemoteServer
     notifyReadyMaps?: MapName[]
     playerInfoEntries: Record<Username, PlayerInfoEntry> = {}
 
@@ -83,7 +84,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             this.netManager = new SocketNetManagerRemoteServer(connS)
         } else assert(false)
 
-        await this.netManager.connect()
+        await this.netManager.start()
         this.measureTraffic = Opts.showPacketNetworkTraffic
     }
 

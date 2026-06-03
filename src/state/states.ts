@@ -1,5 +1,5 @@
 import type { Client } from '../client/client'
-import type { NetConnection } from '../net/connection'
+import type { NetConnection } from '../net/net-connection'
 
 declare global {
     interface StateUpdatePacket {}

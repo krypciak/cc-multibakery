@@ -1,4 +1,5 @@
-import type { NetConnection, NetManagerPhysicsServer } from '../../net/connection'
+import type { NetConnection } from '../../net/net-connection'
+import type { NetManagerPhysicsServer } from '../../net/net-manager-physics'
 import { SocketNetManagerPhysicsServer } from '../../net/socket'
 import {
     Server,
