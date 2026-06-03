@@ -78,11 +78,8 @@ if (REMOTE) {
                 this.nameText = new sc.TextGui('')
                 this.nameIconPrefixesText = new sc.TextGui('')
 
-                let connectionStr
-                const connS = serverInfo.connection
-                if (connS.type == 'socket') {
-                    connectionStr = `socket ${connS.host}:${connS.port}`
-                } else assert(false, 'not implemented')
+                const { host, port } = serverInfo.connection
+                const connectionStr = `${host}:${port}`
 
                 this.connectionText = new sc.TextGui(connectionStr, {
                     font: sc.fontsystem.tinyFont,

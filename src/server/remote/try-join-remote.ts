@@ -5,16 +5,14 @@ import type { ClientJoinAckData, ClientJoinData } from '../server'
 import { RemoteServer } from './remote-server'
 
 export async function tryJoinRemote(
-    serverInfo: NetServerInfoRemote,
+    netInfo: NetServerInfoRemote,
     joinData: ClientJoinData
 ): Promise<ClientJoinAckData> {
     {
         const server = multi.server
         assert(!server)
     }
-    assert(serverInfo.details)
-
-    serverInfo.connection.forceJsonCommunication = serverInfo.details.forceJsonCommunication
+    assert(netInfo.details)
 
     PROFILE && console.time('tryJoinRemote')
 
@@ -24,11 +22,11 @@ export async function tryJoinRemote(
         displayClientInstances: Opts.serverDisplayClientInstances,
         displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
 
-        tps: serverInfo.details.globalTps,
-        forceConsistentTickTimes: serverInfo.details.forceConsistentTickTimes,
-        connection: serverInfo.connection,
-        modCompatibility: serverInfo.details.modCompatibility,
-        mapSwitchDelay: serverInfo.details.mapSwitchDelay,
+        tps: netInfo.details.globalTps,
+        forceConsistentTickTimes: netInfo.details.forceConsistentTickTimes,
+        netInfo: netInfo as any,
+        modCompatibility: netInfo.details.modCompatibility,
+        mapSwitchDelay: netInfo.details.mapSwitchDelay,
     })
     multi.setServer(server)
 

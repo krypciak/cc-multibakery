@@ -54,7 +54,6 @@ export class ServerDiscoveryServer {
             connection: {
                 host: '',
                 port: netInfo.connection.httpPort,
-                type: netInfo.connection.type,
                 https: !!netInfo.connection.https,
             },
             details: multi.server.httpServer.serverDetails,

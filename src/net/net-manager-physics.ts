@@ -5,7 +5,8 @@ import { isClientLeaveData } from '../server/remote/remote-server'
 import { isClientJoinData } from '../server/server'
 import { assertPhysics } from '../server/physics/is-physics-server'
 import { PacketMiddleware, type PacketEventType } from './packet'
-import { NetConnection, type NetTransport, type NetTransportListenerFunctions } from './net-connection'
+import { NetConnection } from './net-connection'
+import { type NetTransport, type NetTransportListenerFunctions } from './net-transport'
 
 export interface NetTransportServer {
     start(

@@ -4,7 +4,6 @@ import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 import { assert } from './misc/assert'
-import { assertPhysics } from './server/physics/is-physics-server'
 
 async function startDevServer() {
     if (!PHYSICS) return
@@ -51,13 +50,16 @@ async function startDevServer() {
                                 liveModUpdates: true,
                             },
                       pingTimeout: 10000e3,
-                      type: 'socket',
+                      transport: {
+                          type: 'socket.io',
+                          // disableBinaryParser: true,
+                      },
                   },
                   details: {
                       title: 'dev',
                       description: 'dev server',
                       iconPath: './assets/mods/cc-multibakery/icon/icon.png',
-                      // forceJsonCommunication: true,
+                      // forceJsonCommunication: true
                   },
                   // discovery: true,
               },

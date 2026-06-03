@@ -78,7 +78,7 @@ export function sendRemoteServerPacket() {
     const cleanPacket = cleanRecord(packet)
     if (!cleanPacket) return
 
-    const toSend = multi.server.settings.connection.forceJsonCommunication
+    const toSend = multi.server.settings.netInfo.details.forceJsonCommunication
         ? cleanPacket
         : RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
 

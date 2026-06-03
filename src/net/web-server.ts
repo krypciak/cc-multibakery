@@ -5,6 +5,7 @@ import { assert } from '../misc/assert'
 import { getCrosscodeWebHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 import { createChain } from 'crosscode-web/src/http-server/http-misc'
+import { convertNetTransportServerSettingsToClientSettings } from './net-transport'
 
 type HttpHandler = RequestListener
 
@@ -32,6 +33,7 @@ export class PhysicsHttpServer {
         this.serverDetails = {
             title: this.netInfo.details.title,
             description: this.netInfo.details.description,
+            transport: convertNetTransportServerSettingsToClientSettings(this.netInfo.connection.transport),
             forceJsonCommunication: this.netInfo.details.forceJsonCommunication,
 
             hasIcon: !!icon,

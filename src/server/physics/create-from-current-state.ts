@@ -4,6 +4,7 @@ import { Opts } from '../../options'
 import { PhysicsServer } from './physics-server'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
 import { assert } from '../../misc/assert'
+import { defaultNetTransport } from '../../net/net-transport'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
@@ -47,7 +48,9 @@ export async function createPhysicsServerFromCurrentState() {
                           Opts.serverPingTimeout == Opts.flatOpts.serverPingTimeout.max
                               ? 10000e3
                               : Opts.serverPingTimeout,
-                      type: 'socket',
+                      transport: {
+                          type: defaultNetTransport,
+                      },
                   },
                   details: {
                       title: Opts.serverTitle,

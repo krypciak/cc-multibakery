@@ -4,7 +4,7 @@ import type { Server as HttpServer } from 'http'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import type { NetTransportClient } from './net-manager-remote'
-import type { NetTransport, NetTransportListenerFunctions } from './net-connection'
+import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import type { NetTransportServer } from './net-manager-physics'
 import { Opts } from '../options'
 import { getServerUrl } from './web-server'
@@ -29,8 +29,14 @@ function setIntervalWorkaround() {
     }
 }
 
-export class SocketNetTransportServer implements NetTransportServer {
+export interface SocketIoNetTransportServerSettings {
+    disableBinaryParser?: boolean
+}
+
+export class SocketIoNetTransportServer implements NetTransportServer {
     private io!: SocketServer
+
+    constructor(private settings: SocketIoNetTransportServerSettings) {}
 
     async start(
         netInfo: NetServerInfoPhysics,
@@ -47,13 +53,13 @@ export class SocketNetTransportServer implements NetTransportServer {
             cors: {
                 origin: `*`,
             },
-            parser: netInfo.details.forceJsonCommunication ? undefined : binaryParser,
+            parser: this.settings.disableBinaryParser ? undefined : binaryParser,
             pingInterval: netInfo.connection.pingInterval ?? Opts.flatOpts.serverPingInterval.init,
             pingTimeout: netInfo.connection.pingTimeout ?? Opts.flatOpts.serverPingTimeout.init,
         })
 
         this.io.on('connection', async socket => {
-            onConnection(listeners => new SocketNetTransport(listeners, socket))
+            onConnection(listeners => new SocketIoNetTransport(listeners, socket))
         })
     }
 
@@ -62,11 +68,17 @@ export class SocketNetTransportServer implements NetTransportServer {
     }
 }
 
-export class SocketNetTransportClient implements NetTransportClient {
+export interface SocketIoNetTransportClientSettings {
+    disableBinaryParser?: boolean
+}
+
+export class SocketIoNetTransportClient implements NetTransportClient {
     private socket!: ClientSocket
 
+    constructor (private settings: SocketIoNetTransportClientSettings) {}
+
     createNetTransport(listeners: NetTransportListenerFunctions): NetTransport {
-        return new SocketNetTransport(listeners, this.socket)
+        return new SocketIoNetTransport(listeners, this.socket)
     }
 
     private async getIoClient(): Promise<typeof import('socket.io-client')> {
@@ -81,15 +93,13 @@ export class SocketNetTransportClient implements NetTransportClient {
     }
 
     async connect(connectionSettings: RemoteServerConnectionSettings, onDisconnect: () => void) {
-        assert(connectionSettings.type == 'socket')
-
         const { io } = await this.getIoClient()
 
         const url = getServerUrl(connectionSettings)
         this.socket = io(url, {
             secure: connectionSettings.https,
             rejectUnauthorized: false,
-            parser: connectionSettings.forceJsonCommunication ? undefined : binaryParser,
+            parser: this.settings.disableBinaryParser ? undefined : binaryParser,
         }) as ClientSocket
 
         this.socket.on('disconnect', () => onDisconnect())
@@ -101,7 +111,7 @@ export class SocketNetTransportClient implements NetTransportClient {
     }
 }
 
-export class SocketNetTransport implements NetTransport {
+export class SocketIoNetTransport implements NetTransport {
     constructor(
         listeners: NetTransportListenerFunctions,
         private socket: ClientSocket | Socket
@@ -138,9 +148,9 @@ export class SocketNetTransport implements NetTransport {
     }
 
     getInfo() {
-        if (!this.socket.connected) return `socket disconnected`
+        if (!this.socket.connected) return `socket.io disconnected`
         // @ts-expect-error
         const type = this.socket.io.engine.transport.name
-        return `socket ${type}`
+        return `socket.io ${type}`
     }
 }

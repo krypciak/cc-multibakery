@@ -2,6 +2,7 @@ import {
     isRemoteServerConnectionSettings,
     type RemoteServerConnectionSettings,
 } from '../../server/remote/remote-server'
+import type { NetTransportClientSettings } from '../../net/net-transport'
 import type { PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
 import { Opts } from '../../options'
 import { isModCompatibilityList, type ModCompatibilityList } from '../../server/mod-compatibility-list'
@@ -10,8 +11,7 @@ interface ServerDetailsBase {
     title: string
     description: string
 
-    /* disables binary encoding */
-    forceJsonCommunication?: boolean
+    forceJsonCommunication?: boolean /* do not use binary encoding for packets */
 }
 function isServerDetailsBase(data: unknown): data is ServerDetailsBase {
     if (!data || typeof data !== 'object') return false
@@ -26,6 +26,8 @@ export interface ServerDetailsRemote extends ServerDetailsBase {
     forceConsistentTickTimes?: boolean
     modCompatibility: ModCompatibilityList
     mapSwitchDelay?: number
+
+    transport: NetTransportClientSettings
 }
 export function isServerDetailsRemote(data: unknown): data is ServerDetailsRemote {
     if (!isServerDetailsBase(data)) return false

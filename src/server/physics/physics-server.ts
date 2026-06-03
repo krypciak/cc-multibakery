@@ -1,6 +1,5 @@
 import type { NetConnection } from '../../net/net-connection'
 import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
-import { SocketNetTransportServer } from '../../net/socket'
 import {
     Server,
     type ClientCreateAndJoinSettings,
@@ -24,6 +23,7 @@ import type { MapName, Username } from '../../net/binary/binary-types'
 import { loadClientOptionModelState } from '../../client/client-option-model-link'
 import { ServerDiscoveryServer } from '../../net/server-discovery'
 import type { PlayerInfoEntry } from '../../state/player-info'
+import { createNetTransportServer, type NetTransportServerSettings } from '../../net/net-transport'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -38,7 +38,7 @@ export interface PhysicsServerConnectionSettings {
     pingInterval?: number
     pingTimeout?: number
 
-    type: 'socket'
+    transport: NetTransportServerSettings
 }
 
 export interface PhysicsServerSettings extends ServerSettings {
@@ -95,19 +95,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (window.crossnode && !window.crossnode.tests) startRepl()
     }
 
-    private createTransportServer(type: PhysicsServerConnectionSettings['type']) {
-        if (type == 'socket') {
-            return new SocketNetTransportServer()
-        } else assert(false, 'not implemented')
-    }
-
     private async startNet() {
         const netInfo = this.settings.netInfo
         if (PHYSICSNET && netInfo) {
             this.httpServer = new PhysicsHttpServer(netInfo)
             await this.httpServer.start()
 
-            const transportServer = this.createTransportServer(netInfo.connection.type)
+            const transportServer = createNetTransportServer(netInfo.connection.transport)
 
             this.netManager = new NetManagerPhysicsServer(transportServer)
             await this.netManager.start(netInfo, this.httpServer.httpServer)

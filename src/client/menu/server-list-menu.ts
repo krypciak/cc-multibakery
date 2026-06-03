@@ -75,11 +75,7 @@ async function addServerDialog(entry?: NetServerInfoRemote): Promise<NetServerIn
         let host = url.hostname
 
         return {
-            connection: {
-                type: 'socket',
-                host,
-                port,
-            },
+            connection: { host, port },
         }
     }
 

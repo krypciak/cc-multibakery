@@ -1,8 +1,13 @@
-import { assert } from '../../misc/assert'
 import type { NetConnection } from '../../net/net-connection'
-import { NetManagerRemoteServer, type NetTransportClient } from '../../net/net-manager-remote'
-import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
+import type { CCMap } from '../ccmap/ccmap'
+import type { MapName, Username } from '../../net/binary/binary-types'
+import type { PlayerInfoEntry } from '../../state/player-info'
+import type { NetServerInfoRemote } from '../../client/menu/server-info'
+import type { StrictNonNullable } from '../../types'
+import { NetManagerRemoteServer } from '../../net/net-manager-remote'
+import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
+import { assert } from '../../misc/assert'
 import {
     type ClientCreateAndJoinSettings,
     type ClientJoinAckData,
@@ -18,10 +23,7 @@ import { sendRemoteServerPacket } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { applyModCompatibilityList, type ModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
-import type { CCMap } from '../ccmap/ccmap'
-import type { MapName, Username } from '../../net/binary/binary-types'
-import type { PlayerInfoEntry } from '../../state/player-info'
-import { SocketNetTransportClient } from '../../net/socket'
+import { createNetTransportClient } from '../../net/net-transport'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -31,12 +33,9 @@ export interface RemoteServerConnectionSettings {
     host: string
     port: number
     https?: boolean
-    type: 'socket'
-    forceJsonCommunication?: boolean
 }
 export function isRemoteServerConnectionSettings(data: unknown): data is RemoteServerConnectionSettings {
     if (!data || typeof data !== 'object') return false
-    if (!('type' in data) || data.type !== 'socket') return false
     if (!('host' in data) || typeof data.host !== 'string') return false
     if (!('port' in data) || typeof data.port !== 'number') return false
 
@@ -44,7 +43,7 @@ export function isRemoteServerConnectionSettings(data: unknown): data is RemoteS
 }
 
 export interface RemoteServerSettings extends ServerSettings {
-    connection: RemoteServerConnectionSettings
+    netInfo: StrictNonNullable<NetServerInfoRemote>
     modCompatibility?: ModCompatibilityList
 }
 
@@ -78,18 +77,10 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         TemporarySet.resetAll()
     }
 
-    private createTransportClient(type: RemoteServerConnectionSettings['type']): NetTransportClient {
-        if (type == 'socket') {
-            return new SocketNetTransportClient()
-        } else assert(false)
-    }
-
     async startNet() {
-        const connS = this.settings.connection
+        const transportClient = createNetTransportClient(this.settings.netInfo.details.transport)
 
-        const transportClient = this.createTransportClient(connS.type)
-
-        this.netManager = new NetManagerRemoteServer(connS, transportClient)
+        this.netManager = new NetManagerRemoteServer(this.settings.netInfo.connection, transportClient)
         await this.netManager.start()
 
         this.measureTraffic = Opts.showPacketNetworkTraffic
@@ -110,7 +101,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     onNetReceive(conn: NetConnection, data: unknown) {
         try {
             let packet: PhysicsServerUpdatePacket
-            if (this.settings.connection.forceJsonCommunication) {
+            if (this.settings.netInfo.details.forceJsonCommunication) {
                 packet = data as any
             } else {
                 const buf = new Uint8Array(data as ArrayBuffer)

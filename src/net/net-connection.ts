@@ -1,17 +1,6 @@
 import type { Client } from '../client/client'
+import type { NetTransport } from './net-transport'
 import { PacketMiddleware } from './packet'
-
-export interface NetTransportListenerFunctions {
-    onReceive(data: Uint8Array): void
-    onBytesSent(bytes: bigint): void
-    onBytesReceived(bytes: bigint): void
-}
-export interface NetTransport {
-    send(data: unknown): void
-    close(): void
-    isConnected(): boolean
-    getInfo(): string
-}
 
 export class NetConnection {
     clients: Client[] = []
