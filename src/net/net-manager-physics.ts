@@ -1,39 +1,39 @@
+import type { Server as HttpServer } from 'http'
+import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import { assert } from '../misc/assert'
 import { isClientLeaveData } from '../server/remote/remote-server'
-import type { Server as HttpServer } from 'http'
 import { isClientJoinData } from '../server/server'
-import type { NetServerInfoPhysics } from '../client/menu/server-info'
 import { assertPhysics } from '../server/physics/is-physics-server'
 import { PacketMiddleware, type PacketEventType } from './packet'
-import { NetConnection } from './net-connection'
+import { NetConnection, type NetTransport, type NetTransportListenerFunctions } from './net-connection'
 
-export abstract class NetManagerPhysicsServer {
+export interface NetTransportServer {
+    start(
+        netInfo: NetServerInfoPhysics,
+        httpServer: HttpServer,
+        onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
+    ): Promise<void>
+    stop(): Promise<void>
+}
+
+export class NetManagerPhysicsServer {
     private stopFunc = () => this.stop()
 
     connections: NetConnection[] = []
 
-    constructor(
-        protected netInfo: NetServerInfoPhysics,
-        protected httpServer: HttpServer
-    ) {
-        assert(httpServer)
-    }
+    constructor(private transportServer: NetTransportServer) {}
 
-    protected abstract startServer(): Promise<void>
-
-    async start() {
+    async start(netInfo: NetServerInfoPhysics, httpServer: HttpServer) {
         assert(PHYSICS)
         assert(PHYSICSNET)
         if (!PHYSICSNET) return
         process.on('exit', this.stopFunc)
         window.addEventListener('beforeunload', this.stopFunc)
 
-        await this.startServer()
+        await this.transportServer.start(netInfo, httpServer, this.registerEvents.bind(this))
     }
 
-    protected async registerEvents(
-        createNetConnection: (middleware: PacketMiddleware, onDisconnect: () => void) => NetConnection
-    ) {
+    private async registerEvents(createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) {
         const server = multi.server
         assertPhysics(server)
 
@@ -48,7 +48,7 @@ export abstract class NetManagerPhysicsServer {
                 const { ackData } = await server.createAndJoinClient(data, { connection })
                 callback(ackData)
             } else if (type == 'ready') {
-                connection.ready = true
+                connection.readyForSendingUpdate = true
             } else if (type == 'leave') {
                 if (!isClientLeaveData(data)) return
                 server.onNetClientLeave(connection, data)
@@ -57,9 +57,14 @@ export abstract class NetManagerPhysicsServer {
                 callback(Date.now())
             }
         }
-        const middleware = new PacketMiddleware(buf => connection.send(buf), onData)
+        const middleware = new PacketMiddleware(buf => connection.transport.send(buf), onData)
 
-        const connection = createNetConnection(middleware, () => {
+        const transport = createNetTransport({
+            onReceive: data => middleware.receive(data),
+            onBytesReceived: bytes => connection.onBytesReceived(bytes),
+            onBytesSent: bytes => connection.onBytesSent(bytes),
+        })
+        const connection = new NetConnection(middleware, transport, () => {
             this.connections.erase(connection)
 
             if (multi.server != server || server.destroyed) return
@@ -69,8 +74,6 @@ export abstract class NetManagerPhysicsServer {
         this.connections.push(connection)
     }
 
-    protected abstract stopConnector(): Promise<void>
-
     async stop() {
         process.off('exit', this.stopFunc)
 
@@ -78,7 +81,7 @@ export abstract class NetManagerPhysicsServer {
             connection.close()
         }
         this.connections = []
-        await this.stopConnector()
+        await this.transportServer.stop()
     }
 
     destroy() {

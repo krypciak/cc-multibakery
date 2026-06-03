@@ -31,11 +31,11 @@ function registerOpts() {
                         name: 'Show ping',
                         description: 'Show client ping in miliseconds',
                     },
-                    showClientConnectionInfo: {
+                    showClientTransportInfo: {
                         type: 'CHECKBOX',
                         init: true,
-                        name: 'Show connection info',
-                        description: 'Show client connection info',
+                        name: 'Show transport info',
+                        description: 'Show client transport info',
                     },
                     showPacketNetworkTraffic: {
                         type: 'CHECKBOX',

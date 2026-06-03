@@ -34,7 +34,7 @@ export function sendPhysicsServerPacket() {
 
     const packets: Record<MapName, Map<NetConnection, StateUpdatePacket>> = {}
     for (const conn of connections) {
-        if (!conn.ready) continue
+        if (!conn.readyForSendingUpdate) continue
 
         const globalPacket1: GlobalStateUpdatePacket = {}
         globalPackets.set(conn, getGlobalStateUpdatePacket(globalPacket1, conn, globalCachePacket))

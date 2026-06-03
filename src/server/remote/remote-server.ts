@@ -1,7 +1,6 @@
 import { assert } from '../../misc/assert'
 import type { NetConnection } from '../../net/net-connection'
-import { SocketNetManagerRemoteServer } from '../../net/socket'
-import type { NetManagerRemoteServer } from '../../net/net-manager-remote'
+import { NetManagerRemoteServer, type NetTransportClient } from '../../net/net-manager-remote'
 import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import {
@@ -22,6 +21,7 @@ import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/ent
 import type { CCMap } from '../ccmap/ccmap'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
+import { SocketNetTransportClient } from '../../net/socket'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -78,13 +78,20 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         TemporarySet.resetAll()
     }
 
+    private createTransportClient(type: RemoteServerConnectionSettings['type']): NetTransportClient {
+        if (type == 'socket') {
+            return new SocketNetTransportClient()
+        } else assert(false)
+    }
+
     async startNet() {
         const connS = this.settings.connection
-        if (connS.type == 'socket') {
-            this.netManager = new SocketNetManagerRemoteServer(connS)
-        } else assert(false)
 
+        const transportClient = this.createTransportClient(connS.type)
+
+        this.netManager = new NetManagerRemoteServer(connS, transportClient)
         await this.netManager.start()
+
         this.measureTraffic = Opts.showPacketNetworkTraffic
     }
 

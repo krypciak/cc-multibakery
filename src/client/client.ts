@@ -5,7 +5,7 @@ import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
 import { runTask, filterInstanceObjectsFromArray } from 'cc-instanceinator/src/inst-util'
 import {
-    createClientConnectionInfoLabel,
+    createClientTransportInfoLabel,
     createClientNetworkPacketTrafficLabel,
     createClientPingLabel,
 } from './client-label-draw'
@@ -91,7 +91,7 @@ export class Client extends InstanceUpdateable {
 
         if (isRemote(multi.server)) {
             createClientPingLabel(this)
-            createClientConnectionInfoLabel(this)
+            createClientTransportInfoLabel(this)
             createClientNetworkPacketTrafficLabel(this)
         }
 

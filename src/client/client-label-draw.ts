@@ -30,17 +30,17 @@ export function createClientPingLabel(client: Client) {
     client.inst.labelDrawClasses.push(new MsPingLabelDrawClass())
 }
 
-export function createClientConnectionInfoLabel(client: Client) {
+export function createClientTransportInfoLabel(client: Client) {
     assertRemote(multi.server)
     const server = multi.server
 
-    class ConnectionInfoLabelDrawClass extends BasicLabelDrawClass {
-        condition = () => Opts.showClientConnectionInfo
+    class TransportInfoLabelDrawClass extends BasicLabelDrawClass {
+        condition = () => Opts.showClientTransportInfo
         getText(): string {
-            return server.netManager?.conn?.getConnectionInfo() ?? 'disconnected'
+            return server.netManager?.conn?.transport.getInfo() ?? 'disconnected'
         }
     }
-    client.inst.labelDrawClasses.push(new ConnectionInfoLabelDrawClass())
+    client.inst.labelDrawClasses.push(new TransportInfoLabelDrawClass())
 }
 
 export function createClientNetworkPacketTrafficLabel(client: Client) {

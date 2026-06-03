@@ -1,22 +1,26 @@
+import type { ClientLeaveData, RemoteServerConnectionSettings } from '../server/remote/remote-server'
+import type { ClientJoinAckData, ClientJoinData } from '../server/server'
 import { assert } from '../misc/assert'
-import type { NetConnection } from './net-connection'
-import { type ClientLeaveData, type RemoteServerConnectionSettings } from '../server/remote/remote-server'
-import { type ClientJoinAckData, type ClientJoinData } from '../server/server'
+import { NetConnection, type NetTransport, type NetTransportListenerFunctions } from './net-connection'
 import { Opts } from '../options'
 import { assertRemote } from '../server/remote/is-remote-server'
 import { PacketMiddleware, type PacketEventType } from './packet'
 
-export abstract class NetManagerRemoteServer {
+export interface NetTransportClient {
+    connect(connectionSettings: RemoteServerConnectionSettings, onDisconnect: () => void): Promise<void>
+    createNetTransport(listeners: NetTransportListenerFunctions): NetTransport
+}
+
+export class NetManagerRemoteServer {
     private stopFunc = () => this.stop()
 
     conn?: NetConnection
     timeOffset: number = 0
 
-    constructor(public connectionSettings: RemoteServerConnectionSettings) {}
-
-    protected abstract connect(): Promise<void>
-
-    protected abstract createNetConnection(middleware: PacketMiddleware): NetConnection
+    constructor(
+        public connectionSettings: RemoteServerConnectionSettings,
+        private transportClient: NetTransportClient
+    ) {}
 
     async start() {
         assert(REMOTE)
@@ -28,16 +32,22 @@ export abstract class NetManagerRemoteServer {
         const server = multi.server
         assertRemote(server)
 
-        await this.connect()
+        await this.transportClient.connect(this.connectionSettings, () => this.onDisconnect())
 
         const onData = async (type: PacketEventType, data: any, _callback?: (data: any) => void) => {
             if (type != 'update' || multi.server != server) return
             server.onNetReceive(this.conn!, data)
         }
-        const middleware = new PacketMiddleware(buf => connection.send(buf), onData)
+        const middleware = new PacketMiddleware(buf => connection.transport.send(buf), onData)
 
-        const connection = this.createNetConnection(middleware)
-        connection.ready = true
+        const transport = this.transportClient.createNetTransport({
+            onReceive: data => middleware.receive(data),
+            onBytesReceived: bytes => connection.onBytesReceived(bytes),
+            onBytesSent: bytes => connection.onBytesSent(bytes),
+        })
+
+        const connection = new NetConnection(middleware, transport)
+        connection.readyForSendingUpdate = true
         this.conn = connection
 
         try {
@@ -45,7 +55,7 @@ export abstract class NetManagerRemoteServer {
         } catch (e) {}
     }
 
-    protected onDisconnect() {
+    private onDisconnect() {
         this.stop()
         if (!multi.server || multi.server.destroyed) return
         assertRemote(multi.server)
@@ -99,7 +109,8 @@ export abstract class NetManagerRemoteServer {
     }
 
     async sendReady() {
-        this.conn?.middleware.send('ready')
+        assert(this.conn)
+        this.conn.middleware.send('ready')
     }
 
     async sendLeave(data: ClientLeaveData): Promise<void> {

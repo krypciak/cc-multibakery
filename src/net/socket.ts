@@ -1,34 +1,15 @@
-import type { Server as _Server, Socket as _Socket } from 'socket.io'
-import type * as ioclient from 'socket.io-client'
-import { assert } from '../misc/assert'
-import { type ClientLeaveData } from '../server/remote/remote-server'
+import type { Server as SocketServer, Socket } from 'socket.io'
+import type { Socket as ClientSocket } from 'socket.io-client'
 import type { Server as HttpServer } from 'http'
-import { type ClientJoinAckData, type ClientJoinData } from '../server/server'
+import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
+import type { NetServerInfoPhysics } from '../client/menu/server-info'
+import type { NetTransportClient } from './net-manager-remote'
+import type { NetTransport, NetTransportListenerFunctions } from './net-connection'
+import type { NetTransportServer } from './net-manager-physics'
+import { Opts } from '../options'
 import { getServerUrl } from './web-server'
 import { parser as binaryParser } from './socket-io-parser'
-import type { NetServerInfoPhysics } from '../client/menu/server-info'
-import { Opts } from '../options'
-import { PacketMiddleware } from './packet'
-import { NetManagerRemoteServer } from './net-manager-remote'
-import { NetConnection } from './net-connection'
-import { NetManagerPhysicsServer } from './net-manager-physics'
-
-type SocketData = never
-
-interface ClientToServerEvents {
-    update(data: unknown): void
-    join(data: ClientJoinData, callback: (data: ClientJoinAckData) => void): void
-    ready(): void
-    ping1(callback: (date: number) => void): void
-    leave(data: ClientLeaveData): void
-}
-export interface ServerToClientEvents {
-    update(data: unknown): void
-}
-type InterServerEvents = {}
-type Socket = _Socket //<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
-type SocketServer = _Server<ClientToServerEvents, ServerToClientEvents, InterServerEvents, SocketData>
-type ClientSocket = ioclient.Socket //<ServerToClientEvents, ClientToServerEvents>
+import { assert } from '../misc/assert'
 
 function setIntervalWorkaround() {
     const origSetInterval = window.setInterval
@@ -48,44 +29,44 @@ function setIntervalWorkaround() {
     }
 }
 
-export class SocketNetManagerPhysicsServer extends NetManagerPhysicsServer {
-    io!: SocketServer
+export class SocketNetTransportServer implements NetTransportServer {
+    private io!: SocketServer
 
-    constructor(netInfo: NetServerInfoPhysics, httpServer: HttpServer) {
-        super(netInfo, httpServer)
-        setIntervalWorkaround()
-    }
-
-    protected async startServer(): Promise<void> {
+    async start(
+        netInfo: NetServerInfoPhysics,
+        httpServer: HttpServer,
+        onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
+    ): Promise<void> {
         assert(PHYSICSNET)
+
+        setIntervalWorkaround()
+
         const { Server } = PHYSICSNET && (await import('socket.io'))
-        this.io = new Server(this.httpServer, {
+        this.io = new Server(httpServer, {
             connectionStateRecovery: {},
             cors: {
                 origin: `*`,
             },
-            parser: this.netInfo.details.forceJsonCommunication ? undefined : binaryParser,
-            pingInterval: this.netInfo.connection.pingInterval ?? Opts.flatOpts.serverPingInterval.init,
-            pingTimeout: this.netInfo.connection.pingTimeout ?? Opts.flatOpts.serverPingTimeout.init,
+            parser: netInfo.details.forceJsonCommunication ? undefined : binaryParser,
+            pingInterval: netInfo.connection.pingInterval ?? Opts.flatOpts.serverPingInterval.init,
+            pingTimeout: netInfo.connection.pingTimeout ?? Opts.flatOpts.serverPingTimeout.init,
         })
 
         this.io.on('connection', async socket => {
-            this.registerEvents(
-                (middleware, onDisconnect) => new SocketNetConnection(middleware, socket, onDisconnect)
-            )
+            onConnection(listeners => new SocketNetTransport(listeners, socket))
         })
     }
 
-    protected async stopConnector(): Promise<void> {
+    async stop(): Promise<void> {
         await this.io.close()
     }
 }
 
-export class SocketNetManagerRemoteServer extends NetManagerRemoteServer {
+export class SocketNetTransportClient implements NetTransportClient {
     private socket!: ClientSocket
 
-    protected createNetConnection(middleware: PacketMiddleware): NetConnection {
-        return new SocketNetConnection(middleware, this.socket)
+    createNetTransport(listeners: NetTransportListenerFunctions): NetTransport {
+        return new SocketNetTransport(listeners, this.socket)
     }
 
     private async getIoClient(): Promise<typeof import('socket.io-client')> {
@@ -99,16 +80,19 @@ export class SocketNetManagerRemoteServer extends NetManagerRemoteServer {
         } else assert(false, 'Unsupported platform')
     }
 
-    protected async connect() {
-        const ioclient = await this.getIoClient()
+    async connect(connectionSettings: RemoteServerConnectionSettings, onDisconnect: () => void) {
+        assert(connectionSettings.type == 'socket')
 
-        this.socket = ioclient.io(getServerUrl(this.connectionSettings), {
-            secure: this.connectionSettings.https,
+        const { io } = await this.getIoClient()
+
+        const url = getServerUrl(connectionSettings)
+        this.socket = io(url, {
+            secure: connectionSettings.https,
             rejectUnauthorized: false,
-            parser: this.connectionSettings.forceJsonCommunication ? undefined : binaryParser,
+            parser: connectionSettings.forceJsonCommunication ? undefined : binaryParser,
         }) as ClientSocket
 
-        this.socket.on('disconnect', () => this.onDisconnect())
+        this.socket.on('disconnect', () => onDisconnect())
         this.socket.on('connect_error', error => {
             if (!this.socket.active) console.log(error.message)
         })
@@ -117,17 +101,13 @@ export class SocketNetManagerRemoteServer extends NetManagerRemoteServer {
     }
 }
 
-export class SocketNetConnection extends NetConnection {
-    private socket: ClientSocket | Socket
-
-    constructor(middleware: PacketMiddleware, socket: ClientSocket | Socket, onDisconnect?: () => void) {
-        super(middleware, onDisconnect)
-        this.socket = socket
-
-        socket.on('disconnect', () => {
-            this.close()
-        })
-        socket.on('update', data => middleware.receive(data))
+export class SocketNetTransport implements NetTransport {
+    constructor(
+        listeners: NetTransportListenerFunctions,
+        private socket: ClientSocket | Socket
+    ) {
+        socket.on('disconnect', () => this.close())
+        socket.on('update', data => listeners.onReceive(data))
 
         function bytesFromData(data: any): bigint {
             if (multi.server?.measureTraffic && data) {
@@ -139,8 +119,8 @@ export class SocketNetConnection extends NetConnection {
         // @ts-expect-error
         const engine: Socket = 'conn' in socket ? socket.conn : socket.io.engine
 
-        engine.on('packetCreate', packet => this.onBytesSent(bytesFromData(packet.data)))
-        engine.on('packet', packet => this.onBytesReceived(bytesFromData(packet.data)))
+        engine.on('packetCreate', packet => listeners.onBytesSent(bytesFromData(packet.data)))
+        engine.on('packet', packet => listeners.onBytesReceived(bytesFromData(packet.data)))
     }
 
     isConnected() {
@@ -151,13 +131,13 @@ export class SocketNetConnection extends NetConnection {
         this.socket.emit('update', data)
     }
 
-    protected closeConnector(): void {
+    close(): void {
         if (!this.socket.disconnected) this.socket.disconnect()
         // @ts-expect-error idk
         this.socket.removeAllListeners()
     }
 
-    getConnectionInfo() {
+    getInfo() {
         if (!this.socket.connected) return `socket disconnected`
         // @ts-expect-error
         const type = this.socket.io.engine.transport.name

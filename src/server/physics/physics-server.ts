@@ -1,6 +1,6 @@
 import type { NetConnection } from '../../net/net-connection'
-import type { NetManagerPhysicsServer } from '../../net/net-manager-physics'
-import { SocketNetManagerPhysicsServer } from '../../net/socket'
+import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
+import { SocketNetTransportServer } from '../../net/socket'
 import {
     Server,
     type ClientCreateAndJoinSettings,
@@ -95,21 +95,24 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (window.crossnode && !window.crossnode.tests) startRepl()
     }
 
+    private createTransportServer(type: PhysicsServerConnectionSettings['type']) {
+        if (type == 'socket') {
+            return new SocketNetTransportServer()
+        } else assert(false, 'not implemented')
+    }
+
     private async startNet() {
         const netInfo = this.settings.netInfo
         if (PHYSICSNET && netInfo) {
             this.httpServer = new PhysicsHttpServer(netInfo)
             await this.httpServer.start()
 
-            if (netInfo.connection.type == 'socket') {
-                this.netManager = new SocketNetManagerPhysicsServer(netInfo, this.httpServer.httpServer)
-            } else assert(false, 'not implemented')
-        }
+            const transportServer = this.createTransportServer(netInfo.connection.type)
 
-        if (this.netManager) {
-            await this.netManager.start()
+            this.netManager = new NetManagerPhysicsServer(transportServer)
+            await this.netManager.start(netInfo, this.httpServer.httpServer)
 
-            if (netInfo?.discovery) {
+            if (netInfo.discovery) {
                 this.serverDiscovery = new ServerDiscoveryServer()
                 this.serverDiscovery.start()
             }
