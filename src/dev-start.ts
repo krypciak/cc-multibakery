@@ -4,14 +4,55 @@ import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 import { assert } from './misc/assert'
+import type { MapTpInfo } from './server/server'
 
-async function startDevServer() {
-    if (!PHYSICS) return
-    if (!DEV) return
+const defaultMap: MapTpInfo = {
+    // map: 'multibakery/dev',
+    map: 'multibakery/mba-pvp',
+    // map: 'tree-dng/f4/boss',
+    // map: 'multibakery/mba-lobby',
+    // map: 'multibakery/mba-testing',
+    // map: 'multibakery/mba-outdoors',
+    // map: 'multibakery/mba-south',
+    // map: 'bergen/hideout-lobby',
+    // map: 'xpc/bonus/training-1v1',
+    // map: 'rhombus-dng/room-1',
+    // map: 'rhombus-dng/room-1-6',
+    // map: 'rhombus-dng/boss',
+    // map: 'rhombus-sqr/dng-end',
+    // map: 'rhombus-sqr/central-inner',
+    // map: 'cargo-ship/room2',
+    // map: 'rookie-harbor/teleporter',
+    // map: 'rookie-harbor/center',
+    // map: 'autumn/entrance',
+    // map: 'autumn/path4',
+    // map: 'autumn/guild/inner-fs-og',
+    // map: 'rookie-harbor/inner-harbor-pub',
+    // map: 'rhombus-dng/room-2',
+    // map: 'rookie-harbor/inner-info-ug-1',
+    // map: 'rhombus-dng/room-3-2-post',
+    // map: 'rhombus-sqr/central-inner',
+    // map: 'rookie-harbor/south',
+    // map: 'forest/path-10',
+    // map: 'xpc/bonus/art-testing',
+    // map: 'final-dng/b4/credits',
+    // map: 'cursed/room-1',
+    // map: 'cursed/room-1-end',
+    // map: 'cursed/world',
+    // map: 'cursed/room-1',
+    // map: 'ark/beginner/bomb-switch',
+    // map: 'ark/beginner/wave-block',
+    // marker: 'entrance',
+    // marker: 'puzzle',
+    // marker: 'pvp',
+    marker: 'to_pvp',
+    // marker: 'exit',
+    // marker: 'door-west1',
+    // marker: 'blockPoint',
+}
 
-    PROFILE && console.time('startDevServer')
-
-    const settings: PhysicsServerSettings = {
+function createSettings(): PhysicsServerSettings {
+    return {
         tps: 60,
         useAnimationFrameLoop: true,
         displayServerInstance: false,
@@ -64,50 +105,17 @@ async function startDevServer() {
                   },
                   // discovery: true,
               },
-        defaultMap: {
-            map: 'multibakery/dev',
-            // map: 'multibakery/mba-pvp',
-            // map: 'tree-dng/f4/boss',
-            // map: 'multibakery/mba-lobby',
-            // map: 'multibakery/mba-testing',
-            // map: 'multibakery/mba-outdoors',
-            // map: 'multibakery/mba-south',
-            // map: 'bergen/hideout-lobby',
-            // map: 'xpc/bonus/training-1v1',
-            // map: 'rhombus-dng/room-1',
-            // map: 'rhombus-dng/room-1-6',
-            // map: 'rhombus-dng/boss',
-            // map: 'rhombus-sqr/dng-end',
-            // map: 'rhombus-sqr/central-inner',
-            // map: 'cargo-ship/room2',
-            // map: 'rookie-harbor/teleporter',
-            // map: 'rookie-harbor/center',
-            // map: 'autumn/entrance',
-            // map: 'autumn/path4',
-            // map: 'autumn/guild/inner-fs-og',
-            // map: 'rookie-harbor/inner-harbor-pub',
-            // map: 'rhombus-dng/room-2',
-            // map: 'rookie-harbor/inner-info-ug-1',
-            // map: 'rhombus-dng/room-3-2-post',
-            // map: 'rhombus-sqr/central-inner',
-            // map: 'rookie-harbor/south',
-            // map: 'forest/path-10',
-            // map: 'xpc/bonus/art-testing',
-            // map: 'final-dng/b4/credits',
-            // map: 'cursed/room-1',
-            // map: 'cursed/room-1-end',
-            // map: 'cursed/world',
-            // map: 'cursed/room-1',
-            // map: 'ark/beginner/bomb-switch',
-            // map: 'ark/beginner/wave-block',
-            // marker: 'entrance',
-            // marker: 'puzzle',
-            // marker: 'pvp',
-            // marker: 'exit',
-            // marker: 'door-west1',
-            marker: 'blockPoint',
-        },
+        defaultMap,
     }
+}
+
+async function startDevServer() {
+    if (!PHYSICS) return
+    if (!DEV) return
+
+    PROFILE && console.time('startDevServer')
+
+    const settings = createSettings()
     const server = PHYSICS && new PhysicsServer(settings)
     multi.setServer(server)
 
