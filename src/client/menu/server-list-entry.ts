@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { isErrorPopupShown } from '../../misc/error-popup'
-import { getServerDetailsAndPing, getServerIcon } from '../../net/web-server'
+import { getServerDetails, getServerIcon } from '../../net/web-server'
 import { Opts } from '../../options'
 import { prestart } from '../../loading-stages'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'
@@ -30,7 +30,6 @@ declare global {
             descriptionText: sc.TextGui
             versionText: sc.TextGui
             connectionText: sc.TextGui
-            pingText: sc.TextGui
             highlight: modmanager.gui.ListEntryHighlight
             iconGui: ig.ImageGui
             isServerReachable: boolean
@@ -109,11 +108,6 @@ if (REMOTE) {
                 this.versionText.setAlign(ig.GUI_ALIGN.X_RIGHT, ig.GUI_ALIGN.Y_TOP)
                 this.versionText.setPos(3, 3)
                 this.addChildGui(this.versionText)
-
-                this.pingText = new sc.TextGui('', { font: sc.fontsystem.tinyFont })
-                this.pingText.setAlign(ig.GUI_ALIGN.X_RIGHT, ig.GUI_ALIGN.Y_TOP)
-                this.pingText.setPos(4, 11)
-                this.addChildGui(this.pingText)
 
                 this.updateNameText(COLOR.WHITE)
                 this.updateHighlightWidth()
@@ -242,17 +236,16 @@ if (REMOTE) {
             },
             async updateConnectionStatus() {
                 this.isServerReachable = false
-                const obj = await getServerDetailsAndPing(this.serverInfo.connection)
+                const obj = await getServerDetails(this.serverInfo.connection)
                 if (!obj) {
                     this.updateNameText(COLOR.RED)
                     return
                 }
-                const { details, ping } = obj
+                const { details } = obj
                 this.serverInfo.details = details
 
                 this.updateDetails()
                 this.updateNameText(COLOR.GREEN)
-                this.pingText.setText(`${ping}ms`)
                 this.isServerReachable = true
             },
         })

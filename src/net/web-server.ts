@@ -135,9 +135,9 @@ async function setHttps(connection: RemoteServerConnectionSettings): Promise<boo
     }
 }
 
-export async function getServerDetailsAndPing(
+export async function getServerDetails(
     connection: RemoteServerConnectionSettings
-): Promise<{ ping: number; details: ServerDetailsRemote } | undefined> {
+): Promise<{ details: ServerDetailsRemote } | undefined> {
     if (connection.https === undefined && (await setHttps(connection))) return
 
     const obj = await fetchUrlWithPing(getDetailsUrl(connection))
@@ -145,10 +145,7 @@ export async function getServerDetailsAndPing(
     const details: unknown = await obj.res.json()
     if (!isServerDetailsRemote(details)) return
 
-    return {
-        ping: obj.ping,
-        details,
-    }
+    return { details }
 }
 
 export async function getServerIcon(connection: RemoteServerConnectionSettings): Promise<HTMLImageElement> {

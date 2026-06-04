@@ -11,6 +11,7 @@
 ### Changed
 
 - Decrease bundle size by removing dependency on http-server
+- Remove server ping from server list entry since it's misleading
 
 ### Fixed
 

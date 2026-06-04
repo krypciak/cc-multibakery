@@ -6,7 +6,7 @@ import { Opts } from './options'
 import { assert } from './misc/assert'
 import type { MapTpInfo } from './server/server'
 import { tryJoinRemote } from './server/remote/try-join-remote'
-import { getServerDetailsAndPing } from './net/web-server'
+import { getServerDetails } from './net/web-server'
 import type { RemoteServerConnectionSettings } from './server/remote/remote-server'
 
 const defaultMap: MapTpInfo = {
@@ -218,7 +218,7 @@ poststart(async () => {
             port: DEFAULT_HTTP_PORT,
             https: true,
         }
-        const { details } = (await getServerDetailsAndPing(connection)) ?? {}
+        const { details } = (await getServerDetails(connection)) ?? {}
         if (details) {
             tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
         }
