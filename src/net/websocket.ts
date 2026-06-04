@@ -25,75 +25,6 @@ interface WsPacket {
 }
 export type GenerateType = WsPacket
 
-export class WsNetTransport implements NetTransport {
-    private closed = false
-
-    constructor(
-        private listeners: NetTransportListenerFunctions,
-        private ws: WebSocketNode | WebSocket
-    ) {
-        this.setupMessageHandler()
-    }
-
-    private handleRawMessage(buf: Uint8Array) {
-        if (this.closed) return
-        this.listeners.onBytesReceived(BigInt(buf.byteLength))
-
-        const packet = WebsocketPacketEncoderDecoder.decode(buf)
-        if (packet.type === PacketType.EVENT) {
-            if (packet.binData) {
-                this.listeners.onReceive(new Uint8Array(packet.binData))
-            } else if (packet.jsonData) {
-                this.listeners.onReceive(packet.jsonData)
-            }
-        } else {
-            console.warn('[ws] unexpected packet type in transport:', PacketType[packet.type])
-        }
-    }
-
-    private setupMessageHandler() {
-        if ('on' in this.ws) {
-            this.ws.on('message', (data: Buffer) => this.handleRawMessage(new Uint8Array(data)))
-            this.ws.on('close', () => this.close())
-        } else if ('addEventListener' in this.ws) {
-            this.ws.binaryType = 'arraybuffer'
-            this.ws.addEventListener('message', (event: MessageEvent) =>
-                this.handleRawMessage(new Uint8Array(event.data as ArrayBuffer))
-            )
-            this.ws.addEventListener('close', () => this.close())
-        } else assert(false)
-    }
-
-    isConnected() {
-        return !this.closed && this.ws.readyState === this.ws.OPEN
-    }
-
-    send(data: unknown) {
-        if (this.closed) {
-            console.warn('[ws] send on closed transport')
-            return
-        }
-        const encoded = WebsocketPacketEncoderDecoder.encode({ type: PacketType.EVENT, binData: data as any })
-        this.listeners.onBytesSent(BigInt(encoded.byteLength))
-        this.ws.send(encoded)
-    }
-
-    close(): void {
-        if (this.closed) return
-        this.closed = true
-        try {
-            this.ws.close()
-        } catch (e) {
-            console.warn('[ws] error closing WebSocket:', e)
-        }
-    }
-
-    getInfo() {
-        if (!this.isConnected()) return `websocket disconnected`
-        return `websocket`
-    }
-}
-
 export interface WsNetTransportServerSettings {}
 
 export class WsNetTransportServer implements NetTransportServer {
@@ -146,12 +77,10 @@ export class WsNetTransportClient implements NetTransportClient {
         return new WsNetTransport(listeners, this.ws)
     }
 
-    async connect(connectionSettings: RemoteServerConnectionSettings, onDisconnect: () => void): Promise<void> {
+    async connect(connectionSettings: RemoteServerConnectionSettings) {
         const url = getServerUrl(connectionSettings)
         this.ws = new WebSocket(url)
         this.ws.binaryType = 'arraybuffer'
-
-        this.ws.addEventListener('close', () => onDisconnect())
 
         return new Promise<void>((resolve, reject) => {
             this.ws.addEventListener('open', () => {
@@ -172,5 +101,74 @@ export class WsNetTransportClient implements NetTransportClient {
                 reject(new Error('WebSocket connection failed'))
             })
         })
+    }
+}
+
+export class WsNetTransport implements NetTransport {
+    private closed = false
+
+    constructor(
+        private listeners: NetTransportListenerFunctions,
+        private ws: WebSocketNode | WebSocket
+    ) {
+        this.setupMessageHandler()
+    }
+
+    private handleRawMessage(buf: Uint8Array) {
+        if (this.closed) return
+        this.listeners.onBytesReceived(BigInt(buf.byteLength))
+
+        const packet = WebsocketPacketEncoderDecoder.decode(buf)
+        if (packet.type === PacketType.EVENT) {
+            if (packet.binData) {
+                this.listeners.onReceive(new Uint8Array(packet.binData))
+            } else if (packet.jsonData) {
+                this.listeners.onReceive(packet.jsonData)
+            }
+        } else {
+            console.warn('[ws] unexpected packet type in transport:', PacketType[packet.type])
+        }
+    }
+
+    private setupMessageHandler() {
+        if ('on' in this.ws) {
+            this.ws.on('message', (data: Buffer) => this.handleRawMessage(new Uint8Array(data)))
+            this.ws.on('close', () => this.listeners.onClose())
+        } else if ('addEventListener' in this.ws) {
+            this.ws.binaryType = 'arraybuffer'
+            this.ws.addEventListener('message', (event: MessageEvent) =>
+                this.handleRawMessage(new Uint8Array(event.data as ArrayBuffer))
+            )
+            this.ws.addEventListener('close', () => this.listeners.onClose())
+        } else assert(false)
+    }
+
+    isConnected() {
+        return !this.closed && this.ws.readyState === this.ws.OPEN
+    }
+
+    send(data: unknown) {
+        if (this.closed) {
+            console.warn('[ws] send on closed transport')
+            return
+        }
+        const encoded = WebsocketPacketEncoderDecoder.encode({ type: PacketType.EVENT, binData: data as any })
+        this.listeners.onBytesSent(BigInt(encoded.byteLength))
+        this.ws.send(encoded)
+    }
+
+    close(): void {
+        if (this.closed) return
+        this.closed = true
+        try {
+            this.ws.close()
+        } catch (e) {
+            console.warn('[ws] error closing WebSocket:', e)
+        }
+    }
+
+    getInfo() {
+        if (!this.isConnected()) return `websocket disconnected`
+        return `websocket`
     }
 }

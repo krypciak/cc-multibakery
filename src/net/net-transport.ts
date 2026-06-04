@@ -40,6 +40,7 @@ export interface NetTransportListenerFunctions {
     onReceive(data: Uint8Array): void
     onBytesSent(bytes: bigint): void
     onBytesReceived(bytes: bigint): void
+    onClose(): void
 }
 export interface NetTransport {
     send(data: unknown): void

@@ -8,7 +8,7 @@ import { assertRemote } from '../server/remote/is-remote-server'
 import { PacketMiddleware, type PacketEventType } from './packet'
 
 export interface NetTransportClient {
-    connect(connectionSettings: RemoteServerConnectionSettings, onDisconnect: () => void): Promise<void>
+    connect(connectionSettings: RemoteServerConnectionSettings): Promise<void>
     createNetTransport(listeners: NetTransportListenerFunctions): NetTransport
 }
 
@@ -33,7 +33,7 @@ export class NetManagerRemoteServer {
         const server = multi.server
         assertRemote(server)
 
-        await this.transportClient.connect(this.connectionSettings, () => this.onDisconnect())
+        await this.transportClient.connect(this.connectionSettings)
 
         const onData = async (type: PacketEventType, data: any, _callback?: (data: any) => void) => {
             if (type != 'update' || multi.server != server) return
@@ -45,6 +45,7 @@ export class NetManagerRemoteServer {
             onReceive: data => middleware.receive(data),
             onBytesReceived: bytes => connection.onBytesReceived(bytes),
             onBytesSent: bytes => connection.onBytesSent(bytes),
+            onClose: () => this.onDisconnect(),
         })
 
         const connection = new NetConnection(middleware, transport)

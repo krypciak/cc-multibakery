@@ -12,8 +12,7 @@ export class NetConnection {
 
     constructor(
         public middleware: PacketMiddleware,
-        public transport: NetTransport,
-        private onDisconnect?: () => void
+        public transport: NetTransport
     ) {}
 
     join(client: Client) {
@@ -35,7 +34,6 @@ export class NetConnection {
         this.closed = true
 
         this.transport.close()
-        this.onDisconnect?.()
 
         for (const client of this.clients) {
             this.leave(client)

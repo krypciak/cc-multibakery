@@ -64,14 +64,15 @@ export class NetManagerPhysicsServer {
             onReceive: data => middleware.receive(data),
             onBytesReceived: bytes => connection.onBytesReceived(bytes),
             onBytesSent: bytes => connection.onBytesSent(bytes),
-        })
-        const connection = new NetConnection(middleware, transport, () => {
-            this.connections.erase(connection)
+            onClose: () => {
+                this.connections.erase(connection)
 
-            if (multi.server != server || server.destroyed) return
+                if (multi.server != server || server.destroyed) return
 
-            server.onNetClientLeave(connection)
+                server.onNetClientLeave(connection)
+            },
         })
+        const connection = new NetConnection(middleware, transport)
         this.connections.push(connection)
     }
 

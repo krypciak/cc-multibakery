@@ -75,7 +75,7 @@ export interface SocketIoNetTransportClientSettings {
 export class SocketIoNetTransportClient implements NetTransportClient {
     private socket!: ClientSocket
 
-    constructor (private settings: SocketIoNetTransportClientSettings) {}
+    constructor(private settings: SocketIoNetTransportClientSettings) {}
 
     createNetTransport(listeners: NetTransportListenerFunctions): NetTransport {
         return new SocketIoNetTransport(listeners, this.socket)
@@ -92,7 +92,7 @@ export class SocketIoNetTransportClient implements NetTransportClient {
         } else assert(false, 'Unsupported platform')
     }
 
-    async connect(connectionSettings: RemoteServerConnectionSettings, onDisconnect: () => void) {
+    async connect(connectionSettings: RemoteServerConnectionSettings) {
         const { io } = await this.getIoClient()
 
         const url = getServerUrl(connectionSettings)
@@ -102,7 +102,6 @@ export class SocketIoNetTransportClient implements NetTransportClient {
             parser: this.settings.disableBinaryParser ? undefined : binaryParser,
         }) as ClientSocket
 
-        this.socket.on('disconnect', () => onDisconnect())
         this.socket.on('connect_error', error => {
             if (!this.socket.active) console.log(error.message)
         })
@@ -116,7 +115,7 @@ export class SocketIoNetTransport implements NetTransport {
         listeners: NetTransportListenerFunctions,
         private socket: ClientSocket | Socket
     ) {
-        socket.on('disconnect', () => this.close())
+        socket.on('disconnect', () => listeners.onClose())
         socket.on('update', data => listeners.onReceive(data))
 
         function bytesFromData(data: any): bigint {
