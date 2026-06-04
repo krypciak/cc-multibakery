@@ -5,6 +5,9 @@ import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 import { assert } from './misc/assert'
 import type { MapTpInfo } from './server/server'
+import { tryJoinRemote } from './server/remote/try-join-remote'
+import { getServerDetailsAndPing } from './net/web-server'
+import type { RemoteServerConnectionSettings } from './server/remote/remote-server'
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',
@@ -92,8 +95,8 @@ function createSettings(): PhysicsServerSettings {
                             },
                       pingTimeout: 10000e3,
                       transport: {
-                          // type: 'socket.io',
-                          type: 'websocket',
+                          type: 'socket.io',
+                          // type: 'websocket',
                           // disableBinaryParser: true,
                       },
                   },
@@ -210,6 +213,14 @@ poststart(async () => {
     if (PHYSICS && isInServerDir()) {
         startDevServer()
     } else if (REMOTE && isInClientDir()) {
-        return
+        const connection: RemoteServerConnectionSettings = {
+            host: '127.0.0.1',
+            port: DEFAULT_HTTP_PORT,
+            https: true,
+        }
+        const { details } = (await getServerDetailsAndPing(connection)) ?? {}
+        if (details) {
+            tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
+        }
     }
 }, 999)

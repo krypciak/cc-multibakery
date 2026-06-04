@@ -95,7 +95,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         if (this.destroyed) return
         console.log('server disconnected')
         await multi.destroyNextFrameAndStartLoop()
-        sc.Dialogs.showErrorDialog('Disconnected')
+        DEV || sc.Dialogs.showErrorDialog('Disconnected')
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
