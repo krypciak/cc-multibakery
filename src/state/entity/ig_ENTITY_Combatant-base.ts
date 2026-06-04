@@ -11,6 +11,7 @@ export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
         ...scActorEntity.getEntityState.call(this, memory),
 
+        firstState: memory.onlyOnce(true),
         party: memory.diff(this.party as COMBATANT_PARTY),
         hp: memory.diff(this.params?.currentHp),
         defeated: memory.diff(this.params?.defeated),
@@ -36,7 +37,9 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
         }
         if (state.hp !== undefined) {
             this.params.currentHp = state.hp
-            notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.HP_CHANGED)
+
+            if (!ig.shared.settingStateImmediately && !state.firstState)
+                notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.HP_CHANGED)
         }
 
         if (state.baseParams !== undefined) {
@@ -44,7 +47,9 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
                 this.params.baseParams,
                 Object.fromEntries(Object.entries(state.baseParams).filter(([_, v]) => v)) as typeof state.baseParams
             )
-            notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED, ig.shared.settingStateImmediately)
+
+            if (!ig.shared.settingStateImmediately && !state.firstState)
+                notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
         }
 
         if (state.spLevel !== undefined) {

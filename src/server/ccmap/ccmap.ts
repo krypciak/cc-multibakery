@@ -11,10 +11,10 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapName } from '../../net/binary/binary-types'
 import { instanceinatorCopyInstanceConfig } from '../server'
 import { createNetid, type EntityNetid } from '../../misc/entity-netid'
-
-import './injects'
 import { isRemote } from '../remote/is-remote-server'
 import { assertPhysics } from '../physics/is-physics-server'
+
+import './injects'
 
 declare global {
     namespace ig {

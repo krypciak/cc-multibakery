@@ -70,21 +70,29 @@ export function setEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, st
         if (state.feet !== undefined) { updateStats = true; this.model.equip.feet = state.feet }
     }
 
+    let setParams = false
     if (state.level !== undefined) {
         this.model.level = state.level
         /* I don't want to even start thinking about making this unique for every player */
         sc.inventory.updateScaledEquipment(state.level)
-        notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
+
+        updateStats = true
+        if (ig.shared.settingStateImmediately || state.firstState) setParams = true
+        else notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
     }
     if (state.exp !== undefined) {
         this.model.exp = state.exp
-        notifyMapAndPlayerInsts(this.model, sc.PARTY_MEMBER_MSG.EXP_CHANGE)
+
+        if (ig.shared.settingStateImmediately || state.firstState) setParams = true
+        else notifyMapAndPlayerInsts(this.model, sc.PARTY_MEMBER_MSG.EXP_CHANGE)
     }
 
     if (updateStats) {
         // @ts-expect-error
         this.model.updateStats()
     }
+
+    if (setParams) notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.SET_PARAMS)
 
     if (state.element !== undefined) {
         this.model.currentElementMode = state.element

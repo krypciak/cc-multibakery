@@ -115,7 +115,7 @@ export function setEntityState(this: ig.ENTITY.Player, state: Return) {
         const diff = state.credit - this.model.credit
         this.model.credit = state.credit
 
-        if (!ig.shared.settingStateImmediately) {
+        if (!ig.shared.settingStateImmediately && !state.firstState) {
             sc.Model.notifyObserver(this.model, sc.PLAYER_MSG.CREDIT_CHANGE, diff)
         }
     }
