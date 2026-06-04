@@ -21,6 +21,7 @@
 - Fix compatibility with lqm-joern-mod custom assault projectiles
 - Fix random error message on vanilla startup
 - Fix player state display for things like hp or money playing animation on map entry
+- Fix music unmuting for a split second when creating a new instance
 
 ## [0.7.9] 2026-05-22
 

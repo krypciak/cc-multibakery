@@ -155,20 +155,28 @@ prestart(() => {
 })
 
 prestart(() => {
+    let noBroadcast = false
+    sc.OptionModel.inject({
+        init() {
+            noBroadcast = true
+            this.parent()
+            noBroadcast = false
+        },
+    })
     ig.System.inject({
         setMasterVolume(volume) {
             this.parent(volume)
-            if (!multi.server) return
+            if (!multi.server || noBroadcast) return
             broadcastAcrossInstances(multi.server.getAllInstances(), () => ig.system?.setMasterVolume(volume))
         },
         setSoundVolume(volume) {
             this.parent(volume)
-            if (!multi.server) return
+            if (!multi.server || noBroadcast) return
             broadcastAcrossInstances(multi.server.getAllInstances(), () => ig.system?.setSoundVolume(volume))
         },
         setMusicVolume(volume) {
             this.parent(volume)
-            if (!multi.server) return
+            if (!multi.server || noBroadcast) return
             broadcastAcrossInstances(multi.server.getAllInstances(), () => ig.system?.setMusicVolume(volume))
         },
     })
