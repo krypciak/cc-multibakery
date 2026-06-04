@@ -16,6 +16,7 @@ import type { EntityNetid } from '../misc/entity-netid'
 import type { NetConnection } from '../net/net-connection'
 import { isUsernameValid } from '../misc/username-util'
 import { executeWithStrategy } from '../misc/function-execute-strategy'
+import { isRemote } from './remote/is-remote-server'
 
 import './server-var-access'
 
@@ -233,7 +234,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         connection: NetConnection | undefined
     ): MapTpInfo | undefined {
         const map = tpInfo?.map
-        if (!map || !this.maps.has(map)) return
+        if (!map) return
+        if (isRemote(this) && !this.maps.has(map)) return
 
         if (
             connection &&

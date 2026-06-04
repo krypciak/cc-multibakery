@@ -197,7 +197,7 @@ prestart(() => {
 })
 
 poststart(async () => {
-    if (!DEV && window.crossnode?.options.test) return
+    if (!DEV || window.crossnode?.options.test) return
 
     if (PHYSICS && isInServerDir()) {
         startDevServer()
