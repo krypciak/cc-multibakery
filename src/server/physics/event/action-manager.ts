@@ -29,8 +29,8 @@ prestart(() => {
     ig.ActorEntity.inject({
         getClientFromBoundAction() {
             let client = this.actionBoundToPlayer?.getClient(true)
-            if (!client?.ready) client = ig.mapShared.ccmap.clients[0]
-            assert(client.ready)
+            if (!client?.ready) client = ig.mapShared.ccmap.clients.find(client => client.ready)
+            if (!client?.ready) return
             return client
         },
         setAction(action, keepState, noStateReset) {
