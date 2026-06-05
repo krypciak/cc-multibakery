@@ -7,6 +7,7 @@
 ### Added
 
 - Add raw websocket network transport method (experimental, disabled by default)
+- Add forceRunOnMap option to EventTrigger
 
 ### Changed
 
