@@ -12,7 +12,7 @@ import { assert } from '../../misc/assert'
 import type { NetServerInfoPhysics } from '../../client/menu/server-info'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client, type ClientSettings } from '../../client/client'
-import { startRepl } from './shell'
+import { Repl } from './shell'
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import type { CrosscodeWebModuleOptions } from '../../net/crosscode-web-http-modules'
 import type { ClientLeaveData } from '../remote/remote-server'
@@ -63,6 +63,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     httpServer?: PhysicsHttpServer
     serverDiscovery?: ServerDiscoveryServer
     anyRemoteClientsOn: boolean = false
+    repl?: Repl
 
     connectionReadyMaps: WeakMap<NetConnection, Set<MapName>> = new WeakMap()
 
@@ -92,7 +93,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         void this.startNet()
 
-        if (window.crossnode && !window.crossnode.tests) startRepl()
+        if (window.crossnode && !window.crossnode.tests) {
+            this.repl = new Repl()
+            this.repl.start()
+        }
     }
 
     private async startNet() {
@@ -298,6 +302,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.netManager?.destroy()
         this.httpServer?.destroy()
         this.serverDiscovery?.destroy()
+        this.repl?.destroy()
     }
 
     private registerVariableChargeTime() {
