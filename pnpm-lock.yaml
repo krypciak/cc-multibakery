@@ -28,7 +28,7 @@ importers:
         version: 1.3.11
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/734d23a6807c718b46d70a41fae967f3b38e7a9e
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/80875e3c7677e2f28afe02188e9f90302f502762
       cc-jetpack-widget:
         specifier: github:krypciak/cc-jetpack-widget
         version: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f
@@ -382,9 +382,9 @@ packages:
     os: [darwin, linux, win32]
     hasBin: true
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/734d23a6807c718b46d70a41fae967f3b38e7a9e:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/734d23a6807c718b46d70a41fae967f3b38e7a9e}
-    version: 1.1.1
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/80875e3c7677e2f28afe02188e9f90302f502762:
+    resolution: {gitHosted: true, integrity: sha512-ke8sdj8QC+N8nWVN/VZsFwHQPCVlbt78tteZ0ZpwreoJZB1ZWLw0UcR+xo/Gcky8bNJat14ThBJf1kF7lLUBBg==, tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/80875e3c7677e2f28afe02188e9f90302f502762}
+    version: 1.1.3
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f:
     resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f}
@@ -830,7 +830,7 @@ snapshots:
       '@oven/bun-windows-x64': 1.3.11
       '@oven/bun-windows-x64-baseline': 1.3.11
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/734d23a6807c718b46d70a41fae967f3b38e7a9e: {}
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/80875e3c7677e2f28afe02188e9f90302f502762: {}
 
   cc-jetpack-widget@https://codeload.github.com/krypciak/cc-jetpack-widget/tar.gz/8aa33d83089a9a265a6d0aa1cb4f2715d24bea1f: {}
 
