@@ -91,12 +91,12 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         multi.storage.load()
         this.registerVariableChargeTime()
 
-        void this.startNet()
-
-        if (window.crossnode && !window.crossnode.tests) {
-            this.repl = new Repl()
-            this.repl.start()
-        }
+        this.startNet().then(() => {
+            if (window.crossnode && !window.crossnode.tests) {
+                this.repl = new Repl()
+                this.repl!.start()
+            }
+        })
     }
 
     private async startNet() {

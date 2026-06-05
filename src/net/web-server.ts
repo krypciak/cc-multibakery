@@ -92,8 +92,26 @@ export class PhysicsHttpServer {
         process.on('exit', this.stopFunc)
         window.addEventListener('beforeunload', this.stopFunc)
 
-        console.log('http server listening to', this.netInfo.connection.httpPort)
-        this.httpServer.listen(this.netInfo.connection.httpPort)
+        return new Promise<void>((resolve, reject) => {
+            const port = this.netInfo.connection.httpPort
+            this.httpServer.on('error', e => {
+                let error: string
+                if ('code' in e && e.code === 'EADDRINUSE') {
+                    error = `http server port ${port} already in use!`
+                } else {
+                    error = 'unknown http server error'
+                }
+                console.error(error)
+                this.destroy()
+                reject(e)
+            })
+            this.httpServer.on('listening', () => {
+                console.log('http server listening to', port)
+                resolve()
+            })
+
+            this.httpServer.listen(port)
+        })
     }
 
     stop() {
