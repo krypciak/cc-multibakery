@@ -36,6 +36,7 @@ declare global {
             data: dummy.DummyPlayer.Data
             itemConsumer: dummy.ItemConsumption
             model: dummy.PlayerModel
+            isCollTypeChangedDueToBeingInCutscene?: boolean
 
             setInputManager(this: this, inputManager: InputManager): void
             getHeadIdx(this: this): number
@@ -97,12 +98,6 @@ prestart(() => {
                 runTask(client.inst, () => inputBackup(this.inputManager, () => this.parent()))
             } else {
                 inputBackup(this.inputManager, () => this.parent())
-            }
-
-            if (this.data.inCutscene) {
-                if (this.coll.type != ig.COLLTYPE.NONE) this.coll.setType(ig.COLLTYPE.NONE)
-            } else if (this.coll.type == ig.COLLTYPE.NONE) {
-                this.coll.setType(ig.COLLTYPE.VIRTUAL)
             }
         },
         onKill(_dontRespawn?: boolean) {
