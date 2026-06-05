@@ -13,6 +13,7 @@
 
 - Decrease bundle size by removing dependency on http-server
 - Remove server ping from server list entry since it's misleading
+- Set pvp.lastWinPartyId to the only remaining party on pvp force end (due to player leaving)
 
 ### Fixed
 

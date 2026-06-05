@@ -166,6 +166,7 @@ prestart(() => {
                         const onlyPartyAlive = this.getOnlyPartyAlive()
                         if (onlyPartyAlive) {
                             if (this.parties.length == 1) {
+                                this.lastWinPartyId = onlyPartyAlive.id
                                 this.points[onlyPartyAlive.combatantParty as sc.COMBATANT_PARTY] = this.winPoints
                             }
                             this.onPostKO(onlyPartyAlive.combatantParty)
@@ -244,10 +245,10 @@ prestart(() => {
 
             this.rearrangeHpBars()
 
-            const onlyTeamAlive = this.getOnlyPartyAlive()
-            if (onlyTeamAlive) {
-                this.lastWinPartyId = onlyTeamAlive.id
-                return this.showKO(onlyTeamAlive.combatantParty)
+            const onlyPartyAlive = this.getOnlyPartyAlive()
+            if (onlyPartyAlive) {
+                this.lastWinPartyId = onlyPartyAlive.id
+                return this.showKO(onlyPartyAlive.combatantParty)
             }
         },
         showKO(combatantParty) {
