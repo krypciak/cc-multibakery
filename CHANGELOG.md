@@ -28,6 +28,7 @@
 - Don't reset pvp state like lastWinPartyId or points after pvp end
 - Fix remote crash when referencing entities in vars in steps
 - Remove player collType getting set to NONE when in cutscene
+- Fix pvp hp bar disappearing on remote when the player is locked
 
 ## [0.7.9] 2026-05-22
 

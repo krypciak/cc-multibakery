@@ -6,6 +6,14 @@ import type { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 import { isRemote } from '../../server/remote/is-remote-server'
 
+declare global {
+    namespace sc {
+        interface CombatParams {
+            forceReportLocked?: boolean
+        }
+    }
+}
+
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
@@ -15,6 +23,7 @@ export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
         party: memory.diff(this.party as COMBATANT_PARTY),
         hp: memory.diff(this.params?.currentHp),
         defeated: memory.diff(this.params?.defeated),
+        locked: memory.diff(this.params?.isLocked()),
         baseParams: memory.diffRecord(this.params?.baseParams ?? ({} as sc.CombatParams.BaseParams)),
         spLevel: memory.diff(this.params?.maxSp),
         sp: memory.diff(this.params?.currentSp),
@@ -34,6 +43,9 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
     if (this.params) {
         if (state.defeated !== undefined) {
             this.params.defeated = state.defeated
+        }
+        if (state.locked !== undefined) {
+            this.params.forceReportLocked = state.locked
         }
         if (state.hp !== undefined) {
             this.params.currentHp = state.hp
@@ -67,6 +79,10 @@ prestart(() => {
     sc.CombatParams.inject({
         setBaseParams(baseParams, noEffect) {
             if (!isRemote(multi.server)) return this.parent(baseParams, noEffect)
+        },
+        isLocked() {
+            if (this.forceReportLocked !== undefined) return this.forceReportLocked
+            else return this.parent()
         },
     })
 })

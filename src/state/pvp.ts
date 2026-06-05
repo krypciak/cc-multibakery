@@ -71,11 +71,12 @@ prestart(() => {
                 }
             }
 
+            let rearrangeHpBars = false
             if (packet.pvp.state !== undefined) {
                 const state = packet.pvp.state
                 sc.pvp.state = state
 
-                if (sc.pvp.hpBars) sc.pvp.rearrangeHpBars()
+                if (sc.pvp.hpBars) rearrangeHpBars = true
                 if (state == 2) {
                     if (sc.pvp.state != 2) sc.pvp.finalizeRoundStart()
                 } else if (state == 3) {
@@ -92,9 +93,8 @@ prestart(() => {
                 StateMemory.applyChangeRecord(sc.pvp.points, packet.pvp.points)
             }
 
-            if (packet.pvp.justRearrangedHpBars) {
-                sc.pvp.rearrangeHpBars()
-            }
+            if (packet.pvp.justRearrangedHpBars) rearrangeHpBars = true
+            if (rearrangeHpBars) sc.pvp.rearrangeHpBars()
         },
     })
 })
