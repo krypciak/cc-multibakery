@@ -89,13 +89,16 @@ prestart(() => {
         for (const areaName in sc.map.areas) {
             const area = new sc.AreaLoadable(areaName)
             const vars = ig.vars
-            area.load(() => {
-                for (const floor of area.data.floors) {
-                    for (const map of floor.maps) {
-                        const mapPath = map.path.toCamel().toPath('', '')
-                        if (!vars.storage.maps[mapPath]) vars.set(`maps.${mapPath}`, {})
+            area.addLoadListener({
+                onLoadableComplete(success) {
+                    if (!success) return
+                    for (const floor of area.data.floors) {
+                        for (const map of floor.maps) {
+                            const mapPath = map.path.toCamel().toPath('', '')
+                            if (!vars.storage.maps[mapPath]) vars.set(`maps.${mapPath}`, {})
+                        }
                     }
-                }
+                },
             })
         }
 
