@@ -73,6 +73,8 @@ prestart(() => {
             this.round = 0
             this.winPoints = winPoints
             assert(this.winPoints <= 63 /* u6 */)
+            this.lastWinPartyId = undefined
+            this.points = {}
             this.points[sc.COMBATANT_PARTY.PLAYER] = 0
             this.points[sc.COMBATANT_PARTY.ENEMY] = 0
 
@@ -190,9 +192,7 @@ prestart(() => {
         },
         resetMultiState() {
             this.multiplayerPvp = false
-            this.parties = []
-            this.points = {}
-            this.lastWinPartyId = undefined
+            this.clearParties()
         },
         removePvpGuis() {
             runTasks(
