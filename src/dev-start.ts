@@ -207,20 +207,22 @@ prestart(() => {
     })
 })
 
-poststart(async () => {
+poststart(() => {
     if (!DEV || window.crossnode?.options.test) return
 
     if (PHYSICS && isInServerDir()) {
         startDevServer()
     } else if (REMOTE && isInClientDir()) {
-        const connection: RemoteServerConnectionSettings = {
-            host: '127.0.0.1',
-            port: DEFAULT_HTTP_PORT,
-            https: true,
-        }
-        const { details } = (await getServerDetails(connection)) ?? {}
-        if (details) {
-            tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
-        }
+        ;(async () => {
+            const connection: RemoteServerConnectionSettings = {
+                host: '127.0.0.1',
+                port: DEFAULT_HTTP_PORT,
+                https: true,
+            }
+            const { details } = (await getServerDetails(connection)) ?? {}
+            if (details) {
+                tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
+            }
+        })()
     }
 }, 999)
