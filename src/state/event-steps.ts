@@ -47,7 +47,8 @@ declare global {
 
 function serializeStepSettingsRecursive(data: any) {
     if (data && typeof data == 'object') {
-        for (const key in data) {
+        const keys = (Array.isArray(data) ? data.keys() : Object.keys(data).values()) as ArrayIterator<any>
+        for (const key of keys) {
             let value = data[key]
             if (!value) continue
 
@@ -67,6 +68,13 @@ function serializeStepSettingsRecursive(data: any) {
                         data[key] = undefined
                     } else {
                         assert(false)
+                    }
+                } else if (key == 'entity' && typeof value == 'object') {
+                    const entity = ig.Event.getEntity(value)
+                    if (entity?.netid) {
+                        data[key] = { netid: entity.netid }
+                    } else {
+                        serializeStepSettingsRecursive(value)
                     }
                 } else {
                     serializeStepSettingsRecursive(value)

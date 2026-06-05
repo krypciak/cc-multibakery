@@ -25,6 +25,7 @@
 - Fix music unmuting for a split second when creating a new instance
 - Close crossnode repl on server destroy
 - Don't reset pvp state like lastWinPartyId or points after pvp end
+- Fix remote crash when referencing entities in vars in steps
 
 ## [0.7.9] 2026-05-22
 
