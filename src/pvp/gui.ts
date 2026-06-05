@@ -79,6 +79,7 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
     }
 
     function drawTeam(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean, ally: boolean) {
+        if (!party) return
         if (left) {
             drawTeamName(party)
             drawTeamHeads.call(this, party, left)
