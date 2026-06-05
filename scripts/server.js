@@ -8,11 +8,11 @@ startCrossnode({
         'cc-multibakery',
         'cc-instanceinator',
         'ccmodmanager',
-        'cc-ts-template-esbuild',
         'nax-ccuilib',
         'cc-alybox',
         'cc-multibakery-additions',
-        'cc-krypek-lib'
+        'cc-krypek-lib',
+        'cc-variable-charge-time'
     ],
     extensionWhitelist: ['post-game'],
 })
