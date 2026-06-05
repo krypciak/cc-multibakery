@@ -176,6 +176,7 @@ prestart(() => {
                         }
 
                         dialog.openMenu()
+                        if (DEV) dialog.userButtons![0].onButtonPress()
                     },
                 })
             }
