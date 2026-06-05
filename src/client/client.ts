@@ -215,7 +215,10 @@ export class Client extends InstanceUpdateable {
     async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
         PROFILE && console.time('client teleport')
         this.startTeleportOverlay()
-        runTask(this.inst, () => sc.model.enterTeleport())
+        runTask(this.inst, () => {
+            sc.model.enterTeleport()
+            ig.game.events.clear()
+        })
 
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
@@ -267,8 +270,6 @@ export class Client extends InstanceUpdateable {
         PROFILE && console.time('linkMapToInstanceStage2')
         this.linkMapToInstanceStage2(map)
         PROFILE && console.timeEnd('linkMapToInstanceStage2')
-
-        this.inst.ig.game.events.clear()
 
         for (const obj of map.onLinkChange) obj.onClientLink?.(this)
 
