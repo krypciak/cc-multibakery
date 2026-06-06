@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Reset instanceinator instance counter on server destroy
+
 ### Fixed
 
 - Fix title screen button gamepad focus logic
