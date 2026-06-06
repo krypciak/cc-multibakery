@@ -26,7 +26,8 @@ prestart(() => {
 
             this.customButtons = buttonConfigs.map(({ text, onClick }) => {
                 // Get the first button in the second column so we can position our button above it.
-                const lastButton = this.buttonGroup.elements[1].find(Boolean)!.hook
+                const lastButtonIndex = this.buttonGroup.elements[1].findIndex(Boolean)
+                const lastButton = this.buttonGroup.elements[1][lastButtonIndex]?.hook
 
                 const button = new sc.ButtonGui(text, lastButton.size.x)
                 button.setAlign(lastButton.align.x, lastButton.align.y)
@@ -35,7 +36,8 @@ prestart(() => {
                 button.hook.transitions = lastButton.transitions
                 button.doStateTransition('HIDDEN', true)
 
-                this.buttonGroup.insertFocusGui(button, 1, 0)
+                if (lastButtonIndex > 0) this.buttonGroup.addFocusGui(button, 1, lastButtonIndex - 1)
+                else this.buttonGroup.insertFocusGui(button, 1, 0)
                 this.insertChildGui(button, 0)
 
                 button.onButtonPress = onClick

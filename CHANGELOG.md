@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix title screen button gamepad focus logic
+
 ## [0.8.0] 2026-06-05
 
 ### Added
