@@ -2,6 +2,7 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
+import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {
     namespace ig.ENTITY {
@@ -30,3 +31,11 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Prop, isStatic: true })
 }, 2)
+
+prestart(() => {
+    ig.ENTITY.Prop.inject({
+        initPermaEffects() {
+            wrapIgnoreEffectNetid(() => this.parent())
+        },
+    })
+})

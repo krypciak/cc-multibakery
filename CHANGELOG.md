@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fix title screen button gamepad focus logic
+- Fix ig.ENTITY.Prop permaEffect duplicating on remote
 
 ## [0.8.0] 2026-06-05
 
