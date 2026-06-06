@@ -28,6 +28,7 @@ export interface MapTpInfo {
 export interface ServerSettings {
     tps: number
     forceConsistentTickTimes?: boolean
+    intervalFps?: number
 
     displayServerInstance?: boolean
     displayMaps?: boolean

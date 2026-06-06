@@ -32,12 +32,12 @@ export default class Multibakery implements PluginClass {
         await executePreload()
     }
 
-    async prestart() {
-        await executePrestart()
-    }
-
     async postload() {
         await executePostload()
+    }
+
+    async prestart() {
+        await executePrestart()
     }
 
     async poststart() {
