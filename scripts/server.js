@@ -4,6 +4,8 @@ import { startCrossnode } from '../../crossnode/crossnode.js'
 startCrossnode({
     ccloader2: true,
     nukeImageStack: true,
+    // writeImage: true,
+    // writeImageInstanceinator: true,
     modWhitelist: [
         'cc-multibakery',
         'cc-instanceinator',
@@ -12,7 +14,7 @@ startCrossnode({
         'cc-alybox',
         'cc-multibakery-additions',
         'cc-krypek-lib',
-        'cc-variable-charge-time'
+        'cc-variable-charge-time',
     ],
     extensionWhitelist: ['post-game'],
 })
