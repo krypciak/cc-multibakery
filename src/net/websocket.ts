@@ -36,6 +36,15 @@ export class WsNetTransportServer implements NetTransportServer {
         return `${Date.now().toString(36)}-${(this.sessionIdCounter++).toString(36)}-${Math.random().toString(36).slice(2, 8)}`
     }
 
+    private async getWs(): Promise<typeof import('ws')> {
+        if (window.crossnode) {
+            return (0, eval)(`require('ws')`)
+        } else {
+            assert(PHYSICSNET)
+            return PHYSICSNET && (await import('ws'))
+        }
+    }
+
     async start(
         netInfo: NetServerInfoPhysics,
         httpServer: HttpServer,
@@ -43,7 +52,7 @@ export class WsNetTransportServer implements NetTransportServer {
     ): Promise<void> {
         assert(PHYSICSNET)
 
-        const { WebSocketServer } = PHYSICSNET && (await import('ws'))
+        const { WebSocketServer } = await this.getWs()
 
         this.wss = new WebSocketServer({ server: httpServer })
 

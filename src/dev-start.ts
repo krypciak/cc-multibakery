@@ -126,8 +126,6 @@ async function startDevServer() {
     await server.start()
     PROFILE && console.timeEnd('server start')
 
-    if (window.crossnode?.options.test || !process.execPath.includes('server')) return
-
     PROFILE && console.time('client creation')
     await createClients(1)
     PROFILE && console.timeEnd('client creation')
@@ -192,7 +190,7 @@ function splitClientsIntoGroups(groupSize: number) {
 }
 
 function isInServerDir() {
-    return process.execPath.includes('cc-server')
+    return process.execPath.includes('cc-server') || process.execPath.endsWith('/bun')
 }
 function isInClientDir() {
     return process.execPath.includes('cc-client')
