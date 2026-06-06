@@ -72,9 +72,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         if (settings.useAnimationFrameLoop && !window.requestAnimationFrame) {
             settings.useAnimationFrameLoop = false
-            console.warn(
-                'useAnimationFrameLoop is enabled, but window.requestAnimationFrame is undefined! defaulting to setInterval'
-            )
+            // console.warn('useAnimationFrameLoop is enabled, but window.requestAnimationFrame is undefined! defaulting to setInterval')
         }
 
         if (settings.useAnimationFrameLoop) {
