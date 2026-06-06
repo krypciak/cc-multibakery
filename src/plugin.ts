@@ -20,6 +20,12 @@ export default class Multibakery implements PluginClass {
         Multibakery.mod.isCCL3 = mod.findAllAssets ? true : false
         Multibakery.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
         if (!Multibakery.mod.isCCL3) Object.assign(mod, { id: Multibakery.mod.name })
+
+        if (window.crossnode) {
+            if (!CROSSNODE) throw new Error('running in crossnode but not compiled with crossnode flag!')
+        } else {
+            if (CROSSNODE) throw new Error('running in browser but compiled with crossnode flag!')
+        }
     }
 
     async preload() {

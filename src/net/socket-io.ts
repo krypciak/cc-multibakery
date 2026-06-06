@@ -44,6 +44,7 @@ export class SocketIoNetTransportServer implements NetTransportServer {
         onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
     ): Promise<void> {
         assert(PHYSICSNET)
+        assert(!!window.crossnode == CROSSNODE)
 
         setIntervalWorkaround()
 

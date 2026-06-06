@@ -38,8 +38,10 @@ export class WsNetTransportServer implements NetTransportServer {
 
     private async getWs(): Promise<typeof import('ws')> {
         if (window.crossnode) {
+            assert(CROSSNODE)
             return (0, eval)(`require('ws')`)
         } else {
+            assert(!CROSSNODE)
             assert(PHYSICSNET)
             return PHYSICSNET && (await import('ws'))
         }

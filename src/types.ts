@@ -20,6 +20,7 @@ declare global {
     const ASSERT: boolean
     const DEV: boolean
     const PROFILE: boolean
+    const CROSSNODE: boolean
 
     namespace NodeJS {
         interface Timeout {

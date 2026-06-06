@@ -20,6 +20,7 @@ interface Options {
     noWrite?: boolean
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
     metafile?: boolean
+    crossnode?: boolean
 }
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
@@ -52,6 +53,7 @@ async function run(
         noWrite = false,
         forceRegenerateBinaryEncodeDecodeScripts = false,
         metafile = false,
+        crossnode = false,
     }: Options
 ) {
     if (!physics) physicsnet = false
@@ -157,6 +159,7 @@ async function run(
     const ctx = await esbuild.context({
         entryPoints: [`${projectRoot}/src/plugin.ts`],
         bundle: true,
+        external: crossnode ? ['ws'] : [],
         write: false,
         ...commonOptions,
         define: {
@@ -167,6 +170,7 @@ async function run(
             ASSERT: String(!dropAssert),
             DEV: String(dev),
             PROFILE: String(!dropProfiling),
+            CROSSNODE: String(crossnode),
         },
         plugins: [plugin],
         metafile,
