@@ -14,7 +14,8 @@
         "buildCrossnode": "bun build/build.ts build dev=true remote=false target=esnext crossnode=true",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 400 --bracket-same-line",
         "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
-        "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js"
+        "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js",
+        "serverBun": "bun run scripts/server.js"
     },
     "devDependencies": {
         "@types/bun": "^1.3.11",
