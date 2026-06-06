@@ -73,7 +73,7 @@ export class WsNetTransportServer implements NetTransportServer {
     }
 
     async stop(): Promise<void> {
-        this.wss.close()
+        this.wss?.close()
         this.sessions.clear()
     }
 }
@@ -172,7 +172,7 @@ export class WsNetTransport implements NetTransport {
         if (this.closed) return
         this.closed = true
         try {
-            this.ws.close()
+            this.ws?.close()
         } catch (e) {
             console.warn('[ws] error closing WebSocket:', e)
         }

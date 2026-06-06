@@ -65,7 +65,7 @@ export class SocketIoNetTransportServer implements NetTransportServer {
     }
 
     async stop(): Promise<void> {
-        await this.io.close()
+        await this.io?.close()
     }
 }
 
@@ -142,6 +142,7 @@ export class SocketIoNetTransport implements NetTransport {
     }
 
     close(): void {
+        if (!this.socket) return
         if (!this.socket.disconnected) this.socket.disconnect()
         // @ts-expect-error idk
         this.socket.removeAllListeners()
