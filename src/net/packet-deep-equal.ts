@@ -1,4 +1,4 @@
-export function packetDeepEqual(a: any, b: any, map = new WeakMap()) {
+export function packetDeepEqual(a: any, b: any, map = new WeakMap(), path = '') {
     if (Object.is(a, b)) return true
 
     if (a instanceof Date && b instanceof Date) {
@@ -18,8 +18,11 @@ export function packetDeepEqual(a: any, b: any, map = new WeakMap()) {
         return !!a == !!b
     }
     if (a === null && b == 'null') return true
+    if (a === null && b === 0) return true
+    if (a === null && b === false) return true
 
     if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
+        console.warn('packet decode mismatch at', path, 'different types', 'a:', a, 'b:', b)
         debugger
         return false
     }
@@ -39,12 +42,15 @@ export function packetDeepEqual(a: any, b: any, map = new WeakMap()) {
     }
 
     if (keysA.length !== keysB.length) {
+        console.warn('packet decode mismatch at', path, 'different keys length', 'a:', a, 'b:', b)
         debugger
         return false
     }
 
     for (let i = 0; i < keysA.length; i++) {
-        if (!Reflect.has(b, keysA[i]) || !packetDeepEqual(a[keysA[i]], b[keysA[i]], map)) {
+        const key = keysA[i] as string
+        if (!Reflect.has(b, key) || !packetDeepEqual(a[key], b[key], map, path + '.' + key)) {
+            console.warn('packet decode mismatch at', path, 'a:', JSON.stringify(a), 'b:', JSON.stringify(b))
             debugger
             return false
         }
