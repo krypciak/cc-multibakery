@@ -2,6 +2,7 @@ import { type LabelDrawClass, ValueAverageOverTime } from 'cc-instanceinator/src
 import type { Client } from './client'
 import { Opts } from '../options'
 import { assertRemote } from '../server/remote/is-remote-server'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 abstract class BasicLabelDrawClass implements LabelDrawClass {
     abstract condition(): boolean
@@ -107,4 +108,15 @@ export function createClientNetworkPacketTrafficLabel(client: Client) {
         }
     }
     client.inst.labelDrawClasses.push(new NetworkPacketSizeLabelDrawClass())
+}
+
+export function createServerTpsLabel(inst: InstanceinatorInstance) {
+    class ServerTpsLabelDrawClass extends BasicLabelDrawClass {
+        condition = () => Opts.showServerTps
+        getText(): string {
+            const tps = 1000 / multi.server.updateDelayAvg.getAverage()
+            return `${tps.round(0)} tps`
+        }
+    }
+    inst.labelDrawClasses.push(new ServerTpsLabelDrawClass())
 }

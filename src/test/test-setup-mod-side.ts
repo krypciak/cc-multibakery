@@ -5,6 +5,7 @@ import type { MapTpInfo } from '../server/server'
 import { generateRandomUsername } from '../misc/username-util'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
+import { Opts } from '../options'
 
 declare global {
     namespace multi {
@@ -49,6 +50,7 @@ class MultibakeryTestUtils {
         await multi.server.start()
 
         instanceinator.displayFps = true
+        Opts.showServerTps = true
     }
 
     async createClient(tpInfo: MapTpInfo) {

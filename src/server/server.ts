@@ -17,6 +17,7 @@ import type { NetConnection } from '../net/net-connection'
 import { isUsernameValid } from '../misc/username-util'
 import { executeWithStrategy } from '../misc/function-execute-strategy'
 import { isRemote } from './remote/is-remote-server'
+import { ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 
 import './server-var-access'
 
@@ -76,6 +77,8 @@ export interface ClientCreateAndJoinSettings {
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
     abstract physics: boolean
+    updateDelayAvg: ValueAverageOverTime
+    lastUpdateTime: number = 0
 
     baseInst!: InstanceinatorInstance
 
@@ -95,6 +98,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         super()
 
         this.baseInst = instanceinator.instances[0]
+        this.updateDelayAvg = new ValueAverageOverTime(settings.tps)
     }
 
     isActive() {
@@ -177,7 +181,17 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         }
     }
 
+    private updateUpdateDelayAvg() {
+        const time = performance.now()
+        if (this.lastUpdateTime != 0) {
+            const timeDiff = time - this.lastUpdateTime
+            this.updateDelayAvg.pushValue(timeDiff)
+        }
+        this.lastUpdateTime = time
+    }
+
     runUpdate() {
+        this.updateUpdateDelayAvg()
         multi.class.gamepadAssigner.update()
 
         this.preUpdateFor([this])

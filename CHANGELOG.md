@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add option for showing server tps average label
+
 ### Changed
 
 - Reset instanceinator instance counter on server destroy

@@ -31,6 +31,12 @@ function registerOpts() {
                         name: 'Show ping',
                         description: 'Show client ping in miliseconds',
                     },
+                    showServerTps: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Show server tps',
+                        description: 'Display server updates per second',
+                    },
                     showClientTransportInfo: {
                         type: 'CHECKBOX',
                         init: true,

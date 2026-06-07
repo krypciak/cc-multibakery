@@ -8,6 +8,7 @@ import {
     createClientTransportInfoLabel,
     createClientNetworkPacketTrafficLabel,
     createClientPingLabel,
+    createServerTpsLabel,
 } from './client-label-draw'
 import { isUsernameValid } from '../misc/username-util'
 import { applyStateUpdatePacket } from '../state/states'
@@ -89,6 +90,7 @@ export class Client extends InstanceUpdateable {
 
         new dummy.BoxGuiAddon.BoxGuiAddon(this.inst.ig.game)
 
+        createServerTpsLabel(this.inst)
         if (isRemote(multi.server)) {
             createClientPingLabel(this)
             createClientTransportInfoLabel(this)
