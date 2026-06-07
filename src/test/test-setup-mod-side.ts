@@ -14,6 +14,11 @@ declare global {
 
 class MultibakeryTestUtils {
     private setupServerPromise: Promise<void> | undefined
+    private tps = 60
+    private intervalFps = Infinity
+    private displayClientInstances = !window.crossnode?.options.nukeImageStack
+    private crossnodeForceWriteImage = true
+    private disablePerfFlags = true
 
     async setupServerIfNeeded() {
         assert(TEST)
@@ -22,23 +27,23 @@ class MultibakeryTestUtils {
     }
 
     private async setupServer() {
-        ig.perf.spriteShadow = false
-        ig.perf.spriteOverlapSolver = false
-        ig.perf.gui = false
-        ig.perf.lighting = false
-        ig.perf.weather = false
-        ig.perf.overlay = false
-        ig.perf.envParticles = false
-        ig.perf.spriteFilter = false
+        if (this.disablePerfFlags) {
+            ig.perf.spriteShadow = false
+            ig.perf.spriteOverlapSolver = false
+            ig.perf.gui = false
+            ig.perf.lighting = false
+            ig.perf.weather = false
+            ig.perf.overlay = false
+            ig.perf.envParticles = false
+            ig.perf.spriteFilter = false
+        }
 
-        const skipFrameWait = true
         multi.setServer(
             new PhysicsServer({
-                tps: 60,
+                tps: this.tps,
                 forceConsistentTickTimes: true,
-                intervalFps: skipFrameWait ? Infinity : undefined,
-
-                displayClientInstances: !window.crossnode?.options.nukeImageStack,
+                intervalFps: this.intervalFps,
+                displayClientInstances: this.displayClientInstances,
             })
         )
         await multi.server.start()
@@ -53,8 +58,12 @@ class MultibakeryTestUtils {
             { awaitClientJoin: true, clientSettingsOverride: { inputType: 'puppet' } }
         )
         assert(client)
+
         const map = multi.server.maps.get(tpInfo.map)!
         assert(map)
+
+        client.inst.crossnodeForceWriteImage = this.crossnodeForceWriteImage
+
         return { client, map }
     }
 
