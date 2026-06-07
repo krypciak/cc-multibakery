@@ -217,6 +217,7 @@ class Aoc2024d15Test implements TestConfig {
 
 prestart(() => {
     for (const config of configs) {
+        if (!config.enabled) continue
         tester.addTest(new Aoc2024d15Test(config as any))
     }
 })
