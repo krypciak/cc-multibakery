@@ -13,7 +13,7 @@
         "buildPhysicsNetless": "bun build/build.ts build dev=false minifySyntax=true minifyWhitespace=true remote=false physicsnet=false",
         "buildCrossnode": "bun build/build.ts build dev=true remote=false target=esnext crossnode=true",
         "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 400 --bracket-same-line",
-        "test": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/test.js",
+        "test": "bun test --parallel --isolate --concurrent",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js",
         "serverBun": "bun run scripts/server.js"
     },
@@ -23,7 +23,7 @@
         "@types/jquery": "^4.0.0",
         "@types/node": "^25.5.0",
         "@types/ws": "^8.18.1",
-        "bun": "^1.3.11",
+        "bun": "^1.3.14",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "cc-jetpack-widget": "github:krypciak/cc-jetpack-widget",
         "cc-krypek-lib": "github:krypciak/cc-krypek-lib",

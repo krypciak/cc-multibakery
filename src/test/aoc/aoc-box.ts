@@ -1,4 +1,5 @@
-export {}
+import { prestart } from '../../loading-stages'
+
 declare global {
     namespace ig.ENTITY {
         namespace AocBox {
@@ -128,6 +129,7 @@ function recursiveMoveCheck(
     }
     return []
 }
+
 function moveBox(this: sc.AocPushPullable, vx: number, vy: number, isPulling: boolean) {
     if (!this.soundHandle) this.soundHandle = sc.PushPullSounds.Loop.play(true)
     ;(this.entity as ig.AnimatedEntity).setCurrentAnim(vx ? 'moveH' : 'moveV')
@@ -150,43 +152,46 @@ function moveBox(this: sc.AocPushPullable, vx: number, vy: number, isPulling: bo
     // this.targetPos.y = Math.round(this.targetPos.y / 4) * 4
 }
 
-sc.AocPushPullable = sc.PushPullable.extend({
-    init(entity) {
-        this.parent(entity)
-        this.navBlocker = undefined as any
-    },
-    moveBox(vx, vy) {
-        const isPulling: boolean = vx
-            ? (this.gripDir == 'EAST' && vx < 0) || (this.gripDir == 'WEST' && vx > 0)
-            : !!vy && ((this.gripDir == 'NORTH' && vy > 0) || (this.gripDir == 'SOUTH' && vy < 0))
+prestart(() => {
+    sc.AocPushPullable = sc.PushPullable.extend({
+        init(entity) {
+            this.parent(entity)
+            this.navBlocker = undefined as any
+        },
+        moveBox(vx, vy) {
+            const isPulling: boolean = vx
+                ? (this.gripDir == 'EAST' && vx < 0) || (this.gripDir == 'WEST' && vx > 0)
+                : !!vy && ((this.gripDir == 'NORTH' && vy > 0) || (this.gripDir == 'SOUTH' && vy < 0))
 
-        const checkLinked = !!this.entity.linked && (this.gripDir == 'NORTH' || this.gripDir == 'SOUTH' || isPulling)
-        const list = recursiveMoveCheck.call(this, vx, vy, isPulling, new Set(), 0, checkLinked)
-        list.reverse()
+            const checkLinked =
+                !!this.entity.linked && (this.gripDir == 'NORTH' || this.gripDir == 'SOUTH' || isPulling)
+            const list = recursiveMoveCheck.call(this, vx, vy, isPulling, new Set(), 0, checkLinked)
+            list.reverse()
 
-        for (const box of list) moveBox.call(box, vx, vy, isPulling)
-    },
-    onUpdate() {
-        /* fix boxes clipping into each other */
-        this.speedTimer = 4238
-        this.parent()
-    },
-})
+            for (const box of list) moveBox.call(box, vx, vy, isPulling)
+        },
+        onUpdate() {
+            /* fix boxes clipping into each other */
+            this.speedTimer = 4238
+            this.parent()
+        },
+    })
 
-ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
-    init(x, y, z, settings) {
-        this.parent(x, y, z, { pushPullType: 'Large' })
-        this.pushPullable = new sc.AocPushPullable(this)
-        if (settings.wide) {
-            if (settings.linked) {
-                this.linked = settings.linked
-            } else {
-                this.motherLinked = true
-                this.linked = ig.game.spawnEntity(ig.ENTITY.AocBox, x + 32, y, z, {
-                    wide: true,
-                    linked: this,
-                })
+    ig.ENTITY.AocBox = ig.ENTITY.PushPullBlock.extend({
+        init(x, y, z, settings) {
+            this.parent(x, y, z, { pushPullType: 'Large' })
+            this.pushPullable = new sc.AocPushPullable(this)
+            if (settings.wide) {
+                if (settings.linked) {
+                    this.linked = settings.linked
+                } else {
+                    this.motherLinked = true
+                    this.linked = ig.game.spawnEntity(ig.ENTITY.AocBox, x + 32, y, z, {
+                        wide: true,
+                        linked: this,
+                    })
+                }
             }
-        }
-    },
+        },
+    })
 })

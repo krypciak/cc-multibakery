@@ -1,6 +1,6 @@
 import type { Server } from './server/server'
 import { assert } from './misc/assert'
-import { prestart } from './loading-stages'
+import { preload } from './loading-stages'
 
 import './misc/entity-netid'
 import './game-loop'
@@ -59,6 +59,6 @@ function initMultiplayer(): typeof window.multi {
     } satisfies Partial<typeof window.multi> as typeof window.multi
 }
 
-prestart(() => {
+preload(() => {
     global.multi = window.multi = initMultiplayer()
 }, 0)

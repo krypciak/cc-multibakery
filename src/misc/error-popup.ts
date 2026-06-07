@@ -28,7 +28,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
             : typeof err == 'object' && err && 'message' in err
               ? err.message
               : 'not an error??'
-    const instName = inst.name
+    const instName = inst?.name
 
     const server = multi.server
     let serverTypeSpecificInfo: string = `clients: [${[...server.clients.values()].map(c => `(${c.username}, ${c.tpInfo.map})`).join(', ')}]\n`

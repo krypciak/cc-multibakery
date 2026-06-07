@@ -17,10 +17,6 @@ export function startGameLoop(useAnimationFrame = false) {
 
     ig.system.frame = 0
 
-    if (window.crossnode?.options.test) {
-        return
-    }
-
     runTasks(Object.values(instanceinator.instances), () => ig.system?.stopRunLoop())
 
     function run() {

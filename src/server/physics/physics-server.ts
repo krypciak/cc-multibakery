@@ -90,7 +90,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.registerVariableChargeTime()
 
         this.startNet().then(() => {
-            if (window.crossnode && !window.crossnode.tests) {
+            if (window.crossnode && !TEST) {
                 this.repl = new Repl()
                 this.repl!.start()
             }
