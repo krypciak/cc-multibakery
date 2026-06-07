@@ -18,7 +18,7 @@ class MultibakeryTestUtils {
     private tps = 60
     private intervalFps = Infinity
     private displayClientInstances = !window.crossnode?.options.nukeImageStack
-    private crossnodeForceWriteImage = true
+    private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
     private disablePerfFlags = true
 
     async setupServerIfNeeded() {

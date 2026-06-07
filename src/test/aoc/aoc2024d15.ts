@@ -6,7 +6,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../tester'
 import { prestart } from '../../loading-stages'
-import configs from './aoc2024d15-correct-moves.json'
+import configs from './aoc2024d15-configs.json'
 
 import './aoc-box'
 

@@ -9,17 +9,11 @@ export async function setupCrosscodeIfNeeded() {
 async function setupCrosscode() {
     await startCrossnode({
         ccloader2: true,
-        // nukeImageStack: true,
-        writeImage: true,
-        writeImageInstanceinator: true,
+        nukeImageStack: true,
+        // writeImage: true,
+        // writeImageInstanceinator: true,
 
-        modWhitelist: [
-            'cc-multibakery',
-            'cc-instanceinator',
-            'ccmodmanager',
-            'nax-ccuilib',
-            'cc-krypek-lib',
-        ],
+        modWhitelist: ['cc-multibakery', 'cc-instanceinator', 'ccmodmanager', 'nax-ccuilib', 'cc-krypek-lib'],
         extensionWhitelist: [],
     })
 }

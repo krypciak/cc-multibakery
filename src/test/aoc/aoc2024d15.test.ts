@@ -1,12 +1,12 @@
 import { describe } from 'bun:test'
 import { setupCrosscodeIfNeeded } from '../test-setup-test-side'
+import configs from './aoc2024d15-configs.json'
 
 await setupCrosscodeIfNeeded()
 
-describe('aoc2024d15 2', async () => {
-    await tester.executeTest('aoc2024d15 2')
-})
-
 describe('aoc2024d15', async () => {
-    await tester.executeTest('aoc2024d15 1')
+    for (const config of configs) {
+        if (!config.enabled) continue
+        tester.executeTest(config.id)
+    }
 })
