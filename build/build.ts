@@ -21,6 +21,7 @@ interface Options {
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
     metafile?: boolean
     crossnode?: boolean
+    test?: boolean
 }
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
@@ -54,6 +55,7 @@ async function run(
         forceRegenerateBinaryEncodeDecodeScripts = false,
         metafile = false,
         crossnode = false,
+        test = false,
     }: Options
 ) {
     if (!physics) physicsnet = false
@@ -171,6 +173,7 @@ async function run(
             DEV: String(dev),
             PROFILE: String(!dropProfiling),
             CROSSNODE: String(crossnode),
+            TEST: String(test),
         },
         plugins: [plugin],
         metafile,

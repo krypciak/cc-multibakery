@@ -8,6 +8,7 @@
             "node",
             "chrome",
             "jquery",
+            "bun"
         ],
         "module": "preserve",
         "rootDir": "./src",
@@ -22,6 +23,6 @@
         "skipLibCheck": true,
         "resolveJsonModule": true,
         "noUncheckedSideEffectImports": true,
-        "allowImportingTsExtensions": true
+        "allowImportingTsExtensions": false
     }
 }
