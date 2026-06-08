@@ -1,4 +1,4 @@
-import { startCrossnode } from '../../../crossnode/crossnode.js'
+import './tester'
 
 let setupCrosscodePromise: Promise<void> | undefined
 export async function setupCrosscodeIfNeeded() {
@@ -7,6 +7,9 @@ export async function setupCrosscodeIfNeeded() {
 }
 
 async function setupCrosscode() {
+    if (global.window) return
+
+    const { startCrossnode } = await import('../../../crossnode/crossnode.js')
     await startCrossnode({
         ccloader2: true,
         nukeImageStack: true,

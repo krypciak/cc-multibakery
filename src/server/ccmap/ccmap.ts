@@ -13,6 +13,7 @@ import { instanceinatorCopyInstanceConfig } from '../server'
 import { createNetid, type EntityNetid } from '../../misc/entity-netid'
 import { isRemote } from '../remote/is-remote-server'
 import { assertPhysics } from '../physics/is-physics-server'
+import type { TestConfig } from '../../test/tester'
 
 import './injects'
 
@@ -55,6 +56,8 @@ export class CCMap extends InstanceUpdateable {
         entityTypeIdCounterMap: {} as ig.Game['entityTypeIdCounterMap'],
         entitiesByNetid: {} as ig.Game['entitiesByNetid'],
     }
+
+    attachedTest?: TestConfig
 
     constructor(public name: MapName) {
         super()
@@ -167,8 +170,10 @@ export class CCMap extends InstanceUpdateable {
     attemptRecovery(e: unknown) {
         if (!multi.server.settings.attemptCrashRecovery) throw e
 
-        console.error(`ccmap crashed, inst: ${instanceinator.id}`, e)
+        if (!TEST) console.error(`ccmap crashed, inst: ${instanceinator.id}`, e)
         multi.server.unloadMap(this)
+
+        if (TEST && this.attachedTest) tester.testCrashed(this.attachedTest)
     }
 
     isActive() {
@@ -232,11 +237,15 @@ export class CCMap extends InstanceUpdateable {
     update() {
         // console.log('map update')
         super.update()
+        if (this.destroyed) return
+
         if (this.forceUpdateForFrames > 0) this.forceUpdateForFrames--
     }
 
     deferredUpdate() {
         super.deferredUpdate()
+        if (this.destroyed) return
+
         ig.soundManager.update()
     }
 

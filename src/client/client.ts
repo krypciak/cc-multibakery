@@ -162,12 +162,15 @@ export class Client extends InstanceUpdateable {
 
     update() {
         super.update()
+        if (this.destroyed) return
 
         updateDummyData(this)
     }
 
     deferredUpdate() {
         super.deferredUpdate()
+        if (this.destroyed) return
+
         ig.soundManager.update()
     }
 

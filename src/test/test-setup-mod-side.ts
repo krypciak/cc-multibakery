@@ -6,6 +6,9 @@ import { generateRandomUsername } from '../misc/username-util'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'
+import type { TestConfig } from './tester'
+
+import './test-setup-mod-side-all-import'
 
 declare global {
     namespace multi {
@@ -45,6 +48,7 @@ class MultibakeryTestUtils {
                 forceConsistentTickTimes: true,
                 intervalFps: this.intervalFps,
                 displayClientInstances: this.displayClientInstances,
+                attemptCrashRecovery: true,
             })
         )
         await multi.server.start()
@@ -53,7 +57,7 @@ class MultibakeryTestUtils {
         Opts.showServerTps = true
     }
 
-    async createClient(tpInfo: MapTpInfo) {
+    async createClient(tpInfo: MapTpInfo, test: TestConfig) {
         const username = generateRandomUsername()
         const { client } = await multi.server.createAndJoinClient(
             { username, prefferedTpInfo: tpInfo },
@@ -63,20 +67,26 @@ class MultibakeryTestUtils {
 
         const map = multi.server.maps.get(tpInfo.map)!
         assert(map)
+        map.attachedTest = test
 
         client.inst.crossnodeForceWriteImage = this.crossnodeForceWriteImage
 
         return { client, map }
     }
 
-    async updateLoop(inst: InstanceinatorInstance, func: () => boolean | undefined | Promise<boolean | undefined>) {
-        await new Promise<void>(res => {
+    updateLoop(inst: InstanceinatorInstance, func: () => boolean | undefined | Promise<boolean | undefined>) {
+        return new Promise<void>((res, rej) => {
             const loop = async () => {
-                const done = await func()
-                if (done) {
-                    res()
-                } else {
-                    scheduleNextTask(inst, loop)
+                try {
+                    const done = await func()
+                    if (done) {
+                        res()
+                    } else {
+                        scheduleNextTask(inst, loop)
+                    }
+                } catch (e) {
+                    rej(e)
+                    throw e
                 }
             }
             runTask(inst, loop)
@@ -88,7 +98,5 @@ if (TEST) {
     preload(() => {
         multi.test = new MultibakeryTestUtils()
         import('./tester')
-
-        import('./aoc/aoc2024d15')
     }, 1)
 }

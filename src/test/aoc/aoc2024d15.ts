@@ -133,7 +133,7 @@ class Aoc2024d15Test implements TestConfig {
 
     async run() {
         await multi.test.setupServerIfNeeded()
-        const { client, map } = await multi.test.createClient({ map: this.config.mapName })
+        const { client, map } = await multi.test.createClient({ map: this.config.mapName }, this)
         this.client = client
         this.map = map
 
@@ -210,6 +210,7 @@ class Aoc2024d15Test implements TestConfig {
     }
 
     cleanup() {
+        if (!multi.server) return
         if (this.client) multi.server.leaveClient(this.client)
         if (this.map) multi.server.unloadMap(this.map)
     }
