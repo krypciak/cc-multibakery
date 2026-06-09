@@ -74,7 +74,7 @@ class TestBridge implements TestRunner {
         test.crashReject('test crashed')
     }
 }
-if (global.window) {
+if (globalThis.window) {
     window.tester ??= new TestBridge()
 } else {
     global.tester ??= new TestBridge()

@@ -135,6 +135,7 @@ export class SimpleTestManager implements TestRunner {
 
     private allFinished() {
         this.printSummary()
+        multi.destroy()
     }
 
     private printSummary() {

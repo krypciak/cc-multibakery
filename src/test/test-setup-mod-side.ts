@@ -50,6 +50,7 @@ class MultibakeryTestUtils {
                 displayClientInstances: this.displayClientInstances,
                 attemptCrashRecovery: true,
                 useAnimationFrameAsFpsLimiter: true,
+                // displayServerInstance: true,
             })
         )
         await multi.server.start()
