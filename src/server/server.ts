@@ -18,6 +18,7 @@ import { isUsernameValid } from '../misc/username-util'
 import { executeWithStrategy } from '../misc/function-execute-strategy'
 import { isRemote } from './remote/is-remote-server'
 import { ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
+import { createServerTpsLabel } from '../client/instance-label-draw'
 
 import './server-var-access'
 
@@ -99,7 +100,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         super()
 
         this.baseInst = instanceinator.instances[0]
-        this.updateDelayAvg = new ValueAverageOverTime(settings.gameTps)
+
+        this.updateDelayAvg = new ValueAverageOverTime(
+            Math.min(1000, settings.gameLoopIntervalTps ?? settings.gameTps)
+        )
     }
 
     isActive() {
@@ -158,6 +162,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
         removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
         this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
+
+        createServerTpsLabel(this.inst)
 
         startGameLoop(useAnimationFrame)
 

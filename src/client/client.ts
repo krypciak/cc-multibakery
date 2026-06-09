@@ -9,7 +9,7 @@ import {
     createClientNetworkPacketTrafficLabel,
     createClientPingLabel,
     createServerTpsLabel,
-} from './client-label-draw'
+} from './instance-label-draw'
 import { isUsernameValid } from '../misc/username-util'
 import { applyStateUpdatePacket } from '../state/states'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'

@@ -14,6 +14,7 @@ import { createNetid, type EntityNetid } from '../../misc/entity-netid'
 import { isRemote } from '../remote/is-remote-server'
 import { assertPhysics } from '../physics/is-physics-server'
 import type { TestConfig } from '../../test/test-bridge'
+import { createServerTpsLabel } from '../../client/instance-label-draw'
 
 import './injects'
 
@@ -125,6 +126,7 @@ export class CCMap extends InstanceUpdateable {
             setMapDataFromLevelData.call(ig.game, this.name, this.copyRawLevelData())
             PROFILE && console.timeEnd('setDataFromLevelData')
         })
+        createServerTpsLabel(this.inst)
 
         this.initResolve()
 
