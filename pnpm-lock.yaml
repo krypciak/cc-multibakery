@@ -68,9 +68,6 @@ importers:
       prettier:
         specifier: 3.8.1
         version: 3.8.1
-      setimmediate:
-        specifier: ^1.0.5
-        version: 1.0.5
       socket.io:
         specifier: ^4.8.3
         version: 4.8.3
@@ -563,9 +560,6 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  setimmediate@1.0.5:
-    resolution: {integrity: sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==}
-
   simple-git@3.36.0:
     resolution: {integrity: sha512-cGQjLjK8bxJw4QuYT7gxHw3/IouVESbhahSsHrX97MzCL1gu2u7oy38W6L2ZIGECEfIBG4BabsWDPjBxJENv9Q==}
 
@@ -1026,8 +1020,6 @@ snapshots:
   select-hose@2.0.0: {}
 
   semver@7.7.4: {}
-
-  setimmediate@1.0.5: {}
 
   simple-git@3.36.0:
     dependencies:

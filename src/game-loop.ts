@@ -3,12 +3,15 @@ import { assert } from './misc/assert'
 import { prestart } from './loading-stages'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 
+import './misc/setimmediate'
+
 declare global {
     namespace ig {
         interface System {
             frame: number
             animationFrameId: number
             useAnimationFrameAsFpsLimiter?: boolean
+            immediateId?: NodeJS.Immediate
         }
     }
 }
@@ -31,7 +34,15 @@ export function startGameLoop(useAnimationFrame = false) {
         window.requestAnimationFrame(loop)
     } else {
         const interval = 1e3 / (multi.server.settings.gameLoopIntervalTps ?? multi.server.settings.gameTps)
-        ig.system.intervalId = setInterval(run, interval) as unknown as number
+        if (interval > 0) {
+            ig.system.intervalId = setInterval(run, interval) as unknown as number
+        } else {
+            function loop() {
+                run()
+                ig.system.immediateId = setImmediate(loop)
+            }
+            ig.system.immediateId = setImmediate(loop)
+        }
 
         if (multi.server.settings.useAnimationFrameAsFpsLimiter && window.requestAnimationFrame) {
             ig.system.useAnimationFrameAsFpsLimiter = true
@@ -61,6 +72,7 @@ prestart(() => {
             this.parent()
             window.cancelAnimationFrame(this.animationFrameId)
             this.useAnimationFrameAsFpsLimiter = false
+            if (this.immediateId !== undefined) clearImmediate(this.immediateId)
         },
         run() {
             if (!ig.system.running) return

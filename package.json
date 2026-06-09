@@ -38,7 +38,6 @@
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
         "node": "^25.8.1",
         "prettier": "3.8.1",
-        "setimmediate": "^1.0.5",
         "socket.io": "^4.8.3",
         "socket.io-adapter": "^2.5.7",
         "socket.io-client": "^4.8.3",
