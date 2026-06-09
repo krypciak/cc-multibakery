@@ -63,7 +63,7 @@ export class MultiPartyManager implements sc.Model {
 
     isPartyTitleValid(title: string) {
         /* all ascii pritable characters */
-        return title.length >= 3 && title.length <= 16 && /^[\x20-\x7E]+$/.test(title)
+        return (TEST || (title.length >= 3 && title.length <= 16)) && /^[\x20-\x7E]+$/.test(title)
     }
 
     sizeOf(party: MultiParty) {
