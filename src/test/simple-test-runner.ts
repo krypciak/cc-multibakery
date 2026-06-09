@@ -1,6 +1,6 @@
 import { deepEqual } from '../misc/deep-equal'
 import { assert } from '../misc/assert'
-import type { DescribeFunc, ExpectFunc, TestFunc, TestManager } from './test-manager'
+import type { DescribeFunc, ExpectFunc, TestFunc, TestRunner } from './test-runner'
 
 async function wait(timeMs: number) {
     await new Promise<void>(resolve => setTimeout(resolve, timeMs))
@@ -34,7 +34,7 @@ interface SimpleTestConfig {
     totalTime?: number
 }
 
-export class SimpleTestManager implements TestManager {
+export class SimpleTestManager implements TestRunner {
     private described: Record<string, SimpleTestConfig[]> = {}
     private currentDescribeName?: string
 

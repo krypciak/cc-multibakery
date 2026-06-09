@@ -9,7 +9,7 @@ export type TestFunc = (
 ) => void | Promise<void>
 export type ExpectFunc = (value?: unknown, msg?: string) => { toEqual(expectedValue?: unknown): void }
 
-export interface TestManager {
+export interface TestRunner {
     describe: DescribeFunc
     test: TestFunc
     expect: ExpectFunc

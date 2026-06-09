@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
-import { SimpleTestManager } from './simple-test-manager'
-import type { TestManager } from './test-manager'
+import { SimpleTestManager } from './simple-test-runner'
+import type { TestRunner } from './test-runner'
 
 declare global {
     var tester: Tester
@@ -15,7 +15,7 @@ export interface TestConfig {
     cleanup?(): void
 }
 
-class Tester implements TestManager {
+class Tester implements TestRunner {
     private initialized = false
     private tests: Record<
         string,
@@ -25,7 +25,7 @@ class Tester implements TestManager {
         }
     > = {}
 
-    private testManager!: TestManager
+    private testManager!: TestRunner
 
     init() {
         if (this.initialized) return
@@ -42,9 +42,9 @@ class Tester implements TestManager {
         }
     }
 
-    describe: TestManager['describe'] = (...args) => this.testManager.describe(...args)
-    test: TestManager['test'] = (...args) => this.testManager.test(...args)
-    expect: TestManager['expect'] = (...args) => this.testManager.expect(...args)
+    describe: TestRunner['describe'] = (...args) => this.testManager.describe(...args)
+    test: TestRunner['test'] = (...args) => this.testManager.test(...args)
+    expect: TestRunner['expect'] = (...args) => this.testManager.expect(...args)
 
     addTest(test: TestConfig) {
         assert(!this.tests[test.id])
