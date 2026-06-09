@@ -302,7 +302,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     abstract createAndJoinClient(
         joinData: ClientJoinData,
         settings?: ClientCreateAndJoinSettings
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }>
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client, map?: CCMap }>
 
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */

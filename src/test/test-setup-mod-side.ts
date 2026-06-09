@@ -61,14 +61,13 @@ class MultibakeryTestUtils {
 
     async createClient(tpInfo: MapTpInfo, test: TestConfig) {
         const username = generateRandomUsername()
-        const { client } = await multi.server.createAndJoinClient(
+        const { client, map } = await multi.server.createAndJoinClient(
             { username, prefferedTpInfo: tpInfo },
             { awaitClientJoin: true, clientSettingsOverride: { inputType: 'puppet' } }
         )
         assert(client)
-
-        const map = multi.server.maps.get(tpInfo.map)!
         assert(map)
+
         map.attachedTest = test
 
         client.inst.crossnodeForceWriteImage = this.crossnodeForceWriteImage

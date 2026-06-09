@@ -24,6 +24,7 @@ import { loadClientOptionModelState } from '../../client/client-option-model-lin
 import { ServerDiscoveryServer } from '../../net/server-discovery'
 import type { PlayerInfoEntry } from '../../state/player-info'
 import { createNetTransportServer, type NetTransportServerSettings } from '../../net/net-transport'
+import type { CCMap } from '../ccmap/ccmap'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -141,7 +142,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     async createAndJoinClient(
         joinData: ClientJoinData,
         { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }> {
         this.createAndJoinClientInitialChecks(joinData)
         assert(!ackDataOverride)
 
@@ -162,7 +163,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         await this.initAndJoinClientStrategy(client, tpInfo, connection, awaitClientJoin)
 
-        return { client, ackData: { status: 'ok', tpInfo, reservedNetid: client.reservedNetid } }
+        return { client, map, ackData: { status: 'ok', tpInfo, reservedNetid: client.reservedNetid } }
     }
 
     leaveClient(client: Client) {

@@ -193,7 +193,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async createAndJoinClient(
         joinData: ClientJoinData,
         { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client }> {
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }> {
         this.createAndJoinClientInitialChecks(joinData)
 
         assert(!clientSettingsOverride)
@@ -211,7 +211,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         const client = new Client(settings)
         const tpInfo = client.getInitialTpInfo()
-        this.getMap(tpInfo.map)
+        const map = this.getMap(tpInfo.map)
 
         assert(ackData.reservedNetid)
         client.reservedNetid = ackData.reservedNetid
@@ -223,7 +223,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         assert(this.netManager.conn)
         this.netManager.conn.join(client)
 
-        return { client, ackData }
+        return { client, ackData, map }
     }
 
     onMapReady(map: CCMap) {
