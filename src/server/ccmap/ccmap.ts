@@ -218,7 +218,7 @@ export class CCMap extends InstanceUpdateable {
         this.clients.erase(client)
         if (prevLen == this.clients.length) return
 
-        this.forceUpdateForFrames = multi.server.settings.tps
+        this.forceUpdateForFrames = multi.server.settings.gameTps
 
         if (client.dummy) this.leaveEntity(client.dummy)
     }

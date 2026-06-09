@@ -18,8 +18,8 @@ declare global {
 
 class MultibakeryTestUtils {
     private setupServerPromise: Promise<void> | undefined
-    private tps = 60
-    private tpsInterval = Infinity
+    private gameTps = 60
+    private actualTps = Infinity
     private displayClientInstances = !window.crossnode?.options.nukeImageStack
     private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
     private disablePerfFlags = true
@@ -44,9 +44,9 @@ class MultibakeryTestUtils {
 
         multi.setServer(
             new PhysicsServer({
-                tps: this.tps,
+                gameTps: this.gameTps,
                 forceConsistentTickTimes: true,
-                tpsInterval: this.tpsInterval,
+                gameLoopIntervalTps: this.actualTps,
                 displayClientInstances: this.displayClientInstances,
                 attemptCrashRecovery: true,
             })

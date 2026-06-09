@@ -22,7 +22,7 @@ export async function tryJoinRemote(
         displayClientInstances: Opts.serverDisplayClientInstances,
         displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
 
-        tps: netInfo.details.globalTps,
+        gameTps: netInfo.details.gameTps,
         forceConsistentTickTimes: netInfo.details.forceConsistentTickTimes,
         netInfo: netInfo as any,
         modCompatibility: netInfo.details.modCompatibility,

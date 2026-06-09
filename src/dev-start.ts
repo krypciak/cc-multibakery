@@ -56,7 +56,7 @@ const defaultMap: MapTpInfo = {
 
 function createSettings(): PhysicsServerSettings {
     return {
-        tps: 60,
+        gameTps: 60,
         useAnimationFrameLoop: true,
         displayServerInstance: false,
         displayMaps: false,

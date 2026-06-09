@@ -30,7 +30,7 @@ export function startGameLoop(useAnimationFrame = false) {
         }
         window.requestAnimationFrame(loop)
     } else {
-        const interval = 1e3 / (multi.server.settings.tpsInterval ?? multi.server.settings.tps)
+        const interval = 1e3 / (multi.server.settings.gameLoopIntervalTps ?? multi.server.settings.gameTps)
         ig.system.intervalId = setInterval(run, interval) as unknown as number
     }
 
@@ -86,7 +86,7 @@ function physicsLoop() {
     if (ig.system.frame % ig.system.frameSkip == 0) {
         const settings = multi.server.settings
         if (settings.forceConsistentTickTimes) {
-            const step = 1000 / settings.tps
+            const step = 1000 / settings.gameTps
             const time = ig.Timer._last + step
             ig.Timer.time += Math.min((time - ig.Timer._last) / 1e3, ig.Timer.maxStep) * ig.Timer.timeScale
             ig.Timer._last = time

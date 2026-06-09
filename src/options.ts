@@ -252,14 +252,14 @@ function registerOpts() {
                     },
                 },
                 'physics server': {
-                    serverGlobalTps: {
+                    serverGameTps: {
                         type: 'OBJECT_SLIDER',
                         init: 60,
                         min: 60,
                         max: 240,
                         step: 1,
                         name: 'TPS',
-                        description: 'Ticks per second',
+                        description: 'Ticks per second, ignored when requestAnimationFrame is used',
                         customNumberDisplay(index) {
                             return index + 60
                         },

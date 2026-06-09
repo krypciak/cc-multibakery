@@ -22,7 +22,7 @@ function isServerDetailsBase(data: unknown): data is ServerDetailsBase {
 
 export interface ServerDetailsRemote extends ServerDetailsBase {
     hasIcon?: boolean
-    globalTps: number
+    gameTps: number
     forceConsistentTickTimes?: boolean
     modCompatibility: ModCompatibilityList
     mapSwitchDelay?: number
@@ -31,7 +31,7 @@ export interface ServerDetailsRemote extends ServerDetailsBase {
 }
 export function isServerDetailsRemote(data: unknown): data is ServerDetailsRemote {
     if (!isServerDetailsBase(data)) return false
-    if (!('globalTps' in data) || typeof data.globalTps !== 'number') return false
+    if (!('gameTps' in data) || typeof data.gameTps !== 'number') return false
     if (!('modCompatibility' in data) || !isModCompatibilityList(data.modCompatibility)) return false
     return true
 }

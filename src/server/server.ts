@@ -27,9 +27,9 @@ export interface MapTpInfo {
 }
 
 export interface ServerSettings {
-    tps: number
+    gameTps: number
     forceConsistentTickTimes?: boolean
-    tpsInterval?: number
+    gameLoopIntervalTps?: number
 
     displayServerInstance?: boolean
     displayMaps?: boolean
@@ -98,7 +98,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         super()
 
         this.baseInst = instanceinator.instances[0]
-        this.updateDelayAvg = new ValueAverageOverTime(settings.tps)
+        this.updateDelayAvg = new ValueAverageOverTime(settings.gameTps)
     }
 
     isActive() {

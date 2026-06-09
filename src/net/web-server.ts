@@ -37,7 +37,7 @@ export class PhysicsHttpServer {
             forceJsonCommunication: this.netInfo.details.forceJsonCommunication,
 
             hasIcon: !!icon,
-            globalTps: multi.server.settings.tps,
+            gameTps: multi.server.settings.gameTps,
             forceConsistentTickTimes: multi.server.settings.forceConsistentTickTimes,
             modCompatibility: getModCompatibilityList(),
             mapSwitchDelay: multi.server.settings.mapSwitchDelay,
