@@ -30,7 +30,7 @@ export function startGameLoop(useAnimationFrame = false) {
         }
         window.requestAnimationFrame(loop)
     } else {
-        const interval = 1e3 / (multi.server.settings.intervalFps ?? multi.server.settings.tps)
+        const interval = 1e3 / (multi.server.settings.tpsInterval ?? multi.server.settings.tps)
         ig.system.intervalId = setInterval(run, interval) as unknown as number
     }
 
