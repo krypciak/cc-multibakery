@@ -4,7 +4,7 @@ import { PhysicsServer } from '../server/physics/physics-server'
 import type { MapTpInfo } from '../server/server'
 import { generateRandomUsername } from '../misc/username-util'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleNextTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'
 import type { TestConfig } from './test-bridge'
 
@@ -19,7 +19,7 @@ declare global {
 class MultibakeryTestUtils {
     private setupServerPromise: Promise<void> | undefined
     private gameTps = 60
-    private actualTps = Infinity
+    private actualTps = 60 //Infinity
     private displayClientInstances = !window.crossnode?.options.nukeImageStack
     private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
     private disablePerfFlags = true
@@ -93,6 +93,12 @@ class MultibakeryTestUtils {
             }
             runTask(inst, loop)
         })
+    }
+
+    async waitFrames(inst: InstanceinatorInstance, count: number) {
+        for (let frame = 0; frame < count; frame++) {
+            await scheduleTask(inst, () => {})
+        }
     }
 }
 

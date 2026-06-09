@@ -159,7 +159,7 @@ async function run(
     }
     const external: string[] = []
     if (crossnode) external.push('ws')
-    if (test) external.push('bun:test', '../../../crossnode/crossnode.js')
+    external.push('bun:test', '../../../crossnode/crossnode.js')
 
     const ctx = await esbuild.context({
         entryPoints: [`${projectRoot}/src/plugin.ts`],

@@ -62,20 +62,25 @@ export class SimpleTestManager implements TestRunner {
         this.totalTests++
 
         try {
-            await Promise.race([
+            const promises = []
+            promises.push(
                 (async () => {
                     await func()
                     if (config.state == 'running') config.state = 'success'
-                })(),
-                timeout &&
+                })()
+            )
+            if (timeout) {
+                promises.push(
                     (async () => {
                         await wait(timeout)
                         if (config.state == 'running') {
                             config.state = 'failed'
                             config.errorMessage = `Timeout ${timeout} ms`
                         }
-                    })(),
-            ])
+                    })()
+                )
+            }
+            await Promise.race(promises)
         } catch (e) {
             config.state = 'failed'
             if (typeof e == 'object' && e && 'message' in e && typeof e.message == 'string') {

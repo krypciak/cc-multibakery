@@ -16,7 +16,7 @@ async function setupCrosscode() {
         // writeImage: true,
         // writeImageInstanceinator: true,
 
-        modWhitelist: ['cc-multibakery', 'cc-instanceinator', 'ccmodmanager', 'nax-ccuilib', 'cc-krypek-lib'],
+        modWhitelist: ['cc-multibakery', 'cc-instanceinator', 'ccmodmanager', 'nax-ccuilib', 'cc-krypek-lib', 'cc-variable-charge-time'],
         extensionWhitelist: [],
     })
 }

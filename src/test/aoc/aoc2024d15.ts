@@ -10,12 +10,6 @@ import configs from './aoc2024d15-configs.json'
 
 import './aoc-box'
 
-async function waitFrames(inst: InstanceinatorInstance, count: number) {
-    for (let frame = 0; frame < count; frame++) {
-        await scheduleTask(inst, () => {})
-    }
-}
-
 async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir: ig.Input.KnownAction) {
     const input = e.inputManager
     assert(input instanceof dummy.input.Puppet.InputManager)
@@ -111,7 +105,7 @@ class Aoc2024d15Test implements TestConfig {
     name: string
     timeout: number
 
-    private moves: string
+    moves: string
 
     moveI = -1
     sum = 0
@@ -178,7 +172,7 @@ class Aoc2024d15Test implements TestConfig {
         else if (move == '^') dir = 'up'
 
         await moveDummy(this.client.dummy, this.client.inst, dir)
-        await waitFrames(this.client.inst, 11)
+        await multi.test.waitFrames(this.client.inst, 11)
         const { x, y } = this.getCenteredPlayerPos(this.client.dummy)
         this.client.dummy.setPos(x, y)
 
