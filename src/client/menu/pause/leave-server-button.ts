@@ -39,7 +39,7 @@ prestart(() => {
                 this.toTitleButton.setText(text, true)
                 this.toTitleButton.onButtonPress = () => {
                     ig.canLeavePauseMenu = false
-                    sc.Dialogs.showYesNoDialog(dialogText, sc.DIALOG_INFO_ICON.QUESTION, button => {
+                    const onClick = (button: { data: number }) => {
                         ig.canLeavePauseMenu = true
                         if (button.data == 0) {
                             ig.interact.removeEntry(this.buttonInteract)
@@ -53,7 +53,12 @@ prestart(() => {
                                 })
                             }
                         }
-                    })
+                    }
+                    if (DEV) {
+                        onClick({ data: 0 })
+                    } else {
+                        sc.Dialogs.showYesNoDialog(dialogText, sc.DIALOG_INFO_ICON.QUESTION, onClick)
+                    }
                 }
             } else if (this.toTitleButtonBackup) {
                 this.toTitleButton.setText(this.toTitleButtonBackup.text)
