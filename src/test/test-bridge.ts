@@ -42,6 +42,10 @@ class TestBridge implements TestRunner {
         }
     }
 
+    getTestIds() {
+        return Object.keys(this.tests)
+    }
+
     describe: TestRunner['describe'] = (...args) => this.testManager.describe(...args)
     test: TestRunner['test'] = (...args) => this.testManager.test(...args)
     expect: TestRunner['expect'] = (...args) => this.testManager.expect(...args)

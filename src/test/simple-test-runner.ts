@@ -2,6 +2,15 @@ import { deepEqual } from '../misc/deep-equal'
 import { assert } from '../misc/assert'
 import type { DescribeFunc, ExpectFunc, TestFunc, TestRunner } from './test-runner'
 
+function importAsyncHooks(): typeof import('async_hooks') | undefined {
+    const isBun = typeof global.Bun !== 'undefined'
+    if (isBun) return require('async_hooks')
+    return (0, eval)('require("async_hooks")')
+}
+
+const async_hooks = importAsyncHooks()
+const AsyncLocalStorage = async_hooks?.AsyncLocalStorage
+
 async function wait(timeMs: number) {
     await new Promise<void>(resolve => setTimeout(resolve, timeMs))
 }
@@ -36,7 +45,8 @@ interface SimpleTestConfig {
 
 export class SimpleTestManager implements TestRunner {
     private described: Record<string, SimpleTestConfig[]> = {}
-    private currentDescribeName?: string
+    private als = AsyncLocalStorage ? new AsyncLocalStorage<string>() : undefined
+    private describeStack: string[] = []
 
     private passCount = 0
     private failCount = 0
@@ -45,16 +55,23 @@ export class SimpleTestManager implements TestRunner {
     private completedTests = 0
     private allStartTime = Date.now()
 
-    describe: DescribeFunc = (name, func) => {
+    describe: DescribeFunc = async (name, func) => {
         this.described[name] ??= []
-        this.currentDescribeName = name
-        func()
-        this.currentDescribeName = undefined
+        if (this.als) {
+            await this.als.run(name, func)
+        } else {
+            this.describeStack.push(name)
+            try {
+                await func()
+            } finally {
+                this.describeStack.pop()
+            }
+        }
     }
 
     test: TestFunc = async (name, func, { timeout } = {}) => {
-        assert(this.currentDescribeName, 'Called test without describe!')
-        const describeName = this.currentDescribeName
+        const describeName = this.als?.getStore() ?? this.describeStack[this.describeStack.length - 1]
+        assert(describeName, 'Called test without describe!')
         const arr = this.described[describeName]
         assert(arr)
         const config: SimpleTestConfig = { name, state: 'running', startTime: Date.now() }
@@ -105,10 +122,16 @@ export class SimpleTestManager implements TestRunner {
                 console.log(`${config.errorMessage}`)
             }
 
-            if (this.completedTests >= this.totalTests) {
-                this.allFinished()
+            if (this.isFinished()) {
+                setTimeout(() => {
+                    if (this.isFinished()) this.allFinished()
+                }, 100)
             }
         }
+    }
+
+    private isFinished() {
+        return this.completedTests >= this.totalTests
     }
 
     expect: ExpectFunc = (value, msg) => {
@@ -139,6 +162,7 @@ export class SimpleTestManager implements TestRunner {
     }
 
     private allFinished() {
+        assert(this.isFinished())
         this.printSummary()
         multi.destroy()
     }

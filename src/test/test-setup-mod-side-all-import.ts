@@ -7,7 +7,8 @@ preload(() => {
 }, 1)
 
 poststart(() => {
-    if (!TEST || CROSSNODE) return
+    const isBun = typeof global.Bun !== 'undefined'
+    if (!TEST || CROSSNODE || isBun) return
     // TEST && import('./aoc/aoc2024d15.test')
     TEST && import('./combat/combat-art-test.test')
 }, 9999)

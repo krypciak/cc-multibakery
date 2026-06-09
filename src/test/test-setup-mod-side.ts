@@ -2,7 +2,6 @@ import { assert } from '../misc/assert'
 import { preload } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
 import type { MapTpInfo } from '../server/server'
-import { generateRandomUsername } from '../misc/username-util'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { runTask, scheduleNextTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'
@@ -59,8 +58,7 @@ class MultibakeryTestUtils {
         Opts.showServerTps = true
     }
 
-    async createClient(tpInfo: MapTpInfo, test: TestConfig) {
-        const username = generateRandomUsername()
+    async createClient(username: string, tpInfo: MapTpInfo, test: TestConfig) {
         const { client, map } = await multi.server.createAndJoinClient(
             { username, prefferedTpInfo: tpInfo },
             { awaitClientJoin: true, clientSettingsOverride: { inputType: 'puppet' } }

@@ -6,6 +6,8 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
+import { addRuntimeAsset, reloadRuntimeAssets } from '../../misc/runtime-assets'
+import { circuitBranchA, circuitBranchB } from '../../misc/godmode'
 
 async function executeCombatArt(
     e: dummy.DummyPlayer,
@@ -78,7 +80,7 @@ async function executeCombatArt(
     input.mainInputData.pushInput(emptyInput)
 
     await multi.test.updateLoop(inst, () => e.state == 0 && !e.currentAction)
-    await multi.test.waitFrames(inst, 60)
+    // await multi.test.waitFrames(inst, 60)
 }
 
 export interface CombatArtTestConfig {
@@ -91,12 +93,14 @@ export interface CombatArtTestConfig {
     branch: 'A' | 'B'
 }
 
+let combatArtMapCounter = 0
 class CombatArtTest implements TestConfig {
     id: string
     name: string
     timeout?: number
 
-    mapName = 'multibakery/test/combat'
+    baseMapName = 'multibakery/test/combat'
+    mapName = this.baseMapName + combatArtMapCounter++
 
     client!: Client
     map!: CCMap
@@ -104,7 +108,7 @@ class CombatArtTest implements TestConfig {
     constructor(private config: CombatArtTestConfig) {
         this.id = config.id
         this.name = config.name
-        // this.timeout = 10e3
+        this.timeout = 1000e3
     }
 
     private setupPlayerModel() {
@@ -122,9 +126,8 @@ class CombatArtTest implements TestConfig {
             model.params.setMaxSp(sc.SP_LEVEL[model.spLevel])
             model.level = 99
 
-            // prettier-ignore
-            const branchA = [0, 1, 2, 4, 6, 8, 9, 10, 11, 12, 13, 14, 15, 17, 19, 21, 22, 23, 24, 25, 26, 27, 28, 29, 31, 33, 35, 36, 37, 38, 39, 40, 41, 42, 44, 46, 48, 49, 50, 51, 52, 53, 54, 55, 57, 59, 61, 62, 63, 65, 67, 69, 70, 71, 72, 74, 76, 78, 79, 80, 81, 82, 84, 85, 86, 87, 88, 89, 90, 91, 93, 95, 97, 99, 101, 103, 104, 105, 106, 107, 108, 109, 110, 111, 113, 115, 117, 118, 120, 122, 124, 125, 126, 128, 130, 132, 133, 134, 135, 136, 137, 138, 139, 140, 141, 142, 143, 145, 147, 149, 151, 153, 155, 156, 157, 158, 160, 162, 164, 165, 166, 167, 168, 169, 170, 171, 172, 173, 174, 175, 176, 177, 179, 181, 183, 185, 187, 189, 190, 191, 192, 193, 194, 195, 196, 197, 199, 201, 203, 204, 206, 208, 210, 211, 212, 213, 214, 216, 218, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 231, 233, 235, 236, 238, 240, 242, 243, 244, 245, 246, 248, 250, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261, 262, 263, 264, 266, 268, 270, 272, 274, 276, 277, 278, 279, 280, 281, 282, 283, 284, 285, 287, 289, 291, 293, 295, 297, 298, 299, 300, 302, 304, 306, 307, 308, 309, 310, 311, 312, 313, 314, 315, 316, 317, 319, 321, 323, 324, 326, 328, 330, 331, 332, 334, 336, 338, 339, 340, 341, 342, 343, 344, 345, 346, 347, 348, 349, 350, 351, 352, 354, 356, 358, 360, 362, 364, 365, 366, 367, 368, 369, 370, 371, 373, 375, 377, 378, 379, 381, 383, 385, 386, 387, 388, 390, 392, 394, 395, 396, 397, 398, 399]
-            const branch = branchA
+            // TODO: this doesnt quite match up
+            const branch = this.config.branch == 'A' ? circuitBranchA : circuitBranchB
 
             for (const id of branch) {
                 // @ts-expect-error
@@ -145,7 +148,13 @@ class CombatArtTest implements TestConfig {
 
     async run() {
         await multi.test.setupServerIfNeeded()
-        const { client, map } = await multi.test.createClient({ map: this.mapName }, this)
+
+        function mapNameToFilePath(name: string) {
+            return 'data/maps/' + name + '.json'
+        }
+        addRuntimeAsset(mapNameToFilePath(this.mapName), mapNameToFilePath(this.baseMapName))
+        reloadRuntimeAssets()
+        const { client, map } = await multi.test.createClient(this.id, { map: this.mapName }, this)
         this.client = client
         this.map = map
         this.setupPlayerModel()
@@ -174,11 +183,13 @@ poststart(() => {
                         const action = model.elementConfigs[element].actions[actionName]
                         if (!action) continue
 
-                        const id = `${character}_${element}_${type}_${branch}_${level}`
+                        const elementName = Object.keys(sc.ELEMENT)[element]
+                        const id = `combat_${character}_${elementName}_${type}_${branch}_${level}`
+                        const combatArtName = action.name
                         tester.addTest(
                             new CombatArtTest({
                                 id,
-                                name: 'combat art test',
+                                name: `${character} ${elementName} ${type} ${branch} ${level} ${combatArtName}`,
                                 character,
                                 element,
                                 combatArt,

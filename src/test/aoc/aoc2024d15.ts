@@ -127,7 +127,7 @@ class Aoc2024d15Test implements TestConfig {
 
     async run() {
         await multi.test.setupServerIfNeeded()
-        const { client, map } = await multi.test.createClient({ map: this.config.mapName }, this)
+        const { client, map } = await multi.test.createClient(this.id, { map: this.config.mapName }, this)
         this.client = client
         this.map = map
 
