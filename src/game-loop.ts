@@ -3,12 +3,12 @@ import { assert } from './misc/assert'
 import { prestart } from './loading-stages'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 
-export {}
 declare global {
     namespace ig {
         interface System {
             frame: number
             animationFrameId: number
+            useAnimationFrameAsFpsLimiter?: boolean
         }
     }
 }
@@ -32,6 +32,15 @@ export function startGameLoop(useAnimationFrame = false) {
     } else {
         const interval = 1e3 / (multi.server.settings.gameLoopIntervalTps ?? multi.server.settings.gameTps)
         ig.system.intervalId = setInterval(run, interval) as unknown as number
+
+        if (multi.server.settings.useAnimationFrameAsFpsLimiter && window.requestAnimationFrame) {
+            ig.system.useAnimationFrameAsFpsLimiter = true
+            function loop() {
+                canDraw = true
+                window.requestAnimationFrame(loop)
+            }
+            window.requestAnimationFrame(loop)
+        }
     }
 
     ig.system.running = true
@@ -41,7 +50,7 @@ prestart(() => {
     const orig = window.requestAnimationFrame
     if (orig) {
         window.requestAnimationFrame = callback => {
-            const id = orig(callback)
+            const id = orig.call(window, callback)
             ig.system.animationFrameId = id
             return id
         }
@@ -51,6 +60,7 @@ prestart(() => {
         stopRunLoop() {
             this.parent()
             window.cancelAnimationFrame(this.animationFrameId)
+            this.useAnimationFrameAsFpsLimiter = false
         },
         run() {
             if (!ig.system.running) return
@@ -70,7 +80,10 @@ prestart(() => {
     })
 })
 
+let canDraw = true
 function draw() {
+    if (!canDraw) return
+
     runTasks(multi.server.getAllInstances(), () => {
         if (!ig.system.hasFocusLost() && ig.game && !ig.game.fullyStopped && ig.perf.draw) {
             ig.game.draw()
@@ -78,6 +91,8 @@ function draw() {
         }
     })
     if (multi.server) assert(instanceinator.id == multi.server?.inst.id)
+
+    if (ig.system.useAnimationFrameAsFpsLimiter) canDraw = false
 }
 
 let previousMusicTime = 0

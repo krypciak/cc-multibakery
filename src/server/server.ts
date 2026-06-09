@@ -30,6 +30,7 @@ export interface ServerSettings {
     gameTps: number
     forceConsistentTickTimes?: boolean
     gameLoopIntervalTps?: number
+    useAnimationFrameAsFpsLimiter?: boolean
 
     displayServerInstance?: boolean
     displayMaps?: boolean

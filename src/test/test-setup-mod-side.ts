@@ -49,6 +49,7 @@ class MultibakeryTestUtils {
                 gameLoopIntervalTps: this.actualTps,
                 displayClientInstances: this.displayClientInstances,
                 attemptCrashRecovery: true,
+                useAnimationFrameAsFpsLimiter: true,
             })
         )
         await multi.server.start()
