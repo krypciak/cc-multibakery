@@ -4,7 +4,7 @@ import type { CCMap } from '../../server/ccmap/ccmap'
 import type { Client } from '../../client/client'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
-import type { TestConfig } from '../tester'
+import type { TestConfig } from '../test-bridge'
 import { prestart } from '../../loading-stages'
 import configs from './aoc2024d15-configs.json'
 

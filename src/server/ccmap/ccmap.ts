@@ -13,7 +13,7 @@ import { instanceinatorCopyInstanceConfig } from '../server'
 import { createNetid, type EntityNetid } from '../../misc/entity-netid'
 import { isRemote } from '../remote/is-remote-server'
 import { assertPhysics } from '../physics/is-physics-server'
-import type { TestConfig } from '../../test/tester'
+import type { TestConfig } from '../../test/test-bridge'
 
 import './injects'
 

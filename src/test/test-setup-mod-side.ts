@@ -6,7 +6,7 @@ import { generateRandomUsername } from '../misc/username-util'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'
-import type { TestConfig } from './tester'
+import type { TestConfig } from './test-bridge'
 
 import './test-setup-mod-side-all-import'
 
@@ -97,6 +97,6 @@ class MultibakeryTestUtils {
 if (TEST) {
     preload(() => {
         multi.test = new MultibakeryTestUtils()
-        import('./tester')
+        import('./test-bridge')
     }, 1)
 }

@@ -3,7 +3,7 @@ import { SimpleTestManager } from './simple-test-runner'
 import type { TestRunner } from './test-runner'
 
 declare global {
-    var tester: Tester
+    var tester: TestBridge
 }
 
 export interface TestConfig {
@@ -15,7 +15,7 @@ export interface TestConfig {
     cleanup?(): void
 }
 
-class Tester implements TestRunner {
+class TestBridge implements TestRunner {
     private initialized = false
     private tests: Record<
         string,
@@ -75,8 +75,8 @@ class Tester implements TestRunner {
     }
 }
 if (global.window) {
-    window.tester ??= new Tester()
+    window.tester ??= new TestBridge()
 } else {
-    global.tester ??= new Tester()
+    global.tester ??= new TestBridge()
 }
 tester.init()

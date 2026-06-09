@@ -1,4 +1,4 @@
-import './tester'
+import './test-bridge'
 
 let setupCrosscodePromise: Promise<void> | undefined
 export async function setupCrosscodeIfNeeded() {
