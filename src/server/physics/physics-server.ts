@@ -306,14 +306,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
     private registerVariableChargeTime() {
         /* cc-variable-charge-time */
-        ig.onChargeTimingsOptionChange?.push(() => {
-            const timings = ig.chargeTimings
-            runTasks(
-                [...this.maps.values()].map(map => map.inst),
-                () => {
-                    ig.setChargeTimings([...timings])
-                }
-            )
+        ig.onChargeTimingsChange?.push(timings => {
+            runTasks(this.getAllInstances(), () => {
+                ig.setChargeTimings([...timings])
+            })
         })
     }
 }

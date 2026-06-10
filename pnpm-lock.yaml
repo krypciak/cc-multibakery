@@ -40,7 +40,7 @@ importers:
         version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/fc159dfcd3808add6d93851857c07ee4eb5df9c6
       cc-variable-charge-time:
         specifier: github:krypciak/cc-variable-charge-time
-        version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/f1bc429a01fb0aa1684252218ec12b81a09894fb
+        version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/b757dba9284897b4adb95dbc08f692fc0c4ee303
       ccmoddb:
         specifier: github:CCDirectLink/CCModDB
         version: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/02a6592136067e64bcb81252392797fc48388944
@@ -414,8 +414,8 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-ZdknutesKAbxC6zFk8tq9fgw3QQkZd10oKa6kzV8LXZqIK68v9TGkrhEApafpFYCWB27V7cZSCH1ZYpa8EBDwg==, tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/fc159dfcd3808add6d93851857c07ee4eb5df9c6}
     version: 1.2.0
 
-  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/f1bc429a01fb0aa1684252218ec12b81a09894fb:
-    resolution: {gitHosted: true, integrity: sha512-NmYzUsQ68W3DN/8yJroYLS2wZwx4duRF43ZoFw20eiDG+BIQcrsZ709q1XhS1vjcWYgTFN2hknYwJeJtio3XoQ==, tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/f1bc429a01fb0aa1684252218ec12b81a09894fb}
+  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/b757dba9284897b4adb95dbc08f692fc0c4ee303:
+    resolution: {gitHosted: true, integrity: sha512-WGMuo2KpH4dVLcX/6VqQZlY1SCS4O7meqyPNCwnbPIcI60n+DVlA8CczcVEr/H8kCHrpWkzrUuuUHKvyElLDdA==, tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/b757dba9284897b4adb95dbc08f692fc0c4ee303}
     version: 1.0.0
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/02a6592136067e64bcb81252392797fc48388944:
@@ -857,7 +857,7 @@ snapshots:
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/fc159dfcd3808add6d93851857c07ee4eb5df9c6: {}
 
-  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/f1bc429a01fb0aa1684252218ec12b81a09894fb: {}
+  cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/b757dba9284897b4adb95dbc08f692fc0c4ee303: {}
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/02a6592136067e64bcb81252392797fc48388944:
     dependencies:
