@@ -4,25 +4,26 @@ import * as path from 'path'
 import { isMissingFiles, generateBinaryTypes } from './generate-binary-encode-decode-scripts'
 import { fileURLToPath } from 'url'
 
-interface Options {
-    sourcemap?: boolean
-    physics?: boolean
-    physicsnet?: boolean
-    remote?: boolean
-    browser?: boolean
-    minifySyntax?: boolean
-    minifyWhitespace?: boolean
-    minifyIdentifiers?: boolean
-    target?: string
-    dropAssert?: boolean
-    dev?: boolean
-    profile?: boolean
-    noWrite?: boolean
-    forceRegenerateBinaryEncodeDecodeScripts?: boolean
-    metafile?: boolean
-    crossnode?: boolean
-    test?: boolean
+const defaultFlags = {
+    sourcemap: true,
+    physics: true,
+    physicsnet: true,
+    remote: true,
+    browser: false,
+    minifySyntax: false,
+    minifyWhitespace: false,
+    minifyIdentifiers: false,
+    target: 'es2018',
+    dropAssert: false,
+    dev: true,
+    profile: false,
+    noWrite: false,
+    forceRegenerateBinaryEncodeDecodeScripts: false,
+    metafile: false,
+    crossnode: false,
+    test: false,
 }
+type Flags = Partial<typeof defaultFlags>
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 
@@ -36,28 +37,29 @@ function requireFix(code: string): string {
     return code
 }
 
-async function run(
-    type: 'build' | 'watch',
-    {
-        sourcemap = true,
-        physics = true,
-        physicsnet = true,
-        remote = true,
-        browser = false,
-        minifySyntax = false,
-        minifyWhitespace = false,
-        minifyIdentifiers = false,
-        target = 'es2018',
-        dropAssert = false,
-        dev = true,
-        profile = false,
-        noWrite = false,
-        forceRegenerateBinaryEncodeDecodeScripts = false,
-        metafile = false,
-        crossnode = false,
-        test = false,
-    }: Options
-) {
+async function run(type: 'build' | 'watch', flags: Flags) {
+    // @ts-expect-error
+    for (const key in defaultFlags) flags[key] ??= defaultFlags[key]
+    let {
+        sourcemap,
+        physics,
+        physicsnet,
+        remote,
+        browser,
+        minifySyntax,
+        minifyWhitespace,
+        minifyIdentifiers,
+        target,
+        dropAssert,
+        dev,
+        profile,
+        noWrite,
+        forceRegenerateBinaryEncodeDecodeScripts,
+        metafile,
+        crossnode,
+        test,
+    } = flags
+
     if (!physics) physicsnet = false
 
     const outputFile = `${projectRoot}/plugin.js`
@@ -190,20 +192,37 @@ async function run(
     }
 }
 
-const args = process.argv.slice(2)
-const obj = Object.fromEntries(
-    args
-        .filter(str => str.includes('='))
-        .map(str => {
-            const sp: any[] = str.split('=')
-            if (sp[1] == 'false') sp[1] = false
-            if (sp[1] == 'true') sp[1] = true
-            return sp
-        })
-)
+function getTypeAndFlags(): { type: 'build' | 'watch'; flags: Flags } {
+    const type = process.argv[2] ?? 'build'
+    if (type != 'build' && type != 'watch') {
+        console.error('unknown build type:', type)
+        process.exit(1)
+    }
 
-if (process.argv[2] == 'build') {
-    await run('build', obj)
-} else if (process.argv[2] == 'watch') {
-    await run('watch', obj)
+    const args = process.argv.slice(3)
+    const flags = Object.fromEntries(
+        args.map(str => {
+            const sp: any[] = str.split('=')
+            const flag = sp[0] as keyof Flags
+            let value = sp[1]
+            if (value === undefined || value == 'true') value = true
+            else if (value == 'false') value = false
+            return [flag, value]
+        })
+    )
+    const errors = []
+    for (const flag of Object.keys(flags) as (keyof Flags)[]) {
+        if (defaultFlags[flag] === undefined) {
+            errors.push('unknown build flag: ' + flag)
+        }
+    }
+    if (errors.length > 0) {
+        console.error(errors.join('\n'))
+        process.exit(1)
+    }
+
+    return { type, flags }
 }
+
+const { type, flags } = getTypeAndFlags()
+await run(type, flags)
