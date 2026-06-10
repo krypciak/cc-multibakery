@@ -8,10 +8,11 @@ import type { MapTpInfo } from './server/server'
 import { tryJoinRemote } from './server/remote/try-join-remote'
 import { getServerDetails } from './net/web-server'
 import type { RemoteServerConnectionSettings } from './server/remote/remote-server'
+import { profile } from './misc/profile-decorator'
 
 const defaultMap: MapTpInfo = {
-    // map: 'multibakery/dev',
-    map: 'multibakery/mba-pvp',
+    map: 'multibakery/dev',
+    // map: 'multibakery/mba-pvp',
     // map: 'tree-dng/f4/boss',
     // map: 'multibakery/mba-lobby',
     // map: 'multibakery/mba-testing',
@@ -45,10 +46,10 @@ const defaultMap: MapTpInfo = {
     // map: 'cursed/room-1',
     // map: 'ark/beginner/bomb-switch',
     // map: 'ark/beginner/wave-block',
-    // marker: 'entrance',
+    marker: 'entrance',
     // marker: 'puzzle',
     // marker: 'pvp',
-    marker: 'to_pvp',
+    // marker: 'to_pvp',
     // marker: 'exit',
     // marker: 'door-west1',
     // marker: 'blockPoint',
@@ -112,40 +113,42 @@ function createSettings(): PhysicsServerSettings {
     }
 }
 
-async function startDevServer() {
-    if (!PHYSICS) return
-    if (!DEV) return
+class DevStart {
+    private static server: PhysicsServer
 
-    PROFILE && console.time('startDevServer')
+    @profile()
+    static async startDevServer() {
+        if (!PHYSICS) return
+        if (!DEV) return
 
-    const settings = createSettings()
-    const server = PHYSICS && new PhysicsServer(settings)
-    multi.setServer(server)
+        const settings = createSettings()
+        this.server = PHYSICS && new PhysicsServer(settings)
+        multi.setServer(this.server)
 
-    PROFILE && console.time('server start')
-    await server.start()
-    PROFILE && console.timeEnd('server start')
+        await this.startServer()
+        await this.createClients(1)
 
-    PROFILE && console.time('client creation')
-    await createClients(1)
-    PROFILE && console.timeEnd('client creation')
-
-    if (false as boolean) splitClientsIntoGroups(5)
-
-    PROFILE && console.timeEnd('startDevServer')
-}
-
-async function createClients(count: number) {
-    if (count == 0) return
-    const { client } = await multi.server.createAndJoinClient({ username: `lea_${1}` }, { awaitClientJoin: true })
-    assert(client)
-    multi.server.setMasterClient(client)
-
-    let promises = []
-    for (let i = 2; i <= count; i++) {
-        promises.push(multi.server.createAndJoinClient({ username: `lea_${i}` }, { awaitClientJoin: true }))
+        if (false as boolean) splitClientsIntoGroups(5)
     }
-    await Promise.all(promises)
+
+    @profile()
+    private static async startServer() {
+        await this.server.start()
+    }
+
+    @profile()
+    private static async createClients(count: number) {
+        if (count == 0) return
+        const { client } = await multi.server.createAndJoinClient({ username: `lea_${1}` }, { awaitClientJoin: true })
+        assert(client)
+        multi.server.setMasterClient(client)
+
+        let promises = []
+        for (let i = 2; i <= count; i++) {
+            promises.push(multi.server.createAndJoinClient({ username: `lea_${i}` }, { awaitClientJoin: true }))
+        }
+        await Promise.all(promises)
+    }
 }
 
 function splitClientsIntoGroups(groupSize: number) {
@@ -201,7 +204,7 @@ prestart(() => {
 
     addTitleScreenButton({
         text: 'Start dev server',
-        onClick: startDevServer,
+        onClick: () => DevStart.startDevServer(),
     })
 })
 
@@ -209,7 +212,7 @@ poststart(() => {
     if (!DEV || TEST) return
 
     if (PHYSICS && isInServerDir()) {
-        startDevServer()
+        DevStart.startDevServer()
     } else if (REMOTE && isInClientDir()) {
         ;(async () => {
             const connection: RemoteServerConnectionSettings = {

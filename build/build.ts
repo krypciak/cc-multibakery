@@ -112,7 +112,7 @@ async function run(type: 'build' | 'watch', flags: Flags) {
                 }
             })
 
-            if (dropAssert || profile || !remote || !physics) {
+            if (dropAssert || profile || !remote || !physics || !profile) {
                 build.onLoad({ filter: /src.+\.(js|ts)$/ }, async args => {
                     let code = await fs.promises.readFile(args.path, 'utf8')
                     let sp = code.split('\n')
@@ -122,6 +122,9 @@ async function run(type: 'build' | 'watch', flags: Flags) {
                                 .replace(/^\s*(else )?(if \(.*\) )?assert(Physics|Remote)?\(.*\)$/g, '')
                                 .replace(/^\s*\} else assert(Physics|Remote)?\(.*\)$/g, '}')
                         )
+                    }
+                    if (!profile) {
+                        sp = sp.map(line => line.replace(/^\s*@profile\b.*$/g, ''))
                     }
                     if (!remote) {
                         sp = sp.map(line =>

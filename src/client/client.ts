@@ -15,7 +15,7 @@ import { applyStateUpdatePacket } from '../state/states'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
-import { initMapsAndLevels } from '../server/ccmap/data-load'
+import { MapDataLoad } from '../server/ccmap/data-load'
 import { instanceinatorCopyInstanceConfig, type MapTpInfo } from '../server/server'
 import { linkClientVars } from './client-var-link'
 import { initClientOptionModel, linkClientOptionModel, loadClientOptionModelState } from './client-option-model-link'
@@ -23,6 +23,7 @@ import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
 import type { EntityNetid } from '../misc/entity-netid'
+import { profile } from '../misc/profile-decorator'
 
 import './injects'
 import './menu/server-list-menu'
@@ -68,9 +69,8 @@ export class Client extends InstanceUpdateable {
         this.username = settings.username
     }
 
+    @profile((self: Client) => `${self.username} client`)
     async init() {
-        PROFILE && console.time('client init')
-
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             {
@@ -100,8 +100,6 @@ export class Client extends InstanceUpdateable {
         removeAddon(this.inst.sc.npcRunner, this.inst.ig.game)
 
         instanceinator.retile()
-
-        PROFILE && console.timeEnd('client init')
     }
 
     private initInputManager() {
@@ -217,8 +215,8 @@ export class Client extends InstanceUpdateable {
         })
     }
 
+    @profile((self: Client) => `${self.username}`)
     async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
-        PROFILE && console.time('client teleport')
         this.startTeleportOverlay()
         runTask(this.inst, () => {
             sc.model.enterTeleport()
@@ -237,7 +235,7 @@ export class Client extends InstanceUpdateable {
         this.ready = false
 
         await Promise.all([
-            map.init(),
+            map.initIfNeeded(),
             noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
         ])
         assert(map)
@@ -261,29 +259,25 @@ export class Client extends InstanceUpdateable {
             teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
         })
 
-        PROFILE && console.time('linkMapToInstanceStage1')
         this.linkMapToInstanceStage1(map)
-        PROFILE && console.timeEnd('linkMapToInstanceStage1')
 
         runTask(this.inst, () => sc.model.enterLoading())
 
-        await map.loadResources()
+        await map.loadResourcesIfNeeded()
 
         this.ready = true
         this.nextTpInfo = { map: '' }
 
-        PROFILE && console.time('linkMapToInstanceStage2')
         this.linkMapToInstanceStage2(map)
-        PROFILE && console.timeEnd('linkMapToInstanceStage2')
 
         for (const obj of map.onLinkChange) obj.onClientLink?.(this)
 
         multi.storage.save()
 
         this.stopTeleportOverlay()
-        PROFILE && console.timeEnd('client teleport')
     }
 
+    @profile((self: Client) => `${self.username}`)
     private linkMapToInstanceStage1(map: CCMap) {
         runTask(this.inst, () => {
             const mig = map.inst.ig
@@ -303,7 +297,7 @@ export class Client extends InstanceUpdateable {
 
             ig.light.shadowProviders = []
             const data = map.copyRawLevelData()
-            initMapsAndLevels.call(ig.game, data)
+            MapDataLoad.initMapsAndLevels(data)
             for (const levelName in mig.game.levels) {
                 const level = mig.game.levels[levelName]
                 if (level.collision) {
@@ -375,6 +369,7 @@ export class Client extends InstanceUpdateable {
         })
     }
 
+    @profile((self: Client) => `${self.username}`)
     private linkMapToInstanceStage2(map: CCMap) {
         runTask(this.inst, () => {
             const mig = map.inst.ig
@@ -439,9 +434,8 @@ export class Client extends InstanceUpdateable {
         }
     }
 
+    @profile((self: Client) => `${self.username}`)
     private async createPlayer() {
-        PROFILE && console.time('createPlayer')
-
         assert(this.reservedNetid)
         if (isPhysics(multi.server)) {
             if (this.dummy && !this.dummy._killed) {
@@ -472,8 +466,6 @@ export class Client extends InstanceUpdateable {
         }
 
         this.dummy.setInputManager(this.inputManager)
-
-        PROFILE && console.timeEnd('createPlayer')
     }
 
     getMap(noAssert: true): CCMap | undefined

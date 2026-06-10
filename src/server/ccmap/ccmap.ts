@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { CCMapDisplay } from './display'
-import { setMapDataFromLevelData, loadMapResources } from './data-load'
+import { MapDataLoad } from './data-load'
 import { forceConditionalLightOnInst } from '../../client/conditional-light'
 import type { Client } from '../../client/client'
 import { runTask } from 'cc-instanceinator/src/inst-util'
@@ -15,6 +15,7 @@ import { isRemote } from '../remote/is-remote-server'
 import { assertPhysics } from '../physics/is-physics-server'
 import type { TestConfig } from '../../test/test-bridge'
 import { createServerTpsLabel } from '../../client/instance-label-draw'
+import { profile } from '../../misc/profile-decorator'
 
 import './injects'
 
@@ -85,17 +86,20 @@ export class CCMap extends InstanceUpdateable {
         for (const link of toLink) link(this.inst, multi.server.inst)
     }
 
-    async init() {
+    async initIfNeeded() {
         if (this.initPromise) return this.initPromise
-        PROFILE && console.time('map init')
-
         this.initPromise = new Promise<void>(resolve => {
             this.initResolve = () => {
                 this.initialized = true
                 resolve()
             }
         })
+        await this.init()
+        this.initResolve()
+    }
 
+    @profile((self: CCMap) => `${self.name} map`)
+    private async init() {
         this.display = new CCMapDisplay(this)
 
         const levelDataPromise = this.readLevelData()
@@ -116,57 +120,47 @@ export class CCMap extends InstanceUpdateable {
         this.inst.ig.game.entityTypeIdCounterMap = this.netidReserve.entityTypeIdCounterMap
         this.inst.ig.game.entitiesByNetid = this.netidReserve.entitiesByNetid
 
-        PROFILE && console.time('await level data')
+        PROFILE && console.time(`${this.name} await level data`)
         const levelData = await levelDataPromise
-        PROFILE && console.timeEnd('await level data')
+        PROFILE && console.timeEnd(`${this.name} await level data`)
         this.rawLevelData = levelData
 
         runTask(this.inst, () => {
-            PROFILE && console.time('setDataFromLevelData')
-            setMapDataFromLevelData.call(ig.game, this.name, this.copyRawLevelData())
-            PROFILE && console.timeEnd('setDataFromLevelData')
+            MapDataLoad.setMapDataFromLevelData(this.copyRawLevelData(), this.name)
         })
         createServerTpsLabel(this.inst)
-
-        this.initResolve()
-
-        PROFILE && console.timeEnd('map init')
     }
 
-    async loadResources() {
+    async loadResourcesIfNeeded() {
         if (this.readyPromise) return this.readyPromise
 
-        PROFILE && console.time('map loadResources')
-
-        assert(!this.readyPromise)
         this.readyPromise = new Promise<void>(resolve => {
             this.readyResolve = () => {
                 this.ready = true
                 resolve()
             }
         })
-
-        await runTask(this.inst, async () => {
-            await loadMapResources.call(ig.game)
-
-            runTask(this.inst, () => {
-                sc.model.enterNewGame()
-                sc.model.enterGame()
-
-                this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
-                this.display.removeUnneededGuis()
-                this.display.addDummyUsernameBoxes()
-            })
-        })
+        await this.loadResources()
         this.readyResolve()
+    }
+
+    @profile((self: CCMap) => `${self.name}`)
+    private async loadResources() {
+        await runTask(this.inst, () => MapDataLoad.loadMapResources())
+        runTask(this.inst, () => {
+            sc.model.enterNewGame()
+            sc.model.enterGame()
+
+            this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })
+            this.display.removeUnneededGuis()
+            this.display.addDummyUsernameBoxes()
+        })
 
         instanceinator.retile()
 
         if (isRemote(multi.server)) {
             multi.server.onMapReady(this)
         }
-
-        PROFILE && console.timeEnd('map loadResources')
     }
 
     attemptRecovery(e: unknown) {

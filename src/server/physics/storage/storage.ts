@@ -9,6 +9,7 @@ import { assertPhysics, isPhysics } from '../is-physics-server'
 import { copy } from '../../../misc/object-copy'
 import type { ClientOptionModelValues } from '../../../client/client-option-model-link'
 import type { Client } from '../../../client/client'
+import { profile } from '../../../misc/profile-decorator'
 
 import './save-slot-button'
 import './pause-screen-save-button'
@@ -33,6 +34,7 @@ declare global {
     }
 }
 
+let profileCounter = 0
 class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLoad {
     currentData?: MultibakerySaveData
     saving: boolean = false
@@ -134,12 +136,11 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         }
     }
 
+    @profile(() => `storage ${profileCounter++}`)
     save(slotId?: number) {
-        PROFILE && console.time('storage save')
         const save = this.getMultiSaveSlotData()
         this.addPrettyTextToSave(save)
         this.commitSave(save, slotId)
-        PROFILE && console.timeEnd('storage save')
     }
 
     // creates state with no references (deep copy)
@@ -210,8 +211,8 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         sc.timers.onStoragePreLoad(data)
     }
 
+    @profile(() => `storage ${profileCounter++}`)
     load() {
-        PROFILE && console.time('storage load')
         assertPhysics(multi.server)
         const settings = multi.server.settings.save
         if (!settings) return
@@ -233,7 +234,6 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         if (data) {
             this.loadSlotData(data)
         }
-        PROFILE && console.timeEnd('storage load')
     }
 }
 

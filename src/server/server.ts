@@ -19,6 +19,7 @@ import { executeWithStrategy } from '../misc/function-execute-strategy'
 import { isRemote } from './remote/is-remote-server'
 import { ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import { createServerTpsLabel } from '../client/instance-label-draw'
+import { profile } from '../misc/profile-decorator'
 
 import './server-var-access'
 
@@ -101,9 +102,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
         this.baseInst = instanceinator.instances[0]
 
-        this.updateDelayAvg = new ValueAverageOverTime(
-            Math.min(1000, settings.gameLoopIntervalTps ?? settings.gameTps)
-        )
+        this.updateDelayAvg = new ValueAverageOverTime(Math.min(1000, settings.gameLoopIntervalTps ?? settings.gameTps))
     }
 
     isActive() {
@@ -132,8 +131,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         linkOptions(this.inst, this.baseInst)
     }
 
+    @profile('non await')
     private createCachedInstances() {
-        PROFILE && console.time('creating instances non await')
         const toCreate = 3 - instanceinator.getCachedInstanceCount(instanceinatorCopyInstanceConfig().cacheKey)
         if (toCreate > 0) {
             instanceinator.createCachedInstances(
@@ -141,7 +140,6 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
                 new Array(toCreate).fill(null).map(_ => instanceinatorCopyInstanceConfig())
             )
         }
-        PROFILE && console.timeEnd('creating instances non await')
     }
 
     async start(useAnimationFrame = false) {
@@ -302,7 +300,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     abstract createAndJoinClient(
         joinData: ClientJoinData,
         settings?: ClientCreateAndJoinSettings
-    ): Promise<{ ackData: ClientJoinAckData; client?: Client, map?: CCMap }>
+    ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }>
 
     leaveClient(client: Client) {
         /* TODO: communicate socket that closed?? */

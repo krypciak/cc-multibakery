@@ -27,7 +27,8 @@ export const circuitBranchB = [0, 1, 2, 3, 5, 7, 9, 10, 11, 12, 13, 14, 15, 16, 
 
 prestart(() => {
     ig.godmode = (model = sc.model.player, { circuitBranch = true }: GodmodeSettings = {}) => {
-        PROFILE && console.time('godmode')
+        const labelName = 'godmode ' + (model instanceof dummy.PlayerModel ? model.dummy.data.username : '')
+        PROFILE && console.time(labelName)
         Object.keysT = Object.keys as any
 
         sc.stats.statsEnabled = true
@@ -121,7 +122,7 @@ prestart(() => {
         sc.Model.notifyObserver(model, sc.PLAYER_MSG.SKILL_CHANGED)
         model.updateStats()
 
-        PROFILE && console.timeEnd('godmode')
+        PROFILE && console.timeEnd(labelName)
     }
 })
 

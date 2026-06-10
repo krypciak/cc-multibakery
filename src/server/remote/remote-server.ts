@@ -24,6 +24,7 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import { applyModCompatibilityList, type ModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 import { createNetTransportClient } from '../../net/net-transport'
+import { profile } from '../../misc/profile-decorator'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -77,6 +78,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         TemporarySet.resetAll()
     }
 
+    @profile()
     async startNet() {
         const transportClient = createNetTransportClient(this.settings.netInfo.details.transport)
 

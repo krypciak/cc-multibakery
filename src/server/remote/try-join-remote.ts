@@ -30,9 +30,7 @@ export async function tryJoinRemote(
     })
     multi.setServer(server)
 
-    PROFILE && console.time('startNet')
     await server.startNet()
-    PROFILE && console.timeEnd('startNet')
 
     const ackData = await server.netManager.sendJoin(joinData)
 

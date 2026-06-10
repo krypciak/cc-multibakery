@@ -6,6 +6,7 @@ import type { NetTransport, NetTransportListenerFunctions } from './net-transpor
 import { Opts } from '../options'
 import { assertRemote } from '../server/remote/is-remote-server'
 import { PacketMiddleware, type PacketEventType } from './packet'
+import { profile } from '../misc/profile-decorator'
 
 export interface NetTransportClient {
     connect(connectionSettings: RemoteServerConnectionSettings): Promise<void>
@@ -101,12 +102,11 @@ export class NetManagerRemoteServer {
         return Date.now() - serverTime + this.timeOffset
     }
 
+    @profile()
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
-        PROFILE && console.time('sendJoin')
         assert(this.conn)
         assertRemote(multi.server)
         const ack: ClientJoinAckData = await this.conn.middleware.sendWithAck('join', data)
-        PROFILE && console.timeEnd('sendJoin')
         return ack
     }
 
