@@ -149,8 +149,8 @@ class Aoc2024d15Test implements TestConfig {
             const boxes = ig.game.getEntitiesByType(ig.ENTITY.AocBox).filter(box => !box.linked || box.motherLinked)
             const positions = boxes.map(b => this.getGridPos(b))
             for (const { x, y } of positions) {
-                assert(x % 1 == 0, 'misalligned box!')
-                assert(y % 1 == 0, 'misalligned box!')
+                assert(x % 1 == 0, 'misaligned box!')
+                assert(y % 1 == 0, 'misaligned box!')
                 sum += y * 100 + x
             }
         })

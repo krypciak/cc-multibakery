@@ -46,7 +46,7 @@ export interface PlayerInfoEntry {
         feet: ArmorType
     }
 }
-/* unfortunetly I cant use type magic to create this type automaticly since ts-binarifier bugs out on such a type :( */
+/* unfortunately I cant use type magic to create this type automatically since ts-binarifier bugs out on such a type :( */
 interface PartialPlayerInfoEntry {
     username?: Username
     character?: string

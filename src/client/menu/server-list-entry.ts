@@ -229,7 +229,7 @@ if (REMOTE) {
                 const joinData: ClientJoinData = {
                     username,
                     initialInputType: ig.input.currentDevice,
-                    prefferedTpInfo: ig.client?.tpInfo,
+                    preferredTpInfo: ig.client?.tpInfo,
                 }
                 const ackData = REMOTE && (await tryJoinRemote(this.serverInfo, joinData))
                 showTryNetJoinResponseDialog(joinData, ackData)

@@ -49,7 +49,7 @@ export interface PhysicsServerSettings extends ServerSettings {
         manualSaving?: boolean
         loadFromSlot?: number
         loadSaveData?: ig.SaveSlot.Data
-        automaticlySave?: boolean
+        automaticallySave?: boolean
     }
     disablePlayerIdlePose?: boolean
     copyNewPlayerStats?: boolean
@@ -151,7 +151,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             inputType: connection ? 'puppet' : 'clone',
             remote: !!connection,
             initialInputType: joinData.initialInputType,
-            tpInfo: this.validatePrefferedMap(joinData.prefferedTpInfo, connection),
+            tpInfo: this.validatePreferredMap(joinData.preferredTpInfo, connection),
             ...(clientSettingsOverride ?? {}),
         }
 

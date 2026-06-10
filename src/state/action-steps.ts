@@ -92,7 +92,8 @@ export function onActionStepStart(step: ig.ActionStepBase, _actor: ig.ActorEntit
     if (actor.getCombatantRoot) {
         const old = actor
         actor = actor.getCombatantRoot()
-        if (fcn(old) != fcn(actor)) {
+        /* TODO: fix this */
+        if (false && fcn(old) != fcn(actor)) {
             console.log('getcombatantroot', fcn(old), fcn(actor))
         }
     }

@@ -13,7 +13,7 @@ interface HitNumberConfig {
     strength?: number
     shieldResult?: sc.SHIELD_RESULT
     isCrit?: boolean
-    appenix?: sc.HIT_NUMBER_APPENDIX[]
+    appendix?: sc.HIT_NUMBER_APPENDIX[]
 }
 
 declare global {
@@ -52,7 +52,7 @@ prestart(() => {
                 strength,
                 shieldResult,
                 isCrit,
-                appenix,
+                appendix,
             } of packet.hitNumber) {
                 const combatant = ig.game.entitiesByNetid[combatantNetid]
                 assert(combatant)
@@ -62,7 +62,7 @@ prestart(() => {
                     spawnHealingNumber(pos, combatant, damage)
                 } else {
                     if (!onlyShowCrit || isCrit) {
-                        spawnHitNumber(pos, combatant, damage, size!, strength!, shieldResult, isCrit, appenix)
+                        spawnHitNumber(pos, combatant, damage, size!, strength!, shieldResult, isCrit, appendix)
                     }
                 }
             }
@@ -81,7 +81,7 @@ prestart(() => {
             strength,
             shieldResult,
             isCrit,
-            appenix
+            appendix
         ) {
             if (shouldCollectStateData()) {
                 ig.mapShared.hitNumberSpawned ??= []
@@ -95,11 +95,11 @@ prestart(() => {
                     strength,
                     shieldResult,
                     isCrit,
-                    appenix: appenix ? appenix : undefined,
+                    appendix: appendix ? appendix : undefined,
                 })
             }
 
-            return spawnHitNumber(pos, combatant, damage, size, strength, shieldResult, isCrit, appenix)
+            return spawnHitNumber(pos, combatant, damage, size, strength, shieldResult, isCrit, appendix)
         }
 
         ig.ENTITY.HitNumber.spawnHealingNumber = function (pos, combatant, healAmount) {

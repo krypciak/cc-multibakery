@@ -158,7 +158,7 @@ prestart(() => {
             }
             this.accountButton.onButtonPress = () => {
                 const tab = 1
-                modmanager.openModOptionsMenu(Multibakery.manifset.id, tab)
+                modmanager.openModOptionsMenu(Multibakery.manifest.id, tab)
             }
         },
         initAddEntryButton() {

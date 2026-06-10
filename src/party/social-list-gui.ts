@@ -300,7 +300,7 @@ prestart(() => {
             this.hotkeySort.setActive(false)
 
             const origScreenCords = button.hook.screenCoords!
-            const ortMenuX: number = origScreenCords.x
+            const sortMenuX: number = origScreenCords.x
             let sortMenuY = origScreenCords.y + origScreenCords.h - 2
             if (sortMenuY + menu.hook.size.y > ig.system.height - 26) {
                 sortMenuY = origScreenCords.y - menu.hook.size.y + 1
@@ -311,7 +311,7 @@ prestart(() => {
 
             button.keepButtonPressed()
             this._keepButtonFocused = button
-            menu.showSortMenuAt(ortMenuX, sortMenuY)
+            menu.showSortMenuAt(sortMenuX, sortMenuY)
         },
     })
 })

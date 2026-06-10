@@ -133,7 +133,7 @@ prestart(() => {
                                 const joinData: ClientJoinData = {
                                     username,
                                     initialInputType: inputButton.inputType,
-                                    prefferedTpInfo: ig.client?.tpInfo,
+                                    preferredTpInfo: ig.client?.tpInfo,
                                 }
                                 const inst = instanceinator.instances[instanceinator.id]
                                 const { ackData } = await runTask(multi.server.inst, () =>

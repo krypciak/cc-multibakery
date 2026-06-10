@@ -83,8 +83,8 @@ export class ServerDiscoveryClient {
 
     private static messageInterval = 5000
     private static lastSent = 0
-    private static reportedInInvertal: Record<string, NetServerInfoRemote> = {}
-    private static reportedInLastInvertal: Record<string, NetServerInfoRemote> = {}
+    private static reportedInInterval: Record<string, NetServerInfoRemote> = {}
+    private static reportedInLastInterval: Record<string, NetServerInfoRemote> = {}
 
     static addListener(listener: ServerDiscoveryListener) {
         assert(!multi.server)
@@ -106,11 +106,11 @@ export class ServerDiscoveryClient {
     }
 
     private static onServerDiscovered(data: ServerDiscoveryMessage) {
-        this.reportedInInvertal[this.serverToId(data)] = data
+        this.reportedInInterval[this.serverToId(data)] = data
 
-        const uniqueServersRecord = { ...this.reportedInLastInvertal }
+        const uniqueServersRecord = { ...this.reportedInLastInterval }
         let changed = false
-        for (const [id, server] of Object.entries(this.reportedInInvertal)) {
+        for (const [id, server] of Object.entries(this.reportedInInterval)) {
             if (!uniqueServersRecord[id]) changed = true
             uniqueServersRecord[id] = server
         }
@@ -143,8 +143,8 @@ export class ServerDiscoveryClient {
     }
 
     private static stop() {
-        this.reportedInInvertal = {}
-        this.reportedInLastInvertal = {}
+        this.reportedInInterval = {}
+        this.reportedInLastInterval = {}
         this.wrapper.destroy()
     }
 
@@ -162,10 +162,10 @@ export class ServerDiscoveryClient {
         if (now > this.lastSent + this.messageInterval) {
             this.lastSent = now
 
-            let changed = Object.keys(this.reportedInLastInvertal).some(oldId => !this.reportedInInvertal[oldId])
-            this.reportedInLastInvertal = this.reportedInInvertal
-            if (changed) this.notifyListeners(Object.values(this.reportedInInvertal))
-            this.reportedInInvertal = {}
+            let changed = Object.keys(this.reportedInLastInterval).some(oldId => !this.reportedInInterval[oldId])
+            this.reportedInLastInterval = this.reportedInInterval
+            if (changed) this.notifyListeners(Object.values(this.reportedInInterval))
+            this.reportedInInterval = {}
 
             this.broadcastMessage()
         }

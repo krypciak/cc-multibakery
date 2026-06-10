@@ -112,10 +112,10 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         let saved = false
 
         if (isPhysics(multi.server)) {
-            const { manualSaving, automaticlySave } = multi.server.settings.save ?? {}
+            const { manualSaving, automaticallySave } = multi.server.settings.save ?? {}
 
             if (slotId === undefined) {
-                if (automaticlySave) {
+                if (automaticallySave) {
                     slotId = ig.storage.lastUsedSlot
                 }
             } else if (!manualSaving) {

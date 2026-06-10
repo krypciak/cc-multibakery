@@ -60,7 +60,7 @@ class MultibakeryTestUtils {
 
     async createClient(username: string, tpInfo: MapTpInfo, test: TestConfig) {
         const { client, map } = await multi.server.createAndJoinClient(
-            { username, prefferedTpInfo: tpInfo },
+            { username, preferredTpInfo: tpInfo },
             { awaitClientJoin: true, clientSettingsOverride: { inputType: 'puppet' } }
         )
         assert(client)

@@ -30,7 +30,7 @@ export type NetTransportClientSettings =
           type: 'websocket'
       } & WsNetTransportClientSettings)
 
-export function isNetTransportSettigns(data: unknown): data is NetTransportServerSettings | NetTransportClientSettings {
+export function isNetTransportSettings(data: unknown): data is NetTransportServerSettings | NetTransportClientSettings {
     if (!data || typeof data !== 'object') return false
     if (!('type' in data) || typeof data.type !== 'string') return false
     return true

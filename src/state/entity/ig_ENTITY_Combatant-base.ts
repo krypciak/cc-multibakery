@@ -34,7 +34,7 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
     scActorEntity.setEntityState.call(this, state)
 
     if (state.party !== undefined) {
-        addCombatantParty(`unkonwn_party_${state.party}`, state.party)
+        addCombatantParty(`unknown_party ${state.party}`, state.party)
         if (this instanceof dummy.DummyPlayer) sc.combat.removeActiveCombatant(this)
         this.party = state.party
         if (this instanceof dummy.DummyPlayer) sc.combat.addActiveCombatant(this)

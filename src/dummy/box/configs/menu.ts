@@ -23,7 +23,7 @@ prestart(() => {
         [sc.MENU_SUBMENU.OPTIONS]: '(Options)',
         [sc.MENU_SUBMENU.SHOP]: '(Shop Records)',
         [sc.MENU_SUBMENU.QUESTS]: '(Quests)',
-        [sc.MENU_SUBMENU.TROPHY]: '(Trohpy Records)',
+        [sc.MENU_SUBMENU.TROPHY]: '(Trophy Records)',
         [sc.MENU_SUBMENU.LORE]: '(Lore Records)',
         [sc.MENU_SUBMENU.ENEMY]: '(Monster Fibula)',
         [sc.MENU_SUBMENU.SOCIAL]: '(Party)',

@@ -74,7 +74,7 @@ function createSettings(): PhysicsServerSettings {
             ? undefined
             : {
                   manualSaving: true,
-                  automaticlySave: true,
+                  automaticallySave: true,
                   loadFromSlot: 0,
               },
         netInfo: false

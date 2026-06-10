@@ -12,7 +12,7 @@ import './dev-start'
 export default class Multibakery implements PluginClass {
     static dir: string
     static mod: Mod1
-    static manifset: typeof import('../ccmod.json') = ccmod
+    static manifest: typeof import('../ccmod.json') = ccmod
 
     constructor(mod: Mod1) {
         Multibakery.dir = mod.baseDirectory

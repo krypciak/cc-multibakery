@@ -45,7 +45,7 @@ poststart(() => {
 prestart(() => {
     // @ts-expect-error
     sc.Model.notifyObserver = function (model: sc.Model & ig.Class, message: number, data?: unknown) {
-        // console.log('nofifyObserver', findClassName(model), message, data)
+        // console.log('notifyObserver', findClassName(model), message, data)
         // function rev<K extends string | number, V extends string | number>(rec: Record<K, V>): Record<V, K> {
         //     return Object.fromEntries(Object.entries(rec).map(([a, b]) => [b as V, a as K]))
         // }
@@ -78,14 +78,14 @@ prestart(() => {
         ig.GuiHook.inject({
             onAttach(hook) {
                 if (this._instanceId != hook!._instanceId) {
-                    console.warn('a sin has been commited', this._instanceId, hook!._instanceId)
+                    console.warn('a sin has been committed', this._instanceId, hook!._instanceId)
                     debugger
                 }
                 this.parent(hook)
             },
             doStateTransition(...args) {
                 if (this._instanceId != instanceinator.id) {
-                    console.warn('a sin has been commited', this._instanceId, instanceinator.id)
+                    console.warn('a sin has been committed', this._instanceId, instanceinator.id)
                     debugger
                 }
                 this.parent(...args)

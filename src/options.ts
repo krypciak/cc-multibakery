@@ -29,7 +29,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Show ping',
-                        description: 'Show client ping in miliseconds',
+                        description: 'Show client ping in milliseconds',
                     },
                     showServerTps: {
                         type: 'CHECKBOX',
@@ -47,7 +47,7 @@ function registerOpts() {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Show network traffic',
-                        description: 'Shows the network trafic per second',
+                        description: 'Shows the network traffic per second',
                         changeEvent() {
                             if (isRemote(multi.server)) {
                                 multi.server.measureTraffic =
@@ -269,7 +269,7 @@ function registerOpts() {
                         init: true,
                         name: 'Use requestAnimationFrame',
                         description:
-                            'Automaticly use screen refresh rate as tps when no remote clients are on the server',
+                            'Automatically use screen refresh rate as tps when no remote clients are on the server',
                     },
                     serverForceConsistentTickTimes: {
                         type: 'CHECKBOX',
@@ -373,8 +373,8 @@ function registerOpts() {
 
     Opts = modmanager.registerAndGetModOptions(
         {
-            modId: Multibakery.manifset.id,
-            title: Multibakery.manifset.title,
+            modId: Multibakery.manifest.id,
+            title: Multibakery.manifest.title,
         },
         opts
     )
@@ -387,7 +387,7 @@ prestart(() => {
 
 poststart(() => {
     if (Opts.clientLogin == defaultClientUsername) {
-        /* trigger option chengeEvent */
+        /* trigger option changeEvent */
         Opts.clientLogin = defaultClientUsername
     }
 })

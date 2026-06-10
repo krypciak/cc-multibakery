@@ -22,7 +22,7 @@ export interface MultiParty {
     players: Username[]
     vanillaMembers: string[]
 }
-/* unfortunetly I cant use type magic to create this type automaticly since ts-binarifier bugs out on such a type :( */
+/* unfortunately I cant use type magic to create this type automatically since ts-binarifier bugs out on such a type :( */
 export interface PartialMultiParty {
     id?: MultiPartyId
     owner?: Username
@@ -62,7 +62,7 @@ export class MultiPartyManager implements sc.Model {
     maxPartySize: number = 9
 
     isPartyTitleValid(title: string) {
-        /* all ascii pritable characters */
+        /* all ascii printable characters */
         return (TEST || (title.length >= 3 && title.length <= 16)) && /^[\x20-\x7E]+$/.test(title)
     }
 

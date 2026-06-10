@@ -75,9 +75,9 @@ prestart(() => {
         },
     })
     const backup = ig.ENTITY.HitNumber.spawnHitNumber
-    ig.ENTITY.HitNumber.spawnHitNumber = (pos, combatant, damage, size, strength, shieldResult, isCrit, appenix) => {
+    ig.ENTITY.HitNumber.spawnHitNumber = (pos, combatant, damage, size, strength, shieldResult, isCrit, appendix) => {
         return playerPartyFix(combatant.party, () =>
-            backup(pos, combatant, damage, size, strength, shieldResult, isCrit, appenix)
+            backup(pos, combatant, damage, size, strength, shieldResult, isCrit, appendix)
         )
     }
 })

@@ -49,7 +49,7 @@ export interface ServerSettings {
 export interface ClientJoinData {
     username: Username
     initialInputType?: ig.INPUT_DEVICES
-    prefferedTpInfo?: MapTpInfo
+    preferredTpInfo?: MapTpInfo
 }
 export function isClientJoinData(_data: unknown): _data is ClientJoinData {
     const data = _data as ClientJoinData
@@ -249,7 +249,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.clients.set(client.username, client)
     }
 
-    protected validatePrefferedMap(
+    protected validatePreferredMap(
         tpInfo: MapTpInfo | undefined,
         connection: NetConnection | undefined
     ): MapTpInfo | undefined {
