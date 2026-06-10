@@ -15,6 +15,11 @@ startCrossnode({
         'cc-multibakery-additions',
         'cc-krypek-lib',
         'cc-variable-charge-time',
+
+        'xenons-playable-classes',
+        'menu-ui-replacer',
+        'extension-asset-preloader',
+        'extendable-severed-heads',
     ],
     extensionWhitelist: ['post-game'],
 })

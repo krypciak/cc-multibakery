@@ -165,6 +165,8 @@ export class SimpleTestManager implements TestRunner {
         assert(this.isFinished())
         this.printSummary()
         multi.destroy()
+
+        if (window.crossnode) process.exit(0)
     }
 
     private printSummary() {

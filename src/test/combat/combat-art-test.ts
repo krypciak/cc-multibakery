@@ -6,8 +6,8 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
+import { teleportPlayerToProperMarker } from '../../server/ccmap/teleport-fix'
 import { addRuntimeAsset, reloadRuntimeAssets } from '../../misc/runtime-assets'
-import { circuitBranchA, circuitBranchB } from '../../misc/godmode'
 
 async function executeCombatArt(
     e: dummy.DummyPlayer,
@@ -22,9 +22,17 @@ async function executeCombatArt(
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
         presses: {
             special: false,
+            guard: false,
+            aim: false,
+            dash: false,
+            left: false,
         },
         actions: {
             special: false,
+            guard: false,
+            aim: false,
+            dash: false,
+            left: false,
         },
         mouse: {
             x: 0.3 * ig.system.width,
@@ -44,9 +52,11 @@ async function executeCombatArt(
         preFrames = 17
     } else if (combatArt.startsWith('THROW')) {
         triggerActions.push('aim')
+        preFrames = 10
     } else if (combatArt.startsWith('DASH')) {
         triggerActions.push('dash')
         triggerActions.push('left')
+        preFrames = 5
     } else assert(false)
 
     for (const action of triggerActions) {
@@ -65,8 +75,22 @@ async function executeCombatArt(
     chargeInp['actions']!['special'] = true
     chargeInp['presses']!['special'] = true
 
+    const entitiesSpawned: ig.Entity[] = []
+
+    if (combatArt.startsWith('GUARD')) {
+        await runTask(inst, async () => {
+            const { x, y, z } = e.coll.pos
+            ig.vars.set('tmp.practiceAttack', true)
+            const enemy = ig.game.spawnEntity('Enemy', x - 32, y, z, {
+                enemyInfo: { type: 'autumn-rh.practice-bot', level: 1 },
+            })
+            entitiesSpawned.push(enemy)
+            enemy.enemyType.assignTarget(enemy, e, false, true)
+        })
+    }
+
     const chargeLevel = parseInt(combatArt[combatArt.length - 1])
-    const chargeTime = chargeLevel * 8
+    const chargeTime = chargeLevel * 4 + 1
     for (let frame = 0; frame < chargeTime; frame++) {
         await scheduleTask(inst, () => {
             input.mainInputData.pushInput(ig.copy(chargeInp))
@@ -79,8 +103,35 @@ async function executeCombatArt(
 
     input.mainInputData.pushInput(emptyInput)
 
-    await multi.test.updateLoop(inst, () => e.state == 0 && !e.currentAction)
-    // await multi.test.waitFrames(inst, 60)
+    function getSpawnedEntities(hexaProps?: boolean) {
+        function shouldInclude(e: ig.Entity): boolean {
+            if (
+                e instanceof ig.ENTITY.Marker ||
+                e instanceof ig.ENTITY.Enemy ||
+                e instanceof dummy.DummyPlayer ||
+                e instanceof ig.ENTITY.Crosshair ||
+                e instanceof ig.ENTITY.CrosshairDot
+            ) {
+                return false
+            }
+            if (!hexaProps && e instanceof sc.CombatProxyEntity && e.proxyType.includes('waveRecall')) return false
+            if (e instanceof ig.ENTITY.Effect && e.target) return shouldInclude(e.target)
+
+            return true
+        }
+        return ig.game.entities.filter(shouldInclude)
+    }
+
+    let frame = 0
+    await multi.test.updateLoop(
+        inst,
+        () => frame++ > 60 * 30 || (e.state == 0 && !e.currentAction && getSpawnedEntities().length == 0)
+    )
+    runTask(inst, () => {
+        for (const entity of [...entitiesSpawned, ...getSpawnedEntities(true)]) {
+            entity.kill()
+        }
+    })
 }
 
 export interface CombatArtTestConfig {
@@ -111,7 +162,7 @@ class CombatArtTest implements TestConfig {
         this.timeout = 1000e3
     }
 
-    private setupPlayerModel() {
+    private setupPlayer() {
         runTask(this.client.inst, () => {
             const model = sc.model.player
 
@@ -125,15 +176,17 @@ class CombatArtTest implements TestConfig {
             model.spLevel = 4
             model.params.setMaxSp(sc.SP_LEVEL[model.spLevel])
             model.level = 99
+            model.equip = { head: 657, leftArm: 607, rightArm: 607, torso: 583, feet: 596 }
 
-            // TODO: this doesnt quite match up
-            const branch = this.config.branch == 'A' ? circuitBranchA : circuitBranchB
-
-            for (const id of branch) {
-                // @ts-expect-error
-                if (sc.skilltree.skills[id].statType == 'SPIKE_DMG') continue
-                // model.learnSkill
-                model.skills[id] = sc.skilltree.skills[id]
+            const relevantSkills = (sc.skilltree.skills as sc.SpecialSkill[]).filter(
+                s =>
+                    s.skillType == this.config.combatArt.split('_')[0] &&
+                    s.element == this.config.element &&
+                    s.branchType == this.config.branch
+            )
+            model.skills = []
+            for (const skill of relevantSkills) {
+                model.skills[skill.id] = skill
             }
 
             sc.Model.notifyObserver(model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
@@ -142,22 +195,54 @@ class CombatArtTest implements TestConfig {
             sc.Model.notifyObserver(model, sc.PLAYER_MSG.SKILL_CHANGED)
             model.updateStats()
 
-            ig.chargeTimings = [0.1, 0.2, 0.3]
+            const frameTime = 1 / multi.server.settings.gameTps
+            ig.setChargeTimings([frameTime * 4, frameTime * 8, frameTime * 12])
+
+            teleportPlayerToProperMarker(this.client.dummy, 'entrance')
         })
     }
 
-    async run() {
-        await multi.test.setupServerIfNeeded()
+    private async createMapAndClientIfNeeded() {
+        // const username = 'combat-art' // this.id
+        // const mapName = this.baseMapName // this.mapName
+        // const map = multi.server.maps.get(mapName)
+        // if (map) {
+        //     const client = multi.server.clients.get(username)
+        //     assert(client)
+        //     return { client, map }
+        // }
 
+        const username = this.id
+        const mapName = this.mapName
         function mapNameToFilePath(name: string) {
             return 'data/maps/' + name + '.json'
         }
         addRuntimeAsset(mapNameToFilePath(this.mapName), mapNameToFilePath(this.baseMapName))
         reloadRuntimeAssets()
-        const { client, map } = await multi.test.createClient(this.id, { map: this.mapName }, this)
+        const ret = await multi.test.createClient(username, { map: mapName }, this)
+
+        await new Promise<void>((res, rej) => {
+            new sc.EnemyType('autumn-rh.practice-bot').addLoadListener({
+                onLoadableComplete(success) {
+                    if (success) res()
+                    else rej()
+                },
+            })
+        })
+
+        await multi.test.waitFrames(ret.client.inst, 20)
+
+        return ret
+    }
+
+    async run() {
+        await multi.test.setupServerIfNeeded()
+
+        const { client, map } = await this.createMapAndClientIfNeeded()
+
         this.client = client
         this.map = map
-        this.setupPlayerModel()
+        this.setupPlayer()
 
         await executeCombatArt(this.client.dummy, this.client.inst, this.config.element, this.config.combatArt)
     }
@@ -170,12 +255,12 @@ class CombatArtTest implements TestConfig {
 }
 
 poststart(() => {
-    for (const character of ['Lea']) {
+    for (const character of ['Lea', 'triblader2', 'Hexacast1']) {
         const model = sc.party.models[character]
-        assert(model)
+        assert(model, `missing player model: ${character}`)
         for (let element = 0 as sc.ELEMENT; element <= sc.ELEMENT.WAVE; element++) {
             for (let level = 1; level <= 3; level++) {
-                for (const type of ['ATTACK', 'THROW', 'GUARD', 'DASH']) {
+                for (const type of ['ATTACK', 'THROW', 'GUARD', 'DASH'] as const) {
                     for (const branch of ['A', 'B'] as const) {
                         const combatArt = (type + '_SPECIAL' + level) as keyof typeof sc.PLAYER_ACTION
                         const actionName = combatArt + '_' + branch

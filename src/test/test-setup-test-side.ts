@@ -16,7 +16,22 @@ async function setupCrosscode() {
         // writeImage: true,
         // writeImageInstanceinator: true,
 
-        modWhitelist: ['cc-multibakery', 'cc-instanceinator', 'ccmodmanager', 'nax-ccuilib', 'cc-krypek-lib', 'cc-variable-charge-time'],
-        extensionWhitelist: [],
+        modWhitelist: [
+            'cc-multibakery',
+            'cc-instanceinator',
+            'cc-krypek-lib',
+            'ccmodmanager',
+            'nax-ccuilib',
+
+            'cc-multibakery-additions',
+            'cc-variable-charge-time',
+
+            'xenons-playable-classes',
+            'menu-ui-replacer',
+            'extension-asset-preloader',
+            'extendable-severed-heads',
+            'cc-alybox',
+        ],
+        extensionWhitelist: ['post-game'],
     })
 }

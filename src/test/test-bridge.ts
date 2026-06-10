@@ -2,6 +2,11 @@ import { assert } from '../misc/assert'
 import { SimpleTestManager } from './simple-test-runner'
 import type { TestRunner } from './test-runner'
 
+export function isBunTest() {
+    const isBun = typeof global.Bun !== 'undefined'
+    return isBun && !process.argv[1].endsWith('server.js')
+}
+
 declare global {
     var tester: TestBridge
 }
@@ -31,8 +36,7 @@ class TestBridge implements TestRunner {
         if (this.initialized) return
         this.initialized = true
 
-        const isBun = typeof global.Bun !== 'undefined'
-        if (isBun) {
+        if (isBunTest()) {
             const bunTest: typeof import('bun:test') = require('bun:test')
             this.testManager = bunTest
         }
@@ -80,6 +84,7 @@ class TestBridge implements TestRunner {
 }
 if (globalThis.window) {
     window.tester ??= new TestBridge()
+    global.tester ??= window.tester
 } else {
     global.tester ??= new TestBridge()
 }

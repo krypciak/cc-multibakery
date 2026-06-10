@@ -18,7 +18,7 @@ declare global {
 class MultibakeryTestUtils {
     private setupServerPromise: Promise<void> | undefined
     private gameTps = 60
-    private actualTps = 60 //Infinity
+    private actualTps = 240
     private displayClientInstances = !window.crossnode?.options.nukeImageStack
     private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
     private disablePerfFlags = true
