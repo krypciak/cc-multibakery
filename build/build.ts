@@ -16,7 +16,7 @@ interface Options {
     target?: string
     dropAssert?: boolean
     dev?: boolean
-    dropProfiling?: boolean
+    profile?: boolean
     noWrite?: boolean
     forceRegenerateBinaryEncodeDecodeScripts?: boolean
     metafile?: boolean
@@ -50,7 +50,7 @@ async function run(
         target = 'es2018',
         dropAssert = false,
         dev = true,
-        dropProfiling = true,
+        profile = false,
         noWrite = false,
         forceRegenerateBinaryEncodeDecodeScripts = false,
         metafile = false,
@@ -110,7 +110,7 @@ async function run(
                 }
             })
 
-            if (dropAssert || dropProfiling || !remote || !physics) {
+            if (dropAssert || profile || !remote || !physics) {
                 build.onLoad({ filter: /src.+\.(js|ts)$/ }, async args => {
                     let code = await fs.promises.readFile(args.path, 'utf8')
                     let sp = code.split('\n')
@@ -174,7 +174,7 @@ async function run(
             BROWSER: String(browser),
             ASSERT: String(!dropAssert),
             DEV: String(dev),
-            PROFILE: String(!dropProfiling),
+            PROFILE: String(profile),
             CROSSNODE: String(crossnode),
             TEST: String(test),
         },
