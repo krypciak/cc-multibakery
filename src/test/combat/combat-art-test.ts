@@ -249,8 +249,14 @@ class CombatArtTest implements TestConfig {
 
     cleanup() {
         if (!multi.server) return
-        if (this.client) multi.server.leaveClient(this.client)
-        if (this.map) multi.server.unloadMap(this.map)
+        if (this.client) {
+            multi.server.leaveClient(this.client)
+            this.client = undefined as any
+        }
+        if (this.map) {
+            multi.server.unloadMap(this.map)
+            this.map = undefined as any
+        }
     }
 }
 
