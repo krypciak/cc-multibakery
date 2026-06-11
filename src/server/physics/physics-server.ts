@@ -13,7 +13,7 @@ import type { NetServerInfoPhysics } from '../../client/menu/server-info'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client, type ClientSettings } from '../../client/client'
 import { Repl } from './shell'
-import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import type { CrosscodeWebModuleOptions } from '../../net/crosscode-web-http-modules'
 import type { ClientLeaveData } from '../remote/remote-server'
 import { startGameLoop } from '../../game-loop'
@@ -25,6 +25,10 @@ import { ServerDiscoveryServer } from '../../net/server-discovery'
 import type { PlayerInfoEntry } from '../../state/player-info'
 import { createNetTransportServer, type NetTransportServerSettings } from '../../net/net-transport'
 import type { CCMap } from '../ccmap/ccmap'
+import {
+    registerChargeTimingsChangeListener,
+    unregisterChargeTimingsChangeListener,
+} from '../../mod-compatibility/cc-variable-charge-time'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -88,7 +92,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.baseInst.display = false
 
         multi.storage.load()
-        this.registerVariableChargeTime()
+        registerChargeTimingsChangeListener()
 
         this.startNet().then(() => {
             if (window.crossnode && !TEST) {
@@ -302,14 +306,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.httpServer?.destroy()
         this.serverDiscovery?.destroy()
         this.repl?.destroy()
-    }
-
-    private registerVariableChargeTime() {
-        /* cc-variable-charge-time */
-        ig.onChargeTimingsChange?.push(timings => {
-            runTasks(this.getAllInstances(), () => {
-                ig.setChargeTimings([...timings])
-            })
-        })
+        unregisterChargeTimingsChangeListener()
     }
 }
