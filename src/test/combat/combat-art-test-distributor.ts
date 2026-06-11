@@ -11,7 +11,7 @@ export async function runCombatArtTests(character: string, element: keyof typeof
             ;((configs[character] ??= {})[element] ??= []).push(id)
         }
 
-        const arr = configs[character][element]!
+        const arr = configs[character]?.[element] ?? []
         for (const id of arr) {
             await tester.executeTest(id)
         }

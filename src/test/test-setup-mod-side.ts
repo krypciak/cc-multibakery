@@ -3,7 +3,7 @@ import { preload } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
 import type { MapTpInfo } from '../server/server'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { runTask, scheduleNextTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'
 import type { TestConfig } from './test-bridge'
 
@@ -82,15 +82,20 @@ class MultibakeryTestUtils {
         return { client, map }
     }
 
-    updateLoop(inst: InstanceinatorInstance, func: () => boolean | undefined | Promise<boolean | undefined>) {
+    updateLoop(
+        inst: InstanceinatorInstance,
+        maxFrames: number,
+        func: (frame: number) => boolean | undefined | void | Promise<boolean | undefined | void>
+    ) {
         return new Promise<void>((res, rej) => {
+            let frames = 0
             const loop = async () => {
                 try {
-                    const done = await func()
-                    if (done) {
+                    const done = await func(frames)
+                    if (done || ++frames >= maxFrames) {
                         res()
                     } else {
-                        scheduleNextTask(inst, loop)
+                        scheduleTask(inst, loop)
                     }
                 } catch (e) {
                     rej(e)
@@ -102,9 +107,7 @@ class MultibakeryTestUtils {
     }
 
     async waitFrames(inst: InstanceinatorInstance, count: number) {
-        for (let frame = 0; frame < count; frame++) {
-            await scheduleTask(inst, () => {})
-        }
+        await this.updateLoop(inst, count + 1, () => {})
     }
 }
 

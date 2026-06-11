@@ -227,7 +227,7 @@ export class Client extends InstanceUpdateable {
 
         assert(instanceinator.id == multi.server.inst.id)
         if (this.dummy) {
-            multi.storage.savePlayerStateWithClient(this, tpInfo)
+            multi.storage.createAndSavePlayerStateWithClient(this, tpInfo)
         }
 
         this.nextTpInfo = tpInfo
@@ -483,7 +483,7 @@ export class Client extends InstanceUpdateable {
 
         this.inputManager?.destroy()
 
-        if (this.dummy) multi.storage.savePlayerStateWithClient(this)
+        if (this.dummy) multi.storage.createAndSavePlayerStateWithClient(this)
 
         multi.server.party.onClientDestroy(this)
 

@@ -8,7 +8,7 @@ import { defaultNetTransport } from '../../net/net-transport'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
-    multi.storage.savePlayerState(
+    multi.storage.createAndSavePlayerState(
         username,
         ig.game.playerEntity,
         {

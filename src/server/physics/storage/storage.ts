@@ -15,11 +15,11 @@ import './save-slot-button'
 import './pause-screen-save-button'
 
 type PlayerGetStateReturn = ReturnType<typeof getEntityState>
-type PlayerEntityState = PlayerGetStateReturn
-type PlayerState = {
-    entityState: PlayerEntityState
-    tpInfo: MapTpInfo
-    optionModelValues: ClientOptionModelValues
+export type StoragePlayerEntityState = Partial<PlayerGetStateReturn>
+interface PlayerState {
+    entityState?: StoragePlayerEntityState
+    tpInfo?: MapTpInfo
+    optionModelValues?: ClientOptionModelValues
 }
 
 export interface MultibakerySaveData {
@@ -159,19 +159,23 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         }
     }
 
-    savePlayerState(
+    createAndSavePlayerState(
         username: Username,
         player: ig.ENTITY.Player,
         tpInfo: MapTpInfo,
         optionModelValues: ClientOptionModelValues
     ): PlayerState {
-        this.currentData ??= {}
-        this.currentData.players ??= {}
-        return (this.currentData.players[username] = this.createPlayerState(player, tpInfo, optionModelValues))
+        return this.savePlayerState(username, this.createPlayerState(player, tpInfo, optionModelValues))
     }
 
-    savePlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
-        return this.savePlayerState(client.username, client.dummy, tpInfo, client.inst.sc.options.clientValues)
+    savePlayerState(username: Username, state: PlayerState): PlayerState {
+        this.currentData ??= {}
+        this.currentData.players ??= {}
+        return (this.currentData.players[username] = state)
+    }
+
+    createAndSavePlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
+        return this.createAndSavePlayerState(client.username, client.dummy, tpInfo, client.inst.sc.options.clientValues)
     }
 
     createPlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
@@ -184,7 +188,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
                 for (const client of map.clients) {
                     if (!client.ready) continue
 
-                    this.savePlayerStateWithClient(client)
+                    this.createAndSavePlayerStateWithClient(client)
                 }
             })
         }

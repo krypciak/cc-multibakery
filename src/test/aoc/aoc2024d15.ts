@@ -1,4 +1,4 @@
-import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import type { CCMap } from '../../server/ccmap/ccmap'
 import type { Client } from '../../client/client'
@@ -44,58 +44,51 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     else if (dir == 'down') dirVec = { x: 0, y: 1 }
     else if (dir == 'up') dirVec = { x: 0, y: -1 }
 
-    // await waitFrames(inst, 1)
-
     input.mainInputData.pushInput(moveInp)
 
     let collided: string = 'none'
-    for (let frame = 0; collided == 'none' && frame < 11; frame++) {
-        await scheduleTask(inst, () => {
-            if (e.coll._collData.collided) {
-                const entities = ig.game.getEntitiesInCircle(
-                    {
-                        x: e.getCenter().x + dirVec.x * 8,
-                        y: e.getCenter().y + dirVec.y * 8,
-                        z: e.coll.pos.z,
-                    },
-                    12,
-                    1,
-                    64,
-                    undefined,
-                    undefined,
-                    undefined,
-                    e
-                )
-                if (entities.length == 0) {
-                    collided = 'wall'
-                } else {
-                    collided = 'box'
-                }
-            }
-        })
-    }
+    await multi.test.updateLoop(inst, 12, () => {
+        if (!e.coll._collData.collided) return
+        const entities = ig.game.getEntitiesInCircle(
+            {
+                x: e.getCenter().x + dirVec.x * 8,
+                y: e.getCenter().y + dirVec.y * 8,
+                z: e.coll.pos.z,
+            },
+            12,
+            1,
+            64,
+            undefined,
+            undefined,
+            undefined,
+            e
+        )
+        if (entities.length == 0) {
+            collided = 'wall'
+        } else {
+            collided = 'box'
+        }
+        return true
+    })
     input.mainInputData.pushInput(emptyInput)
 
     if (collided == 'box') {
         const holdTime = 20
         const pushTime = 23
-        for (let frame = 0; frame < pushTime + holdTime; frame++) {
-            await scheduleTask(inst, () => {
-                if (frame == 0) {
-                    inp.presses!['aim'] = true
-                } else {
-                    inp.actions!['aim'] = true
-                }
-                if (frame >= holdTime) {
-                    inp.actions![dir] = true
-                }
-                input.mainInputData.pushInput(inp)
-            })
-        }
+        await multi.test.updateLoop(inst, pushTime + holdTime, frame => {
+            if (frame == 0) {
+                inp.presses!['aim'] = true
+            } else {
+                inp.actions!['aim'] = true
+            }
+            if (frame >= holdTime) {
+                inp.actions![dir] = true
+            }
+            input.mainInputData.pushInput(inp)
+        })
     }
 
     input.mainInputData.pushInput(emptyInput)
-    // await waitFrames(inst, 8)
 }
 
 type AocConfig = (typeof configs)[number] & { expectedMoves: Record<string, Vec2 & { sum: number }> }
@@ -138,7 +131,7 @@ class Aoc2024d15Test implements TestConfig {
         this.client = client
         this.map = map
 
-        await multi.test.updateLoop(this.client.inst, this.update.bind(this))
+        await multi.test.updateLoop(this.client.inst, Infinity, this.update.bind(this))
 
         tester.expect(this.sum).toEqual(this.config.expectedSum)
     }

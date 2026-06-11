@@ -1,4 +1,4 @@
-import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import { CCMap } from '../../server/ccmap/ccmap'
 import type { Client } from '../../client/client'
@@ -6,15 +6,14 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
-import { teleportPlayerToProperMarker } from '../../server/ccmap/teleport-fix'
 import { addRuntimeAsset, reloadRuntimeAssets, removeRuntimeAssert } from '../../misc/runtime-assets'
+import type { StoragePlayerEntityState } from '../../server/physics/storage/storage'
 
 const enemyType = 'autumn-rh.practice-bot'
 
 async function executeCombatArt(
     e: dummy.DummyPlayer,
     inst: InstanceinatorInstance,
-    element: sc.ELEMENT,
     combatArt: keyof typeof sc.PLAYER_ACTION
 ) {
     const input = e.inputManager
@@ -42,44 +41,34 @@ async function executeCombatArt(
         },
     } satisfies Partial<InputData> as NonNullable<InputData>
 
-    e.model.params.currentSp = e.model.params.maxSp
-    e.model.setElementMode(element)
+    const combartArtTypeConfigMap: Record<string, { triggerActions: ig.Input.KnownAction[]; preFrames: number }> = {
+        ATTACK: { triggerActions: [], preFrames: 0 },
+        GUARD: { triggerActions: ['guard'], preFrames: 18 },
+        THROW: { triggerActions: ['aim'], preFrames: 21 },
+        DASH: { triggerActions: ['dash', 'left'], preFrames: 6 },
+    }
+    const combatArtType = combatArt.split('_')[0]
+    const { triggerActions, preFrames } = combartArtTypeConfigMap[combatArtType]
 
     const chargeInp = ig.copy(emptyInput)
-    const triggerActions: ig.Input.KnownAction[] = []
-    let preFrames = 0
-    if (combatArt.startsWith('ATTACK')) {
-    } else if (combatArt.startsWith('GUARD')) {
-        triggerActions.push('guard')
-        preFrames = 17
-    } else if (combatArt.startsWith('THROW')) {
-        triggerActions.push('aim')
-        preFrames = 10
-    } else if (combatArt.startsWith('DASH')) {
-        triggerActions.push('dash')
-        triggerActions.push('left')
-        preFrames = 5
-    } else assert(false)
-
-    for (const action of triggerActions) {
-        chargeInp['actions']![action] = true
-        chargeInp['presses']![action] = true
+    function setAction(action: ig.Input.KnownAction, value: boolean) {
+        chargeInp['actions']![action] = value
+        chargeInp['presses']![action] = value
     }
+
+    for (const action of triggerActions) setAction(action, true)
 
     input.mainInputData.pushInput(chargeInp)
 
-    for (let frame = 0; frame < preFrames; frame++) {
-        await scheduleTask(inst, () => {
-            input.mainInputData.pushInput(ig.copy(chargeInp))
-        })
-    }
+    await multi.test.updateLoop(inst, preFrames, () => {
+        input.mainInputData.pushInput(ig.copy(chargeInp))
+    })
 
-    chargeInp['actions']!['special'] = true
-    chargeInp['presses']!['special'] = true
+    setAction('special', true)
 
     const entitiesSpawned: ig.Entity[] = []
 
-    if (combatArt.startsWith('GUARD')) {
+    if (combatArtType == 'GUARD') {
         await runTask(inst, async () => {
             const { x, y, z } = e.coll.pos
             ig.vars.set('tmp.practiceAttack', true)
@@ -92,16 +81,11 @@ async function executeCombatArt(
     }
 
     const chargeLevel = parseInt(combatArt[combatArt.length - 1])
-    const chargeTime = chargeLevel * 4 + 1
-    for (let frame = 0; frame < chargeTime; frame++) {
-        await scheduleTask(inst, () => {
-            input.mainInputData.pushInput(ig.copy(chargeInp))
-            for (const action of triggerActions) {
-                chargeInp['actions']![action] = false
-                chargeInp['presses']![action] = false
-            }
-        })
-    }
+    const chargeTime = chargeLevel * 4
+    await multi.test.updateLoop(inst, chargeTime, () => {
+        input.mainInputData.pushInput(ig.copy(chargeInp))
+        for (const action of triggerActions) setAction(action, false)
+    })
 
     input.mainInputData.pushInput(emptyInput)
 
@@ -124,10 +108,10 @@ async function executeCombatArt(
         return ig.game.entities.filter(shouldInclude)
     }
 
-    let frame = 0
     await multi.test.updateLoop(
         inst,
-        () => frame++ > 60 * 30 || (e.state == 0 && !e.currentAction && getSpawnedEntities().length == 0)
+        multi.server.settings.gameTps * 30,
+        () => e.state == 0 && !e.currentAction && getSpawnedEntities().length == 0
     )
     runTask(inst, () => {
         for (const entity of [...entitiesSpawned, ...getSpawnedEntities(true)]) {
@@ -166,46 +150,6 @@ class CombatArtTest implements TestConfig {
         this.timeout = 1000e3
     }
 
-    private setupPlayer() {
-        runTask(this.client.inst, () => {
-            const model = sc.model.player
-
-            const config = sc.party.models[this.config.character].config
-            sc.model.player.setConfig(config)
-
-            for (const k of Object.keysT(model.core)) {
-                model.core[k] = true
-            }
-
-            model.spLevel = 4
-            model.params.setMaxSp(sc.SP_LEVEL[model.spLevel])
-            model.level = 99
-            model.equip = { head: 657, leftArm: 607, rightArm: 607, torso: 583, feet: 596 }
-
-            const relevantSkills = (sc.skilltree.skills as sc.SpecialSkill[]).filter(
-                s =>
-                    s.skillType == this.config.combatArt.split('_')[0] &&
-                    s.element == this.config.element &&
-                    s.branchType == this.config.branch
-            )
-            model.skills = []
-            for (const skill of relevantSkills) {
-                model.skills[skill.id] = skill
-            }
-
-            sc.Model.notifyObserver(model, sc.PLAYER_MSG.LEVEL_CHANGE, null)
-            sc.Model.notifyObserver(model, sc.PARTY_MEMBER_MSG.LEVEL_CHANGE)
-            sc.Model.notifyObserver(model.params, sc.COMBAT_PARAM_MSG.MAX_SP_CHANGED)
-            sc.Model.notifyObserver(model, sc.PLAYER_MSG.SKILL_CHANGED)
-            model.updateStats()
-
-            const frameTime = 1 / multi.server.settings.gameTps
-            ig.setChargeTimings([frameTime * 4, frameTime * 8, frameTime * 12])
-
-            teleportPlayerToProperMarker(this.client.dummy, 'entrance')
-        })
-    }
-
     private async loadEnemy(enemyName: string) {
         return new Promise<void>((res, rej) => {
             new sc.EnemyType(enemyName).addLoadListener({
@@ -217,34 +161,68 @@ class CombatArtTest implements TestConfig {
         })
     }
 
+    private getPlayerStats(): StoragePlayerEntityState {
+        const relevantSkills = (sc.skilltree.skills as sc.SpecialSkill[]).filter(
+            s =>
+                s.skillType == this.config.combatArt.split('_')[0] &&
+                s.element == this.config.element &&
+                s.branchType == this.config.branch
+        )
+        const skills = relevantSkills.reduce((acc, skill) => {
+            acc[skill.id] = true
+            return acc
+        }, [] as boolean[])
+
+        return {
+            spLevel: sc.SP_LEVEL[4],
+            sp: 100,
+            level: 99,
+            head: 657,
+            leftArm: 607,
+            rightArm: 607,
+            torso: 583,
+            feet: 596,
+            modelName: this.config.character,
+            skills,
+            element: this.config.element,
+        }
+    }
+
     private async createMapAndClientIfNeeded() {
         addRuntimeAsset(CCMap.mapNameToFilePath(this.mapName), CCMap.mapNameToFilePath(this.baseMapName))
         reloadRuntimeAssets()
 
+        const username = this.id
+        multi.storage.savePlayerState(username, {
+            entityState: this.getPlayerStats(),
+        })
         const { client, map } = await multi.test.createClient({
-            username: this.id,
+            username,
             tpInfo: { map: this.mapName },
             test: this,
             tilingOrder: this.config.tilingOrder,
         })
+        client.inst.ig.perf.noGuiUpdate = true
+        map.inst.ig.perf.noGuiUpdate = true
+        this.client = client
+        this.map = map
 
         await this.loadEnemy(enemyType)
 
-        await multi.test.waitFrames(client.inst, 20)
+        runTask(client.inst, () => {
+            sc.model.player.updateStats()
 
-        return { client, map }
+            const frameTime = 1 / multi.server.settings.gameTps
+            ig.setChargeTimings([frameTime * 4, frameTime * 8, frameTime * 12])
+        })
     }
 
     async run() {
         await multi.test.setupServerIfNeeded()
 
-        const { client, map } = await this.createMapAndClientIfNeeded()
+        await this.createMapAndClientIfNeeded()
 
-        this.client = client
-        this.map = map
-        this.setupPlayer()
-
-        await executeCombatArt(this.client.dummy, this.client.inst, this.config.element, this.config.combatArt)
+        await executeCombatArt(this.client.dummy, this.client.inst, this.config.combatArt)
     }
 
     cleanup() {
@@ -263,7 +241,7 @@ class CombatArtTest implements TestConfig {
 
 poststart(() => {
     let tilingOrder = 0
-    const models = ['Lea', 'triblader2', 'Hexacast1']
+    const models = ['Lea', 'triblader2', 'Hexacast1'] as const
     for (const character of models) {
         const model = sc.party.models[character]
         assert(model, `missing player model: ${character}`)
