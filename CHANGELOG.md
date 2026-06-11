@@ -16,6 +16,11 @@
 
 - Fix title screen button gamepad focus logic
 - Fix ig.ENTITY.Prop permaEffect duplicating on remote
+- Fix combat art crashes:
+  - triblader2 SHOCK ATTACK B 1 Plasma Thrust
+  - triblader2 HEAT DASH B 2 Trailblazer
+  - Hexacast1 SHOCK ATTACK A 3 Stasis Storm
+  - Hexacast1 HEAT ATTACK B 3 Calamity Beacon
 
 ## [0.8.0] 2026-06-05
 

@@ -2,19 +2,19 @@ import { prestart } from '../../loading-stages'
 import { createNetidSpecialBit } from '../../misc/entity-netid'
 import { assert } from '../../misc/assert'
 
-let ignoreEffectNetid: boolean = false
+let ignoreEffectNetidCount = 0
 export function wrapIgnoreEffectNetid<R>(func: () => R) {
-    assert(!ignoreEffectNetid)
-    ignoreEffectNetid = true
+    assert(ignoreEffectNetidCount >= 0)
+    ignoreEffectNetidCount++
     const ret = func()
-    ignoreEffectNetid = false
+    ignoreEffectNetidCount--
     return ret
 }
 
 prestart(() => {
     ig.ENTITY.Effect.inject({
         createNetid() {
-            if (ignoreEffectNetid) return
+            if (ignoreEffectNetidCount > 0) return
             return createNetidSpecialBit.call(this)
         },
     })
