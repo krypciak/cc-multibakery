@@ -138,6 +138,8 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
     @profile(() => `storage ${profileCounter++}`)
     save(slotId?: number) {
+        if (!isPhysics(multi.server) || (slotId === undefined && !multi.server.settings.save?.automaticallySave)) return
+
         const save = this.getMultiSaveSlotData()
         this.addPrettyTextToSave(save)
         this.commitSave(save, slotId)
