@@ -142,6 +142,8 @@ export interface CombatArtTestConfig {
     combatArt: keyof typeof sc.PLAYER_ACTION
     element: sc.ELEMENT
     branch: 'A' | 'B'
+
+    tilingOrder?: number
 }
 
 let combatArtMapCounter = 0
@@ -219,7 +221,12 @@ class CombatArtTest implements TestConfig {
         }
         addRuntimeAsset(mapNameToFilePath(this.mapName), mapNameToFilePath(this.baseMapName))
         reloadRuntimeAssets()
-        const ret = await multi.test.createClient(username, { map: mapName }, this)
+        const ret = await multi.test.createClient({
+            username,
+            tpInfo: { map: mapName },
+            test: this,
+            tilingOrder: this.config.tilingOrder,
+        })
 
         await new Promise<void>((res, rej) => {
             new sc.EnemyType('autumn-rh.practice-bot').addLoadListener({
@@ -261,10 +268,12 @@ class CombatArtTest implements TestConfig {
 }
 
 poststart(() => {
+    let tilingOrder = 0
     for (const character of ['Lea', 'triblader2', 'Hexacast1']) {
         const model = sc.party.models[character]
         assert(model, `missing player model: ${character}`)
         for (let element = 0 as sc.ELEMENT; element <= sc.ELEMENT.WAVE; element++) {
+            tilingOrder++
             for (let level = 1; level <= 3; level++) {
                 for (const type of ['ATTACK', 'THROW', 'GUARD', 'DASH'] as const) {
                     for (const branch of ['A', 'B'] as const) {
@@ -285,6 +294,7 @@ poststart(() => {
                                 element,
                                 combatArt,
                                 branch,
+                                tilingOrder,
                             })
                         )
                     }

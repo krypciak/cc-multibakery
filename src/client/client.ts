@@ -42,6 +42,7 @@ export type ClientSettings = {
     noShowInstance?: boolean
     forceDraw?: boolean
     tpInfo?: MapTpInfo
+    tilingOrder?: number
 } & (
     | {
           inputType: 'clone'
@@ -79,6 +80,7 @@ export class Client extends InstanceUpdateable {
                 soundPlayCondition: () =>
                     this.isVisible() || this.inst?.ig?.mapShared?.ccmap?.inst?.soundPlayCondition(),
                 forceDraw: this.settings.forceDraw,
+                tilingOrder: this.settings.tilingOrder,
             },
             instanceinatorCopyInstanceConfig()
         )

@@ -101,6 +101,8 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
 type AocConfig = (typeof configs)[number] & { expectedMoves: Record<string, Vec2 & { sum: number }> }
 
 class Aoc2024d15Test implements TestConfig {
+    private static tilingOrderCounter = 2000
+
     id: string
     name: string
     timeout: number
@@ -127,7 +129,12 @@ class Aoc2024d15Test implements TestConfig {
 
     async run() {
         await multi.test.setupServerIfNeeded()
-        const { client, map } = await multi.test.createClient(this.id, { map: this.config.mapName }, this)
+        const { client, map } = await multi.test.createClient({
+            username: this.id,
+            tpInfo: { map: this.config.mapName },
+            test: this,
+            tilingOrder: Aoc2024d15Test.tilingOrderCounter++,
+        })
         this.client = client
         this.map = map
 
