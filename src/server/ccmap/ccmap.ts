@@ -74,13 +74,6 @@ export class CCMap extends InstanceUpdateable {
         )
     }
 
-    copyRawLevelData(): sc.MapModel.Map {
-        return {
-            ...this.rawLevelData,
-            layer: this.rawLevelData.layer.map(layer => ({ ...layer, data: layer.data.map(arr => [...arr]) })),
-        }
-    }
-
     private link() {
         const toLink = [linkMapVars, linkOptions, linkMapModel]
         for (const link of toLink) link(this.inst, multi.server.inst)
@@ -189,8 +182,12 @@ export class CCMap extends InstanceUpdateable {
         )
     }
 
+    static mapNameToFilePath(name: string): string {
+        return ig.getFilePath(name.toPath(ig.root + 'data/maps/', '.json') + ig.getCacheSuffix())
+    }
+
     private async readLevelData() {
-        const path = ig.getFilePath(this.name.toPath(ig.root + 'data/maps/', '.json') + ig.getCacheSuffix())
+        const path = CCMap.mapNameToFilePath(this.name)
         return new Promise<sc.MapModel.Map>(resolve => {
             $.ajax({
                 dataType: 'json',
@@ -202,6 +199,13 @@ export class CCMap extends InstanceUpdateable {
                 },
             })
         })
+    }
+
+    copyRawLevelData(): sc.MapModel.Map {
+        return {
+            ...this.rawLevelData,
+            layer: this.rawLevelData.layer.map(layer => ({ ...layer, data: layer.data.map(arr => [...arr]) })),
+        }
     }
 
     enter(client: Client) {

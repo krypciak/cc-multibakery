@@ -7,6 +7,9 @@ export function addRuntimeAsset(dest: string, from: string) {
     assets[dest] = from
     everAdded.add(dest)
 }
+export function removeRuntimeAssert(path: string) {
+    delete assets[path]
+}
 
 export function reloadRuntimeAssets() {
     if (Multibakery.mod.isCCL3) {

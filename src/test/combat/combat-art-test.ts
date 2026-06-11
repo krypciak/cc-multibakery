@@ -1,13 +1,15 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
-import type { CCMap } from '../../server/ccmap/ccmap'
+import { CCMap } from '../../server/ccmap/ccmap'
 import type { Client } from '../../client/client'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
 import { teleportPlayerToProperMarker } from '../../server/ccmap/teleport-fix'
-import { addRuntimeAsset, reloadRuntimeAssets } from '../../misc/runtime-assets'
+import { addRuntimeAsset, reloadRuntimeAssets, removeRuntimeAssert } from '../../misc/runtime-assets'
+
+const enemyType = 'autumn-rh.practice-bot'
 
 async function executeCombatArt(
     e: dummy.DummyPlayer,
@@ -82,7 +84,7 @@ async function executeCombatArt(
             const { x, y, z } = e.coll.pos
             ig.vars.set('tmp.practiceAttack', true)
             const enemy = ig.game.spawnEntity('Enemy', x - 32, y, z, {
-                enemyInfo: { type: 'autumn-rh.practice-bot', level: 1 },
+                enemyInfo: { type: enemyType, level: 1 },
             })
             entitiesSpawned.push(enemy)
             enemy.enemyType.assignTarget(enemy, e, false, true)
@@ -204,42 +206,33 @@ class CombatArtTest implements TestConfig {
         })
     }
 
-    private async createMapAndClientIfNeeded() {
-        // const username = 'combat-art' // this.id
-        // const mapName = this.baseMapName // this.mapName
-        // const map = multi.server.maps.get(mapName)
-        // if (map) {
-        //     const client = multi.server.clients.get(username)
-        //     assert(client)
-        //     return { client, map }
-        // }
-
-        const username = this.id
-        const mapName = this.mapName
-        function mapNameToFilePath(name: string) {
-            return 'data/maps/' + name + '.json'
-        }
-        addRuntimeAsset(mapNameToFilePath(this.mapName), mapNameToFilePath(this.baseMapName))
-        reloadRuntimeAssets()
-        const ret = await multi.test.createClient({
-            username,
-            tpInfo: { map: mapName },
-            test: this,
-            tilingOrder: this.config.tilingOrder,
-        })
-
-        await new Promise<void>((res, rej) => {
-            new sc.EnemyType('autumn-rh.practice-bot').addLoadListener({
+    private async loadEnemy(enemyName: string) {
+        return new Promise<void>((res, rej) => {
+            new sc.EnemyType(enemyName).addLoadListener({
                 onLoadableComplete(success) {
                     if (success) res()
                     else rej()
                 },
             })
         })
+    }
 
-        await multi.test.waitFrames(ret.client.inst, 20)
+    private async createMapAndClientIfNeeded() {
+        addRuntimeAsset(CCMap.mapNameToFilePath(this.mapName), CCMap.mapNameToFilePath(this.baseMapName))
+        reloadRuntimeAssets()
 
-        return ret
+        const { client, map } = await multi.test.createClient({
+            username: this.id,
+            tpInfo: { map: this.mapName },
+            test: this,
+            tilingOrder: this.config.tilingOrder,
+        })
+
+        await this.loadEnemy(enemyType)
+
+        await multi.test.waitFrames(client.inst, 20)
+
+        return { client, map }
     }
 
     async run() {
@@ -264,12 +257,14 @@ class CombatArtTest implements TestConfig {
             multi.server.unloadMap(this.map)
             this.map = undefined as any
         }
+        removeRuntimeAssert(CCMap.mapNameToFilePath(this.mapName))
     }
 }
 
 poststart(() => {
     let tilingOrder = 0
-    for (const character of ['Lea', 'triblader2', 'Hexacast1']) {
+    const models = ['Lea', 'triblader2', 'Hexacast1']
+    for (const character of models) {
         const model = sc.party.models[character]
         assert(model, `missing player model: ${character}`)
         for (let element = 0 as sc.ELEMENT; element <= sc.ELEMENT.WAVE; element++) {
