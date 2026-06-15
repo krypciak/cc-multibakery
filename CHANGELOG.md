@@ -11,6 +11,7 @@
 ### Changed
 
 - Reset instanceinator instance counter on server destroy
+- Don't give iron stance circuits on godmode
 
 ### Fixed
 
