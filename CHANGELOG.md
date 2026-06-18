@@ -24,6 +24,7 @@
   - Hexacast1 HEAT ATTACK B 3 Calamity Beacon
 - Don't save the game when running on remote server
 - Don't automaticaly save the game when automatic saving is disabled
+- Fix ig.ENTITY.TouchTrigger logic with multiple players
 
 ## [0.8.0] 2026-06-05
 

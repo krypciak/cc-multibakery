@@ -130,7 +130,7 @@
                 "endCondition": "false"
             }
         },
-        { "type": "WallVertical", "x": 1216, "y": 251, "level": 2, "settings": { "size": { "x": 8, "y": 57 }, "mapId": 59, "topEnd": "STOP", "bottomEnd": "STOP", "collType": "BLOCK", "wallZHeight": 32, "name": "wallCage", "condition": "!tmp.cage" } },
+        { "type": "WallVertical", "x": 1216, "y": 251, "level": 2, "settings": { "size": { "x": 8, "y": 57 }, "mapId": 59, "topEnd": "STOP", "bottomEnd": "STOP", "collType": "BLOCK", "wallZHeight": 32, "name": "wallCage", "condition": "!tmp.cage && !tmp.allPlayersInside" } },
         { "type": "Switch", "x": 1197, "y": 327, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 60, "name": "s1", "variable": "tmp.cage" } },
         { "type": "Switch", "x": 1228, "y": 326, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 61, "name": "s1", "variable": "tmp.cage" } },
         { "type": "EnemyCounter", "x": 1281, "y": 258, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 62, "enemyGroup": "cage", "enemyCount": 2, "name": "enemyCounter", "postVariable": "tmp.cage" } },
@@ -145,10 +145,7 @@
             "settings": {
                 "size": { "x": 16, "y": 16 },
                 "mapId": 68,
-                "event": [
-                    { "type": "FORCE_LEVEL_UP" },
-                    { "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlup", "changeType": "set", "value": false }
-                ],
+                "event": [{ "type": "FORCE_LEVEL_UP" }, { "type": "CHANGE_VAR_BOOL", "varName": "tmp.lvlup", "changeType": "set", "value": false }],
                 "eventType": "INTERRUPTABLE",
                 "startCondition": "tmp.lvlup",
                 "triggerType": "ALWAYS",
@@ -329,15 +326,16 @@
             "x": 1264,
             "y": 1032,
             "level": 2,
-            "settings": { "size": { "x": 16, "y": 16 }, "mapId": 130, "event": [
-                { "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" },
-                { "type": "WAIT", "time": 1 },
-                { "type": "PREPARE_PVP_ROUND" },
-                { "type": "WAIT", "time": 1 },
-                { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" },
-                { "type": "START_PVP_ROUND" }
-            ],
-            "name": "pvpBrake", "eventType": "PARALLEL", "triggerType": "ALWAYS", "startCondition": "pvp.brake", "endCondition": "false" }
+            "settings": {
+                "size": { "x": 16, "y": 16 },
+                "mapId": 130,
+                "event": [{ "type": "MACRO", "name": "multibakery/pvpNavigateToPositions" }, { "type": "WAIT", "time": 1 }, { "type": "PREPARE_PVP_ROUND" }, { "type": "WAIT", "time": 1 }, { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" }, { "type": "START_PVP_ROUND" }],
+                "name": "pvpBrake",
+                "eventType": "PARALLEL",
+                "triggerType": "ALWAYS",
+                "startCondition": "pvp.brake",
+                "endCondition": "false"
+            }
         },
         {
             "type": "EventTrigger",
@@ -352,18 +350,28 @@
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpSign", "value": false },
                     { "changeType": "set", "type": "CHANGE_VAR_BOOL", "varName": "map.pvpArena", "value": false },
 
-                    { "type": "MACRO", "name": "FOR", "i": "tmp.partyI", "to": "pvp.parties.length", "steps": [
-                        { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
-                        { "type": "MACRO", "name": "FOR", "i": "tmp.combatantI", "to": "tmp.combatants.length", "steps": [
-                            { 
-                                "type": "DO_ACTION",
-                                "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
-                                "action": [
-                                    { "type": "SET_POS", "newPos": { "varName": "game.entities.name.pvp.pos" } }
+                    {
+                        "type": "MACRO",
+                        "name": "FOR",
+                        "i": "tmp.partyI",
+                        "to": "pvp.parties.length",
+                        "steps": [
+                            { "type": "CHANGE_VAR_ARRAY", "changeType": "set", "varName": "tmp.combatants", "value": { "varName": "pvp.parties[tmp.partyI].combatants.all" } },
+                            {
+                                "type": "MACRO",
+                                "name": "FOR",
+                                "i": "tmp.combatantI",
+                                "to": "tmp.combatants.length",
+                                "steps": [
+                                    {
+                                        "type": "DO_ACTION",
+                                        "entity": { "expr": { "varName": "tmp.combatants[tmp.combatantI]" } },
+                                        "action": [{ "type": "SET_POS", "newPos": { "varName": "game.entities.name.pvp.pos" } }]
+                                    }
                                 ]
                             }
-                        ]}
-                    ]},
+                        ]
+                    },
                     { "type": "STOP_PVP_BATTLE" }
                 ],
                 "name": "pvpEnd",
@@ -392,10 +400,10 @@
                             { "type": "CHANGE_VAR_ARRAY", "changeType": "intersect", "varName": "tmp.playersInBox", "value": { "varName": "game.entities.type.Player" } },
 
                             {
-                               "type": "MACRO",
-                               "name": "multibakery/pvpCheckForPlayersOnDifferentMaps",
-                               "varName": "tmp.playersOnOtherMapDetected",
-                               "players": { "varName": "tmp.playersInBox" }
+                                "type": "MACRO",
+                                "name": "multibakery/pvpCheckForPlayersOnDifferentMaps",
+                                "varName": "tmp.playersOnOtherMapDetected",
+                                "players": { "varName": "tmp.playersInBox" }
                             },
                             {
                                 "type": "IF",
@@ -408,7 +416,7 @@
                                         "type": "IF",
                                         "condition": "pvp.parties.length > 1",
                                         "thenStep": [
-                                            { 
+                                            {
                                                 "type": "SHOW_OBJECT_SLIDER_DIALOG",
                                                 "title": "Win points",
                                                 "initialValue": 2,
@@ -426,9 +434,7 @@
                                                     { "type": "PREPARE_PVP_ROUND", "autoContinue": true },
                                                     { "type": "MACRO", "name": "multibakery/pvpReleasePlayerInputLock" }
                                                 ],
-                                                "declined": [
-                                                    { "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" }
-                                                ]
+                                                "declined": [{ "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" }]
                                             }
                                         ]
                                     }
@@ -532,7 +538,43 @@
         { "type": "Enemy", "x": 1151, "y": 211, "level": 2, "settings": { "name": "bot2", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 19 } },
         { "type": "Enemy", "x": 1113, "y": 210, "level": 2, "settings": { "name": "bot3", "enemyInfo": { "type": "target-bot", "attribs": { "target": { "x": 0, "y": 0 }, "onSuccess": "tmp.hitSuccess", "onFail": "tmp.hitFail" }, "state": "DO_NOT_HIT", "group": "" }, "spawnCondition": null, "enemyType": "target-bot", "mapId": 20 } },
         { "type": "Enemy", "x": 1016, "y": 211, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 52, "enemyInfo": { "party": "PLAYER", "level": 1, "face": "SOUTH", "state": "", "type": "heat.special.brew-machine" } } },
-        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage", "varIncrease": "tmp.clients[player.username].score" } } }
+        { "type": "Enemy", "x": 1243, "y": 226, "level": 2, "settings": { "size": { "x": 16, "y": 16 }, "mapId": 53, "enemyInfo": { "party": "ENEMY", "level": 1, "face": "SOUTH", "state": "IDLE", "type": "jungle.blob", "group": "cage", "varIncrease": "tmp.clients[player.username].score" } } },
+        { "type": "TouchTrigger", "x": 1152, "y": 248, "level": 2, "settings": { "variable": "tmp.inMyTouchTrigger[player.username]", "type": "WHILE_TOUCH_TRUE", "zHeight": 64, "shape": "RECTANGLE", "mapId": 164, "size": { "x": 64, "y": 64 }, "name": "myTouchTrigger" } },
+        {
+            "type": "EventTrigger",
+            "x": 368,
+            "y": 168,
+            "level": 2,
+            "settings": {
+                "size": { "x": 16, "y": 16 },
+                "mapId": 165,
+                "event": [
+                    { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "call.allPlayersInside", "value": true },
+                    { 
+                        "type": "MACRO",
+                        "name": "FOR",
+                        "i": "call.playerI",
+                        "to": "multi.playersOnMap.length",
+                        "steps": [
+                            {
+                                "type": "IF",
+                                "condition": "!tmp.inMyTouchTrigger[multi.playersOnMap[call.playerI].username]",
+                                "thenStep": [
+                                    { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "call.allPlayersInside", "value": false }
+                                ]
+                            }
+                        ]
+                    },
+                    { "type": "CHANGE_VAR_BOOL", "changeType": "set", "varName": "tmp.allPlayersInside", "value": { "varName": "call.allPlayersInside" } }
+                ],
+                "eventType": "INTERRUPTABLE",
+                "startCondition": "true",
+                "triggerType": "ALWAYS",
+                "name": "myTouchTriggerCheck",
+                "loadCondition": true,
+                "endCondition": "false"
+            }
+        }
     ],
     "layer": [
         {
