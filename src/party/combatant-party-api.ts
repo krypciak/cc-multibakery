@@ -23,6 +23,18 @@ export function addCombatantParty(name: string, forceId?: number): sc.COMBATANT_
     return id
 }
 
+function enemyPartyFix<T>(party: sc.COMBATANT_PARTY = 2, func: () => T): T {
+    // @ts-expect-error
+    sc.COMBATANT_PARTY.ENEMY = party
+
+    const ret = func()
+
+    // @ts-expect-error
+    sc.COMBATANT_PARTY.ENEMY = 2
+
+    return ret
+}
+
 function playerPartyFix<T>(party: sc.COMBATANT_PARTY = 1, func: () => T): T {
     if (!isCustomParty(party)) return func()
 
@@ -136,3 +148,16 @@ prestart(() => {
 // ig.ACTION_STEP.SET_PARTY_TEMP_TARGET idk
 // sc.Arena#onPvpRoundFinished idc
 // sc.Arean#onPreDamageApply idc
+
+/* enemy party fix */
+prestart(() => {
+    const orig = sc.COMBAT_POI.ACTIVE_ENEMIES.getEntities!
+    sc.COMBAT_POI.ACTIVE_ENEMIES.getEntities = (results, settings, actor) => {
+        const actorParty = 'party' in actor ? (actor.party as number) : -1
+        for (const party of Object.values(sc.COMBATANT_PARTY) as sc.COMBATANT_PARTY[]) {
+            if (party == actorParty) continue
+
+            enemyPartyFix(party, () => orig(results, settings, actor))
+        }
+    }
+})

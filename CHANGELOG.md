@@ -25,6 +25,7 @@
 - Don't save the game when running on remote server
 - Don't automaticaly save the game when automatic saving is disabled
 - Fix ig.ENTITY.TouchTrigger logic with multiple players
+- Fix sc.COMBAT_POI.ACTIVE_ENEMIES searching only in the ENEMY party
 
 ## [0.8.0] 2026-06-05
 
