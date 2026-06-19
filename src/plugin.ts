@@ -23,7 +23,7 @@ export default class Multibakery implements PluginClass {
 
         if (!TEST) {
             if (window.crossnode) {
-                if (!CROSSNODE) throw new Error('running in crossnode but not compiled with crossnode flag!')
+                if (!CROSSNODE) console.warn('running in crossnode but not compiled with crossnode flag!')
             } else {
                 if (CROSSNODE) throw new Error('running in browser but compiled with crossnode flag!')
             }
