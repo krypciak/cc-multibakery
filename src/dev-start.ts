@@ -224,7 +224,10 @@ poststart(() => {
             }
             const { details } = (await getServerDetails(connection)) ?? {}
             if (details) {
-                tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
+                const ackData = await tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
+                if (ackData.status != 'ok') {
+                    console.log(ackData)
+                }
             }
         })()
     }
