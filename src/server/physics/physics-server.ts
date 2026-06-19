@@ -147,7 +147,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         joinData: ClientJoinData,
         { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
     ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }> {
-        this.createAndJoinClientInitialChecks(joinData)
+        let ackData = this.createAndJoinClientInitialChecks(joinData)
+        if (ackData) return { ackData }
         assert(!ackDataOverride)
 
         const settings: ClientSettings = {
@@ -167,7 +168,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         await this.initAndJoinClientStrategy(client, tpInfo, connection, awaitClientJoin)
 
-        return { client, map, ackData: { status: 'ok', tpInfo, reservedNetid: client.reservedNetid } }
+        ackData = { status: 'ok', tpInfo, reservedNetid: client.reservedNetid }
+        return { client, map, ackData }
     }
 
     leaveClient(client: Client) {

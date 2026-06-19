@@ -267,12 +267,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return tpInfo
     }
 
-    protected createAndJoinClientInitialChecks(joinData: ClientJoinData) {
+    protected createAndJoinClientInitialChecks(joinData: ClientJoinData): ClientJoinAckData | undefined {
         assert(instanceinator.id == this.inst.id)
         assert(isClientJoinData(joinData))
         const username = joinData.username
-        if (!isUsernameValid(username)) return { ackData: { status: 'invalid_username' } }
-        if (this.clients.has(username)) return { ackData: { status: 'username_taken' } }
+        if (!isUsernameValid(username)) return { status: 'invalid_username' }
+        if (this.clients.has(username)) return { status: 'username_taken' }
     }
 
     private async initAndJoinClient(client: Client, tpInfo: MapTpInfo) {

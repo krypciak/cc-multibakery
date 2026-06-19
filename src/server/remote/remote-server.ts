@@ -196,11 +196,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         joinData: ClientJoinData,
         { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
     ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }> {
-        this.createAndJoinClientInitialChecks(joinData)
+        let ackData = this.createAndJoinClientInitialChecks(joinData)
+        if (ackData) return { ackData }
 
         assert(!clientSettingsOverride)
 
-        const ackData = ackDataOverride ?? (await this.netManager.sendJoin(joinData))
+        ackData = ackDataOverride ?? (await this.netManager.sendJoin(joinData))
         if (ackData.status != 'ok') return { ackData }
 
         const settings: ClientSettings = {
@@ -225,7 +226,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         assert(this.netManager.conn)
         this.netManager.conn.join(client)
 
-        return { client, ackData, map }
+        return { client, map, ackData }
     }
 
     onMapReady(map: CCMap) {
