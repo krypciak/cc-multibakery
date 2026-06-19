@@ -43,8 +43,8 @@ export class SocketIoNetTransportServer implements NetTransportServer {
         httpServer: HttpServer,
         onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
     ): Promise<void> {
-        assert(PHYSICSNET)
-        assert(!!window.crossnode == CROSSNODE)
+        assert(PHYSICSNET, 'running socket.io net transport server without PHYSICSNET')
+        assert(!!window.crossnode == CROSSNODE, 'running socket.io net transport server with CROSSNODE flag mismatch')
 
         setIntervalWorkaround()
 
