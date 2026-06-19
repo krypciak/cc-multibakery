@@ -231,7 +231,7 @@ export class Client extends InstanceUpdateable {
         }
 
         this.nextTpInfo = tpInfo
-        const map = multi.server.getMap(tpInfo.map)
+        const map = multi.server.getMap(tpInfo)
         if (isPhysics(multi.server)) this.reservedNetid ??= map.reservePlayerNetid()
 
         this.ready = false
@@ -261,7 +261,7 @@ export class Client extends InstanceUpdateable {
             teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
         })
 
-        this.linkMapToInstanceStage1(map)
+        await this.linkMapToInstanceStage1(map)
 
         runTask(this.inst, () => sc.model.enterLoading())
 
@@ -280,7 +280,8 @@ export class Client extends InstanceUpdateable {
     }
 
     @profile((self: Client) => `${self.username}`)
-    private linkMapToInstanceStage1(map: CCMap) {
+    private async linkMapToInstanceStage1(map: CCMap) {
+        const levelData = await map.getLevelData() /* this will be sync */
         runTask(this.inst, () => {
             const mig = map.inst.ig
 
@@ -298,8 +299,7 @@ export class Client extends InstanceUpdateable {
             ig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
 
             ig.light.shadowProviders = []
-            const data = map.copyRawLevelData()
-            MapDataLoad.initMapsAndLevels(data)
+            MapDataLoad.initMapsAndLevels(levelData)
             for (const levelName in mig.game.levels) {
                 const level = mig.game.levels[levelName]
                 if (level.collision) {
@@ -367,7 +367,7 @@ export class Client extends InstanceUpdateable {
             ig.light.condLights = {}
 
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
-            for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(data)
+            for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(levelData)
         })
     }
 

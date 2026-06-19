@@ -157,7 +157,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
         const client = new Client(settings)
         const tpInfo = client.getInitialTpInfo()
-        const map = this.getMap(tpInfo.map)
+        const map = this.getMap(tpInfo)
 
         client.reservedNetid = map.reservePlayerNetid()
 

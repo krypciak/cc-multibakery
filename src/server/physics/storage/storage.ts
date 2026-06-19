@@ -15,15 +15,15 @@ import './save-slot-button'
 import './pause-screen-save-button'
 
 type PlayerGetStateReturn = ReturnType<typeof getEntityState>
-export type StoragePlayerEntityState = Partial<PlayerGetStateReturn>
-interface PlayerState {
+type StoragePlayerEntityState = Partial<PlayerGetStateReturn>
+export interface StoragePlayerState {
     entityState?: StoragePlayerEntityState
     tpInfo?: MapTpInfo
     optionModelValues?: ClientOptionModelValues
 }
 
 export interface MultibakerySaveData {
-    players?: Record<Username, PlayerState>
+    players?: Record<Username, StoragePlayerState>
 }
 
 declare global {
@@ -150,7 +150,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         player: ig.ENTITY.Player,
         tpInfo: MapTpInfo,
         optionModelValues: ClientOptionModelValues
-    ): PlayerState {
+    ): StoragePlayerState {
         return {
             entityState: {
                 ...copy(player.getEntityState!() as PlayerGetStateReturn),
@@ -166,11 +166,11 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         player: ig.ENTITY.Player,
         tpInfo: MapTpInfo,
         optionModelValues: ClientOptionModelValues
-    ): PlayerState {
+    ): StoragePlayerState {
         return this.savePlayerState(username, this.createPlayerState(player, tpInfo, optionModelValues))
     }
 
-    savePlayerState(username: Username, state: PlayerState): PlayerState {
+    savePlayerState(username: Username, state: StoragePlayerState): StoragePlayerState {
         this.currentData ??= {}
         this.currentData.players ??= {}
         return (this.currentData.players[username] = state)
@@ -200,7 +200,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.savePlayerStates()
     }
 
-    getPlayerState(username: Username): PlayerState | undefined {
+    getPlayerState(username: Username): StoragePlayerState | undefined {
         return this.currentData?.players?.[username]
     }
 

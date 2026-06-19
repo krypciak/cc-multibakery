@@ -216,7 +216,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
         const client = new Client(settings)
         const tpInfo = client.getInitialTpInfo()
-        const map = this.getMap(tpInfo.map)
+        const map = this.getMap(tpInfo)
 
         assert(ackData.reservedNetid)
         client.reservedNetid = ackData.reservedNetid

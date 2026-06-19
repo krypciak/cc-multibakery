@@ -36,7 +36,34 @@ export interface OnLinkChange {
 }
 
 export class CCMap extends InstanceUpdateable {
-    private rawLevelData!: sc.MapModel.Map
+    private static mapUniqueCounter: Record<string, number> = {}
+    private static mapDataCache: Record<string, sc.MapModel.Map> = {}
+    private static async loadMapData(name: string): Promise<sc.MapModel.Map> {
+        let data = this.mapDataCache[name]
+        if (data) {
+            return {
+                ...data,
+                layer: data.layer.map(layer => ({ ...layer, data: layer.data.map(arr => [...arr]) })),
+            }
+        }
+
+        const path = CCMap.mapNameToFilePath(name)
+        data = await new Promise<sc.MapModel.Map>(resolve => {
+            $.ajax({
+                dataType: 'json',
+                url: path,
+                context: this,
+                success: resolve,
+                error: (b, c, e) => {
+                    ig.system.error(Error("Loading of Map '" + this.name + "' failed: " + b + ' / ' + c + ' / ' + e))
+                },
+            })
+        })
+        this.mapDataCache[name] = data
+        return data
+    }
+
+    private fsName: string
 
     clients: Client[] = []
 
@@ -63,6 +90,20 @@ export class CCMap extends InstanceUpdateable {
 
     constructor(public name: MapName) {
         super()
+
+        if (name.includes('@')) {
+            let [baseName, suffix] = name.split('@')
+            this.fsName = baseName
+            if (!suffix) {
+                CCMap.mapUniqueCounter[baseName] ??= 0
+                suffix = `${CCMap.mapUniqueCounter[baseName]++}`
+            }
+            const newName = baseName + '@' + suffix
+
+            this.name = newName
+        } else {
+            this.fsName = name
+        }
     }
 
     reservePlayerNetid(): EntityNetid {
@@ -95,7 +136,7 @@ export class CCMap extends InstanceUpdateable {
     private async init() {
         this.display = new CCMapDisplay(this)
 
-        const levelDataPromise = this.readLevelData()
+        const levelDataPromise = this.getLevelData()
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             {
@@ -116,10 +157,9 @@ export class CCMap extends InstanceUpdateable {
         PROFILE && console.time(`${this.name} await level data`)
         const levelData = await levelDataPromise
         PROFILE && console.timeEnd(`${this.name} await level data`)
-        this.rawLevelData = levelData
 
         runTask(this.inst, () => {
-            MapDataLoad.setMapDataFromLevelData(this.copyRawLevelData(), this.name)
+            MapDataLoad.setMapDataFromLevelData(levelData, this.name)
         })
         createServerTpsLabel(this.inst)
     }
@@ -186,26 +226,8 @@ export class CCMap extends InstanceUpdateable {
         return ig.getFilePath(name.toPath(ig.root + 'data/maps/', '.json') + ig.getCacheSuffix())
     }
 
-    private async readLevelData() {
-        const path = CCMap.mapNameToFilePath(this.name)
-        return new Promise<sc.MapModel.Map>(resolve => {
-            $.ajax({
-                dataType: 'json',
-                url: path,
-                context: this,
-                success: resolve,
-                error: (b, c, e) => {
-                    ig.system.error(Error("Loading of Map '" + this.name + "' failed: " + b + ' / ' + c + ' / ' + e))
-                },
-            })
-        })
-    }
-
-    copyRawLevelData(): sc.MapModel.Map {
-        return {
-            ...this.rawLevelData,
-            layer: this.rawLevelData.layer.map(layer => ({ ...layer, data: layer.data.map(arr => [...arr]) })),
-        }
+    async getLevelData() {
+        return CCMap.loadMapData(this.fsName)
     }
 
     enter(client: Client) {

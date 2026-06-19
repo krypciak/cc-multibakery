@@ -138,8 +138,7 @@ class CombatArtTest implements TestConfig {
     name: string
     timeout?: number
 
-    baseMapName = 'multibakery/test/combat'
-    mapName = this.baseMapName + combatArtMapCounter++
+    tpInfo: MapTpInfo = { map: 'multibakery/test/combat@' }
 
     client!: Client
     map!: CCMap
@@ -161,7 +160,7 @@ class CombatArtTest implements TestConfig {
         })
     }
 
-    private getPlayerStats(): StoragePlayerEntityState {
+    private getPlayerSaveData(): StoragePlayerState {
         const relevantSkills = (sc.skilltree.skills as sc.SpecialSkill[]).filter(
             s =>
                 s.skillType == this.config.combatArt.split('_')[0] &&
@@ -174,40 +173,43 @@ class CombatArtTest implements TestConfig {
         }, [] as boolean[])
 
         return {
-            spLevel: sc.SP_LEVEL[4],
-            sp: 100,
-            level: 99,
-            head: 657,
-            leftArm: 607,
-            rightArm: 607,
-            torso: 583,
-            feet: 596,
-            modelName: this.config.character,
-            skills,
-            element: this.config.element,
+            entityState: {
+                spLevel: sc.SP_LEVEL[4],
+                sp: 100,
+                level: 99,
+                head: 657,
+                leftArm: 607,
+                rightArm: 607,
+                torso: 583,
+                feet: 596,
+                modelName: this.config.character,
+                skills,
+                element: this.config.element,
+            },
+            tpInfo: { ...this.tpInfo },
+        }
+    }
+
+    private async getClientAndMap(username: string) {
+            return multi.test.createClient({
+                username,
+                tpInfo: this.tpInfo,
+                test: this,
+                tilingOrder: this.config.tilingOrder,
+            })
         }
     }
 
     private async createMapAndClientIfNeeded() {
-        addRuntimeAsset(CCMap.mapNameToFilePath(this.mapName), CCMap.mapNameToFilePath(this.baseMapName))
-        reloadRuntimeAssets()
+        await this.loadEnemy(enemyType)
 
         const username = this.id
-        multi.storage.savePlayerState(username, {
-            entityState: this.getPlayerStats(),
-        })
-        const { client, map } = await multi.test.createClient({
-            username,
-            tpInfo: { map: this.mapName },
-            test: this,
-            tilingOrder: this.config.tilingOrder,
-        })
+        multi.storage.savePlayerState(username, this.getPlayerSaveData())
+        const { client, map } = await this.getClientAndMap(username)
         client.inst.ig.perf.noGuiUpdate = true
         map.inst.ig.perf.noGuiUpdate = true
         this.client = client
         this.map = map
-
-        await this.loadEnemy(enemyType)
 
         runTask(client.inst, () => {
             sc.model.player.updateStats()
@@ -227,6 +229,8 @@ class CombatArtTest implements TestConfig {
 
     cleanup() {
         if (!multi.server) return
+
+        multi.server.inst.apply()
         if (this.client) {
             multi.server.leaveClient(this.client)
             this.client = undefined as any
@@ -235,7 +239,6 @@ class CombatArtTest implements TestConfig {
             multi.server.unloadMap(this.map)
             this.map = undefined as any
         }
-        removeRuntimeAssert(CCMap.mapNameToFilePath(this.mapName))
     }
 }
 

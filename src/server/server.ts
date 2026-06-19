@@ -240,11 +240,12 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return [...this.maps.values()].filter(map => map.ready && map.isActive())
     }
 
-    getMap(name: MapName): CCMap {
-        let map: CCMap | undefined = this.maps.get(name)
+    getMap(tpInfo: MapTpInfo): CCMap {
+        let map: CCMap | undefined = this.maps.get(tpInfo.map)
         if (map) return map
-        map = new CCMap(name)
-        this.maps.set(name, map)
+        map = new CCMap(tpInfo.map)
+        tpInfo.map = map.name
+        this.maps.set(tpInfo.map, map)
         return map
     }
 
@@ -313,6 +314,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }>
 
     leaveClient(client: Client) {
+        assert(instanceinator.id == this.inst.id)
         /* TODO: communicate socket that closed?? */
         const id = client.inst.id
         assert(this.inst.id != id && this.baseInst.id != id)
