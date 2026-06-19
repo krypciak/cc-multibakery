@@ -225,27 +225,26 @@ prestart(() => {
 
 declare global {
     namespace ig {
-        var xenoDialogs: ig.ENTITY.XenoDialog[]
+        interface MapSharedVars {
+            xenoDialogs?: ig.ENTITY.XenoDialog[]
+        }
     }
 }
 
 prestart(() => {
     ig.ENTITY.XenoDialog.inject({
-        init(x, y, z, settings) {
-            this.parent(x, y, z, settings)
-            ig.xenoDialogs ??= []
-        },
         startDialog() {
             if (!multi.server) return this.parent()
 
-            for (const entity of ig.xenoDialogs) entity.cancelDialog()
+            ig.mapShared.xenoDialogs ??= []
+            for (const entity of ig.mapShared.xenoDialogs) entity.cancelDialog()
             this.running = true
-            ig.xenoDialogs.push(this)
+            ig.mapShared.xenoDialogs.push(this)
         },
         cancelDialog() {
             this.parent()
             if (!multi.server) return
-            ig.xenoDialogs.erase(this)
+            ig.mapShared.xenoDialogs?.erase(this)
         },
     })
 })
