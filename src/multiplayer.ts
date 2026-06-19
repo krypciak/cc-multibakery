@@ -43,7 +43,9 @@ function initMultiplayer(): typeof window.multi {
         destroy() {
             multi.server.destroy()
             multi.server = undefined as any
-            instanceinator.resetInstanceIdCounter()
+            if (Object.keys(instanceinator).length == 1) {
+                instanceinator.resetInstanceIdCounter()
+            }
         },
         destroyAndStartLoop() {
             multi.destroy()
