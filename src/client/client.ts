@@ -54,8 +54,6 @@ export type ClientSettings = {
 )
 
 export class Client extends InstanceUpdateable {
-    lastPingMs: number = 0
-
     username: Username
     inputManager!: dummy.InputManager
     dummy!: dummy.DummyPlayer
@@ -63,6 +61,8 @@ export class Client extends InstanceUpdateable {
     nextTpInfo?: MapTpInfo
     ready: boolean = false
     reservedNetid?: EntityNetid
+    lastPingMs: number = 0
+    kickReason?: string
 
     constructor(public settings: ClientSettings) {
         super()

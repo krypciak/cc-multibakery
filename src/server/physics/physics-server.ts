@@ -167,8 +167,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         return { client, map, ackData }
     }
 
-    leaveClient(client: Client) {
-        super.leaveClient(client)
+    leaveClient(client: Client, reason?: string) {
+        super.leaveClient(client, reason)
         this.updateAnyRemoteClientsOn()
     }
 

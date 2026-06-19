@@ -176,6 +176,15 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const map = multi.server.maps.get(mapName)
             assert(map?.initialized)
 
+            if (stateUpdatePacket.kicks) {
+                for (const username in stateUpdatePacket.kicks) {
+                    const { reason } = stateUpdatePacket.kicks[username]
+                    const client = this.clients.get(username)
+                    if (!client) continue
+                    this.leaveClient(client, reason)
+                }
+            }
+
             if (stateUpdatePacket.crash) {
                 if (stateUpdatePacket.crash.tryReconnect) {
                     this.resetMapState(map)
@@ -235,10 +244,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         ;(this.notifyReadyMaps ??= []).push(map.name)
     }
 
-    async leaveClient(client: Client) {
+    async leaveClient(client: Client, reason?: string) {
         super.leaveClient(client)
 
         this.netManager.sendLeave({ username: client.username })
+
+        if (reason) console.warn(`${client.username} kicked, reason: ${reason}`)
     }
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {

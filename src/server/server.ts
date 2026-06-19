@@ -313,10 +313,10 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         settings?: ClientCreateAndJoinSettings
     ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }>
 
-    leaveClient(client: Client) {
+    leaveClient(client: Client, reason?: string) {
         assert(instanceinator.id == this.inst.id)
-        /* TODO: communicate socket that closed?? */
         const id = client.inst.id
+        client.kickReason = reason
         assert(this.inst.id != id && this.baseInst.id != id)
         client.destroy()
         this.clients.delete(client.username)

@@ -121,14 +121,20 @@ export class Repl {
         })
         server.defineCommand('kick', {
             help: 'Kick client',
-            action(name?: string) {
-                const client = multi.server.clients.get(name ?? '')
+            action(cmd?: string) {
+                cmd ??= ''
+                let spaceIndex = cmd.indexOf(' ')
+                if (spaceIndex == -1) spaceIndex = cmd.length
+                const username = cmd.substring(0, spaceIndex)
+                const reason = cmd.substring(spaceIndex).trim()
+
+                const client = multi.server.clients.get(username)
                 if (!client) {
-                    console.error(`Client: "${name}" not found!`)
+                    console.error(`Client: "${username}" not found!`)
                     server.displayPrompt()
                     return
                 }
-                multi.server.leaveClient(client)
+                multi.server.leaveClient(client, reason)
                 server.displayPrompt()
             },
         })

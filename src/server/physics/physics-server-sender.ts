@@ -17,8 +17,15 @@ import { packetDeepEqual } from '../../net/packet-deep-equal'
 
 declare global {
     interface StateUpdatePacket {
+        kicks?: Record<
+            string,
+            {
+                reason: string
+            }
+        >
         crash?: {
             tryReconnect: boolean
+            reason?: string
         }
     }
 }
@@ -54,9 +61,14 @@ export function sendPhysicsServerPacket() {
                 packets[mapName].set(conn, dest)
             }
 
-            if (!map && client.destroyed) {
-                dest.crash = { tryReconnect: true }
-                conn.leave(client)
+            if (client.destroyed) {
+                if (!map) {
+                    dest.crash = { tryReconnect: true }
+                } else {
+                    dest.kicks ??= {}
+                    dest.kicks[client.username] = { reason: client.kickReason ?? '' }
+                    conn.leave(client)
+                }
                 continue
             }
 
