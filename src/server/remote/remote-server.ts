@@ -86,6 +86,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await this.netManager.start()
 
         this.measureTraffic = Opts.showPacketNetworkTraffic
+
+        this.startShell()
     }
 
     update() {

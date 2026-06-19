@@ -20,6 +20,7 @@ import { isRemote } from './remote/is-remote-server'
 import { ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import { createServerTpsLabel } from '../client/instance-label-draw'
 import { profile } from '../misc/profile-decorator'
+import { Repl } from '../misc/shell'
 
 import './server-var-access'
 
@@ -82,6 +83,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     abstract physics: boolean
     updateDelayAvg: ValueAverageOverTime
     lastUpdateTime: number = 0
+
+    repl?: Repl
 
     baseInst!: InstanceinatorInstance
 
@@ -166,6 +169,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         startGameLoop(useAnimationFrame)
 
         multi.class.gamepadAssigner.initialize()
+    }
+
+    protected async startShell() {
+        if (window.crossnode && !TEST) {
+            this.repl = new Repl()
+            await this.repl!.start()
+        }
     }
 
     private preUpdateFor(updateables: InstanceUpdateable[] | MapIterator<InstanceUpdateable>) {
@@ -350,6 +360,8 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     destroy() {
         if (this.destroyed) return
         this.postUpdateCallback = undefined
+
+        this.repl?.destroy()
 
         this.inst?.apply()
 

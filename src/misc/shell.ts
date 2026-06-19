@@ -1,5 +1,5 @@
 import type { ReplOptions, REPLServer } from 'repl'
-import { assert } from '../../misc/assert'
+import { assert } from './assert'
 import type * as readline from 'readline'
 
 class SimpleRepl {
@@ -110,7 +110,7 @@ export class Repl {
         this.server = server
 
         server.on('exit', () => {
-            process.exit()
+            setTimeout(() => process.exit(), 0)
         })
         server.defineCommand('clients', {
             help: 'Display client names',
