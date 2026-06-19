@@ -12,7 +12,11 @@ import { profile } from './misc/profile-decorator'
 
 const defaultMap: MapTpInfo = {
     map: 'multibakery/dev',
+    marker: 'entrance',
+
     // map: 'multibakery/mba-pvp',
+    // marker: 'to_pvp',
+
     // map: 'tree-dng/f4/boss',
     // map: 'multibakery/mba-lobby',
     // map: 'multibakery/mba-testing',
@@ -46,10 +50,8 @@ const defaultMap: MapTpInfo = {
     // map: 'cursed/room-1',
     // map: 'ark/beginner/bomb-switch',
     // map: 'ark/beginner/wave-block',
-    marker: 'entrance',
     // marker: 'puzzle',
     // marker: 'pvp',
-    // marker: 'to_pvp',
     // marker: 'exit',
     // marker: 'door-west1',
     // marker: 'blockPoint',
