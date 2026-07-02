@@ -13,17 +13,16 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - name: Install pnpm
+              uses: pnpm/action-setup@v6
+              with:
+                  version: latest
+
             - name: Install Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: latest
                   cache: 'pnpm'
-
-            - name: Install pnpm
-              uses: pnpm/action-setup@v6
-              with:
-                  version: latest
-                  run_install: true
 
             - name: Install semver
               run: |
@@ -83,6 +82,9 @@ jobs:
               run: |
                   git tag -a "$VERSION" -m "Version $VERSION"
                   git push origin "$VERSION"
+
+            - name: Install node dependencies
+              run: pnpm install
 
             - name: Run pack.sh
               run: pnpm run pack
