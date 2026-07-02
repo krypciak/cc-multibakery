@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 import { $, Glob } from 'bun'
 import { Zippable, zipSync } from 'fflate'
+import path from 'path'
 
 import ccmod from './ccmod.json'
 
@@ -11,37 +12,44 @@ await $`bun run build`
 const tasks: Promise<void>[] = []
 const zipFiles: Zippable = {}
 
-function addFile(path: string, minify?: boolean) {
-    if (path.endsWith('~') || path.endsWith('.kra')) return
-    if (path.endsWith('icon240.png')) return
-
-    tasks.push(
-        (async () => {
-            const file = Bun.file(path)
-
-            let data: Uint8Array
-            if (
-                minify &&
-                (path.endsWith('.json') || path.endsWith('.json.patch') || path.endsWith('.json.patch.confd'))
-            ) {
-                data = new TextEncoder().encode(JSON.stringify(await file.json()))
-            } else {
-                data = await file.bytes()
-            }
-            zipFiles[path] = data
-            console.log('  adding: ', path)
-        })()
-    )
-}
 async function addGlob(glob: string, minify?: boolean) {
-    for await (const filePath of new Glob(glob).scan()) addFile(filePath, minify)
+    for await (const filePath of new Glob(glob).scan()) {
+        if (filePath.endsWith('~') || filePath.endsWith('.kra')) continue
+        if (filePath.endsWith('icon240.png')) continue
+
+        tasks.push(
+            (async () => {
+                const file = Bun.file(filePath)
+
+                let data: Uint8Array
+                if (
+                    minify &&
+                    (filePath.endsWith('.json') ||
+                        filePath.endsWith('.json.patch') ||
+                        filePath.endsWith('.json.patch.confd'))
+                ) {
+                    data = new TextEncoder().encode(JSON.stringify(await file.json()))
+                } else {
+                    data = await file.bytes()
+                }
+
+                let obj = zipFiles
+                for (const dirName of path.dirname(filePath).split(path.sep)) {
+                    if (dirName == '.') continue
+                    obj = (obj[dirName] ??= {}) as Zippable
+                }
+                obj[path.basename(filePath)] = data
+                console.log('  adding: ', filePath)
+            })()
+        )
+    }
 }
 
 await Promise.all([
     //
     addGlob('{LICENSE,plugin.js,ccmod.json}'),
     addGlob('icon/icon.png'),
-    addGlob('{assets,lang}/**/*'),
+    addGlob('{assets,lang}/**/*', true),
 ])
 await Promise.all(tasks)
 

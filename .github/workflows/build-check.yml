@@ -13,17 +13,17 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
-            - name: Install pnpm
-              uses: pnpm/action-setup@v3
-              with:
-                  version: latest
-                  run_install: false
-
             - name: Install Node.js
               uses: actions/setup-node@v4
               with:
                   node-version: latest
                   cache: 'pnpm'
 
+            - name: Install pnpm
+              uses: pnpm/action-setup@v3
+              with:
+                  version: latest
+                  run_install: true
+
             - name: Compile
-              run: pnpm install; pnpm run start
+              run: pnpm run start

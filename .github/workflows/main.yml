@@ -84,11 +84,8 @@ jobs:
                   git tag -a "$VERSION" -m "Version $VERSION"
                   git push origin "$VERSION"
 
-            - name: Install node dependencies
-              run: pnpm install
-
             - name: Run pack.sh
-              run: ./pack.sh
+              run: pnpm run pack
 
             - name: Create release
               id: create_release

@@ -6,6 +6,7 @@
         "start": "bun build/build.ts build",
         "watch": "bun build/build.ts watch",
         "build": "bun build/build.ts build dev=false",
+        "pack": "bun pack.ts",
         "regenerateBin": "bun build/build.ts build forceRegenerateBinaryEncodeDecodeScripts",
         "buildRemote": "bun build/build.ts build dev=false minifySyntax minifyWhitespace physics=false",
         "buildRemoteBrowser": "bun build/build.ts build dev=false minifySyntax minifyWhitespace physics=false browser target=es2024",
