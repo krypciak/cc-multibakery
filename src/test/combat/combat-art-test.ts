@@ -6,8 +6,8 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
-import { addRuntimeAsset, reloadRuntimeAssets, removeRuntimeAssert } from '../../misc/runtime-assets'
-import type { StoragePlayerEntityState } from '../../server/physics/storage/storage'
+import type { StoragePlayerState } from '../../server/physics/storage/storage'
+import type { MapTpInfo } from '../../server/server'
 
 const enemyType = 'autumn-rh.practice-bot'
 
@@ -69,7 +69,7 @@ async function executeCombatArt(
     const entitiesSpawned: ig.Entity[] = []
 
     if (combatArtType == 'GUARD') {
-        await runTask(inst, async () => {
+        runTask(inst, () => {
             const { x, y, z } = e.coll.pos
             ig.vars.set('tmp.practiceAttack', true)
             const enemy = ig.game.spawnEntity('Enemy', x - 32, y, z, {
@@ -130,9 +130,10 @@ export interface CombatArtTestConfig {
     branch: 'A' | 'B'
 
     tilingOrder?: number
+
+    remote?: boolean
 }
 
-let combatArtMapCounter = 0
 class CombatArtTest implements TestConfig {
     id: string
     name: string
@@ -146,7 +147,7 @@ class CombatArtTest implements TestConfig {
     constructor(private config: CombatArtTestConfig) {
         this.id = config.id
         this.name = config.name
-        this.timeout = 1000e3
+        this.timeout = 100e3
     }
 
     private async loadEnemy(enemyName: string) {
@@ -190,22 +191,17 @@ class CombatArtTest implements TestConfig {
         }
     }
 
-    private async getClientAndMap(username: string) {
-            return multi.test.createClient({
-                username,
-                tpInfo: this.tpInfo,
-                test: this,
-                tilingOrder: this.config.tilingOrder,
-            })
-        }
-    }
-
     private async createMapAndClientIfNeeded() {
         await this.loadEnemy(enemyType)
 
         const username = this.id
         multi.storage.savePlayerState(username, this.getPlayerSaveData())
-        const { client, map } = await this.getClientAndMap(username)
+        const { client, map } = await multi.test.createClient({
+            username,
+            test: this,
+            tilingOrder: this.config.tilingOrder,
+            remote: this.config.remote,
+        })
         client.inst.ig.perf.noGuiUpdate = true
         map.inst.ig.perf.noGuiUpdate = true
         this.client = client
@@ -219,12 +215,27 @@ class CombatArtTest implements TestConfig {
         })
     }
 
+    private async awaitRemote() {
+        if (!this.config.remote) return
+
+        await multi.test.waitFrames(this.map.inst, 60)
+        if (!this.map) return
+        this.map.inst.ig.mapShared.testDone = true
+
+        const raport = await multi.test.remoteRaports[this.id]
+
+        tester.expect(raport.crashed, 'remote crashed').toEqual(false)
+        tester.expect(raport.playerZoom, 'player zoom not 1!').toEqual(1)
+        if (raport.errors) {
+            tester.expect(raport.errors.length, `errors: [${raport.errors.map(e => `"${e}"`).join(', ')}]`).toEqual(0)
+        }
+    }
+
     async run() {
         await multi.test.setupServerIfNeeded()
-
         await this.createMapAndClientIfNeeded()
-
         await executeCombatArt(this.client.dummy, this.client.inst, this.config.combatArt)
+        await this.awaitRemote()
     }
 
     cleanup() {
@@ -236,8 +247,12 @@ class CombatArtTest implements TestConfig {
             this.client = undefined as any
         }
         if (this.map) {
-            multi.server.unloadMap(this.map)
-            this.map = undefined as any
+            setTimeout(() => {
+                if (!multi.server) return
+                multi.server.inst.apply()
+                multi.server.unloadMap(this.map)
+                this.map = undefined as any
+            }, 200)
         }
     }
 }
@@ -260,17 +275,31 @@ poststart(() => {
                         if (!action) continue
 
                         const elementName = Object.keys(sc.ELEMENT)[element]
-                        const id = `combat_${character}_${elementName}_${type}_${branch}_${level}`
+                        const idSuffix = `_${character}_${elementName}_${type}_${branch}_${level}`
                         const combatArtName = action.name
+                        const testNameSuffix = ` ${character} ${elementName} ${type} ${branch} ${level} ${combatArtName}`
+
                         tester.addTest(
                             new CombatArtTest({
-                                id,
-                                name: `${character} ${elementName} ${type} ${branch} ${level} ${combatArtName}`,
+                                id: `combat_physics` + idSuffix,
+                                name: 'physics' + testNameSuffix,
                                 character,
                                 element,
                                 combatArt,
                                 branch,
                                 tilingOrder,
+                            })
+                        )
+                        tester.addTest(
+                            new CombatArtTest({
+                                id: `combat_remote` + idSuffix,
+                                name: 'remote' + testNameSuffix,
+                                character,
+                                element,
+                                combatArt,
+                                branch,
+                                tilingOrder,
+                                remote: true,
                             })
                         )
                     }

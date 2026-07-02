@@ -2,10 +2,11 @@ import { prestart } from '../loading-stages'
 import { addGlobalStateHandler, type GlobalStateKey } from './states'
 import { StateMemory } from './state-util'
 import { type MultiParty, type MultiPartyId, type PartialMultiParty } from '../party/party'
+import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     interface GlobalStateUpdatePacket {
-        parties?: Record<MultiPartyId, PartialMultiParty>
+        parties?: Record<MultiPartyId, PartialMultiParty> & RecordSize<u16>
     }
 }
 

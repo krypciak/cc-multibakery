@@ -1,13 +1,15 @@
 import { setupCrosscodeIfNeeded } from '../test-setup-test-side'
 
+const type = false ? 'physics' : 'remote'
+
 export async function runCombatArtTests(character: string, element: keyof typeof sc.ELEMENT) {
     await setupCrosscodeIfNeeded()
 
     tester.describe('combat', async () => {
         const configs: Record<string, PartialRecord<string, string[]>> = {}
         for (const id of tester.getTestIds()) {
-            if (!id.startsWith('combat')) continue
-            const [_, character, element] = id.split('_')
+            if (!id.startsWith(`combat_${type}`)) continue
+            const [_, __, character, element] = id.split('_')
             ;((configs[character] ??= {})[element] ??= []).push(id)
         }
 

@@ -1,119 +1,127 @@
-import { assert } from '../misc/assert'
-import { preload } from '../loading-stages'
-import { PhysicsServer } from '../server/physics/physics-server'
-import type { MapTpInfo } from '../server/server'
-import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
-import { Opts } from '../options'
-import type { TestConfig } from './test-bridge'
+import { poststart, preload, prestart } from '../loading-stages'
+import { assert } from '../misc/assert'
+import { getServerDetails } from '../net/web-server'
+import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
+import { tryJoinRemote } from '../server/remote/try-join-remote'
+import { addStateHandler } from '../state/states'
+import { isBunTest } from './test-bridge'
 
-import './test-setup-mod-side-all-import'
+preload(() => {
+    if (!TEST) return
+    TEST && import('./aoc/aoc2024d15')
+    TEST && import('./combat/combat-art-test')
+}, 1)
 
+poststart(() => {
+    if (!TEST || isBunTest()) return
+
+    if (process.argv.length > 2 && process.argv[2] == 'remoteServer') {
+        execRemote()
+    } else {
+        execPhysics()
+    }
+}, 9999)
+
+function execPhysics() {
+    // TEST && import('./aoc/aoc2024d15.test')
+
+    TEST && import('./combat/spheromancer/combat-art-spheromancer-neutral.test')
+    TEST && import('./combat/spheromancer/combat-art-spheromancer-heat.test')
+    TEST && import('./combat/spheromancer/combat-art-spheromancer-cold.test')
+    TEST && import('./combat/spheromancer/combat-art-spheromancer-shock.test')
+    TEST && import('./combat/spheromancer/combat-art-spheromancer-wave.test')
+
+    TEST && import('./combat/triblader/combat-art-triblader-neutral.test')
+    TEST && import('./combat/triblader/combat-art-triblader-heat.test')
+    TEST && import('./combat/triblader/combat-art-triblader-cold.test')
+    TEST && import('./combat/triblader/combat-art-triblader-shock.test')
+    TEST && import('./combat/triblader/combat-art-triblader-wave.test')
+
+    TEST && import('./combat/hexacast/combat-art-hexacast-neutral.test')
+    TEST && import('./combat/hexacast/combat-art-hexacast-heat.test')
+    TEST && import('./combat/hexacast/combat-art-hexacast-cold.test')
+    TEST && import('./combat/hexacast/combat-art-hexacast-shock.test')
+    TEST && import('./combat/hexacast/combat-art-hexacast-wave.test')
+}
+
+export interface TestRemoteClientRaport {
+    crashed: boolean
+    playerZoom?: number
+    errors?: string[]
+}
+
+export interface TestRemoteClientRequestConfig {
+    username: string
+    port: number
+}
+
+let raportSent = false
+async function execRemote() {
+    ig.system.startRunLoop = () => {
+        createAndSendRaport()
+        process.exit(0)
+    }
+
+    const config: TestRemoteClientRequestConfig = JSON.parse(process.argv[3])
+    const { username, port } = config
+
+    const connection: RemoteServerConnectionSettings = { host: '127.0.0.1', port }
+    const { details } = (await getServerDetails(connection)) ?? {}
+    assert(details)
+    const ackData = await tryJoinRemote({ connection, details }, { username })
+    if (ackData.status != 'ok') {
+        console.error(ackData)
+    }
+}
+
+function createRaport(): TestRemoteClientRaport {
+    if (!multi.server) return { crashed: true }
+    const client = multi.server.clients.values().next().value
+    if (!client) return { crashed: true }
+
+    const playerZoom = client.inst.ig.camera._currentZoom
+
+    return {
+        crashed: false,
+        playerZoom,
+    }
+}
+
+function createAndSendRaport() {
+    if (raportSent) return
+    raportSent = true
+
+    const raport = createRaport()
+    console.log('RAPORT:', JSON.stringify(raport))
+}
 declare global {
-    namespace multi {
-        var test: MultibakeryTestUtils
+    interface StateUpdatePacket {
+        testDone?: boolean
     }
-}
-
-class MultibakeryTestUtils {
-    private setupServerPromise: Promise<void> | undefined
-    private gameTps = 60
-    private actualTps = 240
-    private displayClientInstances = !window.crossnode?.options.nukeImageStack
-    private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
-    private disablePerfFlags = true
-
-    async setupServerIfNeeded() {
-        assert(TEST)
-        if (this.setupServerPromise) return this.setupServerPromise
-        return (this.setupServerPromise = this.setupServer())
-    }
-
-    private async setupServer() {
-        if (this.disablePerfFlags) {
-            ig.perf.spriteShadow = false
-            ig.perf.spriteOverlapSolver = false
-            ig.perf.gui = false
-            ig.perf.lighting = false
-            ig.perf.weather = false
-            ig.perf.overlay = false
-            ig.perf.envParticles = false
-            ig.perf.spriteFilter = false
+    namespace ig {
+        interface MapSharedVars {
+            testDone?: boolean
         }
-
-        multi.setServer(
-            new PhysicsServer({
-                gameTps: this.gameTps,
-                forceConsistentTickTimes: true,
-                gameLoopIntervalTps: this.actualTps,
-                displayClientInstances: this.displayClientInstances,
-                attemptCrashRecovery: true,
-                useAnimationFrameAsFpsLimiter: true,
-                // displayServerInstance: true,
-            })
-        )
-        await multi.server.start()
-
-        instanceinator.displayFps = true
-        Opts.showServerTps = true
     }
+}
+prestart(() => {
+    if (!TEST) return
+    addStateHandler({
+        get(packet) {
+            packet.testDone = ig.mapShared?.testDone
+        },
+        set(packet) {
+            if (!packet.testDone) return
 
-    async createClient({
-        username,
-        tpInfo,
-        test,
-        tilingOrder,
-    }: {
-        username: string
-        tpInfo: MapTpInfo
-        test: TestConfig
-        tilingOrder?: number
-    }) {
-        const { client, map } = await multi.server.createAndJoinClient(
-            { username, preferredTpInfo: tpInfo },
-            { awaitClientJoin: true, clientSettingsOverride: { inputType: 'puppet', tilingOrder } }
-        )
-        assert(client)
-        assert(map)
+            createAndSendRaport()
 
-        map.attachedTest = test
-        client.inst.crossnodeForceWriteImage = this.crossnodeForceWriteImage
-
-        return { client, map }
-    }
-
-    updateLoop(
-        inst: InstanceinatorInstance,
-        maxFrames: number,
-        func: (frame: number) => boolean | undefined | void | Promise<boolean | undefined | void>
-    ) {
-        return new Promise<void>((res, rej) => {
-            let frames = 0
-            const loop = async () => {
-                try {
-                    const done = await func(frames)
-                    if (done || ++frames >= maxFrames) {
-                        res()
-                    } else {
-                        scheduleTask(inst, loop)
-                    }
-                } catch (e) {
-                    rej(e)
-                    throw e
+            assert(ig.ccmap)
+            scheduleTask(ig.ccmap.inst, () => {
+                for (const client of ig.ccmap!.clients) {
+                    runTask(multi.server.inst, () => multi.server.leaveClient(client))
                 }
-            }
-            runTask(inst, loop)
-        })
-    }
-
-    async waitFrames(inst: InstanceinatorInstance, count: number) {
-        await this.updateLoop(inst, count + 1, () => {})
-    }
-}
-
-if (TEST) {
-    preload(() => {
-        multi.test = new MultibakeryTestUtils()
-        import('./test-bridge')
-    }, 1)
-}
+            })
+        },
+    })
+})

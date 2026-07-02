@@ -6,7 +6,7 @@ import { executePostload, executePoststart, executePreload, executePrestart } fr
 import './multiplayer'
 import './options'
 import './misc/modify-prototypes'
-import './test/test-setup-mod-side'
+import './test/test-utils'
 import './dev-start'
 
 export default class Multibakery implements PluginClass {
