@@ -4,3 +4,4 @@ allowBuilds:
   node: true
 overrides:
   ws: ^8.0.0
+blockExoticSubdeps: false
