@@ -31,6 +31,10 @@ prestart(() => {
             let client = this.actionBoundToPlayer?.getClient(true)
             if (!client?.ready) client = ig.mapShared.ccmap.clients.find(client => client.ready)
             if (!client?.ready) return
+            if (client.tpInfo.map != ig.game.mapName) {
+                this.actionBoundToPlayer = undefined
+                return
+            }
             return client
         },
         setAction(action, keepState, noStateReset) {
