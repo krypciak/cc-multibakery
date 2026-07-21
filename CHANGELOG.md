@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Added FAQ to github readme
+
 ### Fixed
 
 - Fix entities on remote not getting killed after a while
