@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix entities on remote not getting killed after a while
+
 ## [0.8.1] 2026-07-02
 
 ### Added

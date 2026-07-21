@@ -46,13 +46,6 @@ prestart(() => {
     if (!PHYSICSNET) return
 
     ig.Entity.inject({
-        setNetid(override) {
-            if (!shouldCollectStateData()) return this.parent(override)
-
-            if (ig.mapShared.entityDeaths) delete ig.mapShared.entityDeaths[this.netid]
-            this.parent(override)
-            if (ig.mapShared.entityDeaths) delete ig.mapShared.entityDeaths[this.netid]
-        },
         kill(levelChange) {
             this.parent(levelChange)
             if (!this.netid) return
