@@ -17,7 +17,6 @@ import {
 } from '../server'
 import { Client, type ClientSettings } from '../../client/client'
 import { Opts } from '../../options'
-import { TemporarySet } from '../../misc/temporary-set'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { sendRemoteServerPacket } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
@@ -74,8 +73,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await super.start()
 
         if (this.settings.modCompatibility) applyModCompatibilityList(this.inst, this.settings.modCompatibility)
-
-        TemporarySet.resetAll()
     }
 
     @profile()
