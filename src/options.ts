@@ -170,6 +170,7 @@ function registerOpts() {
                         init: true,
                         name: 'Enable LAN discovery',
                         description: 'Allow remote clients to find this server on a local network',
+                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
                 },
                 server: {
