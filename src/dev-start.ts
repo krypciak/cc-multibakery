@@ -5,7 +5,6 @@ import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 import { assert } from './misc/assert'
 import type { MapTpInfo } from './server/server-types'
-import { tryJoinRemote } from './server/remote/try-join-remote'
 import { getServerDetails } from './net/web-server-utils'
 import type { RemoteServerConnectionSettings } from './server/remote/remote-server-types'
 import { profile } from './misc/profile-decorator'
@@ -223,7 +222,7 @@ poststart(() => {
             }
             const { details } = (await getServerDetails(connection)) ?? {}
             if (details) {
-                const ackData = await tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
+                const ackData = await multi.tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
                 if (ackData.status != 'ok') {
                     console.log(ackData)
                 }

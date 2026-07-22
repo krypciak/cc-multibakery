@@ -3,7 +3,6 @@ import { poststart, preload, prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { getServerDetails } from '../net/web-server-utils'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
-import { tryJoinRemote } from '../server/remote/try-join-remote'
 import { addStateHandler } from '../state/states'
 import { isBunTest } from './test-bridge'
 
@@ -69,7 +68,7 @@ async function execRemote() {
     const connection: RemoteServerConnectionSettings = { host: '127.0.0.1', port }
     const { details } = (await getServerDetails(connection)) ?? {}
     assert(details)
-    const ackData = await tryJoinRemote({ connection, details }, { username })
+    const ackData = await multi.tryJoinRemote({ connection, details }, { username })
     if (ackData.status != 'ok') {
         console.error(ackData)
     }
