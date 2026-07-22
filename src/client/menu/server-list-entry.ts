@@ -3,7 +3,6 @@ import { isErrorPopupShown } from '../../misc/error-popup'
 import { getServerDetails, getServerIcon } from '../../net/web-server-utils'
 import { Opts } from '../../options'
 import { prestart } from '../../loading-stages'
-import { tryJoinRemote } from '../../server/remote/try-join-remote'
 import { showTryNetJoinResponseDialog } from '../../server/server-types'
 import type { ClientJoinData } from '../../server/server-types'
 import type { NetServerInfoRemote } from './server-info-types'
@@ -232,7 +231,7 @@ if (REMOTE) {
                     initialInputType: ig.input.currentDevice,
                     preferredTpInfo: ig.client?.tpInfo,
                 }
-                const ackData = REMOTE && (await tryJoinRemote(this.serverInfo, joinData))
+                const ackData = REMOTE && (await multi.tryJoinRemote(this.serverInfo, joinData))
                 showTryNetJoinResponseDialog(joinData, ackData)
             },
             async updateConnectionStatus() {
