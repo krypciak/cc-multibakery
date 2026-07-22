@@ -1,4 +1,4 @@
-import { isPhysics } from '../server/physics/is-physics-server'
+import { isPhysics } from '../server/physics/physics-server-types'
 
 export function shouldCollectStateData(): boolean {
     return isPhysics(multi.server) && multi.server.anyRemoteClientsOn

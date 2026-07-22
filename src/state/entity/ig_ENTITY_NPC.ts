@@ -4,7 +4,7 @@ import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import * as scActorEntity from './sc_ActorEntity-base'
 import type { i16 } from 'ts-binarifier/src/type-aliases'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
     namespace ig.ENTITY {

@@ -7,7 +7,7 @@ import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
 import type { Username } from '../net/binary/binary-types'
 import { runEvent } from '../steps/event-steps-run'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 
 interface StepObj {
     settings: any // ig.EventStepBase.Settings

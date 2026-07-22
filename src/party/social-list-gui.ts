@@ -5,7 +5,7 @@ import { type MultiParty } from './party'
 import { runEvent } from '../steps/event-steps-run'
 import type { Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 
 declare global {
     namespace sc {

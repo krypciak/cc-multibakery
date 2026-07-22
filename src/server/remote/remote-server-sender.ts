@@ -15,7 +15,7 @@ import { assert } from '../../misc/assert'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import { cleanRecord, StateMemory } from '../../state/state-util'
-import { assertRemote } from './is-remote-server'
+import { assertRemote } from './remote-server-types'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
 
 let remoteSenderStateMemory: StateMemory | undefined

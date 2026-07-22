@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { isPhysics } from '../../../server/physics/is-physics-server'
+import { isPhysics } from '../../../server/physics/physics-server-types'
 import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
 
 declare global {

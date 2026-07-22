@@ -3,24 +3,17 @@ import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender
 import type { CCMap } from '../ccmap/ccmap'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
-import type { NetServerInfoRemote } from '../../client/menu/server-info'
-import type { StrictNonNullable } from '../../types'
 import { NetManagerRemoteServer } from '../../net/net-manager-remote'
 import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
 import { assert } from '../../misc/assert'
-import {
-    type ClientCreateAndJoinSettings,
-    type ClientJoinAckData,
-    type ClientJoinData,
-    Server,
-    type ServerSettings,
-} from '../server'
+import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
+import { Server } from '../server'
 import { Client, type ClientSettings } from '../../client/client'
 import { Opts } from '../../options'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { sendRemoteServerPacket } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
-import { applyModCompatibilityList, type ModCompatibilityList } from '../mod-compatibility-list'
+import { applyModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 import { createNetTransportClient } from '../../net/net-transport'
 import { profile } from '../../misc/profile-decorator'
@@ -28,30 +21,8 @@ import { profile } from '../../misc/profile-decorator'
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-
-export interface RemoteServerConnectionSettings {
-    host: string
-    port: number
-}
-export function isRemoteServerConnectionSettings(data: unknown): data is RemoteServerConnectionSettings {
-    if (!data || typeof data !== 'object') return false
-    if (!('host' in data) || typeof data.host !== 'string') return false
-    if (!('port' in data) || typeof data.port !== 'number') return false
-
-    return true
-}
-
-export interface RemoteServerSettings extends ServerSettings {
-    netInfo: StrictNonNullable<NetServerInfoRemote>
-    modCompatibility?: ModCompatibilityList
-}
-
-export interface ClientLeaveData {
-    username: string
-}
-export function isClientLeaveData(data: unknown): data is ClientLeaveData {
-    return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'
-}
+import type { RemoteServerSettings } from './remote-server-types'
+export type { RemoteServerConnectionSettings, ClientLeaveData } from './remote-server-types'
 
 export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
@@ -203,12 +174,12 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         joinData: ClientJoinData,
         { connection, awaitClientJoin, clientSettingsOverride, ackDataOverride }: ClientCreateAndJoinSettings = {}
     ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }> {
-        let ackData = this.createAndJoinClientInitialChecks(joinData)
-        if (ackData) return { ackData }
+        const initialAck = this.createAndJoinClientInitialChecks(joinData)
+        if (initialAck) return { ackData: initialAck }
 
         assert(!clientSettingsOverride)
 
-        ackData = ackDataOverride ?? (await this.netManager.sendJoin(joinData))
+        const ackData = ackDataOverride ?? (await this.netManager.sendJoin(joinData))
         if (ackData.status != 'ok') return { ackData }
 
         const settings: ClientSettings = {

@@ -1,7 +1,7 @@
 import type { u20, u6 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { assert } from './assert'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 
 interface EntityClass extends ImpactClass<any> {
     new (x: number, y: number, z: number, settings: any): any

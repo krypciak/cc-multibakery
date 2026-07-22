@@ -30,12 +30,6 @@ export type NetTransportClientSettings =
           type: 'websocket'
       } & WsNetTransportClientSettings)
 
-export function isNetTransportSettings(data: unknown): data is NetTransportServerSettings | NetTransportClientSettings {
-    if (!data || typeof data !== 'object') return false
-    if (!('type' in data) || typeof data.type !== 'string') return false
-    return true
-}
-
 export interface NetTransportListenerFunctions {
     onReceive(data: Uint8Array): void
     onBytesSent(bytes: bigint): void

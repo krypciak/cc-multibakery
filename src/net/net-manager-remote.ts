@@ -4,7 +4,7 @@ import { assert } from '../misc/assert'
 import { NetConnection } from './net-connection'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import { Opts } from '../options'
-import { assertRemote } from '../server/remote/is-remote-server'
+import { assertRemote } from '../server/remote/remote-server-types'
 import { PacketMiddleware, type PacketEventType } from './packet'
 import { profile } from '../misc/profile-decorator'
 

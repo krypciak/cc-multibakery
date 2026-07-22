@@ -3,7 +3,7 @@ import { StateMemory } from '../state-util'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import type { u10, u7 } from 'ts-binarifier/src/type-aliases'
 import { assert } from '../../misc/assert'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory) {

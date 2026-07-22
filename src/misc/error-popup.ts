@@ -3,8 +3,8 @@ import type {} from 'ccmodmanager/types/local-mods'
 import { prestart } from '../loading-stages'
 import { modMetadata } from '../mod-metadata'
 import { assert } from './assert'
-import { isPhysics } from '../server/physics/is-physics-server'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isPhysics } from '../server/physics/physics-server-types'
+import { isRemote } from '../server/remote/remote-server-types'
 
 prestart(() => {
     ig.System.inject({

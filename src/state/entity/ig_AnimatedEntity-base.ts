@@ -1,6 +1,6 @@
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
-import { isPhysics } from '../../server/physics/is-physics-server'
+import { isPhysics } from '../../server/physics/physics-server-types'
 import type { StateMemory } from '../state-util'
 import { undefinedIfFalsy } from '../state-util'
 

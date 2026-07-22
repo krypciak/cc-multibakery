@@ -1,5 +1,5 @@
 import { poststart } from '../loading-stages'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 
 declare global {
     namespace ig {

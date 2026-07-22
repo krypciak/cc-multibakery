@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { isErrorPopupShown } from '../../misc/error-popup'
-import { getServerDetails, getServerIcon } from '../../net/web-server'
+import { getServerDetails, getServerIcon } from '../../net/web-server-utils'
 import { Opts } from '../../options'
 import { prestart } from '../../loading-stages'
 import { tryJoinRemote } from '../../server/remote/try-join-remote'

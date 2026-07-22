@@ -3,8 +3,9 @@ import { poststart, prestart } from './loading-stages'
 import { generateRandomUsername, isUsernameValid } from './misc/username-util'
 import { modMetadata } from './mod-metadata'
 import { DEFAULT_HTTP_PORT, serverListDefault } from './client/menu/default-server-list'
-import { isPhysics } from './server/physics/is-physics-server'
-import { isRemote } from './server/remote/is-remote-server'
+import { isPhysics } from './server/physics/physics-server-types'
+import { isRemote } from './server/remote/remote-server-types'
+import { isPortValid } from './net/web-server-utils'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -142,13 +143,7 @@ function registerOpts() {
                         name: 'Server port (1025 - 65535)',
                         init: `${DEFAULT_HTTP_PORT}`,
                         description: 'Server port (1025 - 65535)',
-                        isValid(text) {
-                            const port = Number(text)
-                            if (Number.isNaN(port)) return false
-                            if (port > 65535 || port <= 0) return false
-                            if (port < 1024) return false
-                            return true
-                        },
+                        isValid: isPortValid,
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
                     serverTitle: {

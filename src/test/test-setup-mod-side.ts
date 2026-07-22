@@ -1,7 +1,7 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { poststart, preload, prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { getServerDetails } from '../net/web-server'
+import { getServerDetails } from '../net/web-server-utils'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
 import { tryJoinRemote } from '../server/remote/try-join-remote'
 import { addStateHandler } from '../state/states'

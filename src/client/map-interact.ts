@@ -3,7 +3,7 @@ import { assert } from '../misc/assert'
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { inputBackup as wrapInput } from '../dummy/dummy-input'
-import { isPhysics } from '../server/physics/is-physics-server'
+import { isPhysics } from '../server/physics/physics-server-types'
 import { broadcastAcrossInstances, isBroadcasting, setIsBroadcasting } from './client-map-util'
 
 function cloneIconHoverTextGui(subGui: sc.IconHoverTextGui): sc.IconHoverTextGui {

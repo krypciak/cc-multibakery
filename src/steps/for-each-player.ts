@@ -2,7 +2,7 @@ import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { runEvent } from './event-steps-run'
-import { assertPhysics } from '../server/physics/is-physics-server'
+import { assertPhysics } from '../server/physics/physics-server-types'
 
 declare global {
     namespace ig.EVENT_STEP {

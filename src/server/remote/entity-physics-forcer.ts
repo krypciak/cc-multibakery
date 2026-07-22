@@ -1,5 +1,5 @@
 import { prestart } from '../../loading-stages'
-import { isRemote } from './is-remote-server'
+import { isRemote } from './remote-server-types'
 
 declare global {
     interface ImpactClass<Instance> {

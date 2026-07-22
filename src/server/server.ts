@@ -1,7 +1,17 @@
+import {
+    isClientJoinData,
+    type ClientCreateAndJoinSettings,
+    type ClientJoinAckData,
+    type ClientJoinData,
+    type MapTpInfo,
+    type ServerSettings,
+} from './server-types'
+export type { ClientJoinData, ClientJoinAckData, MapTpInfo }
+
 import { startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { Client, type ClientSettings } from '../client/client'
+import { Client } from '../client/client'
 import { assert } from '../misc/assert'
 import { isErrorPopupShown, showServerErrorPopup } from '../misc/error-popup'
 import { applyUpdateable, InstanceUpdateable } from './instance-updateable'
@@ -12,72 +22,16 @@ import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
 import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
 import { removeUnnecessarySystemsForServerInstance } from './game-systems-cleanup'
-import type { EntityNetid } from '../misc/entity-netid'
 import type { NetConnection } from '../net/net-connection'
 import { isUsernameValid } from '../misc/username-util'
 import { executeWithStrategy } from '../misc/function-execute-strategy'
-import { isRemote } from './remote/is-remote-server'
+import { isRemote } from './remote/remote-server-types'
 import { ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import { createServerTpsLabel } from '../client/instance-label-draw'
 import { profile } from '../misc/profile-decorator'
 import { Repl } from '../misc/shell'
 
 import './server-var-access'
-
-export interface MapTpInfo {
-    map: MapName
-    marker?: Nullable<string>
-}
-
-export interface ServerSettings {
-    gameTps: number
-    forceConsistentTickTimes?: boolean
-    gameLoopIntervalTps?: number
-    useAnimationFrameAsFpsLimiter?: boolean
-
-    displayServerInstance?: boolean
-    displayMaps?: boolean
-    forceMapsActive?: boolean
-    displayInactiveMaps?: boolean
-    disableMapDisplayCameraMovement?: boolean
-    displayClientInstances?: boolean
-    displayRemoteClientInstances?: boolean
-    defaultMap?: MapTpInfo
-    attemptCrashRecovery?: boolean
-    mapSwitchDelay?: number
-}
-
-export interface ClientJoinData {
-    username: Username
-    initialInputType?: ig.INPUT_DEVICES
-    preferredTpInfo?: MapTpInfo
-}
-export function isClientJoinData(_data: unknown): _data is ClientJoinData {
-    const data = _data as ClientJoinData
-    if (!data || typeof data !== 'object') return false
-    if (!data.username || typeof data.username !== 'string') return false
-    if (data.initialInputType !== undefined) {
-        if (typeof data.initialInputType !== 'number') return false
-        if (!Object.values(ig.INPUT_DEVICES).includes(data.initialInputType)) return false
-    }
-    return true
-}
-export type ClientJoinAckData =
-    | {
-          status: 'username_taken' | 'invalid_join_data' | 'invalid_username'
-      }
-    | {
-          status: 'ok'
-          tpInfo?: MapTpInfo
-          reservedNetid?: EntityNetid
-      }
-
-export interface ClientCreateAndJoinSettings {
-    connection?: NetConnection
-    awaitClientJoin?: boolean
-    clientSettingsOverride?: Partial<ClientSettings>
-    ackDataOverride?: ClientJoinAckData
-}
 
 export abstract class Server<S extends ServerSettings = ServerSettings> extends InstanceUpdateable {
     abstract physics: boolean

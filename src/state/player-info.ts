@@ -1,7 +1,7 @@
 import { prestart } from '../loading-stages'
 import { addGlobalStateHandler, type GlobalStateKey } from './states'
 import { StateMemory } from './state-util'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 import { assert } from '../misc/assert'
 import type {
     AttackType,

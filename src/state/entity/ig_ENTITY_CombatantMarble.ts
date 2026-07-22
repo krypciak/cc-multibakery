@@ -3,7 +3,7 @@ import { prestart } from '../../loading-stages'
 import type { StateKey } from '../states'
 import { createFakeEffectSheet } from '../entity'
 import { StateMemory } from '../state-util'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
     namespace ig.ENTITY {

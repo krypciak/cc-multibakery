@@ -4,7 +4,7 @@ import { prestart } from '../../loading-stages'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import type { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
     namespace sc {

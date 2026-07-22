@@ -2,7 +2,7 @@ import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
 import { closePhysicsServerAndSaveState } from '../../../server/physics/create-from-current-state'
 import { schedulePostTask } from 'cc-instanceinator/src/inst-util'
-import { isPhysics } from '../../../server/physics/is-physics-server'
+import { isPhysics } from '../../../server/physics/physics-server-types'
 
 declare global {
     namespace sc {

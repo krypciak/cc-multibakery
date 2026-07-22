@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { isRemote } from '../remote/is-remote-server'
+import { isRemote } from '../remote/remote-server-types'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
 

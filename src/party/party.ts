@@ -2,7 +2,7 @@ import type { Client } from '../client/client'
 import { assert } from '../misc/assert'
 import type { COMBATANT_PARTY, MapName, Username } from '../net/binary/binary-types'
 import { addCombatantParty } from './combatant-party-api'
-import { assertPhysics, isPhysics } from '../server/physics/is-physics-server'
+import { assertPhysics, isPhysics } from '../server/physics/physics-server-types'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 
 import './social-list-gui'
