@@ -1,5 +1,5 @@
 // local
-import './entity'
+import './entity-all'
 import './event-steps'
 import './game-model-state'
 import './pvp'
