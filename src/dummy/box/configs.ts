@@ -1,37 +1,17 @@
 import type { DummyBoxGuiConfig } from './box-addon'
 
-import './configs/username'
-import './configs/combat-art'
-import './configs/elemental-overload'
-import './configs/no-sp'
-import './configs/combatant-label'
-import './configs/menu'
+import { config as usernameConfig } from './configs/username'
+import { config as combatArtConfig } from './configs/combat-art'
+import { config as elementalOverloadConfig } from './configs/elemental-overload'
+import { config as noSpConfig } from './configs/no-sp'
+import { config as combatantLabelConfig } from './configs/combatant-label'
+import { config as menuConfig } from './configs/menu'
 
-let dummyBoxGuiConfigs: DummyBoxGuiConfig[]
-
-export function getDummyBoxGuiConfigs(): DummyBoxGuiConfig[] {
-    return dummyBoxGuiConfigs
-}
-
-export function addDummyBoxGuiConfig(config: DummyBoxGuiConfig) {
-    dummyBoxGuiConfigs ??= []
-    dummyBoxGuiConfigs.push(config)
-}
-
-export function disableSmallEntityBoxAdding<T>(func: () => T): { ret: T; text?: string; box?: sc.SmallEntityBox } {
-    const backup = ig.gui.addGuiElement
-    let text: string | undefined
-    let box: sc.SmallEntityBox | undefined
-    ig.gui.addGuiElement = gui => {
-        if (gui instanceof sc.SmallEntityBox) {
-            text = gui.textGui.text?.toString()
-            box = gui
-        } else {
-            backup.call(ig.gui, gui)
-        }
-    }
-    const ret = func()
-    ig.gui.addGuiElement = backup
-
-    return { ret, text, box }
-}
+export const dummyBoxGuiConfigs: DummyBoxGuiConfig[] = [
+    usernameConfig,
+    combatArtConfig,
+    elementalOverloadConfig,
+    noSpConfig,
+    combatantLabelConfig,
+    menuConfig,
+]

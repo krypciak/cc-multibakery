@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { addDummyBoxGuiConfig } from '../configs'
+import type { DummyBoxGuiConfig } from '../box-addon'
 
 let stateMap: PartialRecord<sc.GAME_MODEL_SUBSTATE | -1, string>
 let menuMap: PartialRecord<sc.MENU_SUBMENU | -1, string>
@@ -47,10 +47,10 @@ function getText(player: dummy.DummyPlayer): string | undefined {
     if (player.data.inCutscene) return '(Cutscene)'
 }
 
-addDummyBoxGuiConfig({
+export const config: DummyBoxGuiConfig = {
     yPriority: 10,
     hideSmall: true,
 
     textGetter: player => getText(player)!,
     condition: player => !!getText(player),
-})
+}
