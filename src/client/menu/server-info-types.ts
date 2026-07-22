@@ -1,6 +1,6 @@
 import type { NetTransportClientSettings } from '../../net/net-transport'
 import { isModCompatibilityList, type ModCompatibilityList } from '../../server/mod-compatibility-list-types'
-import type { PhysicsServerConnectionSettings } from '../../server/physics/physics-server'
+import type { PhysicsServerConnectionSettings } from '../../server/physics/physics-server-types'
 import {
     isRemoteServerConnectionSettings,
     type RemoteServerConnectionSettings,

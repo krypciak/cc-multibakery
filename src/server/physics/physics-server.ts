@@ -1,15 +1,14 @@
+import type { PhysicsServerSettings } from './physics-server-types'
 import type { NetConnection } from '../../net/net-connection'
 import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
-import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData, ServerSettings } from '../server-types'
+import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
 import { Server } from '../server'
 import { isRemoteServerUpdatePacket, type RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
-import type { NetServerInfoPhysics } from '../../client/menu/server-info-types'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client } from '../../client/client'
 import type { ClientSettings } from '../../client/client-types'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import type { CrosscodeWebModuleOptions } from '../../net/crosscode-web-http-modules'
 import type { ClientLeaveData } from '../remote/remote-server-types'
 import { startGameLoop } from '../../game-loop'
 import { sendPhysicsServerPacket } from './physics-server-sender'
@@ -18,7 +17,7 @@ import type { MapName, Username } from '../../net/binary/binary-types'
 import { loadClientOptionModelState } from '../../client/client-option-model-link'
 import { ServerDiscoveryServer } from '../../net/server-discovery'
 import type { PlayerInfoEntry } from '../../state/player-info'
-import { createNetTransportServer, type NetTransportServerSettings } from '../../net/net-transport'
+import { createNetTransportServer } from '../../net/net-transport'
 import type { CCMap } from '../ccmap/ccmap'
 import {
     registerChargeTimingsChangeListener,
@@ -29,33 +28,6 @@ import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
-
-export interface PhysicsServerConnectionSettings {
-    httpPort: number
-    crosscodeWeb?: CrosscodeWebModuleOptions
-    https?: { cert: string; key: string }
-
-    pingInterval?: number
-    pingTimeout?: number
-
-    transport: NetTransportServerSettings
-}
-
-export interface PhysicsServerSettings extends ServerSettings {
-    godmode?: boolean
-    netInfo?: NetServerInfoPhysics
-    save?: {
-        manualSaving?: boolean
-        loadFromSlot?: number
-        loadSaveData?: ig.SaveSlot.Data
-        automaticallySave?: boolean
-    }
-    disablePlayerIdlePose?: boolean
-    copyNewPlayerStats?: boolean
-
-    /* when this is true, forceConsistentTickTimes is forced off */
-    useAnimationFrameLoop?: boolean
-}
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     physics: boolean = true

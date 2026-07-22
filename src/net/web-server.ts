@@ -9,8 +9,7 @@ import { getCrosscodeWebHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 import { createChain } from 'crosscode-web/src/http-server/http-misc'
 import { convertNetTransportServerSettingsToClientSettings } from './net-transport'
-import { modMetadata } from '../mod-metadata'
-import { isPortValid } from './web-server-utils'
+import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
 
 type HttpHandler = RequestListener
 
