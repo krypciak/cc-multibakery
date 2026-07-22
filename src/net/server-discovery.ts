@@ -54,7 +54,6 @@ export class ServerDiscoveryServer {
             connection: {
                 host: '',
                 port: netInfo.connection.httpPort,
-                https: !!netInfo.connection.https,
             },
             details: multi.server.httpServer.serverDetails,
         } satisfies NetServerInfoRemote)

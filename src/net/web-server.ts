@@ -128,7 +128,7 @@ export class PhysicsHttpServer {
 }
 
 export function getServerUrl(connection: RemoteServerConnectionSettings) {
-    return `http${connection.https ? 's' : ''}://${connection.host}:${connection.port}`
+    return `https://${connection.host}:${connection.port}`
 }
 
 function getDetailsUrl(connection: RemoteServerConnectionSettings) {
@@ -138,28 +138,9 @@ function getIconUrl(connection: RemoteServerConnectionSettings) {
     return `${getServerUrl(connection)}/icon`
 }
 
-async function setHttps(connection: RemoteServerConnectionSettings): Promise<boolean> {
-    try {
-        connection.https = true
-        await fetch(getDetailsUrl(connection))
-        return false
-    } catch (e) {
-        try {
-            connection.https = false
-            await fetch(getDetailsUrl(connection))
-            return false
-        } catch (e) {
-            connection.https = undefined
-            return true
-        }
-    }
-}
-
 export async function getServerDetails(
     connection: RemoteServerConnectionSettings
 ): Promise<{ details: ServerDetailsRemote } | undefined> {
-    if (connection.https === undefined && (await setHttps(connection))) return
-
     const obj = await fetchUrlWithPing(getDetailsUrl(connection))
     if (!obj) return
     const details: unknown = await obj.res.json()

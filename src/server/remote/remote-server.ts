@@ -32,7 +32,6 @@ import './injects'
 export interface RemoteServerConnectionSettings {
     host: string
     port: number
-    https?: boolean
 }
 export function isRemoteServerConnectionSettings(data: unknown): data is RemoteServerConnectionSettings {
     if (!data || typeof data !== 'object') return false
