@@ -14,7 +14,7 @@
         "buildPhysicsNetless": "bun build/build.ts build dev=false minifySyntax minifyWhitespace remote=false physicsnet=false",
         "buildCrossnode": "bun build/build.ts build dev=false remote=false target=esnext crossnode",
         "buildTest": "bun build/build.ts build dev target=esnext crossnode test",
-        "format": "prettier ./src -w; npx prettier ./assets -w --tab-width 4 --no-semi --print-width 400 --bracket-same-line",
+        "format": "prettier ./src -w",
         "test": "bun test --parallel --isolate --concurrent",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js",
         "serverBun": "bun run scripts/server.js"
