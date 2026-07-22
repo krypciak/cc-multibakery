@@ -1,3 +1,4 @@
+import type { OnLinkChange } from './ccmap-types'
 import { assert } from '../../misc/assert'
 import { CCMapDisplay } from './display'
 import { MapDataLoad } from './data-load'
@@ -18,22 +19,6 @@ import { createServerTpsLabel } from '../../client/instance-label-draw'
 import { profile } from '../../misc/profile-decorator'
 
 import './injects'
-
-declare global {
-    namespace ig {
-        var ccmap: CCMap | undefined
-
-        interface MapSharedVars {
-            ccmap: CCMap
-        }
-        var mapShared: MapSharedVars
-    }
-}
-
-export interface OnLinkChange {
-    onClientLink?(this: this, client: Client): void
-    onClientUnlink?(this: this, client: Client): void
-}
 
 export class CCMap extends InstanceUpdateable {
     private static mapUniqueCounter: Record<string, number> = {}

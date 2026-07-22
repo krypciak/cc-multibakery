@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { prestart } from '../loading-stages'
 import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
-import type { OnLinkChange } from '../server/ccmap/ccmap'
+import type { OnLinkChange } from '../server/ccmap/ccmap-types'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
 import { isPhysics } from '../server/physics/physics-server-types'
 

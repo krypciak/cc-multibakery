@@ -1,5 +1,4 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { openManagerServerPopup } from '../../client/menu/pause/server-manage-button'
 import { Opts } from '../../options'
 import { PhysicsServer } from './physics-server'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
@@ -81,11 +80,8 @@ export async function createPhysicsServerFromCurrentState() {
         const { x, y, z } = playerDataBackup.pos
         ig.game.playerEntity.setPos(x, y, z)
         Vec2.assign(ig.game.playerEntity.face, playerDataBackup.face)
-
-        sc.model.enterPause()
-        ig.multibakeryManageServerPopup = undefined
-        openManagerServerPopup(true)
     })
+    return client
 }
 
 export async function closePhysicsServerAndSaveState() {

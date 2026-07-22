@@ -1,6 +1,6 @@
 import { assert } from '../misc/assert'
 import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
-import type { ClientSettings } from '../client/client'
+import type { ClientSettings } from '../client/client-types'
 import type { EntityNetid } from '../misc/entity-netid'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { NetConnection } from '../net/net-connection'
