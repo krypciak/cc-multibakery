@@ -123,8 +123,7 @@ class DevStart {
         if (!PHYSICS) return
         if (!DEV) return
 
-        const settings = createSettings()
-        this.server = PHYSICS && new PhysicsServer(settings)
+        this.server = multi.createPhysicsServer(createSettings())
         multi.setServer(this.server)
 
         await this.startServer()
