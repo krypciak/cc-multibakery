@@ -127,7 +127,7 @@ class EntityStateRecordUnionNode extends Node {
 }
 
 import * as fs from 'fs'
-const entityImportOrder = (await fs.promises.readFile('src/state/entity.ts', 'utf8'))
+const entityImportOrder = (await fs.promises.readFile('src/state/entity-all.ts', 'utf8'))
     .split('\n')
     .filter(line => line.startsWith("import './entity/"))
     .map(line => line.trim().slice("import './entity/".length, -1))
