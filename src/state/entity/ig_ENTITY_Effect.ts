@@ -5,7 +5,7 @@ import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import type { StateKey } from '../states'
 import type { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
-import { isPhysics } from '../../server/physics/is-physics-server'
+import { isPhysics } from '../../server/physics/physics-server-types'
 
 declare global {
     namespace ig.ENTITY {

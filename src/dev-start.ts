@@ -6,7 +6,7 @@ import { Opts } from './options'
 import { assert } from './misc/assert'
 import type { MapTpInfo } from './server/server'
 import { tryJoinRemote } from './server/remote/try-join-remote'
-import { getServerDetails } from './net/web-server'
+import { getServerDetails } from './net/web-server-utils'
 import type { RemoteServerConnectionSettings } from './server/remote/remote-server'
 import { profile } from './misc/profile-decorator'
 

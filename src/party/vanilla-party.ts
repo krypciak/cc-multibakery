@@ -1,8 +1,8 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { assertPhysics } from '../server/physics/is-physics-server'
-import { isRemote } from '../server/remote/is-remote-server'
+import { assertPhysics } from '../server/physics/physics-server-types'
+import { isRemote } from '../server/remote/remote-server-types'
 
 declare global {
     namespace sc {

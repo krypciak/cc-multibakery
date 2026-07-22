@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { isPhysics } from '../server/physics/is-physics-server'
+import { isPhysics } from '../server/physics/physics-server-types'
 import { onActionStepStart } from '../state/action-steps'
 
 prestart(() => {
@@ -24,7 +24,7 @@ prestart(() => {
                 actor.currentActionStep = step
             }
 
-            for (let callLimit = 1e4; step?.run(actor); ) {
+            for (let callLimit = 1e4; step?.run(actor);) {
                 if (actor.stepTimer > 0) actor.stepTimer = 0
                 if (!actor.currentAction) {
                     step = null

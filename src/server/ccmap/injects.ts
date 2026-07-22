@@ -2,7 +2,7 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
-import { isPhysics } from '../physics/is-physics-server'
+import { isPhysics } from '../physics/physics-server-types'
 
 import './sound-position-fix'
 

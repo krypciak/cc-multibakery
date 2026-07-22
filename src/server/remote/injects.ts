@@ -1,6 +1,6 @@
 import { prestart } from '../../loading-stages'
 import { wrapIgnoreEffectNetid } from '../../state/entity/effect-netid'
-import { isRemote } from './is-remote-server'
+import { isRemote } from './remote-server-types'
 
 prestart(() => {
     if (!REMOTE) return

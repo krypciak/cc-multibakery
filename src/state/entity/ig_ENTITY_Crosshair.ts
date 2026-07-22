@@ -4,7 +4,7 @@ import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import { inputBackup } from '../../dummy/dummy-input'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
     namespace ig.ENTITY {

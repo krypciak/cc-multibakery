@@ -1,20 +1,15 @@
 import type { NetConnection } from '../../net/net-connection'
 import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
-import {
-    Server,
-    type ClientCreateAndJoinSettings,
-    type ClientJoinAckData,
-    type ClientJoinData,
-    type ServerSettings,
-} from '../server'
+import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData, ServerSettings } from '../server-types'
+import { Server } from '../server'
 import { isRemoteServerUpdatePacket, type RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
-import type { NetServerInfoPhysics } from '../../client/menu/server-info'
+import type { NetServerInfoPhysics } from '../../client/menu/server-info-types'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client, type ClientSettings } from '../../client/client'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import type { CrosscodeWebModuleOptions } from '../../net/crosscode-web-http-modules'
-import type { ClientLeaveData } from '../remote/remote-server'
+import type { ClientLeaveData } from '../remote/remote-server-types'
 import { startGameLoop } from '../../game-loop'
 import { sendPhysicsServerPacket } from './physics-server-sender'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'

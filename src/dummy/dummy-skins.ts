@@ -1,7 +1,7 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 
 export type PlayerSkin = string
 

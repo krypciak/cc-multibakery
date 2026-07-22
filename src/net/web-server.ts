@@ -1,11 +1,16 @@
 import type { Server as HttpServer, RequestListener } from 'http'
-import { isServerDetailsRemote, type NetServerInfoPhysics, type ServerDetailsRemote } from '../client/menu/server-info'
-import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
+import {
+    isServerDetailsRemote,
+    type NetServerInfoPhysics,
+    type ServerDetailsRemote,
+} from '../client/menu/server-info-types'
 import { assert } from '../misc/assert'
 import { getCrosscodeWebHttpModules } from './crosscode-web-http-modules'
 import { getModCompatibilityList } from '../server/mod-compatibility-list'
 import { createChain } from 'crosscode-web/src/http-server/http-misc'
 import { convertNetTransportServerSettingsToClientSettings } from './net-transport'
+import { modMetadata } from '../mod-metadata'
+import { isPortValid } from './web-server-utils'
 
 type HttpHandler = RequestListener
 

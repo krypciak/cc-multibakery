@@ -4,7 +4,7 @@ import { prestart } from '../../loading-stages'
 import { resolveProxyFromType } from './proxy-util'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {

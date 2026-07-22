@@ -3,7 +3,7 @@ import { prestart } from '../loading-stages'
 import { runTask, runTasks, wait } from 'cc-instanceinator/src/inst-util'
 import type { OnLinkChange } from '../server/ccmap/ccmap'
 import { MULTI_PARTY_EVENT, type MultiParty } from '../party/party'
-import { isPhysics } from '../server/physics/is-physics-server'
+import { isPhysics } from '../server/physics/physics-server-types'
 
 import './gui'
 import './steps'

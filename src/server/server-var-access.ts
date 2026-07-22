@@ -3,7 +3,7 @@ import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { checkAndCutPrefix, checkAndCutSuffix } from '../misc/check-and-cut'
 import { createPartyVarAccess } from '../pvp/pvp-var-access'
-import { isRemote } from './remote/is-remote-server'
+import { isRemote } from './remote/remote-server-types'
 
 class MultiVarAccessor implements ig.Vars.Accessor {
     onVarAccess(_path: string, keys: string[]): ig.VarValue | void {

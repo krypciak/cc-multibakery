@@ -4,7 +4,7 @@ import { StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import { assert } from '../../misc/assert'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
     namespace ig.ENTITY {

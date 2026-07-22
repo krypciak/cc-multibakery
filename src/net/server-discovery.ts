@@ -1,8 +1,8 @@
 import type { Socket } from 'dgram'
 import { prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
-import { assertPhysics } from '../server/physics/is-physics-server'
-import { isNetServerInfoRemote, type NetServerInfoRemote } from '../client/menu/server-info'
+import { assertPhysics } from '../server/physics/physics-server-types'
+import { isNetServerInfoRemote, type NetServerInfoRemote } from '../client/menu/server-info-types'
 
 const dgram: typeof import('dgram') | undefined = (0, eval)('require("dgram")')
 

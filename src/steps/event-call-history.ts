@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { isRemote } from '../server/remote/is-remote-server'
+import { isRemote } from '../server/remote/remote-server-types'
 import { onEventStepStart } from '../state/event-steps'
 
 prestart(() => {

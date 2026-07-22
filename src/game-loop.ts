@@ -161,7 +161,7 @@ prestart(() => {
                 let nextTick = tick
 
                 if (ig.perf.update) {
-                    for (this.firstUpdateLoop = true; nextTick > 0; ) {
+                    for (this.firstUpdateLoop = true; nextTick > 0;) {
                         ig.system.actualTick = Math.min(0.05, nextTick)
                         ig.system.tick = ig.system.actualTick * ig.system.timeFactor
 

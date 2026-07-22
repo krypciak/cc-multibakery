@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { isPhysics } from '../is-physics-server'
+import { isPhysics } from '../physics-server-types'
 
 prestart(() => {
     function updateButton(button: sc.ButtonGui) {

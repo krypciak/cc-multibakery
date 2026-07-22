@@ -8,7 +8,7 @@ import {
 import { showTryNetJoinResponseDialog, type ClientJoinData } from '../../../server/server'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../../misc/nwjs-version-popup'
 import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
-import { isPhysics } from '../../../server/physics/is-physics-server'
+import { isPhysics } from '../../../server/physics/physics-server-types'
 import type { MultiPageButtonGuiButtons } from 'cc-krypek-lib/src/input-field-dialog'
 
 declare global {

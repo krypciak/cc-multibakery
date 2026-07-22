@@ -11,7 +11,7 @@ import { cleanRecord } from '../../state/state-util'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import type { f64 } from 'ts-binarifier/src/type-aliases'
 import type { MapName } from '../../net/binary/binary-types'
-import { assertPhysics } from './is-physics-server'
+import { assertPhysics } from './physics-server-types'
 import { assert } from '../../misc/assert'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
 

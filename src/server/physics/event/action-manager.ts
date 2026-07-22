@@ -1,7 +1,7 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../../misc/assert'
 import { prestart } from '../../../loading-stages'
-import { isPhysics } from '../is-physics-server'
+import { isPhysics } from '../physics-server-types'
 import { type Client } from '../../../client/client'
 
 declare global {

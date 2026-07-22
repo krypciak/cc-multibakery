@@ -7,7 +7,7 @@ import type { NetTransportClient } from './net-manager-remote'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import type { NetTransportServer } from './net-manager-physics'
 import { Opts } from '../options'
-import { getServerUrl } from './web-server'
+import { getServerUrl } from './web-server-utils'
 import { parser as binaryParser } from './socket-io-parser'
 import { assert } from '../misc/assert'
 

@@ -8,7 +8,7 @@ import { Opts } from '../options'
 import type { TestConfig } from './test-bridge'
 import type { Client } from '../client/client'
 import type { CCMap } from '../server/ccmap/ccmap'
-import { assertPhysics } from '../server/physics/is-physics-server'
+import { assertPhysics } from '../server/physics/physics-server-types'
 import type { TestRemoteClientRaport, TestRemoteClientRequestConfig } from './test-setup-mod-side'
 
 import './test-setup-mod-side'

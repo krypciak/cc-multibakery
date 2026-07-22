@@ -1,7 +1,7 @@
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../../loading-stages'
 import { setNextSetBy, unsetNextSetBy } from './vars'
-import { isPhysics } from '../is-physics-server'
+import { isPhysics } from '../physics-server-types'
 
 declare global {
     namespace ig.ENTITY {

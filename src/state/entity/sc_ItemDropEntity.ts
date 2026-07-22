@@ -6,7 +6,7 @@ import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././states'
 import type { u8 } from 'ts-binarifier/src/type-aliases'
 import type { ItemType } from '../../net/binary/binary-types'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
     namespace sc {

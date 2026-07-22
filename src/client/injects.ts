@@ -2,7 +2,7 @@ import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { type Client } from './client'
 import { broadcastAcrossInstances } from './client-map-util'
-import { isPhysics } from '../server/physics/is-physics-server'
+import { isPhysics } from '../server/physics/physics-server-types'
 
 prestart(() => {
     ig.Physics.inject({

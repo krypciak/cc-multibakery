@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { isPhysics } from '../physics/is-physics-server'
+import { isPhysics } from '../physics/physics-server-types'
 
 declare global {
     namespace ig {

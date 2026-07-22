@@ -5,7 +5,7 @@ import type { StateKey } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as igEntityPlayer from './ig_ENTITY_Player-base'
 import type { f32, u32 } from 'ts-binarifier/src/type-aliases'
-import { isRemote } from '../../server/remote/is-remote-server'
+import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 
 declare global {

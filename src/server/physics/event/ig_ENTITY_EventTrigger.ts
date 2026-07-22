@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import { isPhysics } from '../is-physics-server'
+import { isPhysics } from '../physics-server-types'
 import { setEventNextTriggeredBy, unsetEventNextTriggeredBy } from './event-manager'
 import { findSetByEntityByVars, setNextSetBy, unsetNextSetBy } from './vars'
 
