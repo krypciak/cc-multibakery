@@ -1,3 +1,5 @@
+import { assert } from '../misc/assert'
+import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
 import type { ClientSettings } from '../client/client'
 import type { EntityNetid } from '../misc/entity-netid'
 import type { MapName, Username } from '../net/binary/binary-types'
@@ -56,4 +58,18 @@ export interface ClientCreateAndJoinSettings {
     awaitClientJoin?: boolean
     clientSettingsOverride?: Partial<ClientSettings>
     ackDataOverride?: ClientJoinAckData
+}
+
+export function instanceinatorCopyInstanceConfig(): InstanceinatorCopyInstanceConfig {
+    return { cacheKey: 'multibakery', hideTitleScreen: true }
+}
+
+export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: ClientJoinAckData) {
+    if (resp.status == 'ok') return
+    let msg!: string
+    assert(resp.status != 'invalid_join_data', 'invalid_join_data??')
+    if (resp.status == 'username_taken') msg = `Error: username "${joinData.username}" is taken.`
+    else if (resp.status == 'invalid_username') msg = `Error: username "${joinData.username} is invalid.`
+    assert(msg)
+    sc.Dialogs.showErrorDialog(msg)
 }

@@ -1,5 +1,5 @@
 import type { Server as HttpServer } from 'http'
-import type { NetServerInfoPhysics } from '../client/menu/server-info'
+import type { NetServerInfoPhysics } from '../client/menu/server-info-types'
 import { assert } from '../misc/assert'
 import { isClientLeaveData } from '../server/remote/remote-server-types'
 import { isClientJoinData } from '../server/server-types'

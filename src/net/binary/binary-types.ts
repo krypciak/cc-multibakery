@@ -1,6 +1,5 @@
 import type { f32, u16, u10, u14, u6, i11, u7, i32, f64, u8 } from 'ts-binarifier/src/type-aliases'
 
-export {}
 declare global {
     interface Vec2 {
         x: f32

@@ -1,3 +1,4 @@
+import './net/binary/binary-types'
 import 'ultimate-crosscode-typedefs'
 import type {} from 'cc-instanceinator/src/plugin'
 import type {} from 'crossnode/crossnode'
@@ -8,7 +9,6 @@ import type {} from 'nax-ccuilib/src/ui/quick-menu/quick-menu-extension'
 import type {} from 'cc-variable-charge-time/src/plugin'
 import type {} from 'cc-krypek-lib/src/plugin'
 import 'ts-binarifier/src/type-aliases'
-import './net/binary/binary-types'
 
 declare global {
     /* build constants */

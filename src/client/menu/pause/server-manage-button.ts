@@ -5,7 +5,8 @@ import {
     closePhysicsServerAndSaveState,
     createPhysicsServerFromCurrentState,
 } from '../../../server/physics/create-from-current-state'
-import { showTryNetJoinResponseDialog, type ClientJoinData } from '../../../server/server'
+import { showTryNetJoinResponseDialog } from '../../../server/server-types'
+import type { ClientJoinData } from '../../../server/server-types'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../../misc/nwjs-version-popup'
 import { runTask, scheduleNextTask } from 'cc-instanceinator/src/inst-util'
 import { isPhysics } from '../../../server/physics/physics-server-types'

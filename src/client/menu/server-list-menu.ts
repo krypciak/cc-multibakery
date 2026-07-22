@@ -1,12 +1,7 @@
 import { poststart, prestart } from '../../loading-stages'
 import { modMetadata } from '../../mod-metadata'
-import {
-    addServerListEntry,
-    moveServerEntry,
-    type NetServerInfoRemote,
-    removeServerListEntry,
-    replaceServerEntry,
-} from './server-info'
+import { addServerListEntry, moveServerEntry, removeServerListEntry, replaceServerEntry } from './server-info'
+import type { NetServerInfoRemote } from './server-info-types'
 import { addTitleScreenButton } from '../../misc/title-screen-button'
 import { checkNwjsVerionAndCreatePopupIfProblemsFound } from '../../misc/nwjs-version-popup'
 import { DEFAULT_HTTP_PORT } from './default-server-list'

@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import type { NetServerInfoRemote } from '../../client/menu/server-info'
+import type { NetServerInfoRemote } from '../../client/menu/server-info-types'
 import type { StrictNonNullable } from '../../types'
 import type { ModCompatibilityList } from '../mod-compatibility-list-types'
 import type { ServerSettings } from '../server-types'

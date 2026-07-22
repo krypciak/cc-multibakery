@@ -1,4 +1,4 @@
-import type { NetServerInfoRemote } from './server-info'
+import type { NetServerInfoRemote } from './server-info-types'
 
 export const DEFAULT_HTTP_PORT = 33405
 
