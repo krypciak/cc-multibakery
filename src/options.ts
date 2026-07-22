@@ -1,7 +1,7 @@
 import type { Options } from 'ccmodmanager/types/mod-options'
 import { poststart, prestart } from './loading-stages'
 import { generateRandomUsername, isUsernameValid } from './misc/username-util'
-import Multibakery from './plugin'
+import { modMetadata } from './mod-metadata'
 import { DEFAULT_HTTP_PORT, serverListDefault } from './client/menu/default-server-list'
 import { isPhysics } from './server/physics/is-physics-server'
 import { isRemote } from './server/remote/is-remote-server'
@@ -374,8 +374,8 @@ function registerOpts() {
 
     Opts = modmanager.registerAndGetModOptions(
         {
-            modId: Multibakery.manifest.id,
-            title: Multibakery.manifest.title,
+            modId: modMetadata.manifest.id,
+            title: modMetadata.manifest.title,
         },
         opts
     )

@@ -2,7 +2,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MultiPageButtonGuiButtons } from 'cc-krypek-lib/src/input-field-dialog'
 import { COLOR, wrapColor } from '../misc/wrap-color'
 import { semver } from '../misc/nwjs-version-popup'
-import Multibakery from '../plugin'
+import { modMetadata } from '../mod-metadata'
 import { assert } from '../misc/assert'
 
 export interface ModVersionEntry {
@@ -16,13 +16,7 @@ function isModVersionEntry(data: unknown): data is ModVersionEntry {
     return true
 }
 type AddonId =
-    | 'fish-gear'
-    | 'flying-hedgehag'
-    | 'snowman-tank'
-    | 'scorpion-robo'
-    | 'post-game'
-    | 'ninja-skin'
-    | 'manlea'
+    'fish-gear' | 'flying-hedgehag' | 'snowman-tank' | 'scorpion-robo' | 'post-game' | 'ninja-skin' | 'manlea'
 
 export interface ModCompatibilityList {
     required: ModVersionEntry[]
@@ -51,7 +45,7 @@ export function isModCompatibilityList(data: unknown): data is ModCompatibilityL
 const knownClientModsWithJson = ['menu-ui-replacer', 'extendable-severed-heads', 'bobrank', 'NamedSaves', 'xpc-litter']
 
 function getActiveModList() {
-    return Multibakery.mod.isCCL3
+    return modMetadata.mod.isCCL3
         ? [...modloader.loadedMods.values()].map(m => ({
               id: m.id,
               version: m.version?.toString() ?? '',

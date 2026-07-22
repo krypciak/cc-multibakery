@@ -1,7 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type {} from 'ccmodmanager/types/local-mods'
 import { prestart } from '../loading-stages'
-import Multibakery from '../plugin'
+import { modMetadata } from '../mod-metadata'
 import { assert } from './assert'
 import { isPhysics } from '../server/physics/is-physics-server'
 import { isRemote } from '../server/remote/is-remote-server'
@@ -16,7 +16,7 @@ prestart(() => {
 })
 
 function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
-    const isCCL3 = Multibakery.mod.isCCL3
+    const isCCL3 = modMetadata.mod.isCCL3
     const version = ig.game?.getVersion()
     const platform = ig.getPlatformName(ig.platform)
     const os = ig.OS

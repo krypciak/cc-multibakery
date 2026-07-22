@@ -1,4 +1,4 @@
-import Multibakery from '../plugin'
+import { modMetadata } from '../mod-metadata'
 
 const assets: Record<string, string> = {}
 const everAdded: Set<string> = new Set()
@@ -12,7 +12,7 @@ export function removeRuntimeAssert(path: string) {
 }
 
 export function reloadRuntimeAssets() {
-    if (Multibakery.mod.isCCL3) {
+    if (modMetadata.mod.isCCL3) {
         for (const asset of everAdded) {
             ccmod.resources.assetOverridesTable.delete(asset)
         }
@@ -20,6 +20,6 @@ export function reloadRuntimeAssets() {
             ccmod.resources.assetOverridesTable.set(k, v)
         })
     } else {
-        Multibakery.mod.runtimeAssets = assets
+        modMetadata.mod.runtimeAssets = assets
     }
 }

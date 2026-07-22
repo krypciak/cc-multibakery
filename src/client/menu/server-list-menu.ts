@@ -1,5 +1,5 @@
 import { poststart, prestart } from '../../loading-stages'
-import Multibakery from '../../plugin'
+import { modMetadata } from '../../mod-metadata'
 import {
     addServerListEntry,
     moveServerEntry,
@@ -158,7 +158,7 @@ prestart(() => {
             }
             this.accountButton.onButtonPress = () => {
                 const tab = 1
-                modmanager.openModOptionsMenu(Multibakery.manifest.id, tab)
+                modmanager.openModOptionsMenu(modMetadata.manifest.id, tab)
             }
         },
         initAddEntryButton() {

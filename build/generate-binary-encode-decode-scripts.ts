@@ -1,8 +1,8 @@
 import type { Config, SingleConfig } from 'ts-binarifier/src/index'
 import { generateEncodeDecodeScripts } from 'ts-binarifier/src/index'
 import { createEntityStateRecordUnionNode } from './entity-state-record-union-node'
-import fs from 'fs'
 import { fileURLToPath } from 'url'
+import fs from 'fs'
 
 const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 

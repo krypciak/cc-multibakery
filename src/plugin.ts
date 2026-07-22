@@ -1,7 +1,7 @@
 import type { PluginClass } from 'ultimate-crosscode-typedefs/modloader/mod'
 import type { Mod1 } from 'cc-instanceinator/src/types'
-import ccmod from '../ccmod.json'
 import { executePostload, executePoststart, executePreload, executePrestart } from './loading-stages'
+import { setModMetadata } from './mod-metadata'
 
 import './multiplayer'
 import './options'
@@ -10,16 +10,8 @@ import './test/test-utils'
 import './dev-start'
 
 export default class Multibakery implements PluginClass {
-    static dir: string
-    static mod: Mod1
-    static manifest: typeof import('../ccmod.json') = ccmod
-
     constructor(mod: Mod1) {
-        Multibakery.dir = mod.baseDirectory
-        Multibakery.mod = mod
-        Multibakery.mod.isCCL3 = mod.findAllAssets ? true : false
-        Multibakery.mod.isCCModPacked = mod.baseDirectory.endsWith('.ccmod/')
-        if (!Multibakery.mod.isCCL3) Object.assign(mod, { id: Multibakery.mod.name })
+        setModMetadata(mod)
 
         if (!TEST) {
             if (window.crossnode) {
