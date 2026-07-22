@@ -46,6 +46,8 @@ export class PhysicsHttpServer {
         const serverDetailsString: string = JSON.stringify(this.serverDetails)
 
         const serverHandle: HttpHandler = (req, res) => {
+            res.setHeader('Access-Control-Allow-Origin', '*')
+
             if (req.url == '/details') {
                 res.writeHead(200, {
                     'Content-Type': 'application/json',
