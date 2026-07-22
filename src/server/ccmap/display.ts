@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import type { CCMap } from './ccmap'
-import type { OnLinkChange } from './ccmap'
+import type { OnLinkChange } from './ccmap-types'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import type { Client } from '../../client/client'
 

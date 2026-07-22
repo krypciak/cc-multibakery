@@ -1,4 +1,5 @@
 import { assert } from '../misc/assert'
+import type { ClientSettings } from './client-types'
 import type { CCMap } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../misc/game-addon-util'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
@@ -30,29 +31,6 @@ import './injects'
 import './menu/server-list-menu'
 import './menu/pause/pause-screen'
 import './menu/map-overlay'
-
-declare global {
-    namespace ig {
-        var client: Client | undefined
-    }
-}
-
-export type ClientSettings = {
-    username: Username
-    remote: boolean
-    noShowInstance?: boolean
-    forceDraw?: boolean
-    tpInfo?: MapTpInfo
-    tilingOrder?: number
-} & (
-    | {
-          inputType: 'clone'
-          initialInputType?: ig.INPUT_DEVICES
-      }
-    | {
-          inputType: 'puppet'
-      }
-)
 
 export class Client extends InstanceUpdateable {
     username: Username

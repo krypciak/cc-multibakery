@@ -104,10 +104,15 @@ prestart(() => {
                 if (!multi.server) {
                     buttons.push({
                         name: 'Start server',
-                        onPress() {
+                        async onPress() {
                             self.closeMenu()
                             self.doStateTransition('HIDDEN', true, true)
-                            PHYSICS && createPhysicsServerFromCurrentState()
+                            const client = await createPhysicsServerFromCurrentState()
+                            runTask(client.inst, () => {
+                                sc.model.enterPause()
+                                ig.multibakeryManageServerPopup = undefined
+                                openManagerServerPopup()
+                            })
                         },
                     })
                 } else if (isPhysics(multi.server) && isMaster) {
