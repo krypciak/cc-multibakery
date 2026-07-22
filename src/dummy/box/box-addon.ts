@@ -1,6 +1,6 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { getDummyBoxGuiConfigs } from './configs'
+import { dummyBoxGuiConfigs } from './configs'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { addAddon } from '../../misc/game-addon-util'
 
@@ -96,7 +96,7 @@ prestart(() => {
             this.parent('dummy.BoxGuiAddon.BoxGuiAddon')
 
             this.guis = new Map()
-            this.configs = getDummyBoxGuiConfigs()
+            this.configs = dummyBoxGuiConfigs
 
             addAddon(this, game)
         },

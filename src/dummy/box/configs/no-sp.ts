@@ -1,5 +1,6 @@
 import { prestart } from '../../../loading-stages'
-import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
+import type { DummyBoxGuiConfig } from '../box-addon'
+import { disableSmallEntityBoxAdding } from '../disable-box-adding'
 
 declare global {
     namespace dummy {
@@ -21,7 +22,7 @@ prestart(() => {
     })
 })
 
-addDummyBoxGuiConfig({
+export const config: DummyBoxGuiConfig = {
     yPriority: 3,
     hideSmall: true,
     time: 0.5,
@@ -35,4 +36,4 @@ addDummyBoxGuiConfig({
     onRemove: player => {
         player.showNoSpLabel = undefined
     },
-})
+}

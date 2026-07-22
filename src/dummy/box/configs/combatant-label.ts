@@ -1,6 +1,7 @@
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../../../server/physics/physics-server-types'
-import { addDummyBoxGuiConfig, disableSmallEntityBoxAdding } from '../configs'
+import type { DummyBoxGuiConfig } from '../box-addon'
+import { disableSmallEntityBoxAdding } from '../disable-box-adding'
 
 declare global {
     namespace dummy {
@@ -31,7 +32,7 @@ prestart(() => {
     })
 })
 
-addDummyBoxGuiConfig({
+export const config: DummyBoxGuiConfig = {
     yPriority: 4,
     hideSmall: true,
     time: 1,
@@ -45,4 +46,4 @@ addDummyBoxGuiConfig({
     onRemove: player => {
         player.combatantLabelInfo = undefined
     },
-})
+}

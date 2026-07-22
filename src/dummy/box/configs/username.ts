@@ -1,9 +1,9 @@
 import { Opts } from '../../../options'
-import { addDummyBoxGuiConfig } from '../configs'
+import type { DummyBoxGuiConfig } from '../box-addon'
 
-addDummyBoxGuiConfig({
+export const config: DummyBoxGuiConfig = {
     yPriority: 0,
 
     textGetter: player => player.data.username,
     condition: player => !ig.client || !Opts.hideClientUsername || ig.client.username != player.data.username,
-})
+}
