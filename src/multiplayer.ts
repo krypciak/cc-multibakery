@@ -2,6 +2,7 @@ import type { Server } from './server/server'
 import { assert } from './misc/assert'
 import { preload } from './loading-stages'
 
+import './server/physics/create-physics-server'
 import './server/remote/try-join-remote'
 import './misc/entity-netid'
 import './game-loop'

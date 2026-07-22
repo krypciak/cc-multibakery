@@ -1,6 +1,5 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../../options'
-import { PhysicsServer } from './physics-server'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
 import { assert } from '../../misc/assert'
 import { defaultNetTransport } from '../../net/net-transport'
@@ -24,7 +23,7 @@ export async function createPhysicsServerFromCurrentState() {
 
     const origInputType = ig.input.currentDevice
 
-    const server = new PhysicsServer({
+    const server = multi.createPhysicsServer({
         gameTps: Opts.serverGameTps,
         useAnimationFrameLoop: Opts.serverUseAnimationFrameLoop,
         godmode: Opts.serverGodmode,
