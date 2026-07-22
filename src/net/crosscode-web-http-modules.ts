@@ -74,7 +74,6 @@ async function liveModUpdates() {
                 'physics=false',
                 'browser=true',
                 `target=${esTarget}`,
-                'extraTreeShaking=true',
                 'noWrite=true',
                 `sourcemap=${sourceMap}`,
             ],
