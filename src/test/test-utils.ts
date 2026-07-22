@@ -1,7 +1,7 @@
 import { assert } from '../misc/assert'
 import { preload } from '../loading-stages'
 import { PhysicsServer } from '../server/physics/physics-server'
-import type { MapTpInfo } from '../server/server'
+import type { MapTpInfo } from '../server/server-types'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'

@@ -1,5 +1,5 @@
-import type { ClientLeaveData, RemoteServerConnectionSettings } from '../server/remote/remote-server'
-import type { ClientJoinAckData, ClientJoinData } from '../server/server'
+import type { ClientLeaveData, RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
+import type { ClientJoinAckData, ClientJoinData } from '../server/server-types'
 import { assert } from '../misc/assert'
 import { NetConnection } from './net-connection'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'

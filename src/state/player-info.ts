@@ -15,7 +15,7 @@ import type {
     LevelType,
     Username,
 } from '../net/binary/binary-types'
-import type { MapTpInfo } from '../server/server'
+import type { MapTpInfo } from '../server/server-types'
 import type { EntityNetid } from '../misc/entity-netid'
 
 export interface PlayerInfoEntry {

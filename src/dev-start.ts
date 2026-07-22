@@ -4,10 +4,10 @@ import { addTitleScreenButton } from './misc/title-screen-button'
 import { poststart, prestart } from './loading-stages'
 import { Opts } from './options'
 import { assert } from './misc/assert'
-import type { MapTpInfo } from './server/server'
+import type { MapTpInfo } from './server/server-types'
 import { tryJoinRemote } from './server/remote/try-join-remote'
 import { getServerDetails } from './net/web-server-utils'
-import type { RemoteServerConnectionSettings } from './server/remote/remote-server'
+import type { RemoteServerConnectionSettings } from './server/remote/remote-server-types'
 import { profile } from './misc/profile-decorator'
 
 const defaultMap: MapTpInfo = {

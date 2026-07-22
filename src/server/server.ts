@@ -1,4 +1,5 @@
 import {
+    instanceinatorCopyInstanceConfig,
     isClientJoinData,
     type ClientCreateAndJoinSettings,
     type ClientJoinAckData,
@@ -18,7 +19,6 @@ import { linkOptions } from './physics/storage/storage'
 import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
-import type { InstanceinatorCopyInstanceConfig } from 'cc-instanceinator/src/instance-copy'
 import { removeUnnecessarySystemsForServerInstance } from './game-systems-cleanup'
 import type { NetConnection } from '../net/net-connection'
 import { isUsernameValid } from '../misc/username-util'
@@ -340,18 +340,4 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
         instanceinator.retile()
     }
-}
-
-export function instanceinatorCopyInstanceConfig(): InstanceinatorCopyInstanceConfig {
-    return { cacheKey: 'multibakery', hideTitleScreen: true }
-}
-
-export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: ClientJoinAckData) {
-    if (resp.status == 'ok') return
-    let msg!: string
-    assert(resp.status != 'invalid_join_data', 'invalid_join_data??')
-    if (resp.status == 'username_taken') msg = `Error: username "${joinData.username}" is taken.`
-    else if (resp.status == 'invalid_username') msg = `Error: username "${joinData.username} is invalid.`
-    assert(msg)
-    sc.Dialogs.showErrorDialog(msg)
 }

@@ -1,6 +1,6 @@
 import type { Server as HttpServer } from 'http'
-import type { RemoteServerConnectionSettings } from '../server/remote/remote-server'
-import type { NetServerInfoPhysics } from '../client/menu/server-info'
+import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
+import type { NetServerInfoPhysics } from '../client/menu/server-info-types'
 import type { NetTransportClient } from './net-manager-remote'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import type { NetTransportServer } from './net-manager-physics'

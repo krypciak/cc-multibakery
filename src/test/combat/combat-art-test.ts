@@ -7,7 +7,7 @@ import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
 import type { StoragePlayerState } from '../../server/physics/storage/storage'
-import type { MapTpInfo } from '../../server/server'
+import type { MapTpInfo } from '../../server/server-types'
 
 const enemyType = 'autumn-rh.practice-bot'
 
