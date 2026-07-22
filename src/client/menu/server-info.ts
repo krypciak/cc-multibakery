@@ -1,7 +1,5 @@
 import { Opts } from '../../options'
 import type { NetServerInfoRemote } from './server-info-types'
-export type { NetServerInfoRemote }
-export type { NetServerInfoPhysics, ServerDetailsRemote } from './server-info-types'
 
 export function getServerListInfo(): NetServerInfoRemote[] {
     return [...Opts.serverList]

@@ -6,8 +6,6 @@ import {
     type MapTpInfo,
     type ServerSettings,
 } from './server-types'
-export type { ClientJoinData, ClientJoinAckData, MapTpInfo }
-
 import { startGameLoop } from '../game-loop'
 import { CCMap } from './ccmap/ccmap'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'

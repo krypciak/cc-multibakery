@@ -22,7 +22,6 @@ import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
 import type { RemoteServerSettings } from './remote-server-types'
-export type { RemoteServerConnectionSettings, ClientLeaveData } from './remote-server-types'
 
 export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
