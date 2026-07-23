@@ -25,9 +25,9 @@ declare global {
             MULTIBAKERY_LOGIN = 378943,
         }
     }
-    namespace multi.class.ServerList {
+    namespace multi.classes.ServerList {
         interface Menu extends sc.ListInfoMenu, sc.Model {
-            list: multi.class.ServerList.List
+            list: multi.classes.ServerList.List
             accountButton: sc.ButtonGui
             addEntryButton: sc.ButtonGui
             removeEntryButton: sc.ButtonGui
@@ -49,7 +49,7 @@ declare global {
         var Menu: MenuConstructor
     }
     namespace sc {
-        var serverListMenu: multi.class.ServerList.Menu
+        var serverListMenu: multi.classes.ServerList.Menu
     }
 }
 
@@ -118,13 +118,13 @@ const menuId = 'multibakery_login'
 prestart(() => {
     if (!REMOTE) return
 
-    multi.class.ServerList = {} as any
+    multi.classes.ServerList = {} as any
 
-    multi.class.ServerList.Menu = sc.ListInfoMenu.extend({
+    multi.classes.ServerList.Menu = sc.ListInfoMenu.extend({
         observers: [],
         init() {
             sc.serverListMenu = this
-            this.parent(new multi.class.ServerList.List(), undefined, true)
+            this.parent(new multi.classes.ServerList.List(), undefined, true)
 
             this.list.setPos(9, 23)
 
@@ -305,7 +305,7 @@ prestart(() => {
     sc.MENU_SUBMENU.MULTIBAKERY_LOGIN = 378943
 
     sc.SUB_MENU_INFO[sc.MENU_SUBMENU.MULTIBAKERY_LOGIN] = {
-        Clazz: multi.class.ServerList.Menu,
+        Clazz: multi.classes.ServerList.Menu,
         name: menuId,
     }
 }, 10)

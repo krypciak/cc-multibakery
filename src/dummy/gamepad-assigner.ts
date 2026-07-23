@@ -80,17 +80,17 @@ class GamepadAssigner {
     }
 }
 declare global {
-    namespace multi.class {
+    namespace multi.classes {
         var gamepadAssigner: GamepadAssigner
     }
 }
 prestart(() => {
-    multi.class.gamepadAssigner = new GamepadAssigner()
+    multi.classes.gamepadAssigner = new GamepadAssigner()
     /* initialize needs to be called in server.ts */
 })
 
 declare global {
-    namespace multi.class {
+    namespace multi.classes {
         interface SingleGamepadManager extends ig.GamepadManager {
             setSingleGamepad(this: this, gamepad: ig.Gamepad): void
             clearSingleGamepad(this: this): void
@@ -102,7 +102,7 @@ declare global {
     }
 }
 prestart(() => {
-    multi.class.SingleGamepadManager = ig.GamepadManager.extend({
+    multi.classes.SingleGamepadManager = ig.GamepadManager.extend({
         init() {
             this.activeGamepads = []
             this.clearSingleGamepad()

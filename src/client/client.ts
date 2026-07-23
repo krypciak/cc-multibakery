@@ -92,7 +92,7 @@ export class Client extends InstanceUpdateable {
             this.inst.ig.input = puppet.mainInput
             this.inst.ig.gamepad = puppet.mainGamepadManager
         } else if (this.settings.inputType == 'clone') {
-            this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
+            this.inst.ig.gamepad = new multi.classes.SingleGamepadManager()
             inputManager = new dummy.input.Clone.InputManager(
                 this.inst.ig.input,
                 this.inst.ig.gamepad,

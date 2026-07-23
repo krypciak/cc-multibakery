@@ -184,7 +184,7 @@ prestart(() => {
                 .map(a => a.info)
 
             for (const playerInfo of playerList) {
-                const button = new multi.class.SocialEntryButton(playerInfo)
+                const button = new multi.classes.SocialEntryButton(playerInfo)
                 list.addButton(button)
             }
         },
@@ -266,7 +266,7 @@ prestart(() => {
                 return
             }
 
-            assert(button instanceof multi.class.SocialEntryButton)
+            assert(button instanceof multi.classes.SocialEntryButton)
             const clickedPlayerInfo = button.playerInfo
             const clickedParty = multi.server.party.getPartyOfUsername(clickedPlayerInfo.username)
 
@@ -328,7 +328,7 @@ poststart(() => {
 })
 
 declare global {
-    namespace multi.class {
+    namespace multi.classes {
         interface SocialEntryButton extends sc.SocialEntryButton {
             playerInfo: PlayerInfoEntry
             partyText: sc.TextGui
@@ -340,7 +340,7 @@ declare global {
     }
 }
 prestart(() => {
-    multi.class.SocialEntryButton = sc.SocialEntryButton.extend({
+    multi.classes.SocialEntryButton = sc.SocialEntryButton.extend({
         init(playerInfo) {
             this.playerInfo = playerInfo
             const model = sc.party.models[playerInfo.character]
@@ -370,7 +370,7 @@ prestart(() => {
 prestart(() => {
     sc.SocialList.inject({
         onListEntrySelected(button) {
-            if (!(button instanceof multi.class.SocialEntryButton)) return this.parent(button)
+            if (!(button instanceof multi.classes.SocialEntryButton)) return this.parent(button)
             sc.menu.setSynopInfo(button.playerInfo)
         },
     })
@@ -437,7 +437,7 @@ declare global {
             thisFramePartyMembersUpdated: boolean
 
             addEntryGui(this: this, gui: sc.SocialPartyMember, y: number, skipTransition?: Nullable<boolean>): number
-            createPlayerEntryGui(this: this, username: Username, isFirst: boolean): multi.class.SocialPartyMember
+            createPlayerEntryGui(this: this, username: Username, isFirst: boolean): multi.classes.SocialPartyMember
             createVanillaMemberEntryGui(this: this, modelName: string): sc.SocialPartyMember
             updateScroll(this: this, y: number): void
         }
@@ -488,7 +488,7 @@ prestart(() => {
         },
         createPlayerEntryGui(username, isFirst) {
             const playerInfo = multi.server.getPlayerInfoOf(username)
-            const gui = new multi.class.SocialPartyMember(isFirst, playerInfo)
+            const gui = new multi.classes.SocialPartyMember(isFirst, playerInfo)
             return gui
         },
         createVanillaMemberEntryGui(modelName) {
@@ -582,7 +582,7 @@ prestart(() => {
 })
 
 declare global {
-    namespace multi.class {
+    namespace multi.classes {
         interface SocialPartyMember extends sc.SocialPartyMember {}
         interface SocialPartyMemberConstructor extends ImpactClass<SocialPartyMember> {
             new (isFirst: boolean, playerInfo: PlayerInfoEntry): SocialPartyMember
@@ -591,7 +591,7 @@ declare global {
     }
 }
 prestart(() => {
-    multi.class.SocialPartyMember = sc.SocialPartyMember.extend({
+    multi.classes.SocialPartyMember = sc.SocialPartyMember.extend({
         init(isFirst, playerInfo) {
             const model = sc.party.models[playerInfo.character]
             this.parent(isFirst, model, playerInfo.username)
