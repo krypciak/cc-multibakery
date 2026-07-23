@@ -9,7 +9,13 @@ export function isModVersionEntry(data: unknown): data is ModVersionEntry {
     return true
 }
 export type AddonId =
-    'fish-gear' | 'flying-hedgehag' | 'snowman-tank' | 'scorpion-robo' | 'post-game' | 'ninja-skin' | 'manlea'
+    | 'fish-gear'
+    | 'flying-hedgehag'
+    | 'snowman-tank'
+    | 'scorpion-robo'
+    | 'post-game'
+    | 'ninja-skin'
+    | 'manlea'
 
 export interface ModCompatibilityList {
     required: ModVersionEntry[]

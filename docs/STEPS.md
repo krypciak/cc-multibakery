@@ -1,18 +1,20 @@
 # Steps
 
-Recommend to read [cc-krypek-lib](https://github.com/krypciak/cc-krypek-lib?tab=readme-ov-file#for-mod-developers) documentation beforehand.  
+Recommend to read [cc-krypek-lib](https://github.com/krypciak/cc-krypek-lib?tab=readme-ov-file#for-mod-developers) documentation beforehand.
 
 ## Pvp related steps
 
 ### `ig.EVENT_STEP.ADD_PLAYERS_TO_PVP`
 
 Given players, retrieves their parties and adds those parties to pvp.  
-Pvp has to be off when calling this step.  
+Pvp has to be off when calling this step.
 
 Settings:
+
 - `players` (`ig.Event.ArrayExpression<dummy.DummyPlayer>`) - array of players
 
-Examples:  
+Examples:
+
 ```json
 { "type": "COMMENT", "text": "ran in a client instance, add the player's party to pvp" },
 { "type": "ADD_PLAYERS_TO_PVP", "players": { "varName": "party.combatants.players" } }
@@ -21,9 +23,10 @@ Examples:
 ### `ig.EVENT_STEP.CLEAR_MULTIPLAYER_PVP_PARTIES`
 
 Clear selected parties for pvp.  
-Pvp has to be off when calling this step.  
+Pvp has to be off when calling this step.
 
-Examples:  
+Examples:
+
 ```json
 { "type": "CLEAR_MULTIPLAYER_PVP_PARTIES" } }
 ```
@@ -31,12 +34,14 @@ Examples:
 ### `ig.EVENT_STEP.START_MULTIPLAYER_PVP_BATTLE`
 
 Start multiplayer pvp battle.  
-If there are less than 2 parties selected for pvp, the game will crash.  
+If there are less than 2 parties selected for pvp, the game will crash.
 
 Settings:
+
 - `winPoints` (`ig.Event.NumberExpression`) - number of win points
 
-Examples:  
+Examples:
+
 ```json
 { "type": "START_MULTIPLAYER_PVP_BATTLE", "winPoints": { "varName": "tmp.pvpWinPoints" } },
 ```
@@ -51,12 +56,14 @@ If you want your steps to also work when the server is off, avoid using multibak
 so for example instead of `multi.playersOnMap` use cc-krypek-lib variable `game.entities.type.Player`.
 
 Settings:
+
 - `players` (`ig.Event.ArrayExpression<dummy.DummyPlayer>`) - array of players
 - `steps` (`ig.EventStepBase[]`) - steps to run
 - `noWait` (`boolean`) (optional, default = `false`) - whether to wait for all `steps` to finish in all client instances
 - `indexVarName` (`string`) (optional) - if set, set variable named `indexVarName` to the index of the current player in the array
 
-Examples:  
+Examples:
+
 ```json
 { "type": "COMMENT", "text": "this teleports all players on the current map to specific coordinates" },
 {
@@ -86,6 +93,7 @@ Examples:
 ### `ig.EVENT_STEP.GODMODE`
 
 Gives the player op stats:
+
 - all items
 - equip end game gear
 - lvl 99
@@ -97,9 +105,11 @@ Gives the player op stats:
 - gives party member entries
 
 Settings:
+
 - `circuitBranch` (`ig.Event`) (optional) - what skill circuit branch to use
 
-Examples:  
+Examples:
+
 ```json
 { "type": "GODMODE" },
 { "type": "GODMODE", "circuitBranch": true },

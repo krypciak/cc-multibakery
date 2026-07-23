@@ -19,6 +19,25 @@
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js",
         "serverBun": "bun run scripts/server.js"
     },
+    "dependencies": {
+        "@types/chrome": "^0.2.2",
+        "@types/jquery": "^4.0.1",
+        "@types/node": "^26.1.0",
+        "@types/ws": "^8.18.1",
+        "cc-instanceinator": "github:krypciak/cc-instanceinator",
+        "cc-krypek-lib": "github:krypciak/cc-krypek-lib",
+        "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
+        "ccmodmanager": "github:CCDirectLink/CCModManager",
+        "crosscode-web": "github:krypciak/crosscode-web",
+        "crossnode": "github:krypciak/crossnode",
+        "nax-ccuilib": "github:krypciak/nax-ccuilib",
+        "socket.io": "^4.8.3",
+        "socket.io-adapter": "^2.5.8",
+        "socket.io-client": "^4.8.3",
+        "spdy": "^4.0.2",
+        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
+        "ws": "^8.21.0"
+    },
     "devDependencies": {
         "@types/bun": "^1.3.14",
         "bun": "^1.3.14",
@@ -28,24 +47,5 @@
         "oxfmt": "^0.60.0",
         "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^6.0.3"
-    },
-    "dependencies": {
-        "@types/chrome": "^0.2.2",
-        "@types/jquery": "^4.0.1",
-        "@types/node": "^26.1.0",
-        "@types/ws": "^8.18.1",
-        "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
-        "ws": "^8.21.0",
-        "socket.io": "^4.8.3",
-        "socket.io-adapter": "^2.5.8",
-        "socket.io-client": "^4.8.3",
-        "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
-        "spdy": "^4.0.2",
-        "nax-ccuilib": "github:krypciak/nax-ccuilib",
-        "cc-instanceinator": "github:krypciak/cc-instanceinator",
-        "cc-krypek-lib": "github:krypciak/cc-krypek-lib",
-        "ccmodmanager": "github:CCDirectLink/CCModManager",
-        "crosscode-web": "github:krypciak/crosscode-web",
-        "crossnode": "github:krypciak/crossnode"
     }
 }

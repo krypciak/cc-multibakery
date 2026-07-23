@@ -33,15 +33,14 @@ On the discord server above.
 
 If your friends are not on the same local network, you need to make your server accessible to them. You can do this in one of two ways:
 
-* **Expose the server to the internet** using a tunneling or port-forwarding solution such as playit.gg or ngrok
-* **Create a virtual LAN** using a tool such as Tailscale or Hamachi (please don't actually use Hamachi), allowing everyone to connect as if they were on the same local network
+- **Expose the server to the internet** using a tunneling or port-forwarding solution such as playit.gg or ngrok
+- **Create a virtual LAN** using a tool such as Tailscale or Hamachi (please don't actually use Hamachi), allowing everyone to connect as if they were on the same local network
 
 Once connected through one of these methods, your friends should be able to find or connect to your server using the same process as LAN players
 
-
 ## Documentation
 
-Recommend reading in order  
+Recommend reading in order
 
 - [SERVER-ARCHITECTURE.md](/docs/SERVER-ARCHITECTURE.md)
 - [GAME-VARIABLES.md](/docs/GAME-VARIABLES.md)

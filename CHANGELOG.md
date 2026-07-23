@@ -30,10 +30,10 @@
 - Fix title screen button gamepad focus logic
 - Fix ig.ENTITY.Prop permaEffect duplicating on remote
 - Fix combat art crashes:
-  - triblader2 SHOCK ATTACK B 1 Plasma Thrust
-  - triblader2 HEAT DASH B 2 Trailblazer
-  - Hexacast1 SHOCK ATTACK A 3 Stasis Storm
-  - Hexacast1 HEAT ATTACK B 3 Calamity Beacon
+    - triblader2 SHOCK ATTACK B 1 Plasma Thrust
+    - triblader2 HEAT DASH B 2 Trailblazer
+    - Hexacast1 SHOCK ATTACK A 3 Stasis Storm
+    - Hexacast1 HEAT ATTACK B 3 Calamity Beacon
 - Don't save the game when running on remote server
 - Don't automaticaly save the game when automatic saving is disabled
 - Fix ig.ENTITY.TouchTrigger logic with multiple players
@@ -359,7 +359,7 @@
 
 ## [0.5.6] 2025-10-31
 
-### Added 
+### Added
 
 - Add map, area and landmark remote state
 - Add ig.ENTITY.DynamicPlatform remote state
@@ -412,6 +412,9 @@
 - Fix rare remote server crash on ig.ENTITY.Ball despawn
 
 ## [0.5.3] 2025-10-29
+
 ## [0.5.2] 2025-10-29
+
 ## [0.5.1] 2025-10-04
+
 ## [0.5.0] 2025-10-04
