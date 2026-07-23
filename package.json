@@ -14,7 +14,7 @@
         "buildPhysicsNetless": "bun build/build.ts build dev=false minifySyntax minifyWhitespace remote=false physicsnet=false",
         "buildCrossnode": "bun build/build.ts build dev=false remote=false target=esnext crossnode",
         "buildTest": "bun build/build.ts build dev target=esnext crossnode test",
-        "format": "prettier ./src -w",
+        "format": "oxfmt",
         "test": "bun test --parallel --isolate --concurrent",
         "server": "NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js",
         "serverBun": "bun run scripts/server.js"
@@ -25,7 +25,7 @@
         "esbuild": "^0.28.1",
         "fflate": "^0.8.3",
         "node": "^26.4.0",
-        "prettier": "3.9.4",
+        "oxfmt": "^0.60.0",
         "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^6.0.3"
     },
@@ -39,11 +39,11 @@
         "socket.io": "^4.8.3",
         "socket.io-adapter": "^2.5.8",
         "socket.io-client": "^4.8.3",
+        "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
         "spdy": "^4.0.2",
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "cc-krypek-lib": "github:krypciak/cc-krypek-lib",
-        "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
         "ccmodmanager": "github:CCDirectLink/CCModManager",
         "crosscode-web": "github:krypciak/crosscode-web",
         "crossnode": "github:krypciak/crossnode"
