@@ -1,7 +1,7 @@
 allowBuilds:
-  esbuild: true
-  bun: true
-  node: true
+    esbuild: true
+    bun: true
+    node: true
 overrides:
-  ws: ^8.0.0
+    ws: ^8.0.0
 blockExoticSubdeps: false
