@@ -1,9 +1,7 @@
 {
     "compilerOptions": {
         "target": "esnext",
-        "types": [
-            "node",
-        ],
+        "types": ["node"],
         "module": "preserve",
         "rootDir": ".",
         "moduleResolution": "bundler",
