@@ -114,13 +114,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.updateMusicInstance()
 
         removeAddon(this.inst.ig.gamepad, this.inst.ig.game)
-        this.inst.ig.gamepad = new multi.class.SingleGamepadManager()
+        this.inst.ig.gamepad = new multi.classes.SingleGamepadManager()
 
         createServerTpsLabel(this.inst)
 
         startGameLoop(useAnimationFrame)
 
-        multi.class.gamepadAssigner.initialize()
+        multi.classes.gamepadAssigner.initialize()
     }
 
     protected async startShell() {
@@ -159,7 +159,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
 
     runUpdate() {
         this.updateUpdateDelayAvg()
-        multi.class.gamepadAssigner.update()
+        multi.classes.gamepadAssigner.update()
 
         this.preUpdateFor([this])
         this.preUpdateFor(this.maps.values())
@@ -331,7 +331,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         this.baseInst.apply()
         super.destroy()
 
-        multi.class.gamepadAssigner.clearAllState()
+        multi.classes.gamepadAssigner.clearAllState()
 
         this.baseInst.display = true
         instanceinator.displayId = modmanager.options['cc-instanceinator'].displayId

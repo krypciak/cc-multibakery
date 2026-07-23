@@ -5,7 +5,7 @@ import type { Client } from './client'
 
 function getGamepadManager(client: Client) {
     const gamepadManager = client.inst.ig.gamepad
-    assert(gamepadManager instanceof multi.class.SingleGamepadManager)
+    assert(gamepadManager instanceof multi.classes.SingleGamepadManager)
     return gamepadManager
 }
 
@@ -22,7 +22,7 @@ function waitForGamepad(client: Client) {
     runTask(client.inst, () => {
         sc.inputForcer.setEntry('WAIT_FOR_GAMEPAD', 'Waiting for gamepad', ' ', ' ')
     })
-    multi.class.gamepadAssigner
+    multi.classes.gamepadAssigner
         .requestGamepad(client.inst.id, () => {
             clearGamepad(client, true)
         })

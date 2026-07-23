@@ -14,7 +14,7 @@ import type { MultiPageButtonGuiButtons } from 'cc-krypek-lib/src/input-field-di
 
 declare global {
     namespace ig {
-        var multibakeryManageServerPopup: multi.class.ManageServerPopup | undefined
+        var multibakeryManageServerPopup: multi.classes.ManageServerPopup | undefined
     }
 }
 export async function openManagerServerPopup(immediately?: boolean) {
@@ -23,7 +23,7 @@ export async function openManagerServerPopup(immediately?: boolean) {
     } else {
         if (!multi.server) await checkNwjsVerionAndCreatePopupIfProblemsFound()
     }
-    ig.multibakeryManageServerPopup = new multi.class.ManageServerPopup()
+    ig.multibakeryManageServerPopup = new multi.classes.ManageServerPopup()
     ig.multibakeryManageServerPopup.openMenu()
     if (immediately) {
         ig.multibakeryManageServerPopup.doStateTransition('DEFAULT', true)
@@ -36,7 +36,7 @@ function getIconFromInputType(inputType: ig.INPUT_DEVICES | undefined): string {
 }
 
 declare global {
-    namespace multi.class {
+    namespace multi.classes {
         interface ManageServerPopup extends modmanager.gui.MultiPageButtonBoxGui {
             updateContent(this: this): void
         }
@@ -87,7 +87,7 @@ class InputButton {
 }
 
 prestart(() => {
-    multi.class.ManageServerPopup = modmanager.gui.MultiPageButtonBoxGui.extend({
+    multi.classes.ManageServerPopup = modmanager.gui.MultiPageButtonBoxGui.extend({
         init() {
             const self = this
             const buttons: MultiPageButtonGuiButtons = []

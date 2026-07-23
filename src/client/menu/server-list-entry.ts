@@ -19,7 +19,7 @@ interface ServerImageConfig {
 }
 
 declare global {
-    namespace multi.class.ServerList {
+    namespace multi.classes.ServerList {
         export interface ListEntry extends ig.FocusGui, sc.Model.Observer {
             ninepatch: ig.NinePatch
             serverInfo: NetServerInfoRemote
@@ -53,7 +53,7 @@ declare global {
 
 if (REMOTE) {
     prestart(() => {
-        multi.class.ServerList.ListEntry = ig.FocusGui.extend({
+        multi.classes.ServerList.ListEntry = ig.FocusGui.extend({
             ninepatch: new ig.NinePatch('media/gui/CCModManager.png', {
                 width: 42,
                 height: 26,

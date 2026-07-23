@@ -36,7 +36,7 @@ declare global {
 
 function initMultiplayer(): typeof window.multi {
     return {
-        class: {} as any,
+        classes: {} as any,
 
         setServer(server: Server) {
             assert(!multi.server)

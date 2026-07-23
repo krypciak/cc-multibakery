@@ -6,7 +6,7 @@ import type { NetServerInfoRemote } from './server-info-types'
 import './server-list-entry'
 
 declare global {
-    namespace multi.class.ServerList {
+    namespace multi.classes.ServerList {
         enum SORT_ORDER {
             NAME,
         }
@@ -22,22 +22,22 @@ declare global {
                 populateFunc: (
                     list: sc.ButtonListBox,
                     buttonGroup: sc.ButtonGroup,
-                    sort: multi.class.ServerList.SORT_ORDER
+                    sort: multi.classes.ServerList.SORT_ORDER
                 ) => void
             }[]
-            currentSort: multi.class.ServerList.SORT_ORDER
+            currentSort: multi.classes.ServerList.SORT_ORDER
             discoveredServers: NetServerInfoRemote[]
 
-            sortModEntries(this: this, servers: NetServerInfoRemote[], sort: multi.class.ServerList.SORT_ORDER): void
+            sortModEntries(this: this, servers: NetServerInfoRemote[], sort: multi.classes.ServerList.SORT_ORDER): void
             populateServers(
                 this: this,
                 list: sc.ButtonListBox,
                 buttonGroup: sc.ButtonGroup,
-                sort: multi.class.ServerList.SORT_ORDER
+                sort: multi.classes.ServerList.SORT_ORDER
             ): void
             populateListFromServers(this: this, servers: NetServerInfoRemote[], list: sc.ButtonListBox): void
             reloadEntries(this: this): void
-            getEntryList(this: this, excludeDiscovered?: boolean): multi.class.ServerList.ListEntry[]
+            getEntryList(this: this, excludeDiscovered?: boolean): multi.classes.ServerList.ListEntry[]
             getCurrentlyFocusedEntryIndex(this: this): number
         }
         interface ListConstructor extends ImpactClass<List> {
@@ -50,16 +50,16 @@ declare global {
 prestart(() => {
     if (!REMOTE) return
 
-    multi.class.ServerList.SORT_ORDER = {
+    multi.classes.ServerList.SORT_ORDER = {
         NAME: 0,
     } as const
 
-    multi.class.ServerList.TAB_INDEXES = {
+    multi.classes.ServerList.TAB_INDEXES = {
         SERVERS: 0,
     } as const
 
-    multi.class.ServerList.List = sc.ListTabbedPane.extend({
-        currentSort: multi.class.ServerList.SORT_ORDER.NAME,
+    multi.classes.ServerList.List = sc.ListTabbedPane.extend({
+        currentSort: multi.classes.ServerList.SORT_ORDER.NAME,
         init() {
             this.parent(false)
 
@@ -84,7 +84,7 @@ prestart(() => {
         show(_tabIndex) {
             this.parent()
 
-            this.setTab(multi.class.ServerList.TAB_INDEXES.SERVERS, true, { skipSounds: true })
+            this.setTab(multi.classes.ServerList.TAB_INDEXES.SERVERS, true, { skipSounds: true })
             this.rearrangeTabs()
 
             ig.interact.setBlockDelay(0.2)
@@ -136,7 +136,7 @@ prestart(() => {
         modelChanged(model, message, data) {
             if (model == sc.menu) {
                 if (message == sc.MENU_EVENT.SORT_LIST) {
-                    const sort = ((data as sc.ButtonGui).data as any).sortType as multi.class.ServerList.SORT_ORDER
+                    const sort = ((data as sc.ButtonGui).data as any).sortType as multi.classes.ServerList.SORT_ORDER
                     this.currentSort = sort
                     this.reloadEntries()
                 }
@@ -152,7 +152,7 @@ prestart(() => {
         },
 
         sortModEntries(servers, sort) {
-            if (sort == multi.class.ServerList.SORT_ORDER.NAME) {
+            if (sort == multi.classes.ServerList.SORT_ORDER.NAME) {
                 servers.sort((a, b) => {
                     const titleA = a.details?.title ?? 'ZZZ'
                     const titleB = b.details?.title ?? 'ZZZ'
@@ -169,7 +169,7 @@ prestart(() => {
         populateListFromServers(servers, list) {
             for (let i = 0; i < servers.length; i++) {
                 const server = servers[i]
-                const newModEntry = new multi.class.ServerList.ListEntry(server, this.hook.size.x)
+                const newModEntry = new multi.classes.ServerList.ListEntry(server, this.hook.size.x)
                 const x = 0
                 list.addButton(newModEntry, undefined, x)
             }
@@ -179,7 +179,7 @@ prestart(() => {
             this.setTab(this.currentTabIndex, true, { skipSounds: true })
         },
         getEntryList(excludeDiscovered) {
-            let entries = this.currentList!.buttonGroup.elements[0] as multi.class.ServerList.ListEntry[]
+            let entries = this.currentList!.buttonGroup.elements[0] as multi.classes.ServerList.ListEntry[]
             if (excludeDiscovered) entries = entries.slice(0, -this.discoveredServers.length)
             return entries
         },
