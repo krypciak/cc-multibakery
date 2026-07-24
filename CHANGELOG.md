@@ -12,6 +12,7 @@
 - Add ig.ENTITY.SteamTurnout remote state
 - Add ig.ENTITY.SteamOven remote state
 - Add sc.SteamGlowEntity remote state
+- Add ig.ENTITY.SteamPipe remote state
 
 ### Fixed
 
