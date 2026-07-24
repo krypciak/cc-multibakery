@@ -47,7 +47,7 @@ prestart(() => {
         const { x, y, z } = state.pos
 
         const combatant = ig.game.entitiesByNetid[state.combatant]
-        assert(combatant, `target not found:  ${state.combatant}`)
+        assert(combatant, `sc.CombatantProxyEntity#create target not found:  ${state.combatant}`)
         assert(combatant instanceof sc.BasicCombatant)
 
         const proxy = resolveProxyFromType(state.proxyType)

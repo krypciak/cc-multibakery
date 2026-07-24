@@ -52,16 +52,18 @@ function setEntityState(this: ig.ENTITY.Effect, state: Return) {
     }
 }
 
+const targetNotFoundIgnoreEffectNames = new Set(['ballTrailCold'])
 function resolveObjects(state: Return) {
     let target
     if (state.target) {
         target = ig.game.entitiesByNetid[state.target]
-        if (!target) console.warn('target not found:', state.target)
+        if (!target && !targetNotFoundIgnoreEffectNames.has(state.effectName ?? ''))
+            console.warn('resolveObjects target not found:', state.target)
     }
     let target2
     if (state.target2) {
         target2 = ig.game.entitiesByNetid[state.target2]
-        if (!target2) console.warn('target2 not found:', state.target2)
+        if (!target2) console.warn('resolveObjects target2 not found:', state.target2)
     }
     assert(state.sheetPath)
     const sheet = new ig.EffectSheet(state.sheetPath)
