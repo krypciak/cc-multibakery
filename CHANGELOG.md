@@ -9,6 +9,7 @@
 - Added FAQ to github readme
 - Add sc.WaterBubbleEntity remote state
 - Add sc.IceDiskEntity remote state
+- Add ig.ENTITY.SteamTurnout remote state
 
 ### Fixed
 
