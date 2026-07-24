@@ -98,7 +98,7 @@ export class SocketIoNetTransportClient implements NetTransportClient {
 
         const url = getServerUrl(connectionSettings)
         this.socket = io(url, {
-            secure: true,
+            secure: connectionSettings.https,
             rejectUnauthorized: false,
             parser: this.settings.disableBinaryParser ? undefined : binaryParser,
         }) as ClientSocket

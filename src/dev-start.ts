@@ -219,6 +219,7 @@ poststart(() => {
             const connection: RemoteServerConnectionSettings = {
                 host: '127.0.0.1',
                 port: DEFAULT_HTTP_PORT,
+                https: true,
             }
             const { details } = (await getServerDetails(connection)) ?? {}
             if (details) {
