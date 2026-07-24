@@ -2,6 +2,7 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././states'
+import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
 
 declare global {
     namespace sc {
@@ -38,3 +39,7 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: sc.SteamGlowEntity })
 }, 2)
+
+prestart(() => {
+    sc.SteamGlowEntity.inject({ stop: universalPlayerEntityFix() })
+})

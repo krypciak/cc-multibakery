@@ -24,6 +24,7 @@
 - Fix jetpack mod on remote
 - Fix crash on steam pipe activation
 - Fix jump panels being active even when condition is false
+- Fix crash when hitting bomb with heat element
 
 ## [0.8.1] 2026-07-02
 

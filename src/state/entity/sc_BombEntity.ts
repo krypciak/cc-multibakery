@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././states'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
 
 declare global {
     namespace sc {
@@ -41,3 +42,12 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: sc.BombEntity })
 }, 2)
+
+prestart(() => {
+    sc.BombEntity.inject({
+        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
+        explode: universalPlayerEntityFix(function () {
+            return [this.combatant]
+        }),
+    })
+})
