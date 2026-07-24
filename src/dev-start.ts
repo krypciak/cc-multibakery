@@ -13,6 +13,7 @@ import { profile } from './misc/profile-decorator'
 const defaultMap: MapTpInfo = {
     map: 'multibakery/dev',
     marker: 'entrance',
+    // map: 'co-op-dng/intro-rooms/room-4',
 
     // map: 'multibakery/mba-pvp',
     // marker: 'to_pvp',
