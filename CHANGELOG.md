@@ -11,6 +11,7 @@
 - Add sc.IceDiskEntity remote state
 - Add ig.ENTITY.SteamTurnout remote state
 - Add ig.ENTITY.SteamOven remote state
+- Add sc.SteamGlowEntity remote state
 
 ### Fixed
 
