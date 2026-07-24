@@ -14,6 +14,7 @@
 - Add sc.SteamGlowEntity remote state
 - Add ig.ENTITY.SteamPipe remote state
 - Add ig.ENTITY.WaterBlock remote state
+- Add ig.ENTITY.Magnet remote state
 
 ### Fixed
 
