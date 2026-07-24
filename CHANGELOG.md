@@ -13,6 +13,7 @@
 - Fix entities on remote not getting killed after a while
 - Fix crash when player switches maps and entity from older map still has action attached
 - Improve crosscode-web android functionality
+- Add sc.WaterBubbleEntity remote functionality
 
 ## [0.8.1] 2026-07-02
 
