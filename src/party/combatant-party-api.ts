@@ -99,10 +99,25 @@ prestart(() => {
 // ig.GUI.StatusBar#update idk maybe fine?
 // ig.GUI.StatusBar#_drawHpBar idk maybe fine?
 // sc.ENEMY_REACTION.HIT_REACTION#hitApply arena players shoud just have sc.COMBATANT_PART.PLAYER anyways
-// ig.ENTITY.JumpPanel#onTopEntityJump just effect stuff
-// ig.ENTITY.JumpPanelFar#onTopEntityJumpFar just effect stuff
-// ig.ENTITY.JumpPanelFloat#collideWith just effect stuff?
 prestart(() => {
+    ig.ENTITY.JumpPanel.inject({
+        onTopEntityJump(actor) {
+            if (!(actor instanceof ig.ENTITY.Player)) return this.parent(actor)
+            return playerPartyFix(actor.party, () => this.parent(actor))
+        },
+    })
+    ig.ENTITY.JumpPanelFar.inject({
+        onTopEntityJumpFar(actor) {
+            if (!(actor instanceof ig.ENTITY.Player)) return this.parent(actor)
+            return playerPartyFix(actor.party, () => this.parent(actor))
+        },
+    })
+    ig.ENTITY.JumpPanelFloat.inject({
+        collideWith(actor, dir) {
+            if (!(actor instanceof ig.ENTITY.Player)) return this.parent(actor, dir)
+            return playerPartyFix(actor.party, () => this.parent(actor, dir))
+        },
+    })
     sc.WaterBubbleEntity.inject({
         ballHit(ballLike, blockDir) {
             return playerPartyFix(ballLike.party, () => this.parent(ballLike, blockDir))

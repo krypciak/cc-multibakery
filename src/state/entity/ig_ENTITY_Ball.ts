@@ -63,14 +63,16 @@ prestart(() => {
         const combatant = ig.game.entitiesByNetid[state.combatant]
         assert(combatant)
         assert(combatant instanceof ig.ENTITY.Combatant)
-        assert(combatant.params)
+        // params can be null when the enemy data isnt loaded yet,
+        // but that doesnt seem to cause issues
+        // assert(combatant.params)
 
         assert(state.vel)
 
         const settings: ig.ENTITY.Ball.Settings = {
             dir: state.vel,
             ballInfo,
-            params: combatant.params,
+            params: combatant.params!,
             party: combatant.party,
             combatant,
             netid,
