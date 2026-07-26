@@ -27,6 +27,7 @@
 - Fix crash when hitting bomb with heat element
 - Fix crash when ig.ENTITY.Combatant#show is called from client instance
 - Fix crash due to invalid ig.ENTITY.HitNumber.spawnHitNumber 8th type
+- Fix remote crash when combatant proxy has collaboration break type
 
 ## [0.8.1] 2026-07-02
 

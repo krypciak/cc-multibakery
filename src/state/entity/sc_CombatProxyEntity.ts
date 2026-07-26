@@ -70,6 +70,14 @@ prestart(() => {
 
     if (REMOTE) {
         sc.CombatProxyEntity.inject({
+            init(x, y, z, settings) {
+                if (!isRemote(multi.server) || !('collaboration' in settings.combatant))
+                    return this.parent(x, y, z, settings)
+
+                settings.combatant.collaboration = { addCollabAttached() {} }
+                this.parent(x, y, z, settings)
+                settings.combatant.collaboration = undefined
+            },
             update() {
                 if (!isRemote(multi.server)) return this.parent()
                 ig.AnimatedEntity.prototype.update.call(this)
