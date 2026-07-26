@@ -16,6 +16,7 @@
 - Add ig.ENTITY.WaterBlock remote state
 - Add ig.ENTITY.Magnet remote state
 - Add ig.ENTITY.SlidingBlock remote state
+- Add ig.ENTITY.BallChanger remote state
 
 ### Fixed
 
