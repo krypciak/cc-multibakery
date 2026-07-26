@@ -14,6 +14,7 @@ const defaultMap: MapTpInfo = {
     map: 'multibakery/dev',
     marker: 'entrance',
     // map: 'co-op-dng/intro-rooms/room-4',
+    // map: 'co-op-dng/template',
 
     // map: 'multibakery/mba-pvp',
     // marker: 'to_pvp',
