@@ -20,43 +20,44 @@ prestart(() => {
             this.statusGuis = {}
         },
         show(noShowFx) {
-            this.parent(noShowFx)
-            if (!multi.server) return
+            if (!multi.server) return this.parent(noShowFx)
 
-            const map = ig.ccmap
-            assert(map)
+            const map = ig.mapShared.ccmap
+            runTask(ig.mapShared.ccmap.inst, () => {
+                this.parent(noShowFx)
 
-            this.statusGuis = {}
-            runTasks(map.getClientInstances(), () => this.createStatusGui())
-            this.statusGuis[instanceinator.id] = this.statusGui
+                this.statusGuis = {}
+                runTasks(map.getClientInstances(), () => this.createStatusGui())
+                this.statusGuis[instanceinator.id] = this.statusGui
 
-            const self = this
-            map.onLinkChange.push(this)
+                const self = this
+                map.onLinkChange.push(this)
 
-            this.statusGui = new Proxy(this.statusGui, {
-                get(target, p, _receiver) {
-                    const key = p as keyof ig.GUI.StatusBar
-                    const obj = target[key]
+                this.statusGui = new Proxy(this.statusGui, {
+                    get(target, p, _receiver) {
+                        const key = p as keyof ig.GUI.StatusBar
+                        const obj = target[key]
 
-                    if (typeof obj == 'function') {
-                        return function (...args: unknown[]) {
-                            let ret: unknown
-                            for (const [id, gui] of Object.entries(self.statusGuis)) {
-                                const func = gui[key] as Function
-                                assert(typeof func === 'function' && func)
-                                const inst = instanceinator.instances[parseInt(id)]
-                                if (!inst) return
-                                ret = runTask(inst, () => func.call(gui, ...args))
+                        if (typeof obj == 'function') {
+                            return function (...args: unknown[]) {
+                                let ret: unknown
+                                for (const [id, gui] of Object.entries(self.statusGuis)) {
+                                    const func = gui[key] as Function
+                                    assert(typeof func === 'function' && func)
+                                    const inst = instanceinator.instances[parseInt(id)]
+                                    if (!inst) return
+                                    ret = runTask(inst, () => func.call(gui, ...args))
+                                }
+                                if (key == 'remove') {
+                                    self.statusGuis = {}
+                                }
+                                return ret
                             }
-                            if (key == 'remove') {
-                                self.statusGuis = {}
-                            }
-                            return ret
+                        } else {
+                            return obj
                         }
-                    } else {
-                        return obj
-                    }
-                },
+                    },
+                })
             })
         },
         createStatusGui() {
@@ -70,8 +71,7 @@ prestart(() => {
             this.parent()
             if (!multi.server) return
 
-            const map = ig.ccmap
-            assert(map)
+            const map = ig.mapShared.ccmap
             map.onLinkChange.erase(this)
         },
         onKill(levelChange) {
