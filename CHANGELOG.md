@@ -17,6 +17,7 @@
 - Add ig.ENTITY.Magnet remote state
 - Add ig.ENTITY.SlidingBlock remote state
 - Add ig.ENTITY.BallChanger remote state
+- Add ig.ENTITY.ElementPole remote state
 
 ### Fixed
 
