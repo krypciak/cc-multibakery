@@ -21,6 +21,10 @@ export function packetDeepEqual(a: any, b: any, map = new WeakMap(), path = '') 
     if (a === null && b === 0) return true
     if (a === null && b === false) return true
 
+    if (((typeof a == 'string' && typeof b == 'number') || (typeof a == 'number' && typeof b == 'string')) && a == b) {
+        return true
+    }
+
     if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) {
         console.warn('packet decode mismatch at', path, 'different types', 'a:', a, 'b:', b)
         debugger
