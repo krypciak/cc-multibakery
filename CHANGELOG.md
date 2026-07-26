@@ -15,6 +15,7 @@
 - Add ig.ENTITY.SteamPipe remote state
 - Add ig.ENTITY.WaterBlock remote state
 - Add ig.ENTITY.Magnet remote state
+- Add ig.ENTITY.SlidingBlock remote state
 
 ### Fixed
 
