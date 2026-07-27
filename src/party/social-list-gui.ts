@@ -117,6 +117,9 @@ const popupConfigs: {
                 ownParty.players.includes(clickedPlayerInfo.username)
             )
         },
+        enabled(_clickedPlayerInfo, ownPlayerInfo, clickedParty, _ownParty) {
+            return ownPlayerInfo.username == clickedParty.owner
+        },
         execute(clickedPlayerInfo) {
             if (isRemote(multi.server)) return
             multi.server.party.leaveCurrentParty(clickedPlayerInfo.username)

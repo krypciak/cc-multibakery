@@ -15,6 +15,7 @@
 - Fix rare crash when entering a new map with EventTrigger with condition true
 - Fix invalid player head rendering on pvp gui when extendable-severed-heads is enabled
 - Fix duplicate player head rendering on pvp gui on remote
+- Disable "Kick from party" button when you're not a party owner
 
 ## [0.8.2] 2026-07-26
 
