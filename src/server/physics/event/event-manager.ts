@@ -37,18 +37,22 @@ prestart(() => {
                 return this.parent(...args)
             }
 
-            let player: ig.Entity | undefined
+            let player: dummy.DummyPlayer | undefined
             if (this.nextTriggeredBy) {
-                player = findSetByEntityByVars(this.nextTriggeredBy?.vars ?? []).filter(
+                player = findSetByEntityByVars(this.nextTriggeredBy.vars).filter(
                     e => e instanceof dummy.DummyPlayer
-                )[0]
+                )[0] as dummy.DummyPlayer | undefined
                 if (!player && isConditionTriggeredAtMapEnter(this.nextTriggeredBy.pretty)) {
-                    assert(ig.ccmap)
-                    assert(ig.ccmap.clients.length > 0)
-                    const pl = ig.ccmap.clients[0]
-                    // assert(pl.ready)
-                    assert(pl.dummy)
-                    player = pl.dummy
+                    if (ig.client) {
+                        player = ig.client.dummy
+                    } else {
+                        assert(ig.ccmap)
+                        assert(ig.ccmap.clients.length > 0)
+                        const pl = ig.ccmap.clients[0]
+                        // assert(pl.ready)
+                        assert(pl.dummy)
+                        player = pl.dummy
+                    }
                 }
             }
             if (!player) return this.parent(...args)
