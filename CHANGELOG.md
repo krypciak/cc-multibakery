@@ -3,6 +3,12 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Use websocket network transport by default
+- Add option Settings->Server->Use websocket transport
+
 ## [0.8.2] 2026-07-26
 
 ### Added

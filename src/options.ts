@@ -167,11 +167,28 @@ function registerOpts() {
                         description: 'Allow remote clients to find this server on a local network',
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
+                    serverTransortTypeInfo: {
+                        type: 'INFO',
+                        name:
+                            'Network transports:\n' +
+                            'socket.io - old, battle-tested\n' +
+                            'websocket - new, experimental, lightweight',
+                        description: '',
+                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
+                    },
+                    serverNetTransportUseWebsocket: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Use websocket transport',
+                        description: 'websocket is a new experimental alternative to socket.io',
+                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
+                    },
                 },
                 server: {
                     info: {
                         type: 'INFO',
                         name: `Advanced configuration below, don't touch if you don't know what you're doing!`,
+                        description: '',
                     },
                     serverDisplayServerInstance: {
                         type: 'CHECKBOX',

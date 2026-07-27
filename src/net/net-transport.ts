@@ -43,8 +43,6 @@ export interface NetTransport {
     getInfo(): string
 }
 
-export const defaultNetTransport: NetTransportType = 'socket.io'
-
 const netTransportMap = {
     'socket.io': { client: SocketIoNetTransportClient, server: SocketIoNetTransportServer },
     websocket: { client: WsNetTransportClient, server: WsNetTransportServer },

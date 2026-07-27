@@ -100,8 +100,8 @@ function createSettings(): PhysicsServerSettings {
                             },
                       pingTimeout: Infinity,
                       transport: {
-                          type: 'socket.io',
-                          // type: 'websocket',
+                          // type: 'socket.io',
+                          type: 'websocket',
                           // disableBinaryParser: true,
                       },
                   },

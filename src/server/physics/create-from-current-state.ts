@@ -2,7 +2,6 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../../options'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
 import { assert } from '../../misc/assert'
-import { defaultNetTransport } from '../../net/net-transport'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
@@ -46,7 +45,7 @@ export async function createPhysicsServerFromCurrentState() {
                               ? Infinity
                               : Opts.serverPingTimeout,
                       transport: {
-                          type: defaultNetTransport,
+                          type: Opts.serverNetTransportUseWebsocket ? 'websocket' : 'socket.io',
                       },
                   },
                   details: {
