@@ -67,9 +67,8 @@ const popupConfigs: {
             return clickedPlayerInfo.username == ownPlayerInfo.username && ownParty.owner == ownPlayerInfo.username
         },
         execute(_clickedPlayerInfo, _ownPlayerInfo, clickedParty) {
-            ig.mapShared.ignoreEventStepsCollection = true
-            runEvent(
-                new ig.Event({
+            runEvent({
+                event: new ig.Event({
                     steps: [
                         {
                             type: 'SHOW_INPUT_DIALOG',
@@ -81,6 +80,7 @@ const popupConfigs: {
                                 {
                                     type: 'RUN_JS_FUNCTION',
                                     func() {
+                                        if (isRemote(multi.server)) return
                                         const newTitle = ig.vars.get('tmp.newPartyName')
                                         assert(typeof newTitle === 'string')
                                         multi.server.party.changePartyTitle(clickedParty, newTitle)
@@ -90,9 +90,9 @@ const popupConfigs: {
                         },
                     ],
                 }),
-                ig.EventRunType.BLOCKING
-            )
-            ig.mapShared.ignoreEventStepsCollection = false
+                type: ig.EventRunType.BLOCKING,
+                ignoreEventStepsCollection: true,
+            })
         },
     },
     {

@@ -234,6 +234,7 @@ export class MultiPartyManager implements sc.Model {
     }
 
     changePartyTitle(party: MultiParty, newTitle: string) {
+        assert(this.isPartyTitleValid(newTitle))
         party.title = newTitle
 
         sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.PARTY_TITLE_CHANGED, { party })

@@ -158,7 +158,13 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
                 Object.assign(allInput, input)
             }
 
-            const call = runEvent(new ig.Event({ steps: stepsSettings }), type, callEntity, allData, allInput)
+            const call = runEvent({
+                event: new ig.Event({ steps: stepsSettings }),
+                type,
+                callEntity,
+                allData,
+                allInput,
+            })
             if (eventCallMemory.has(eventCallId)) {
                 const { eventAttached } = eventCallMemory.get(eventCallId)!
                 call.eventAttached = eventAttached
@@ -275,8 +281,6 @@ declare global {
     namespace ig {
         interface EventCall {
             eventCallId: number
-        }
-        interface MapSharedVars {
             ignoreEventStepsCollection?: boolean
         }
     }
@@ -306,9 +310,10 @@ export function onEventStepStart(
         !step ||
         !eventStepWhitelist.has(step.classId) ||
         !shouldCollectStateData() ||
-        ig.mapShared.ignoreEventStepsCollection
-    )
+        call.ignoreEventStepsCollection
+    ) {
         return
+    }
 
     const group = getGroup(call)
     assert(group.eventCallId == call.eventCallId)
