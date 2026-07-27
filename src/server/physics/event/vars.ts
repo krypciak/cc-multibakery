@@ -41,8 +41,10 @@ export function setNextSetBy(entity: ig.Entity) {
 export function unsetNextSetBy() {
     ig.vars.nextSetBy.pop()
 }
-export function findSetByEntityByVars(vars: string[]): ig.Entity | undefined {
-    return ig.vars.varsSetBy[vars.find(varName => ig.vars.varsSetBy[varName]) ?? -1]
+export function findSetByEntityByVars(vars: string[]): ig.Entity[] {
+    return Object.entries(ig.vars.varsSetBy)
+        .filter(([varName]) => vars.includes(varName))
+        .map(([_, v]) => v)
 }
 
 prestart(() => {

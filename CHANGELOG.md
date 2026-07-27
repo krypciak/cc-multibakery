@@ -9,6 +9,10 @@
 - Use websocket network transport by default
 - Add option Settings->Server->Use websocket transport
 
+### Fixed
+
+- Fix crash when an event call is called when a non player entity triggered it
+
 ## [0.8.2] 2026-07-26
 
 ### Added
