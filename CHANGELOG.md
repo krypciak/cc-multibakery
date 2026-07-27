@@ -16,6 +16,7 @@
 - Fix invalid player head rendering on pvp gui when extendable-severed-heads is enabled
 - Fix duplicate player head rendering on pvp gui on remote
 - Disable "Kick from party" button when you're not a party owner
+- Fix pvp locking on party of 2 players where 1 is defeated and the other one leaves the game
 
 ## [0.8.2] 2026-07-26
 

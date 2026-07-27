@@ -236,9 +236,7 @@ export class CCMap extends InstanceUpdateable {
         }
 
         assert(instanceinator.id == multi.server.inst.id)
-        runTask(this.inst, () => {
-            e.kill()
-        })
+        runTask(this.inst, () => e.kill())
     }
 
     update() {

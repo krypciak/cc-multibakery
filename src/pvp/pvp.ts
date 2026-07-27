@@ -162,15 +162,14 @@ prestart(() => {
 
                     if (multi.server.party.sizeOf(party) == 0) {
                         this.parties.erase(party)
-
-                        const onlyPartyAlive = this.getOnlyPartyAlive()
-                        if (onlyPartyAlive) {
-                            if (this.parties.length == 1) {
-                                this.lastWinPartyId = onlyPartyAlive.id
-                                this.points[onlyPartyAlive.combatantParty as sc.COMBATANT_PARTY] = this.winPoints
-                            }
-                            this.onPostKO(onlyPartyAlive.combatantParty)
+                    }
+                    const onlyPartyAlive = this.getOnlyPartyAlive()
+                    if (onlyPartyAlive) {
+                        if (this.parties.length == 1) {
+                            this.lastWinPartyId = onlyPartyAlive.id
+                            this.points[onlyPartyAlive.combatantParty as sc.COMBATANT_PARTY] = this.winPoints
                         }
+                        this.onPostKO(onlyPartyAlive.combatantParty)
                     }
                 }
             }
@@ -226,7 +225,7 @@ prestart(() => {
         // getDmgFactor should be handled by cc-krypek-lib damage factor override variable
         isOver() {
             if (!this.multiplayerPvp) return this.parent()
-            return Object.values(this.points).some(points => points == this.winPoints)
+            return Object.values(this.points).some(points => points >= this.winPoints)
         },
         isCombatantInPvP(combatant) {
             if (!this.multiplayerPvp) return this.parent(combatant)
@@ -264,7 +263,7 @@ prestart(() => {
 
             this.showKOGuis()
 
-            return sc.DRAMATIC_EFFECT[points == this.winPoints ? 'PVP_FINAL_KO' : 'PVP_KO']
+            return sc.DRAMATIC_EFFECT[points >= this.winPoints ? 'PVP_FINAL_KO' : 'PVP_KO']
         },
         onPostKO(combatantParty) {
             if (!this.multiplayerPvp) return this.parent(combatantParty)
