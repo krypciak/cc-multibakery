@@ -13,6 +13,7 @@
 
 - Fix crash when an event call is called when a non player entity triggered it
 - Fix rare crash when entering a new map with EventTrigger with condition true
+- Fix invalid player head rendering on pvp gui when extendable-severed-heads is enabled
 
 ## [0.8.2] 2026-07-26
 

@@ -36,19 +36,32 @@ function injectIntoPvpUpperGui(clazz: sc.CombatUpperHud.CONTENT_GUI.PVP_CONSTRUC
         x += text.size.x
     }
 
+    function getHead(entity: ig.ENTITY.Combatant) {
+        if (entity instanceof dummy.DummyPlayer) return entity.getHeadIdx()
+        if (entity instanceof sc.PartyMemberEntity) return entity.model.getHeadIdx()
+    }
+
+    /* dont use this._renderHeads because extendable-severed-heads patches it in a way that
+     * overrides heads[0] when left == true */
+    function _renderHeads(
+        this: sc.CombatUpperHud.CONTENT_GUI.PVP,
+        renderer: ig.GuiRenderer,
+        x: number,
+        left: boolean,
+        heads: number[]
+    ): void {
+        if (left) x -= 24
+        for (const head of heads) {
+            renderer.addGfx(this.heads, x, -10, head * 24, 0, 24, 24, left)
+            x += left ? -16 : 16
+        }
+    }
+
     function drawTeamHeads(this: sc.CombatUpperHud.CONTENT_GUI.PVP, party: MultiParty, left: boolean) {
-        const heads: number[] = multi.server.party
-            .getPartyCombatants(party, ig.game.mapName)
-            .map(entity =>
-                entity instanceof dummy.DummyPlayer
-                    ? entity.getHeadIdx()
-                    : entity instanceof sc.PartyMemberEntity
-                      ? entity.model.getHeadIdx()
-                      : undefined
-            )
-            .filter(id => id !== undefined)
+        const combatants = multi.server.party.getPartyCombatants(party, ig.game.mapName)
+        const heads: number[] = combatants.map(getHead).filter(id => id !== undefined)
         if (left) x += (heads.length - 1) * 16
-        this._renderHeads(renderer, x + (left ? 24 : 0), left, heads)
+        _renderHeads.call(this, renderer, x + (left ? 24 : 0), left, heads)
         if (left) x += 16
         else x += heads.length * 16
         x += 8
