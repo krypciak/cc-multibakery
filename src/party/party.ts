@@ -96,19 +96,19 @@ export class MultiPartyManager implements sc.Model {
 
     getPartyCombatants(party: MultiParty, onMap?: MapName): ig.ENTITY.Combatant[] {
         const combatants: ig.ENTITY.Combatant[] = []
-        for (const username of party.players) {
-            if (isPhysics(multi.server)) {
+        if (isPhysics(multi.server)) {
+            for (const username of party.players) {
                 const client = multi.server.clients.get(username)
                 assert(client?.dummy)
                 if (!onMap || client.getMap().name == onMap) {
                     combatants.push(client.dummy)
                 }
-            } else {
-                assert(onMap == ig.game.mapName)
-                for (const entity of ig.game.entities) {
-                    if (entity instanceof dummy.DummyPlayer && party.players.includes(entity.data.username)) {
-                        combatants.push(entity)
-                    }
+            }
+        } else {
+            assert(onMap == ig.game.mapName)
+            for (const entity of ig.game.entities) {
+                if (entity instanceof dummy.DummyPlayer && party.players.includes(entity.data.username)) {
+                    combatants.push(entity)
                 }
             }
         }
