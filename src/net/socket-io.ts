@@ -2,11 +2,9 @@ import type { Server as SocketServer, Socket } from 'socket.io'
 import type { Socket as ClientSocket } from 'socket.io-client'
 import type { Server as HttpServer } from 'http'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
-import type { NetServerInfoPhysics } from '../client/menu/server-info-types'
 import type { NetTransportClient } from './net-manager-remote'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import type { NetTransportServer } from './net-manager-physics'
-import { Opts } from '../options'
 import { getServerUrl } from './web-server-utils'
 import { parser as binaryParser } from './socket-io-parser'
 import { assert } from '../misc/assert'
@@ -39,7 +37,6 @@ export class SocketIoNetTransportServer implements NetTransportServer {
     constructor(private settings: SocketIoNetTransportServerSettings) {}
 
     async start(
-        netInfo: NetServerInfoPhysics,
         httpServer: HttpServer,
         onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
     ): Promise<void> {
@@ -55,8 +52,6 @@ export class SocketIoNetTransportServer implements NetTransportServer {
                 origin: `*`,
             },
             parser: this.settings.disableBinaryParser ? undefined : binaryParser,
-            pingInterval: netInfo.connection.pingInterval ?? Opts.flatOpts.serverPingInterval.init,
-            pingTimeout: netInfo.connection.pingTimeout ?? Opts.flatOpts.serverPingTimeout.init,
         })
 
         this.io.on('connection', async socket => {
@@ -116,7 +111,7 @@ export class SocketIoNetTransport implements NetTransport {
         listeners: NetTransportListenerFunctions,
         private socket: ClientSocket | Socket
     ) {
-        socket.on('disconnect', () => listeners.onClose())
+        socket.on('disconnect', () => listeners.onClose('disconnect'))
         socket.on('update', data => listeners.onReceive(data))
 
         function bytesFromData(data: any): bigint {

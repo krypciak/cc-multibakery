@@ -1,7 +1,6 @@
 import type { Server as HttpServer } from 'http'
-import type { NetServerInfoPhysics } from '../client/menu/server-info-types'
 import { assert } from '../misc/assert'
-import { isClientLeaveData } from '../server/remote/remote-server-types'
+import { isClientLeaveData, type ClientLeaveData } from '../server/remote/remote-server-types'
 import { isClientJoinData } from '../server/server-types'
 import { assertPhysics } from '../server/physics/physics-server-types'
 import { PacketMiddleware, type PacketEventType } from './packet'
@@ -10,7 +9,6 @@ import { type NetTransport, type NetTransportListenerFunctions } from './net-tra
 
 export interface NetTransportServer {
     start(
-        netInfo: NetServerInfoPhysics,
         httpServer: HttpServer,
         onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
     ): Promise<void>
@@ -22,22 +20,26 @@ export class NetManagerPhysicsServer {
 
     connections: NetConnection[] = []
 
-    constructor(private transportServer: NetTransportServer) {}
+    constructor(
+        private transportServer: NetTransportServer,
+        private pingTimeout: number
+    ) {}
 
-    async start(netInfo: NetServerInfoPhysics, httpServer: HttpServer) {
+    async start(httpServer: HttpServer) {
         assert(PHYSICS)
         assert(PHYSICSNET)
         if (!PHYSICSNET) return
         process.on('exit', this.stopFunc)
         window.addEventListener('beforeunload', this.stopFunc)
 
-        await this.transportServer.start(netInfo, httpServer, this.registerEvents.bind(this))
+        await this.transportServer.start(httpServer, this.registerEvents.bind(this))
     }
 
     private async registerEvents(createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) {
         const server = multi.server
         assertPhysics(server)
 
+        const sendData = (buf: Uint8Array) => connection.transport.send(buf)
         const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
             if (server != multi.server) return
 
@@ -52,25 +54,32 @@ export class NetManagerPhysicsServer {
                 connection.readyForSendingUpdate = true
             } else if (type == 'leave') {
                 if (!isClientLeaveData(data)) return
-                server.onNetClientLeave(connection, data)
-            } else if (type == 'ping1') {
-                if (!callback) return
-                callback(Date.now())
+                onClose('leave', data)
             }
         }
-        const middleware = new PacketMiddleware(buf => connection.transport.send(buf), onData)
+
+        const onClose = (_reason: string, data?: ClientLeaveData) => {
+            if (connection.closed) return
+            if (multi.server == server && !server.destroyed) {
+                server.onNetClientLeave(connection, data)
+            }
+            this.connections.erase(connection)
+            connection.close()
+        }
+
+        const middleware = new PacketMiddleware(
+            { sendData, onData },
+            {
+                timeout: this.pingTimeout,
+                onTimeout: timeoutTimeMs => onClose(`Timeout ${timeoutTimeMs.round(0)} ms`),
+            }
+        )
 
         const transport = createNetTransport({
             onReceive: data => middleware.receive(data),
             onBytesReceived: bytes => connection.onBytesReceived(bytes),
             onBytesSent: bytes => connection.onBytesSent(bytes),
-            onClose: () => {
-                this.connections.erase(connection)
-
-                if (multi.server != server || server.destroyed) return
-
-                server.onNetClientLeave(connection)
-            },
+            onClose,
         })
         const connection = new NetConnection(middleware, transport)
         this.connections.push(connection)

@@ -38,5 +38,6 @@ export class NetConnection {
         for (const client of this.clients) {
             this.leave(client)
         }
+        this.middleware.destroy()
     }
 }

@@ -11,13 +11,13 @@ import type { RemoteServerConnectionSettings } from './server/remote/remote-serv
 import { profile } from './misc/profile-decorator'
 
 const defaultMap: MapTpInfo = {
-    map: 'multibakery/dev',
-    marker: 'entrance',
+    // map: 'multibakery/dev',
+    // marker: 'entrance',
     // map: 'co-op-dng/intro-rooms/room-4',
     // map: 'co-op-dng/template',
 
-    // map: 'multibakery/mba-pvp',
-    // marker: 'to_pvp',
+    map: 'multibakery/mba-pvp',
+    marker: 'to_pvp',
 
     // map: 'tree-dng/f4/boss',
     // map: 'multibakery/mba-lobby',
@@ -98,7 +98,7 @@ function createSettings(): PhysicsServerSettings {
                                 modProxy: true,
                                 liveModUpdates: true,
                             },
-                      pingTimeout: 10000e3,
+                      pingTimeout: Infinity,
                       transport: {
                           type: 'socket.io',
                           // type: 'websocket',

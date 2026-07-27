@@ -3,7 +3,6 @@ import type { ClientJoinAckData, ClientJoinData } from '../server/server-types'
 import { assert } from '../misc/assert'
 import { NetConnection } from './net-connection'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
-import { Opts } from '../options'
 import { assertRemote } from '../server/remote/remote-server-types'
 import { PacketMiddleware, type PacketEventType } from './packet'
 import { profile } from '../misc/profile-decorator'
@@ -17,11 +16,11 @@ export class NetManagerRemoteServer {
     private stopFunc = () => this.stop()
 
     conn?: NetConnection
-    timeOffset: number = 0
 
     constructor(
         public connectionSettings: RemoteServerConnectionSettings,
-        private transportClient: NetTransportClient
+        private transportClient: NetTransportClient,
+        private pingTimeout: number
     ) {}
 
     async start() {
@@ -36,70 +35,40 @@ export class NetManagerRemoteServer {
 
         await this.transportClient.connect(this.connectionSettings)
 
+        const sendData = (buf: Uint8Array) => connection.transport.send(buf)
         const onData = async (type: PacketEventType, data: any, _callback?: (data: any) => void) => {
             if (type != 'update' || multi.server != server) return
             server.onNetReceive(this.conn!, data)
         }
-        const middleware = new PacketMiddleware(buf => connection.transport.send(buf), onData)
+        const middleware = new PacketMiddleware(
+            { sendData, onData },
+            {
+                timeout: this.pingTimeout,
+                onTimeout: timeoutTimeMs => this.onDisconnect(`Timeout ${timeoutTimeMs.round(0)} ms`),
+            }
+        )
 
         const transport = this.transportClient.createNetTransport({
             onReceive: data => middleware.receive(data),
             onBytesReceived: bytes => connection.onBytesReceived(bytes),
             onBytesSent: bytes => connection.onBytesSent(bytes),
-            onClose: () => this.onDisconnect(),
+            onClose: reason => this.onDisconnect(`Connection closed: ${reason}`),
         })
 
         const connection = new NetConnection(middleware, transport)
         connection.readyForSendingUpdate = true
         this.conn = connection
-
-        try {
-            this.measureClockOffset()
-        } catch (e) {}
     }
 
-    private onDisconnect() {
+    private onDisconnect(reason: string) {
         this.stop()
         if (!multi.server || multi.server.destroyed) return
         assertRemote(multi.server)
-        multi.server.onNetDisconnect()
+        multi.server.onNetDisconnect(reason)
     }
 
-    private async probeTimeOffset(): Promise<{ timeTook: number; timeDiff: number }> {
-        assert(this.conn)
-        const clientDate = Date.now()
-        const clientTimeStart = performance.now()
-        const serverDate: number = await this.conn.middleware.sendWithAck('ping1')
-        const clientTimeEnd = performance.now()
-
-        const timeTook = clientTimeEnd - clientTimeStart
-
-        return { timeTook, timeDiff: serverDate - clientDate }
-    }
-
-    private async measureClockOffset() {
-        if (!Opts.serverTimeSynchronization) return
-
-        const probeFor = 1e3
-        const start = performance.now()
-
-        let minTimeTook = 100000
-        let minRawDiff = 100000
-
-        while (true) {
-            if (!this.conn || this.conn.closed) return
-
-            const { timeTook, timeDiff: rawDiff } = await this.probeTimeOffset()
-            minTimeTook = Math.min(minTimeTook, timeTook)
-            minRawDiff = Math.min(minRawDiff, rawDiff)
-            this.timeOffset = minRawDiff - minTimeTook / 2
-
-            if (performance.now() - start >= probeFor) break
-        }
-    }
-
-    calculatePing(serverTime: number): number {
-        return Date.now() - serverTime + this.timeOffset
+    calculatePing(): number {
+        return this.conn?.middleware.heartbeat.getPing() ?? 0
     }
 
     @profile()

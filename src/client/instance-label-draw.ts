@@ -1,7 +1,7 @@
 import { type LabelDrawClass, ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import type { Client } from './client'
 import { Opts } from '../options'
-import { assertRemote } from '../server/remote/remote-server-types'
+import { assertRemote, isRemote } from '../server/remote/remote-server-types'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 abstract class BasicLabelDrawClass implements LabelDrawClass {
@@ -19,11 +19,19 @@ abstract class BasicLabelDrawClass implements LabelDrawClass {
 }
 
 export function createClientPingLabel(client: Client) {
+    function getPing(): number {
+        if (isRemote(multi.server)) {
+            return multi.server.netManager.calculatePing()
+        } else {
+            return 0
+        }
+    }
     class MsPingLabelDrawClass extends BasicLabelDrawClass {
         avg = new ValueAverageOverTime(60)
         condition = () => Opts.showClientMsPing
         getText(): string {
-            this.avg.pushValue(client.lastPingMs)
+            const ping = getPing()
+            this.avg.pushValue(ping)
             const msPing = Math.max(0, this.avg.getAverage().floor())
             return `${msPing}ms`
         }

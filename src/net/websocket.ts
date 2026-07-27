@@ -1,6 +1,5 @@
 import type { Server as HttpServer } from 'http'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
-import type { NetServerInfoPhysics } from '../client/menu/server-info-types'
 import type { NetTransportClient } from './net-manager-remote'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import type { NetTransportServer } from './net-manager-physics'
@@ -27,9 +26,14 @@ export type GenerateType = WsPacket
 
 export interface WsNetTransportServerSettings {}
 
+interface SessionObject {
+    socket: WebSocketNode
+    transport: WsNetTransport
+}
+
 export class WsNetTransportServer implements NetTransportServer {
     private wss!: WebSocketServer
-    private sessions = new Map<string, { transport: WsNetTransport }>()
+    private sessions = new Map<string, SessionObject>()
 
     private sessionIdCounter = 0
     private generateSessionId(): string {
@@ -48,7 +52,6 @@ export class WsNetTransportServer implements NetTransportServer {
     }
 
     async start(
-        netInfo: NetServerInfoPhysics,
         httpServer: HttpServer,
         onConnection: (createNetTransport: (listeners: NetTransportListenerFunctions) => NetTransport) => void
     ): Promise<void> {
@@ -64,9 +67,12 @@ export class WsNetTransportServer implements NetTransportServer {
             const connectPacket = WebsocketPacketEncoderDecoder.encode({ type: PacketType.CONNECT, sid })
             ws.send(connectPacket)
 
+            const sessionObject: SessionObject = { socket: ws, transport: undefined as any }
+            this.sessions.set(sid, sessionObject)
+
             onConnection(listeners => {
                 const transport = new WsNetTransport(listeners, ws)
-                this.sessions.set(sid, { transport })
+                sessionObject.transport = transport
                 return transport
             })
         })
@@ -122,7 +128,14 @@ export class WsNetTransport implements NetTransport {
         private listeners: NetTransportListenerFunctions,
         private ws: WebSocketNode | WebSocket
     ) {
-        this.setupMessageHandler()
+        if ('on' in ws) {
+            ws.on('message', (data: Buffer) => this.handleRawMessage(new Uint8Array(data)))
+            ws.on('close', () => listeners.onClose('disconnect'))
+        } else if ('addEventListener' in ws) {
+            ws.binaryType = 'arraybuffer'
+            ws.addEventListener('message', event => this.handleRawMessage(new Uint8Array(event.data as ArrayBuffer)))
+            ws.addEventListener('close', () => listeners.onClose('disconnect'))
+        } else assert(false)
     }
 
     private handleRawMessage(buf: Uint8Array) {
@@ -141,28 +154,12 @@ export class WsNetTransport implements NetTransport {
         }
     }
 
-    private setupMessageHandler() {
-        if ('on' in this.ws) {
-            this.ws.on('message', (data: Buffer) => this.handleRawMessage(new Uint8Array(data)))
-            this.ws.on('close', () => this.listeners.onClose())
-        } else if ('addEventListener' in this.ws) {
-            this.ws.binaryType = 'arraybuffer'
-            this.ws.addEventListener('message', (event: MessageEvent) =>
-                this.handleRawMessage(new Uint8Array(event.data as ArrayBuffer))
-            )
-            this.ws.addEventListener('close', () => this.listeners.onClose())
-        } else assert(false)
-    }
-
     isConnected() {
         return !this.closed && this.ws.readyState === this.ws.OPEN
     }
 
     send(data: unknown) {
-        if (this.closed) {
-            console.warn('[ws] send on closed transport')
-            return
-        }
+        if (this.closed) return
         const encoded = WebsocketPacketEncoderDecoder.encode({ type: PacketType.EVENT, binData: data as any })
         this.listeners.onBytesSent(BigInt(encoded.byteLength))
         this.ws.send(encoded)

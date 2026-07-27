@@ -40,7 +40,6 @@ export class Client extends InstanceUpdateable {
     nextTpInfo?: MapTpInfo
     ready: boolean = false
     reservedNetid?: EntityNetid
-    lastPingMs: number = 0
     kickReason?: string
 
     constructor(public settings: ClientSettings) {

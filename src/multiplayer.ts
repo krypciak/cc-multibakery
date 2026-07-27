@@ -17,6 +17,7 @@ import './steps/all'
 import './misc/icons'
 import './mod-compatibility/all'
 import './server/instance-redirect-fixes'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace multi {
@@ -25,7 +26,7 @@ declare global {
         function setServer(server: Server): void
         function destroy(): void
         function destroyAndStartLoop(): void
-        function destroyNextFrameAndStartLoop(): Promise<void>
+        function destroyNextFrameAndStartLoop(errorMessage?: string): Promise<void>
     }
     namespace NodeJS {
         interface Global {
@@ -53,12 +54,16 @@ function initMultiplayer(): typeof window.multi {
             multi.destroy()
             ig.system.startRunLoop()
         },
-        async destroyNextFrameAndStartLoop() {
+        async destroyNextFrameAndStartLoop(errorMessage) {
             await new Promise<void>(resolve => {
                 multi.server.postUpdateCallback = resolve
             })
             multi.destroy()
             ig.system.startRunLoop()
+
+            if (errorMessage) {
+                sc.Dialogs.showErrorDialog(errorMessage)
+            }
         },
     } satisfies Partial<typeof window.multi> as typeof window.multi
 }

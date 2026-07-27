@@ -41,10 +41,9 @@ export async function createPhysicsServerFromCurrentState() {
             ? {
                   connection: {
                       httpPort: Number(Opts.serverHttpPort),
-                      pingInterval: Opts.serverPingInterval,
                       pingTimeout:
                           Opts.serverPingTimeout == Opts.flatOpts.serverPingTimeout.max
-                              ? 10000e3
+                              ? Infinity
                               : Opts.serverPingTimeout,
                       transport: {
                           type: defaultNetTransport,

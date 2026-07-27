@@ -49,7 +49,11 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     async startNet() {
         const transportClient = createNetTransportClient(this.settings.netInfo.details.transport)
 
-        this.netManager = new NetManagerRemoteServer(this.settings.netInfo.connection, transportClient)
+        this.netManager = new NetManagerRemoteServer(
+            this.settings.netInfo.connection,
+            transportClient,
+            Opts.serverPingTimeout
+        )
         await this.netManager.start()
 
         this.measureTraffic = Opts.showPacketNetworkTraffic
@@ -62,11 +66,11 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         sendRemoteServerPacket()
     }
 
-    async onNetDisconnect() {
+    async onNetDisconnect(reason: string) {
         if (this.destroyed) return
-        console.log('server disconnected')
-        await multi.destroyNextFrameAndStartLoop()
-        DEV || sc.Dialogs.showErrorDialog('Disconnected')
+        console.log('server disconnected:', reason)
+        if (DEV) reason = ''
+        await multi.destroyNextFrameAndStartLoop(reason)
     }
 
     onNetReceive(conn: NetConnection, data: unknown) {
@@ -120,11 +124,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
-        const msPing = this.netManager.calculatePing(data.sendAt)
-        for (const client of this.clients.values()) {
-            client.lastPingMs = msPing
-        }
-
         // if (Object.keys(cleanRecord(data) ?? {}).length > 1) {
         //     console.log(JSON.stringify(data, null, 4))
         // }

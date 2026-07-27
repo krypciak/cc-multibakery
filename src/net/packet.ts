@@ -1,5 +1,6 @@
 import type { RecordSize, u24, u32, u8 } from 'ts-binarifier/src/type-aliases'
 import { PacketEncoderDecoder } from './binary/packet-encoder-decoder.generated'
+import { type HeartbeatConfig, Heartbeat } from './heartbeat'
 
 export type PacketEventType = 'ack' | 'update' | 'join' | 'leave' | 'ping1' | 'ready'
 
@@ -14,16 +15,27 @@ interface PacketMiddlewarePacket {
 }
 export type GenerateType = PacketMiddlewarePacket
 
+interface PacketMiddlewareSettings {
+    sendData: (buf: Uint8Array) => void
+    onData: (type: PacketEventType, buf: u8[], callback?: (data: any) => void) => void
+}
+
 export class PacketMiddleware {
     private ackQueue = new Map<u32, (data: any) => void>()
     private ackIdCounter = 0
 
+    heartbeat: Heartbeat
+
     constructor(
-        private sendData: (buf: Uint8Array) => void,
-        private onData: (type: PacketEventType, buf: u8[], callback?: (data: any) => void) => void
-    ) {}
+        private settings: PacketMiddlewareSettings,
+        heartbeatConfig: HeartbeatConfig
+    ) {
+        this.heartbeat = new Heartbeat(this, heartbeatConfig)
+    }
 
     receive(buf: Uint8Array) {
+        this.heartbeat.onReceive()
+
         const packet: GenerateType = PacketEncoderDecoder.decode(buf)
 
         const data = packet.jsonData ?? packet.binData
@@ -39,10 +51,15 @@ export class PacketMiddleware {
                     console.warn('ack id', id, 'missing!')
                 }
             } else {
-                this.onData(packet.type, data, cbData => this.sendAckResponse(packet.type, cbData, id))
+                const callback = (cbData?: any) => this.sendAckResponse(packet.type, cbData, id)
+                if (packet.type == 'ping1') {
+                    callback()
+                } else {
+                    this.settings.onData(packet.type, data, callback)
+                }
             }
         } else {
-            this.onData(packet.type, data)
+            this.settings.onData(packet.type, data)
         }
     }
 
@@ -63,7 +80,7 @@ export class PacketMiddleware {
     }
 
     private encodePacketAndSend(type: PacketEventType, data: any, ack?: { id: u32; response: boolean }) {
-        const isBin = data instanceof Uint8Array
+        const isBin = data !== undefined && data instanceof Uint8Array
         const packet: PacketMiddlewarePacket = {
             type,
             ack,
@@ -71,6 +88,10 @@ export class PacketMiddleware {
             binData: isBin ? (data as never as u8[]) : undefined,
         }
         const buf = PacketEncoderDecoder.encode(packet)
-        this.sendData(buf)
+        this.settings.sendData(buf)
+    }
+
+    destroy() {
+        this.heartbeat.destroy()
     }
 }

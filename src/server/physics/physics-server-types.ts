@@ -17,7 +17,6 @@ export interface PhysicsServerConnectionSettings {
     crosscodeWeb?: CrosscodeWebModuleOptions
     https?: { cert: string; key: string }
 
-    pingInterval?: number
     pingTimeout?: number
 
     transport: NetTransportServerSettings
