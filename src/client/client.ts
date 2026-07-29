@@ -26,6 +26,7 @@ import { assertPhysics, isPhysics } from '../server/physics/physics-server-types
 import { isRemote } from '../server/remote/remote-server-types'
 import type { EntityNetid } from '../misc/entity-netid'
 import { profile } from '../misc/profile-decorator'
+import type { StoragePlayerEntityState } from '../server/physics/storage/storage'
 
 import './injects'
 import './menu/server-list-menu'
@@ -48,7 +49,7 @@ export class Client extends InstanceUpdateable {
         this.username = settings.username
     }
 
-    @profile((self: Client) => `${self.username} client`)
+    @profile(self => `${self.username}`, 'client')
     async init() {
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
@@ -195,7 +196,7 @@ export class Client extends InstanceUpdateable {
         })
     }
 
-    @profile((self: Client) => `${self.username}`)
+    @profile((self, _, __) => `${self.username}`)
     async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
         this.startTeleportOverlay()
         runTask(this.inst, () => {
@@ -257,7 +258,7 @@ export class Client extends InstanceUpdateable {
         this.stopTeleportOverlay()
     }
 
-    @profile((self: Client) => `${self.username}`)
+    @profile((self, _) => `${self.username}`)
     private async linkMapToInstanceStage1(map: CCMap) {
         const levelData = await map.getLevelData() /* this will be sync */
         runTask(this.inst, () => {
@@ -349,7 +350,7 @@ export class Client extends InstanceUpdateable {
         })
     }
 
-    @profile((self: Client) => `${self.username}`)
+    @profile((self, _) => `${self.username}`)
     private linkMapToInstanceStage2(map: CCMap) {
         runTask(this.inst, () => {
             const mig = map.inst.ig
@@ -404,17 +405,18 @@ export class Client extends InstanceUpdateable {
         return state
     }
 
-    private loadPlayerEntityState() {
-        assertPhysics(multi.server)
-        const state = this.getSaveState(true)?.entityState
-        if (state) {
-            PROFILE && console.time('applyStateUpdatePacket')
-            applyStateUpdatePacket({ states: { [this.dummy.netid]: state } }, 0, true)
-            PROFILE && console.timeEnd('applyStateUpdatePacket')
-        }
+    @profile((self, _) => `${self.username}`)
+    private applyPlayerEntityState(entityState: StoragePlayerEntityState) {
+        applyStateUpdatePacket({ states: { [this.dummy.netid]: entityState } }, 0, true)
     }
 
-    @profile((self: Client) => `${self.username}`)
+    private loadAndApplyPlayerEntityState() {
+        assertPhysics(multi.server)
+        const state = this.getSaveState(true)?.entityState
+        if (state) this.applyPlayerEntityState(state)
+    }
+
+    @profile(self => `${self.username}`)
     private async createPlayer() {
         assert(this.reservedNetid)
         if (isPhysics(multi.server)) {
@@ -435,7 +437,7 @@ export class Client extends InstanceUpdateable {
                 ig.godmode(this.dummy.model, { circuitBranch: true })
             }
 
-            this.loadPlayerEntityState()
+            this.loadAndApplyPlayerEntityState()
         } else {
             let player = this.getMap().inst.ig.game.entities.find(
                 e => e instanceof dummy.DummyPlayer && !e._killed && e.data.username == this.username

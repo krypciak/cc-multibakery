@@ -83,7 +83,7 @@ export class MapDataLoad {
         }
     }
 
-    @profile((_self, _data, mapName: string) => `${mapName}`)
+    @profile((_self, _data, mapName) => `${mapName}`)
     static setMapDataFromLevelData(data: sc.MapModel.Map, mapName: string) {
         const game = ig.game
         /* mostly stolen from ig.Game#loadLevel */
@@ -109,7 +109,7 @@ export class MapDataLoad {
         game.renderer.mapCleared()
     }
 
-    @profile((_self, inst) => `${inst.ig.game.mapName}`)
+    @profile((_self, inst, _) => `${inst.ig.game.mapName}`)
     private static async onLoadingComplete(inst: InstanceinatorInstance, loader: ig.Loader) {
         await scheduleTask(inst, () => {
             /* this.finalize() */
@@ -131,7 +131,7 @@ export class MapDataLoad {
         })
     }
 
-    @profile(() => `${ig.game.mapName}`)
+    @profile((_self, _) => `${ig.game.mapName}`)
     private static startLoaderAndWait(loader: ig.Loader) {
         return new Promise<void>(resolve => {
             loader.onEnd = () => {

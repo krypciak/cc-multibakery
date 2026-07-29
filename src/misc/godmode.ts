@@ -1,12 +1,9 @@
 import { prestart } from '../loading-stages'
+import { profile } from './profile-decorator'
 
 declare global {
     namespace ig {
         var godmode: (model?: sc.PlayerModel, settings?: GodmodeSettings) => void
-    }
-
-    interface Object {
-        keysT<K extends string | number | symbol, V>(object: Record<K, V>): K[]
     }
 
     namespace sc {
@@ -76,12 +73,10 @@ const partyMemberConfigs = {
     },
 }
 
-prestart(() => {
-    ig.godmode = (model = sc.model.player, { circuitBranch = true }: GodmodeSettings = {}) => {
-        const labelName = 'godmode ' + (model instanceof dummy.PlayerModel ? model.dummy.data.username : '')
-        PROFILE && console.time(labelName)
-        Object.keysT = Object.keys as any
-
+class Godmode {
+    // prettier-ignore
+    @profile((_self, model) => `${model instanceof dummy.PlayerModel ? model.dummy.data.username : model?.name}`)
+    static godmode(model = sc.model.player, { circuitBranch = true }: GodmodeSettings = {}) {
         sc.stats.statsEnabled = true
 
         /* add all party members */
@@ -90,16 +85,14 @@ prestart(() => {
             sc.party.godmoded = true
         }
 
-        for (const k of Object.keysT(model.core)) {
+        for (const k of Object.keys(model.core) as unknown[] as sc.PLAYER_CORE[]) {
             model.core[k] = true
         }
 
         sc.newgame.setActive(true)
         if (!sc.newgame.get('infinite-sp')) sc.newgame.toggle('infinite-sp')
-        /* model.setSpLevel(4) */
         model.spLevel = 4
         model.params.setMaxSp(sc.SP_LEVEL[model.spLevel])
-        /* model.setLevel */
         model.level = 99
         model.equip = { head: 657, leftArm: 577, rightArm: 607, torso: 583, feet: 596 }
         // model.equip = { head: 568, leftArm: 567, rightArm: 567, torso: 569, feet: 570 } // full ascended crossgear
@@ -176,9 +169,11 @@ prestart(() => {
         sc.Model.notifyObserver(model.params, sc.COMBAT_PARAM_MSG.MAX_SP_CHANGED)
         sc.Model.notifyObserver(model, sc.PLAYER_MSG.SKILL_CHANGED)
         model.updateStats()
-
-        PROFILE && console.timeEnd(labelName)
     }
+}
+
+prestart(() => {
+    ig.godmode = (...args) => Godmode.godmode(...args)
 })
 
 declare global {

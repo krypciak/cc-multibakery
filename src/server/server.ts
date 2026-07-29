@@ -86,7 +86,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         linkOptions(this.inst, this.baseInst)
     }
 
-    @profile('non await')
+    @profile(undefined, 'non await')
     private createCachedInstances() {
         const toCreate = 3 - instanceinator.getCachedInstanceCount(instanceinatorCopyInstanceConfig().cacheKey)
         if (toCreate > 0) {

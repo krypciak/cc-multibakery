@@ -15,7 +15,7 @@ import './save-slot-button'
 import './pause-screen-save-button'
 
 type PlayerGetStateReturn = ReturnType<typeof getEntityState>
-type StoragePlayerEntityState = Partial<PlayerGetStateReturn>
+export type StoragePlayerEntityState = Partial<PlayerGetStateReturn>
 export interface StoragePlayerState {
     entityState?: StoragePlayerEntityState
     tpInfo?: MapTpInfo
@@ -34,7 +34,6 @@ declare global {
     }
 }
 
-let profileCounter = 0
 class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLoad {
     currentData?: MultibakerySaveData
     saving: boolean = false
@@ -136,7 +135,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         }
     }
 
-    @profile(() => `storage ${profileCounter++}`)
+    @profile(undefined, 'storage')
     save(slotId?: number) {
         if (!isPhysics(multi.server) || (slotId === undefined && !multi.server.settings.save?.automaticallySave)) return
 
@@ -217,7 +216,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         sc.timers.onStoragePreLoad(data)
     }
 
-    @profile(() => `storage ${profileCounter++}`)
+    @profile(undefined, 'storage')
     load() {
         assertPhysics(multi.server)
         const settings = multi.server.settings.save

@@ -1,6 +1,7 @@
 import type { NetServerInfoRemote } from '../../client/menu/server-info-types'
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
+import { profile } from '../../misc/profile-decorator'
 import { Opts } from '../../options'
 import type { ClientJoinAckData, ClientJoinData } from '../server-types'
 import { RemoteServer } from './remote-server'
@@ -11,19 +12,19 @@ declare global {
     }
 }
 
-prestart(() => {
-    if (!REMOTE) return
-    multi.tryJoinRemote = async function (
-        netInfo: NetServerInfoRemote,
-        joinData: ClientJoinData
-    ): Promise<ClientJoinAckData> {
+class TryJoinRemote {
+    @profile()
+    private static async startServer(server: RemoteServer) {
+        await server.start()
+    }
+
+    @profile((_self, netInfo, joinData) => `${netInfo.connection.host}:${netInfo.connection.port} ${joinData.username}`)
+    static async tryJoinRemote(netInfo: NetServerInfoRemote, joinData: ClientJoinData): Promise<ClientJoinAckData> {
         {
             const server = multi.server
             assert(!server)
         }
         assert(netInfo.details)
-
-        PROFILE && console.time('tryJoinRemote')
 
         const server = new RemoteServer({
             displayServerInstance: Opts.serverDisplayServerInstance,
@@ -46,9 +47,7 @@ prestart(() => {
         if (ackData.status != 'ok') {
             multi.destroyAndStartLoop()
         } else {
-            PROFILE && console.time('server start')
-            await server.start()
-            PROFILE && console.timeEnd('server start')
+            await this.startServer(server)
 
             await server.netManager.sendReady()
 
@@ -60,8 +59,11 @@ prestart(() => {
             server.setMasterClient(client)
         }
 
-        PROFILE && console.timeEnd('tryJoinRemote')
-
         return ackData
     }
+}
+
+prestart(() => {
+    if (!REMOTE) return
+    multi.tryJoinRemote = (...args) => TryJoinRemote.tryJoinRemote(...args)
 })

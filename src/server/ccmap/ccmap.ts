@@ -117,7 +117,12 @@ export class CCMap extends InstanceUpdateable {
         this.initResolve()
     }
 
-    @profile((self: CCMap) => `${self.name} map`)
+    @profile((self, _) => `${self.name}`, 'map')
+    private async awaitLevelData(promise: Promise<sc.MapModel.Map>): Promise<sc.MapModel.Map> {
+        return await promise
+    }
+
+    @profile(self => `${self.name}`, 'map')
     private async init() {
         this.display = new CCMapDisplay(this)
 
@@ -139,9 +144,7 @@ export class CCMap extends InstanceUpdateable {
         this.inst.ig.game.entityTypeIdCounterMap = this.netidReserve.entityTypeIdCounterMap
         this.inst.ig.game.entitiesByNetid = this.netidReserve.entitiesByNetid
 
-        PROFILE && console.time(`${this.name} await level data`)
-        const levelData = await levelDataPromise
-        PROFILE && console.timeEnd(`${this.name} await level data`)
+        const levelData = await this.awaitLevelData(levelDataPromise)
 
         runTask(this.inst, () => {
             MapDataLoad.setMapDataFromLevelData(levelData, this.name)
@@ -162,7 +165,7 @@ export class CCMap extends InstanceUpdateable {
         this.readyResolve()
     }
 
-    @profile((self: CCMap) => `${self.name}`)
+    @profile(self => `${self.name}`)
     private async loadResources() {
         await runTask(this.inst, () => MapDataLoad.loadMapResources())
         runTask(this.inst, () => {
