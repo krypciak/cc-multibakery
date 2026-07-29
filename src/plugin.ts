@@ -6,13 +6,13 @@ import { setModMetadata } from './mod-metadata'
 import './multiplayer'
 import './options'
 import './misc/modify-prototypes'
-import './test/test-utils'
 import './dev-start'
 
 export default class Multibakery implements PluginClass {
     constructor(mod: Mod1) {
         setModMetadata(mod)
 
+        if (TEST) import('./test/test-utils')
         if (!TEST) {
             if (window.crossnode) {
                 if (!CROSSNODE) console.warn('running in crossnode but not compiled with crossnode flag!')
