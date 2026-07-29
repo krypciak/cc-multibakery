@@ -1,6 +1,7 @@
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { assert } from '../misc/assert'
 import { copyTickInfo } from '../game-loop'
+import { profile } from '../misc/performance-profiling'
 
 export abstract class InstanceUpdateable {
     inst!: InstanceinatorInstance
@@ -11,12 +12,12 @@ export abstract class InstanceUpdateable {
     abstract isVisible(): boolean
     protected abstract attemptRecovery(e: unknown): void
 
-    // @profile(self => `${self.inst.name}`)
+    @profile(self => `${self.inst.name}`, '', true)
     preUpdate() {
         for (const addon of ig.game.addons.preUpdate) addon.onPreUpdate()
     }
 
-    // @profile(self => `${self.inst.name}`)
+    @profile(self => `${self.inst.name}`, '', true)
     update() {
         const addonsPreUpdateBackup = ig.game.addons.preUpdate
         ig.game.addons.preUpdate = []
@@ -32,7 +33,7 @@ export abstract class InstanceUpdateable {
         }
     }
 
-    // @profile(self => `${self.inst.name}`)
+    @profile(self => `${self.inst.name}`, '', true)
     deferredUpdate() {
         try {
             ig.game.deferredUpdate()
