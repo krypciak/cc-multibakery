@@ -143,10 +143,18 @@ export class SocketIoNetTransport implements NetTransport {
         this.socket.removeAllListeners()
     }
 
-    getInfo() {
+    getStatusInfo(): string {
         if (!this.socket.connected) return `socket.io disconnected`
         // @ts-expect-error
         const type = this.socket.io.engine.transport.name
         return `socket.io ${type}`
+    }
+
+    getConnectionInfo(): string {
+        if ('conn' in this.socket) {
+            return this.socket.conn?.remoteAddress ?? 'unknown'
+        } else {
+            return this.socket.io?.['uri'] ?? 'unknown'
+        }
     }
 }

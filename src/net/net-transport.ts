@@ -40,7 +40,8 @@ export interface NetTransport {
     send(data: unknown): void
     close(): void
     isConnected(): boolean
-    getInfo(): string
+    getStatusInfo(): string
+    getConnectionInfo(): string
 }
 
 const netTransportMap = {

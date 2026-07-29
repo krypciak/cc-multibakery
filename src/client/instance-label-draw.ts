@@ -46,7 +46,7 @@ export function createClientTransportInfoLabel(client: Client) {
     class TransportInfoLabelDrawClass extends BasicLabelDrawClass {
         condition = () => Opts.showClientTransportInfo
         getText(): string {
-            return server.netManager?.conn?.transport.getInfo() ?? 'disconnected'
+            return server.netManager?.conn?.transport.getStatusInfo() ?? 'disconnected'
         }
     }
     client.inst.labelDrawClasses.push(new TransportInfoLabelDrawClass())

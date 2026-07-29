@@ -8,6 +8,7 @@ import type { WebSocket as WebSocketNode, WebSocketServer } from 'ws'
 import { getServerUrl } from './web-server-utils'
 import { assert } from '../misc/assert'
 import type { RecordSize, u24, u8 } from 'ts-binarifier/src/type-aliases'
+import type { TLSSocket } from 'tls'
 
 enum PacketType {
     CONNECT,
@@ -175,8 +176,17 @@ export class WsNetTransport implements NetTransport {
         }
     }
 
-    getInfo() {
+    getStatusInfo(): string {
         if (!this.isConnected()) return `websocket disconnected`
         return `websocket`
+    }
+
+    getConnectionInfo(): string {
+        if ('_socket' in this.ws) {
+            const rawSocket = this.ws._socket as TLSSocket
+            return rawSocket.remoteAddress ?? 'unknown'
+        } else {
+            return this.ws.url ?? 'unknown'
+        }
     }
 }

@@ -33,7 +33,7 @@ function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
     const server = multi.server
     let serverTypeSpecificInfo: string = `clients: [${[...server.clients.values()].map(c => `(${c.username}, ${c.tpInfo.map})`).join(', ')}]\n`
     if (isRemote(server)) {
-        const transportInfo = server.netManager?.conn?.transport.getInfo()
+        const transportInfo = server.netManager?.conn?.transport.getStatusInfo()
         serverTypeSpecificInfo += `${transportInfo ? `transport: ${transportInfo}` : ''}\n`
     } else if (isPhysics(server)) {
     } else assert(false)
