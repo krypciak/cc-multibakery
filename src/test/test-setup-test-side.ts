@@ -9,29 +9,34 @@ export async function setupCrosscodeIfNeeded() {
 async function setupCrosscode() {
     if (global.window) return
 
-    const { startCrossnode } = await import('../../../crossnode/crossnode.js')
-    await startCrossnode({
-        ccloader2: true,
-        nukeImageStack: true,
-        // writeImage: true,
-        // writeImageInstanceinator: true,
+    try {
+        // @ts-ignore
+        const { startCrossnode } = await import('../../../crossnode/crossnode.js')
+        await startCrossnode({
+            ccloader2: true,
+            nukeImageStack: true,
+            // writeImage: true,
+            // writeImageInstanceinator: true,
 
-        modWhitelist: [
-            'cc-multibakery',
-            'cc-instanceinator',
-            'cc-krypek-lib',
-            'ccmodmanager',
-            'nax-ccuilib',
+            modWhitelist: [
+                'cc-multibakery',
+                'cc-instanceinator',
+                'cc-krypek-lib',
+                'ccmodmanager',
+                'nax-ccuilib',
 
-            'cc-multibakery-additions',
-            'cc-variable-charge-time',
+                'cc-multibakery-additions',
+                'cc-variable-charge-time',
 
-            'xenons-playable-classes',
-            'menu-ui-replacer',
-            'extension-asset-preloader',
-            'extendable-severed-heads',
-            'cc-alybox',
-        ],
-        extensionWhitelist: ['post-game'],
-    })
+                'xenons-playable-classes',
+                'menu-ui-replacer',
+                'extension-asset-preloader',
+                'extendable-severed-heads',
+                'cc-alybox',
+            ],
+            extensionWhitelist: ['post-game'],
+        })
+    } catch (e) {
+        throw new Error('Error while starting crossnode', { cause: e })
+    }
 }
