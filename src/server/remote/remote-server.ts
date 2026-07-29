@@ -12,7 +12,7 @@ import { Client } from '../../client/client'
 import type { ClientSettings } from '../../client/client-types'
 import { Opts } from '../../options'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { sendRemoteServerPacket } from './remote-server-sender'
+import { RemoteSender } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { applyModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
@@ -63,7 +63,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
     update() {
         super.update()
-        sendRemoteServerPacket()
+
+        RemoteSender.collectAndSend()
     }
 
     async onNetDisconnect(reason: string) {

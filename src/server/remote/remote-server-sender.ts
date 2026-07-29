@@ -17,93 +17,16 @@ import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { assertRemote } from './remote-server-types'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
+import { profile } from '../../misc/performance-profiling'
 
 let remoteSenderStateMemory: StateMemory | undefined
-
 const maxInputFieldTextLength = 50
-
-export function sendRemoteServerPacket() {
-    assertRemote(multi.server)
-    const conn = multi.server.netManager.conn
-    if (!conn) return
-
-    const clientPackets: RemoteServerClientPackets = {}
-    for (const client of multi.server.clients.values()) {
-        const inst = client.inst
-        assert(inst)
-
-        const inPauseScreen = inst.ig.inPauseScreen
-        let packet: RemoteServerClientPacket | undefined
-
-        if (!inPauseScreen) {
-            const input = inst.ig.input.getInput()
-            if (input) {
-                for (const action of disallowedInputActions) {
-                    delete input.presses?.[action]
-                    delete input.actions?.[action]
-                }
-            }
-
-            const gamepad = inst.ig.gamepad.getInput()
-
-            const memory = StateMemory.get(remoteSenderStateMemory)
-            remoteSenderStateMemory ??= memory
-
-            const options = filterClientOptionModelValues(
-                (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
-            )
-
-            packet = {
-                input,
-                gamepad,
-                inputFieldText: memory.diff(inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)),
-                options: memory.diffRecord(options),
-            }
-        }
-
-        if (packet) {
-            const cleanPacket = cleanRecord(packet)
-            if (cleanPacket) {
-                clientPackets[client.username] = cleanPacket
-            }
-        }
-    }
-
-    const packet: RemoteServerUpdatePacket = {
-        clients: cleanRecord(clientPackets),
-        readyMaps: multi.server.notifyReadyMaps,
-    }
-    multi.server.notifyReadyMaps = undefined
-
-    const cleanPacket = cleanRecord(packet)
-    if (!cleanPacket) return
-
-    const toSend = multi.server.settings.netInfo.details.forceJsonCommunication
-        ? cleanPacket
-        : RemoteUpdatePacketEncoderDecoder.encode(cleanPacket)
-
-    if (DEV && toSend instanceof Uint8Array) {
-        const decoded = RemoteUpdatePacketEncoderDecoder.decode(toSend)
-        assert(packetDeepEqual(packet, decoded), 'remote packet decoding mismatch!')
-    }
-
-    conn.middleware.send('update', toSend)
-}
 
 export interface RemoteServerUpdatePacket {
     clients?: RemoteServerClientPackets
     readyMaps?: MapName[]
 }
 export type GenerateType = RemoteServerUpdatePacket
-
-type RemoteServerClientPackets = Record<Username, RemoteServerClientPacket>
-
-export interface RemoteServerClientPacket {
-    input?: InputData
-    gamepad?: GamepadManagerData
-    inputFieldText?: string
-    options?: PartialRecord<KeyType, f64> // ClientOptionModelValues
-}
 export function isRemoteServerUpdatePacket(_data: unknown): _data is RemoteServerUpdatePacket {
     const data = _data as RemoteServerUpdatePacket
     if (typeof data != 'object' || !data) return false
@@ -114,6 +37,13 @@ export function isRemoteServerUpdatePacket(_data: unknown): _data is RemoteServe
     if (!isRemoteServerInputPacket(input)) return false
 
     return true
+}
+
+export interface RemoteServerClientPacket {
+    input?: InputData
+    gamepad?: GamepadManagerData
+    inputFieldText?: string
+    options?: PartialRecord<KeyType, f64> // ClientOptionModelValues
 }
 function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientPackets {
     const data = _data as RemoteServerClientPackets
@@ -140,4 +70,87 @@ function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientP
     }
 
     return true
+}
+
+type RemoteServerClientPackets = Record<Username, RemoteServerClientPacket>
+
+export class RemoteSender {
+    @profile(undefined, 'remote sender', true)
+    static collectAndSend() {
+        assertRemote(multi.server)
+        const conn = multi.server.netManager.conn
+        if (!conn) return
+
+        const clientPackets: RemoteServerClientPackets = {}
+        for (const client of multi.server.clients.values()) {
+            const inst = client.inst
+            assert(inst)
+
+            const inPauseScreen = inst.ig.inPauseScreen
+            let packet: RemoteServerClientPacket | undefined
+
+            if (!inPauseScreen) {
+                const input = inst.ig.input.getInput()
+                if (input) {
+                    for (const action of disallowedInputActions) {
+                        delete input.presses?.[action]
+                        delete input.actions?.[action]
+                    }
+                }
+
+                const gamepad = inst.ig.gamepad.getInput()
+
+                const memory = StateMemory.get(remoteSenderStateMemory)
+                remoteSenderStateMemory ??= memory
+
+                const options = filterClientOptionModelValues(
+                    (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
+                )
+
+                packet = {
+                    input,
+                    gamepad,
+                    inputFieldText: memory.diff(
+                        inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)
+                    ),
+                    options: memory.diffRecord(options),
+                }
+            }
+
+            if (packet) {
+                const cleanPacket = cleanRecord(packet)
+                if (cleanPacket) {
+                    clientPackets[client.username] = cleanPacket
+                }
+            }
+        }
+
+        const packet: RemoteServerUpdatePacket = {
+            clients: cleanRecord(clientPackets),
+            readyMaps: multi.server.notifyReadyMaps,
+        }
+        multi.server.notifyReadyMaps = undefined
+
+        const cleanPacket = cleanRecord(packet)
+        if (!cleanPacket) return
+
+        const toSend = this.encodePacket(cleanPacket)
+        this.verifyPacketEncoding(toSend, cleanPacket)
+
+        conn.middleware.send('update', toSend)
+    }
+
+    @profile(undefined, 'remote sender', true)
+    private static encodePacket(data: RemoteServerUpdatePacket) {
+        assertRemote(multi.server)
+        const forceJson = multi.server.settings.netInfo!.details.forceJsonCommunication
+        return forceJson ? data : RemoteUpdatePacketEncoderDecoder.encode(data)
+    }
+
+    private static verifyPacketEncoding(data: unknown, originalPacket: RemoteServerUpdatePacket) {
+        if (DEV && data instanceof Uint8Array) {
+            const decoded = RemoteUpdatePacketEncoderDecoder.decode(data)
+            assert(packetDeepEqual(originalPacket, decoded), 'remote packet decoding mismatch!')
+        }
+    }
 }

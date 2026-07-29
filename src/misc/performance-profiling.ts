@@ -109,10 +109,11 @@ class Perf {
     }
 }
 
+const perf = (PROFILE && new Perf()) as Perf
+
 prestart(() => {
     if (!PROFILE) return
-
-    multi.perf = new Perf()
+    multi.perf = perf
 })
 
 type TextGenerator<S, T extends unknown[]> = string | ((self: S, ...args: T) => string)
@@ -140,11 +141,11 @@ export function profile<S, T extends unknown[]>(
             const finalize = () => {
                 const end = performance.now()
                 if (!frequent) console.timeEnd(consoleLabel)
-                multi.perf.addTimePoint(labelStr, prefixStr, end - start)
+                perf.addTimePoint(labelStr, prefixStr, end - start)
             }
             if (!frequent) {
                 consoleLabel =
-                    multi.perf.getTimesCircularBuffer(labelStr, prefixStr).length() +
+                    perf.getTimesCircularBuffer(labelStr, prefixStr).length() +
                     ' ' +
                     (prefixStr ? prefixStr + ' ' : '') +
                     labelStr

@@ -11,7 +11,7 @@ import type { ClientSettings } from '../../client/client-types'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import type { ClientLeaveData } from '../remote/remote-server-types'
 import { startGameLoop } from '../../game-loop'
-import { sendPhysicsServerPacket } from './physics-server-sender'
+import { PhysicsSender } from './physics-server-sender'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import { loadClientOptionModelState } from '../../client/client-option-model-link'
@@ -90,7 +90,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     update() {
         super.update()
 
-        sendPhysicsServerPacket()
+        if (this.netManager) PhysicsSender.collectAndSend()
     }
 
     private updateAnyRemoteClientsOn() {
