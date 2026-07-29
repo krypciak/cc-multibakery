@@ -8,7 +8,7 @@ import { assert } from './misc/assert'
 import type { MapTpInfo } from './server/server-types'
 import { getServerDetails } from './net/web-server-utils'
 import type { RemoteServerConnectionSettings } from './server/remote/remote-server-types'
-import { profile } from './misc/profile-decorator'
+import { profile } from './misc/performance-profiling'
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',

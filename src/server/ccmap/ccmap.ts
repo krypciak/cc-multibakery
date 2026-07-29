@@ -16,7 +16,7 @@ import { isRemote } from '../remote/remote-server-types'
 import { assertPhysics } from '../physics/physics-server-types'
 import type { TestConfig } from '../../test/test-bridge'
 import { createServerTpsLabel } from '../../client/instance-label-draw'
-import { profile } from '../../misc/profile-decorator'
+import { profile } from '../../misc/performance-profiling'
 
 import './injects'
 

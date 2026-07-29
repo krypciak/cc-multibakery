@@ -9,7 +9,7 @@ import { assertPhysics, isPhysics } from '../physics-server-types'
 import { copy } from '../../../misc/object-copy'
 import type { ClientOptionModelValues } from '../../../client/client-option-model-link'
 import type { Client } from '../../../client/client'
-import { profile } from '../../../misc/profile-decorator'
+import { profile } from '../../../misc/performance-profiling'
 
 import './save-slot-button'
 import './pause-screen-save-button'

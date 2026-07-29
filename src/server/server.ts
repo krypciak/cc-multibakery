@@ -26,7 +26,7 @@ import { executeWithStrategy } from '../misc/function-execute-strategy'
 import { isRemote } from './remote/remote-server-types'
 import { ValueAverageOverTime } from 'cc-instanceinator/src/label-draw'
 import { createServerTpsLabel } from '../client/instance-label-draw'
-import { profile } from '../misc/profile-decorator'
+import { profile } from '../misc/performance-profiling'
 import { Repl } from '../misc/shell'
 
 import './server-var-access'

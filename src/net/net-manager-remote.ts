@@ -5,7 +5,7 @@ import { NetConnection } from './net-connection'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import { assertRemote } from '../server/remote/remote-server-types'
 import { PacketMiddleware, type PacketEventType } from './packet'
-import { profile } from '../misc/profile-decorator'
+import { profile } from '../misc/performance-profiling'
 
 export interface NetTransportClient {
     connect(connectionSettings: RemoteServerConnectionSettings): Promise<void>

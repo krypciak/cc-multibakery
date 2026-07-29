@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { profile } from './profile-decorator'
+import { profile } from './performance-profiling'
 
 declare global {
     namespace ig {

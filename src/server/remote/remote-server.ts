@@ -17,7 +17,7 @@ import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-upda
 import { applyModCompatibilityList } from '../mod-compatibility-list'
 import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 import { createNetTransportClient } from '../../net/net-transport'
-import { profile } from '../../misc/profile-decorator'
+import { profile } from '../../misc/performance-profiling'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'

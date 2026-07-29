@@ -1,6 +1,6 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../loading-stages'
-import { profile } from '../../misc/profile-decorator'
+import { profile } from '../../misc/performance-profiling'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
 type Layer = keyof typeof ig.MAP

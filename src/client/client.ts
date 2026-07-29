@@ -25,7 +25,7 @@ import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/physics-server-types'
 import { isRemote } from '../server/remote/remote-server-types'
 import type { EntityNetid } from '../misc/entity-netid'
-import { profile } from '../misc/profile-decorator'
+import { profile } from '../misc/performance-profiling'
 import type { StoragePlayerEntityState } from '../server/physics/storage/storage'
 
 import './injects'

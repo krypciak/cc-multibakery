@@ -1,7 +1,7 @@
 import type { NetServerInfoRemote } from '../../client/menu/server-info-types'
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
-import { profile } from '../../misc/profile-decorator'
+import { profile } from '../../misc/performance-profiling'
 import { Opts } from '../../options'
 import type { ClientJoinAckData, ClientJoinData } from '../server-types'
 import { RemoteServer } from './remote-server'
