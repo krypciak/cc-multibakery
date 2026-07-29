@@ -1,6 +1,6 @@
 import { setupCrosscodeIfNeeded } from '../test-setup-test-side'
 
-const type = false ? 'physics' : 'remote'
+const type = true ? 'physics' : 'remote'
 
 export async function runCombatArtTests(character: string, element: keyof typeof sc.ELEMENT) {
     await setupCrosscodeIfNeeded()
