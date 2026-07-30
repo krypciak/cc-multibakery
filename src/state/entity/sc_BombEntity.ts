@@ -4,6 +4,7 @@ import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././states'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace sc {
@@ -20,6 +21,7 @@ function getEntityState(this: sc.BombEntity, player?: StateKey) {
 
     return {
         ...igAnimatedEntity.getEntityState.call(this, memory),
+        panel: memory.onlyOnce(this.panel?.netid),
     }
 }
 
@@ -33,9 +35,11 @@ prestart(() => {
         setEntityState,
     })
     sc.BombEntity.create = (netid, state: Return) => {
-        const settings: sc.BombEntity.Settings = {
-            netid,
-        }
+        const panel = state.panel ? ig.game.entitiesByNetid[state.panel] : undefined
+        if (panel) assert(panel instanceof ig.ENTITY.BombPanel)
+        if (panel?.bomb) panel.bomb.kill(true)
+
+        const settings: sc.BombEntity.Settings = { netid, panel }
         const { x, y, z } = state.pos!
         const entity = ig.game.spawnEntity(sc.BombEntity, x, y, z, settings)
         return entity

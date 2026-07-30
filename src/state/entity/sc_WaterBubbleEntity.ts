@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././states'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace sc {
@@ -19,6 +20,7 @@ function getEntityState(this: sc.WaterBubbleEntity, player?: StateKey) {
 
     return {
         ...igAnimatedEntity.getEntityState.call(this, memory),
+        panel: memory.onlyOnce(this.panel?.netid),
     }
 }
 
@@ -32,9 +34,11 @@ prestart(() => {
         setEntityState,
     })
     sc.WaterBubbleEntity.create = (netid, state: Return) => {
-        const settings: sc.WaterBubbleEntity.Settings = {
-            netid,
-        }
+        const panel = state.panel ? ig.game.entitiesByNetid[state.panel] : undefined
+        if (panel) assert(panel instanceof ig.ENTITY.WaterBubblePanel)
+        if (panel?.currentBubble) panel.currentBubble.kill(true)
+
+        const settings: sc.WaterBubbleEntity.Settings = { panel, netid }
         const { x, y, z } = state.pos!
         const entity = ig.game.spawnEntity(sc.WaterBubbleEntity, x, y, z, settings)
         return entity

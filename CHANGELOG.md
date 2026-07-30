@@ -23,6 +23,7 @@
 - Fix pvp points desyncing on remote
 - Fix players being unaffected by time scales
 - Fix invalid party handling on player map change
+- Fix bombs and water bubbles phantoms on remote if remote player enters after bomb/water bubble has respawned at least once
 
 ## [0.8.2] 2026-07-26
 
