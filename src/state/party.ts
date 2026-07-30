@@ -38,6 +38,8 @@ prestart(() => {
                     multi.server.party.addParty(partyData as MultiParty)
                 } else {
                     if (partyData.owner !== undefined) party.owner = partyData.owner
+                    if (partyData.originalOwner !== undefined) party.originalOwner = partyData.originalOwner
+                    if (partyData.combatantParty !== undefined) party.combatantParty = partyData.combatantParty
                     if (partyData.title !== undefined) multi.server.party.changePartyTitle(party, partyData.title)
                     if (partyData.players !== undefined) {
                         for (const username of partyData.players) {

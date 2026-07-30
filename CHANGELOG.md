@@ -19,6 +19,7 @@
 - Fix pvp locking on party of 2 players where 1 is defeated and the other one leaves the game
 - Fix double party name change input dialog on remote
 - Fix crash when entering mba-testing for the first time
+- Fix pvp points desyncing on remote
 
 ## [0.8.2] 2026-07-26
 
