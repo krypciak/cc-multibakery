@@ -1,4 +1,4 @@
-import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { scheduleTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../loading-stages'
 import { profile } from '../../misc/performance-profiling'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
@@ -150,23 +150,6 @@ export class MapDataLoad {
         await this.onLoadingComplete(inst, loader)
     }
 }
-
-prestart(() => {
-    ig.Loadable.inject({
-        loadingFinished(success) {
-            if (this._instanceId == instanceinator.id) {
-                return this.parent(success)
-            }
-            if (success) this.loaded = true
-            else this.failed = true
-            const inst = instanceinator.instances[this._instanceId]
-            if (!inst) return
-            runTask(inst, () => {
-                this.loadingFinished(success)
-            })
-        },
-    })
-})
 
 prestart(() => {
     sc.CrossCode.inject({
