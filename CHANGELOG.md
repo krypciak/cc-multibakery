@@ -8,6 +8,7 @@
 
 - Use websocket network transport by default
 - Add option Settings->Server->Use websocket transport
+- Add ig.ENTITY.WaterBubblePanel state
 
 ### Fixed
 
