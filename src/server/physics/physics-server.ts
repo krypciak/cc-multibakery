@@ -23,7 +23,7 @@ import {
     registerChargeTimingsChangeListener,
     unregisterChargeTimingsChangeListener,
 } from '../../mod-compatibility/cc-variable-charge-time'
-import { Opts } from '../../options'
+import { getServerPingTimeout, Opts } from '../../options'
 
 import './physics-server-sender'
 import './storage/storage'
@@ -74,7 +74,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
             this.netManager = new NetManagerPhysicsServer(
                 transportServer,
-                netInfo.connection.pingTimeout ?? Opts.serverPingTimeout
+                netInfo.connection.pingTimeout ?? getServerPingTimeout()
             )
             await this.netManager.start(this.httpServer.httpServer)
 

@@ -1,5 +1,5 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { Opts } from '../../options'
+import { getServerPingTimeout, Opts } from '../../options'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
 import { assert } from '../../misc/assert'
 
@@ -40,10 +40,7 @@ export async function createPhysicsServerFromCurrentState() {
             ? {
                   connection: {
                       httpPort: Number(Opts.serverHttpPort),
-                      pingTimeout:
-                          Opts.serverPingTimeout == Opts.flatOpts.serverPingTimeout.max
-                              ? Infinity
-                              : Opts.serverPingTimeout,
+                      pingTimeout: getServerPingTimeout(),
                       transport: {
                           type: Opts.serverNetTransportUseWebsocket ? 'websocket' : 'socket.io',
                       },

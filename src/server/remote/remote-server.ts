@@ -10,7 +10,7 @@ import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } f
 import { Server } from '../server'
 import { Client } from '../../client/client'
 import type { ClientSettings } from '../../client/client-types'
-import { Opts } from '../../options'
+import { getServerPingTimeout, Opts } from '../../options'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { RemoteSender } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
@@ -52,7 +52,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.netManager = new NetManagerRemoteServer(
             this.settings.netInfo.connection,
             transportClient,
-            Opts.serverPingTimeout
+            getServerPingTimeout()
         )
         await this.netManager.start()
 

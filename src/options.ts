@@ -11,6 +11,10 @@ export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnTyp
 
 const defaultClientUsername = '@DEFAULT_USERNAME'
 
+export function getServerPingTimeout() {
+    return Opts.serverPingTimeout == Opts.flatOpts.serverPingTimeout.max ? Infinity : Opts.serverPingTimeout
+}
+
 function registerOpts() {
     const opts = {
         client: {
