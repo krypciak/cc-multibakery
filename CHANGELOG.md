@@ -20,6 +20,7 @@
 - Fix double party name change input dialog on remote
 - Fix crash when entering mba-testing for the first time
 - Fix pvp points desyncing on remote
+- Fix players being unaffected by time scales
 
 ## [0.8.2] 2026-07-26
 

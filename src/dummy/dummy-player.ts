@@ -95,7 +95,13 @@ prestart(() => {
             /* client only null when client after client is destroyed */
             const client = this.getClient(true)
             if (client?.ready) {
-                runTask(client.inst, () => inputBackup(this.inputManager, () => this.parent()))
+                const mapTick = ig.system.tick
+                runTask(client.inst, () => {
+                    const clientTickBackup = ig.system.tick
+                    ig.system.tick = mapTick
+                    inputBackup(this.inputManager, () => this.parent())
+                    ig.system.tick = clientTickBackup
+                })
             } else {
                 inputBackup(this.inputManager, () => this.parent())
             }
