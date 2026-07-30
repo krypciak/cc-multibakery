@@ -198,64 +198,68 @@ export class Client extends InstanceUpdateable {
 
     @profile((self, _, __) => `${self.username}`)
     async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
-        this.startTeleportOverlay()
-        runTask(this.inst, () => {
-            sc.model.enterTeleport()
-            ig.game.events.clear()
-        })
+        try {
+            this.startTeleportOverlay()
+            runTask(this.inst, () => {
+                sc.model.enterTeleport()
+                ig.game.events.clear()
+            })
 
-        assert(instanceinator.id == multi.server.inst.id)
-        if (this.dummy) {
-            multi.storage.createAndSavePlayerStateWithClient(this, tpInfo)
+            assert(instanceinator.id == multi.server.inst.id)
+            if (this.dummy) {
+                multi.storage.createAndSavePlayerStateWithClient(this, tpInfo)
+            }
+
+            this.nextTpInfo = tpInfo
+            const map = multi.server.getMap(tpInfo)
+            if (isPhysics(multi.server)) this.reservedNetid ??= map.reservePlayerNetid()
+
+            this.ready = false
+
+            await Promise.all([
+                map.initIfNeeded(),
+                noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
+            ])
+            assert(map)
+            assert(map.initialized)
+
+            const oldMap = multi.server.maps.get(this.tpInfo.map)
+            if (oldMap) {
+                oldMap.leave(this)
+                for (const obj of oldMap.onLinkChange) obj.onClientUnlink?.(this)
+            }
+
+            this.tpInfo = tpInfo
+
+            await runTask(map.inst, () => this.createPlayer())
+
+            this.reservedNetid = undefined
+
+            map.enter(this)
+
+            runTask(map.inst, () => {
+                teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
+            })
+
+            await this.linkMapToInstanceStage1(map)
+
+            runTask(this.inst, () => sc.model.enterLoading())
+
+            await map.loadResourcesIfNeeded()
+
+            this.ready = true
+            this.nextTpInfo = { map: '' }
+
+            this.linkMapToInstanceStage2(map)
+
+            for (const obj of map.onLinkChange) obj.onClientLink?.(this)
+
+            multi.storage.save()
+
+            this.stopTeleportOverlay()
+        } catch (e) {
+            multi.server.onInstanceUpdateError(e)
         }
-
-        this.nextTpInfo = tpInfo
-        const map = multi.server.getMap(tpInfo)
-        if (isPhysics(multi.server)) this.reservedNetid ??= map.reservePlayerNetid()
-
-        this.ready = false
-
-        await Promise.all([
-            map.initIfNeeded(),
-            noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
-        ])
-        assert(map)
-        assert(map.initialized)
-
-        const oldMap = multi.server.maps.get(this.tpInfo.map)
-        if (oldMap) {
-            oldMap.leave(this)
-            for (const obj of oldMap.onLinkChange) obj.onClientUnlink?.(this)
-        }
-
-        this.tpInfo = tpInfo
-
-        await runTask(map.inst, () => this.createPlayer())
-
-        this.reservedNetid = undefined
-
-        map.enter(this)
-
-        runTask(map.inst, () => {
-            teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
-        })
-
-        await this.linkMapToInstanceStage1(map)
-
-        runTask(this.inst, () => sc.model.enterLoading())
-
-        await map.loadResourcesIfNeeded()
-
-        this.ready = true
-        this.nextTpInfo = { map: '' }
-
-        this.linkMapToInstanceStage2(map)
-
-        for (const obj of map.onLinkChange) obj.onClientLink?.(this)
-
-        multi.storage.save()
-
-        this.stopTeleportOverlay()
     }
 
     @profile((self, _) => `${self.username}`)
