@@ -339,7 +339,7 @@ export class Client extends InstanceUpdateable {
             addAddon(sc.map, ig.game)
 
             sc.party.contacts = msc.party.contacts
-            multi.server.party.createPersonalParty(this.username)
+            multi.server.party.onPlayerCreate(this.username)
 
             sc.model.enterNewGame()
             sc.model.enterGame()

@@ -130,19 +130,28 @@ export class MultiPartyManager implements sc.Model {
         sc.Model.notifyObserver(this, MULTI_PARTY_EVENT.PARTY_ADDED, { party })
     }
 
-    createPersonalParty(username: Username) {
-        const id = 'personal_' + username
-        let party: MultiParty = this.parties[id]
-        if (party) {
-            this.setPlayerData(username, party)
-            if (!party.players.includes(username)) {
-                this.joinParty(username, party)
-                this.transferPartyOwnership(username, party)
+    onPlayerCreate(username: Username) {
+        const inParty = this.getPartyOfUsername(username, true)
+        if (inParty) {
+            this.setPlayerData(username, inParty)
+        } else {
+            const personalParty = this.createPersonalParty(username)
+
+            this.setPlayerData(username, personalParty)
+            if (!personalParty.players.includes(username)) {
+                this.joinParty(username, personalParty)
+                this.transferPartyOwnership(username, personalParty)
             }
-            return
         }
+    }
+
+    private createPersonalParty(username: Username) {
+        const id = 'personal_' + username
+        let personalParty: MultiParty = this.parties[id]
+        if (personalParty) return personalParty
+
         const combatantParty = addCombatantParty(id)
-        party = {
+        personalParty = {
             id,
             owner: username,
             originalOwner: username,
@@ -151,10 +160,10 @@ export class MultiPartyManager implements sc.Model {
             players: [],
             vanillaMembers: [],
         }
-        this.addParty(party)
-        this.joinParty(username, party)
+        this.addParty(personalParty)
+        this.joinParty(username, personalParty)
 
-        return party
+        return personalParty
     }
 
     getPartyOfUsername(username: Username, noAssert?: false): MultiParty
