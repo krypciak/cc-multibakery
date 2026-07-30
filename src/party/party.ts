@@ -215,7 +215,8 @@ export class MultiPartyManager implements sc.Model {
     }
 
     joinParty(username: Username, party: MultiParty) {
-        assert(!party.players.includes(username))
+        assert(!party.players.includes(username), 'joinParty: player is already in this party!')
+        assert(!this.getPartyOfUsername(username, true), 'joinParty: player is in a different party!')
         party.players.push(username)
 
         this.setPlayerData(username, party)
@@ -274,6 +275,7 @@ export class MultiPartyManager implements sc.Model {
         if (!client.dummy) return
 
         const party = this.getPartyOfEntity(client.dummy)
+        if (!party) return
         if (party.owner == client.username) {
             const nextPlayer = party.players.find(username => username != client.username)
             if (nextPlayer) {
