@@ -4,7 +4,7 @@ import { prestart } from '../../loading-stages'
 import type { StateKey } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as igEntityPlayer from './ig_ENTITY_Player-base'
-import type { f32, u32 } from 'ts-binarifier/src/type-aliases'
+import type { u32 } from 'ts-binarifier/src/type-aliases'
 import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 
@@ -34,8 +34,6 @@ function getEntityState(this: dummy.DummyPlayer, player?: StateKey) {
         currentSubState: memory.diff(this.data.currentSubState),
 
         combatArtLabelText: memory.diff(this.combatArtLabelText),
-        combatantLabelText: memory.diff(this.combatantLabelInfo?.text),
-        combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time as f32),
         showElementalOverloadLabel: memory.diff(this.model.showElementalOverloadLabel),
         showNoSpLabel: memory.diff(this.showNoSpLabel),
     }
@@ -54,12 +52,6 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
     if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
 
     if (state.combatArtLabelText !== undefined) this.combatArtLabelText = state.combatArtLabelText
-    if (state.combatantLabelText !== undefined) {
-        this.combatantLabelInfo = {
-            text: state.combatantLabelText,
-            time: state.combatantLabelTimer,
-        }
-    }
     if (state.showElementalOverloadLabel !== undefined)
         this.model.showElementalOverloadLabel = state.showElementalOverloadLabel
     if (state.showNoSpLabel !== undefined) this.showNoSpLabel = state.showNoSpLabel

@@ -1,14 +1,17 @@
+import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../../../server/physics/physics-server-types'
 import type { DummyBoxGuiConfig } from '../box-addon'
 import { disableSmallEntityBoxAdding } from '../disable-box-adding'
 
 declare global {
-    namespace dummy {
-        interface DummyPlayer {
+    namespace ig.ENTITY {
+        interface Combatant {
             combatantLabelInfo?: {
                 text: string
                 time?: number
+                align?: keyof typeof sc.SMALL_BOX_ALIGN
+                offY?: number
             }
         }
     }
@@ -17,15 +20,29 @@ declare global {
 prestart(() => {
     if (!PHYSICS) return
 
+    function getAlignType(align: sc.SmallBoxAlign): keyof typeof sc.SMALL_BOX_ALIGN {
+        return align == sc.SMALL_BOX_ALIGN.BOTTOM ? 'BOTTOM' : align == sc.SMALL_BOX_ALIGN.CENTER ? 'CENTER' : 'TOP'
+    }
     sc.Combat.inject({
         showCombatantLabel(entity, msg) {
-            if (!isPhysics(multi.server) || !(entity instanceof dummy.DummyPlayer)) return this.parent(entity, msg)
+            if (!isPhysics(multi.server)) return this.parent(entity, msg)
 
             const { text, box } = disableSmallEntityBoxAdding(() => this.parent(entity, msg))
             if (text && box) {
+                const time = box.timer == 1 ? undefined : box.timer
+                const offY = box.offY
                 entity.combatantLabelInfo = {
                     text,
-                    time: box.timer == 1 ? undefined : box.timer,
+                    time,
+                    align: getAlignType(box.align),
+                    offY,
+                }
+
+                if (!(entity instanceof dummy.DummyPlayer)) {
+                    runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
+                        const newBox = new sc.SmallEntityBox(entity, text, time || 1, box.align, offY)
+                        ig.gui.addGuiElement(newBox)
+                    })
                 }
             }
         },

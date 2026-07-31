@@ -5,6 +5,8 @@ import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import type { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 import { isRemote } from '../../server/remote/remote-server-types'
+import type { f32 } from 'ts-binarifier/src/type-aliases'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace sc {
@@ -27,6 +29,11 @@ export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
         baseParams: memory.diffRecord(this.params?.baseParams ?? ({} as sc.CombatParams.BaseParams)),
         spLevel: memory.diff(this.params?.maxSp),
         sp: memory.diff(this.params?.currentSp),
+
+        combatantLabelText: memory.diff(this.combatantLabelInfo?.text),
+        combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time as f32),
+        combatantLabelAlign: memory.diff(this.combatantLabelInfo?.align),
+        combatantLabelOffY: memory.diff(this.combatantLabelInfo?.offY),
     }
 }
 
@@ -71,6 +78,26 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
         if (state.sp !== undefined) {
             this.params.currentSp = state.sp
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.SP_CHANGED)
+        }
+    }
+
+    if (state.combatantLabelText !== undefined) {
+        const text = state.combatantLabelText
+        const time = state.combatantLabelTimer
+        const align = state.combatantLabelAlign
+        const offY = state.combatantLabelOffY
+        this.combatantLabelInfo = { text, time, align, offY }
+        if (!(this instanceof dummy.DummyPlayer)) {
+            runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
+                const box = new sc.SmallEntityBox(
+                    this,
+                    text,
+                    time || 1,
+                    align ? sc.SMALL_BOX_ALIGN[align] : undefined,
+                    offY
+                )
+                ig.gui.addGuiElement(box)
+            })
         }
     }
 }
