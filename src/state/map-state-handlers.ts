@@ -1,6 +1,22 @@
 import type { Client } from '../client/client'
 
+declare global {
+    interface StateUpdatePacket {}
+}
+
 export type StateKey = Client
+
+declare global {
+    namespace ig {
+        interface InstanceShared {
+            settingState?: boolean
+            settingStateImmediately?: boolean
+        }
+        interface MapSharedVars {
+            lastStatePacket?: StateUpdatePacket
+        }
+    }
+}
 
 export interface MapStateHandler {
     get: (packet: StateUpdatePacket, client?: StateKey, cache?: StateUpdatePacket) => void
@@ -20,7 +36,7 @@ import { hitNumberClearMapStateHandler, hitNumberSpawnMapStateHandler } from './
 import { varsMapStateHandler } from './vars'
 import { actionStepsMapStateHandler, clearActionAttachedStateHandler } from './action-steps'
 
-export const mapStateHandlers: MapStateHandler[] = [
+const mapStateHandlers: MapStateHandler[] = [
     clearEffectsMapStateHandler,
     stopEffectsMapStateHandler,
     destroyCombatProxiesMapStateHandler,
@@ -39,4 +55,28 @@ export const mapStateHandlers: MapStateHandler[] = [
 
 if (TEST) {
     await import('../test/test-setup-mod-side').then(o => mapStateHandlers.push(o.testMapStateHandler))
+}
+
+export function getMapStateUpdatePacket(dest: StateUpdatePacket = {}, client?: StateKey, cache?: StateUpdatePacket) {
+    for (const { get } of mapStateHandlers) get(dest, client, cache)
+
+    return dest
+}
+
+export function applyMapStateUpdatePacket(packet: StateUpdatePacket, tick: number, immediately: boolean) {
+    ig.shared.settingState = true
+    const backup = ig.system.tick
+    ig.system.tick = tick
+    ig.shared.settingStateImmediately = immediately
+
+    for (const { set } of mapStateHandlers) set(packet)
+
+    ig.system.tick = backup
+    ig.shared.settingState = false
+    ig.shared.settingStateImmediately = false
+    ig.mapShared.lastStatePacket = packet
+}
+
+export function clearCollectedMapState() {
+    for (const { clear } of mapStateHandlers) clear?.()
 }

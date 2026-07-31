@@ -12,7 +12,7 @@ import {
     createServerTpsLabel,
 } from './instance-label-draw'
 import { isUsernameValid } from '../misc/username-util'
-import { applyStateUpdatePacket } from '../state/states'
+import { applyMapStateUpdatePacket } from '../state/map-state-handlers'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { InstanceUpdateable } from '../server/instance-updateable'
 import { updateDummyData } from './injects'
@@ -411,7 +411,7 @@ export class Client extends InstanceUpdateable {
 
     @profile((self, _) => `${self.username}`)
     private applyPlayerEntityState(entityState: StoragePlayerEntityState) {
-        applyStateUpdatePacket({ states: { [this.dummy.netid]: entityState } }, 0, true)
+        applyMapStateUpdatePacket({ states: { [this.dummy.netid]: entityState } }, 0, true)
     }
 
     private loadAndApplyPlayerEntityState() {

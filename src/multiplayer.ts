@@ -8,7 +8,7 @@ import './misc/entity-netid'
 import './game-loop'
 import './misc/godmode'
 import './dummy/dummy-player'
-import './state/states-all'
+import './state/entity-all'
 import './misc/paused-virtual'
 import './misc/disable-fkeys'
 import './misc/unregister'
@@ -17,7 +17,6 @@ import './steps/all'
 import './misc/icons'
 import './mod-compatibility/all'
 import './server/instance-redirect-fixes'
-import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace multi {

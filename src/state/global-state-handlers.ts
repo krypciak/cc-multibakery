@@ -1,4 +1,9 @@
 import type { NetConnection } from '../net/net-connection'
+
+declare global {
+    interface GlobalStateUpdatePacket {}
+}
+
 export type GlobalStateKey = NetConnection
 
 export interface GlobalStateHandler {
@@ -12,9 +17,31 @@ import { areasGlobalStateHandler } from './areas'
 import { playerInfoGlobalStateHandler } from './player-info'
 import { partyGlobalStateHandler } from './party'
 
-export const globalStateHandlers: GlobalStateHandler[] = [
+const globalStateHandlers: GlobalStateHandler[] = [
     varsGlobalStateHandler,
     areasGlobalStateHandler,
     playerInfoGlobalStateHandler,
     partyGlobalStateHandler,
 ]
+
+export function getGlobalStateUpdatePacket(
+    dest: GlobalStateUpdatePacket = {},
+    conn: GlobalStateKey,
+    cache?: GlobalStateUpdatePacket
+) {
+    for (const { get } of globalStateHandlers) get(dest, conn, cache)
+
+    return dest
+}
+
+export function applyGlobalStateUpdatePacket(packet: GlobalStateUpdatePacket) {
+    ig.shared.settingState = true
+
+    for (const { set } of globalStateHandlers) set(packet)
+
+    ig.shared.settingState = false
+}
+
+export function clearCollectedGlobalState() {
+    for (const { clear } of globalStateHandlers) clear?.()
+}

@@ -4,7 +4,8 @@ import type { CCMap } from '../ccmap/ccmap'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
 import { NetManagerRemoteServer } from '../../net/net-manager-remote'
-import { applyGlobalStateUpdatePacket, applyStateUpdatePacket } from '../../state/states'
+import { applyMapStateUpdatePacket } from '../../state/map-state-handlers'
+import { applyGlobalStateUpdatePacket } from '../../state/global-state-handlers'
 import { assert } from '../../misc/assert'
 import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
 import { Server } from '../server'
@@ -161,7 +162,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             runTask(map.inst, () => {
                 try {
-                    applyStateUpdatePacket(stateUpdatePacket, ig.system.tick, map.noStateAppliedYet)
+                    applyMapStateUpdatePacket(stateUpdatePacket, ig.system.tick, map.noStateAppliedYet)
                 } catch (e) {
                     this.onInstanceUpdateError(e)
                 }

@@ -1,9 +1,6 @@
 import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
-import {
-    clearCollectedState,
-    getGlobalStateUpdatePacket,
-    getEntityStateUpdatePacket,
-} from '../../state/states'
+import { clearCollectedMapState, getMapStateUpdatePacket } from '../../state/map-state-handlers'
+import { clearCollectedGlobalState, getGlobalStateUpdatePacket } from '../../state/global-state-handlers'
 import type { StateKey } from '../../state/map-state-handlers'
 import type { CCMap } from '../ccmap/ccmap'
 import type { NetConnection } from '../../net/net-connection'
@@ -115,7 +112,7 @@ export class PhysicsSender {
 
     @profile((_self, map) => `${map.name}`, 'physics sender', true)
     private static getMapUpdatePacket(map: CCMap, dest?: StateUpdatePacket, key?: StateKey, cache?: StateUpdatePacket) {
-        runTask(map.inst, () => getEntityStateUpdatePacket(dest, key, cache))
+        runTask(map.inst, () => getMapStateUpdatePacket(dest, key, cache))
     }
 
     @profile((self, _) => `${self.currentConn?.transport.getConnectionInfo()}`, 'physics sender', true)
@@ -145,9 +142,10 @@ export class PhysicsSender {
     }
 
     private static clearCollectedState() {
+        clearCollectedGlobalState()
         runTasks(
             [...multi.server.maps.values()].filter(map => map.ready).map(map => map.inst),
-            () => clearCollectedState()
+            () => clearCollectedMapState()
         )
     }
 }
