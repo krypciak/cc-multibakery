@@ -12,15 +12,16 @@ import { profile } from './misc/performance-profiling'
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',
-    // marker: 'entrance',
-    // map: 'co-op-dng/intro-rooms/room-4',
+    marker: 'entrance',
+    // map: 'co-op-dng/intro-rooms/room-3',
+    // marker: 'd1',
     // map: 'co-op-dng/template',
 
-    map: 'multibakery/mba-pvp',
-    marker: 'to_pvp',
+    // map: 'multibakery/mba-pvp',
+    // marker: 'to_pvp',
 
     // map: 'tree-dng/f4/boss',
-    // map: 'multibakery/mba-lobby',
+    map: 'multibakery/mba-lobby',
     // map: 'multibakery/mba-testing',
     // map: 'multibakery/mba-outdoors',
     // map: 'multibakery/mba-south',
