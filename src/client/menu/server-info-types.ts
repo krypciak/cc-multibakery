@@ -1,3 +1,4 @@
+import type { BinaryClassHashes } from '../../net/binary/binary-class-hashes'
 import type { NetTransportClientSettings } from '../../net/net-transport'
 import { isModCompatibilityList, type ModCompatibilityList } from '../../server/mod-compatibility-list-types'
 import type { PhysicsServerConnectionSettings } from '../../server/physics/physics-server-types'

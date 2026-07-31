@@ -5,6 +5,7 @@ import { COLOR, wrapColor } from '../misc/wrap-color'
 import { semver } from '../misc/nwjs-version-popup'
 import { modMetadata } from '../mod-metadata'
 import { assert } from '../misc/assert'
+import { getBinaryClassHashes } from '../net/binary/binary-class-hashes'
 
 const knownClientModsWithJson = ['menu-ui-replacer', 'extendable-severed-heads', 'bobrank', 'NamedSaves', 'xpc-litter']
 
@@ -50,12 +51,13 @@ export function getModCompatibilityList(): ModCompatibilityList {
         incompatible: [],
         ccuilibWidgets: widgets,
         requiredAddons: addons,
+        binaryClassHashes: getBinaryClassHashes(),
     }
     assert(isModCompatibilityList(list))
     return list
 }
 
-type ModCompatibilityErrorList = {
+interface ModCompatibilityErrorList {
     missing?: { modId: string }[]
     versionMismatch?: {
         modId: string
@@ -64,6 +66,7 @@ type ModCompatibilityErrorList = {
     }[]
     incompatible?: { modId: string }[]
     missingAddons?: { addonId: string }[]
+    binaryClassHashMismatch?: string[]
 }
 
 export function isModCompatibilityListSatisfied(list: ModCompatibilityList): {
@@ -98,6 +101,14 @@ export function isModCompatibilityListSatisfied(list: ModCompatibilityList): {
     for (const addonId of list.requiredAddons) {
         if (!ig.extensions.enabled[addonId]) {
             ;(errors.missingAddons ??= []).push({ addonId: addonId })
+        }
+    }
+
+    const ownBinaryClassHashes = getBinaryClassHashes()
+    for (const [className, theirHash] of Object.entries(list.binaryClassHashes)) {
+        const ownHash = ownBinaryClassHashes[className as keyof typeof list.binaryClassHashes]
+        if (ownHash != theirHash) {
+            ;(errors.binaryClassHashMismatch ??= []).push(className)
         }
     }
 
@@ -140,6 +151,10 @@ export function showModCompatibilityListPopup(errors: ModCompatibilityErrorList)
     if (errors.missingAddons) {
         text += 'Missing game addons:\n'
         text += errors.missingAddons.map(({ addonId }) => `- ${wrapColor(addonId, COLOR.YELLOW)}`)
+    }
+    if (errors.binaryClassHashMismatch) {
+        text += 'Binary encoding classes hash mismatch:\n'
+        text += errors.binaryClassHashMismatch.map(className => `- ${wrapColor(className, COLOR.YELLOW)}`)
     }
 
     const popup = new modmanager.gui.MultiPageButtonBoxGui(448, 290, buttons)

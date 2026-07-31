@@ -30,7 +30,6 @@ export type SpLevelType = u6
 export type SpType = f32
 export type ExpType = u10
 
-export {}
 declare global {
     namespace sc {
         namespace CombatParams {

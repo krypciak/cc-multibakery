@@ -1,3 +1,5 @@
+import type { BinaryClassHashes } from '../net/binary/binary-class-hashes'
+
 export interface ModVersionEntry {
     id: string
     version: string
@@ -22,6 +24,7 @@ export interface ModCompatibilityList {
     incompatible: ModVersionEntry[]
     ccuilibWidgets: string[]
     requiredAddons: AddonId[]
+    binaryClassHashes: BinaryClassHashes
 }
 export function isModCompatibilityList(data: unknown): data is ModCompatibilityList {
     if (!data || typeof data !== 'object') return false
@@ -37,6 +40,14 @@ export function isModCompatibilityList(data: unknown): data is ModCompatibilityL
     }
     if (!('ccuilibWidgets' in data) || !Array.isArray(data.ccuilibWidgets)) return false
     if (!('requiredAddons' in data) || !Array.isArray(data.requiredAddons)) return false
+    if (
+        !('binaryClassHashes' in data) ||
+        !data.binaryClassHashes ||
+        typeof data.binaryClassHashes !== 'object' ||
+        Object.values(data.binaryClassHashes).some(v => typeof v !== 'string')
+    ) {
+        return false
+    }
 
     return true
 }
