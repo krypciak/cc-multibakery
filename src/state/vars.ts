@@ -1,6 +1,6 @@
 import { prestart } from '../loading-stages'
 import type { MapStateHandler } from './map-state-handlers'
-import { addGlobalStateHandler, type GlobalStateKey, type StateKey } from './states'
+import type { GlobalStateKey, StateKey } from './states'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
@@ -9,6 +9,7 @@ import { runTasks } from 'cc-instanceinator/src/inst-util'
 import type { MapName } from '../net/binary/binary-types'
 import { fromCamel } from '../misc/from-camel'
 import { wrapIgnoreEffectNetid } from './entity/effect-netid'
+import type { GlobalStateHandler } from './global-state-handlers'
 
 type VarObj = Record<string, unknown> & RecordSize<u16>
 
@@ -77,60 +78,60 @@ export const varsMapStateHandler: MapStateHandler = {
     },
 }
 
+const globalEverSent = new WeakSet<GlobalStateKey>()
+let globalVarsChanged: VarObj | undefined = undefined
+export const varsGlobalStateHandler: GlobalStateHandler = {
+    get(packet, conn) {
+        packet.vars = globalVarsChanged
+
+        if (!globalEverSent.has(conn)) {
+            globalEverSent.add(conn)
+
+            packet.vars ??= {}
+            flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
+
+            for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
+            flattenRecursive(ig.vars.storage.maps ?? {}, 'maps', packet.vars)
+        }
+    },
+    clear() {
+        globalVarsChanged = undefined
+    },
+    set(packet) {
+        if (!packet.vars) return
+
+        const mapsToNotify = new Set<MapName>()
+        for (let path in packet.vars) {
+            const value = packet.vars[path]
+            const obj = ig.vars._getAccessObject(path)
+            assert(obj)
+
+            const oldValue = obj.obj[obj.key]
+            /* do not override object so references are not broken (ig.vars.storage.map) */
+            if (oldValue && typeof oldValue === 'object' && value && typeof value === 'object') {
+                /* value should always be an empty object, but just in case */
+                for (const [k, v] of Object.entries(value)) {
+                    oldValue[k] = v
+                }
+            } else {
+                obj.obj[obj.key] = value
+            }
+
+            if (path.startsWith('maps')) {
+                mapsToNotify.add(extractMapNameOutOfMapsVar(path))
+            }
+        }
+        runTasks(
+            [...mapsToNotify]
+                .map(mapName => multi.server.maps.get(mapName))
+                .filter(Boolean)
+                .map(map => map!.inst),
+            () => ig.game.varsChangedDeferred()
+        )
+    },
+}
+
 prestart(() => {
-    const globalEverSent = new WeakSet<GlobalStateKey>()
-    let globalVarsChanged: VarObj | undefined = undefined
-    addGlobalStateHandler({
-        get(packet, conn) {
-            packet.vars = globalVarsChanged
-
-            if (!globalEverSent.has(conn)) {
-                globalEverSent.add(conn)
-
-                packet.vars ??= {}
-                flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
-
-                for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
-                flattenRecursive(ig.vars.storage.maps ?? {}, 'maps', packet.vars)
-            }
-        },
-        clear() {
-            globalVarsChanged = undefined
-        },
-        set(packet) {
-            if (!packet.vars) return
-
-            const mapsToNotify = new Set<MapName>()
-            for (let path in packet.vars) {
-                const value = packet.vars[path]
-                const obj = ig.vars._getAccessObject(path)
-                assert(obj)
-
-                const oldValue = obj.obj[obj.key]
-                /* do not override object so references are not broken (ig.vars.storage.map) */
-                if (oldValue && typeof oldValue === 'object' && value && typeof value === 'object') {
-                    /* value should always be an empty object, but just in case */
-                    for (const [k, v] of Object.entries(value)) {
-                        oldValue[k] = v
-                    }
-                } else {
-                    obj.obj[obj.key] = value
-                }
-
-                if (path.startsWith('maps')) {
-                    mapsToNotify.add(extractMapNameOutOfMapsVar(path))
-                }
-            }
-            runTasks(
-                [...mapsToNotify]
-                    .map(mapName => multi.server.maps.get(mapName))
-                    .filter(Boolean)
-                    .map(map => map!.inst),
-                () => ig.game.varsChangedDeferred()
-            )
-        },
-    })
-
     if (PHYSICSNET) {
         addVarModifyListener((path, newValue) => {
             if (
