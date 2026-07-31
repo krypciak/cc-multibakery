@@ -1,6 +1,6 @@
 import ts from 'typescript'
 import { Node } from 'ts-binarifier/src/nodes/node'
-import { gray, yellow } from 'ts-binarifier/src/colors'
+import { gray, green, yellow } from 'ts-binarifier/src/colors'
 import type { TypeParser } from 'ts-binarifier/src/type-parser'
 import { getRecordKeyType } from 'ts-binarifier/src/type-parser'
 import { assert } from 'ts-binarifier/src/assert'
@@ -12,7 +12,7 @@ class EntityStateRecordUnionNode extends Node {
     constructor(
         optional: boolean | undefined,
         private netidNode: NumberNode,
-        public values: Node[]
+        public values: { node: Node; name: string }[]
     ) {
         super(optional)
     }
@@ -24,12 +24,14 @@ class EntityStateRecordUnionNode extends Node {
             ', \n' +
             this.values
                 .map(
-                    (v, i) =>
+                    ({ node, name }, i) =>
                         Node.indent(indent + 1) +
-                        gray(`/* id: `, noColor) +
+                        gray(`/* `, noColor) +
+                        gray(name, noColor) +
+                        gray(` id: `, noColor) +
                         yellow(`${i + 1}`, noColor) +
                         gray(` */ `, noColor) +
-                        v.print(noColor, indent + 1)
+                        node.print(noColor, indent + 1)
                 )
                 .join(' | \n') +
             '>' +
@@ -63,11 +65,11 @@ class EntityStateRecordUnionNode extends Node {
                 `switch (${idVar}) { \n` +
                 this.values
                     .map(
-                        (t, i) =>
+                        ({ node, name }, i) =>
                             Node.indent(data.indent + 2) +
-                            `case ${i + 1}: {\n` +
+                            `case ${i + 1}: { // ${name}\n` +
                             Node.indent(data.indent + 3) +
-                            t.genEncode({ ...data, varName: valueVar, indent: data.indent + 3 }) +
+                            node.genEncode({ ...data, varName: valueVar, indent: data.indent + 3 }) +
                             '\n' +
                             Node.indent(data.indent + 3) +
                             `break\n` +
@@ -103,12 +105,12 @@ class EntityStateRecordUnionNode extends Node {
                 `switch (${idVar}) { \n` +
                 this.values
                     .map(
-                        (t, i) =>
+                        ({ node, name }, i) =>
                             Node.indent(data.indent + 2) +
-                            `case ${i + 1}: {\n` +
+                            `case ${i + 1}: { // ${name}\n` +
                             Node.indent(data.indent + 3) +
                             `${valueVar} = ` +
-                            t.genDecode({ ...data, indent: data.indent + 3 }) +
+                            node.genDecode({ ...data, indent: data.indent + 3 }) +
                             '\n' +
                             Node.indent(data.indent + 3) +
                             `break\n` +
@@ -162,9 +164,10 @@ export function createEntityStateRecordUnionNode(
 
     assert(entityImportOrder.length == valueNodesUnsortedTypeNames.length)
     // console.log(valueNodesUnsortedTypeNames)
-    const valueNodes: Node[] = entityImportOrder.map(
-        typeName => valueNodesUnsorted[valueNodesUnsortedTypeNames.findIndex(typeName1 => typeName == typeName1)]
-    )
+    const nodes = entityImportOrder.map(typeName => ({
+        node: valueNodesUnsorted[valueNodesUnsortedTypeNames.findIndex(typeName1 => typeName == typeName1)],
+        name: typeName,
+    }))
 
-    return new EntityStateRecordUnionNode(optional, keyNode, valueNodes)
+    return new EntityStateRecordUnionNode(optional, keyNode, nodes)
 }
