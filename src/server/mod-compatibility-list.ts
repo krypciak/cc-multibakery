@@ -118,15 +118,7 @@ export function isModCompatibilityListSatisfied(list: ModCompatibilityList): {
     }
 }
 
-export function showModCompatibilityListPopup(errors: ModCompatibilityErrorList) {
-    const buttons: MultiPageButtonGuiButtons = []
-    buttons.push({
-        name: 'Close',
-        onPress() {
-            popup.closeMenu()
-        },
-    })
-
+export function getModCompatibilityErrorListText(errors: ModCompatibilityErrorList) {
     let text = ``
     if (errors.missing) {
         text += 'Missing mods:\n'
@@ -156,6 +148,19 @@ export function showModCompatibilityListPopup(errors: ModCompatibilityErrorList)
         text += 'Binary encoding classes hash mismatch:\n'
         text += errors.binaryClassHashMismatch.map(className => `- ${wrapColor(className, COLOR.YELLOW)}`)
     }
+    return text
+}
+
+export function showModCompatibilityListPopup(errors: ModCompatibilityErrorList) {
+    const buttons: MultiPageButtonGuiButtons = []
+    buttons.push({
+        name: 'Close',
+        onPress() {
+            popup.closeMenu()
+        },
+    })
+
+    const text = getModCompatibilityErrorListText(errors)
 
     const popup = new modmanager.gui.MultiPageButtonBoxGui(448, 290, buttons)
     popup.hook.temporary = true

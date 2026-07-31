@@ -9,6 +9,7 @@ import type { MapTpInfo } from './server/server-types'
 import { getServerDetails } from './net/web-server-utils'
 import type { RemoteServerConnectionSettings } from './server/remote/remote-server-types'
 import { profile } from './misc/performance-profiling'
+import { getModCompatibilityErrorListText, isModCompatibilityListSatisfied } from './server/mod-compatibility-list'
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',
@@ -225,11 +226,15 @@ poststart(() => {
                 https: true,
             }
             const { details } = (await getServerDetails(connection)) ?? {}
-            if (details) {
-                const ackData = await multi.tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
-                if (ackData.status != 'ok') {
-                    console.log(ackData)
-                }
+            if (!details) return
+            const { satisfied, errors } = isModCompatibilityListSatisfied(details.modCompatibility)
+            if (!satisfied) {
+                console.error(getModCompatibilityErrorListText(errors))
+                return
+            }
+            const ackData = await multi.tryJoinRemote({ connection, details }, { username: Opts.clientLogin })
+            if (ackData.status != 'ok') {
+                console.log(ackData)
             }
         })()
     }
