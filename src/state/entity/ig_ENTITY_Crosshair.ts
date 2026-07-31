@@ -9,8 +9,8 @@ import { isRemote } from '../../server/remote/remote-server-types'
 declare global {
     namespace ig.ENTITY {
         interface Crosshair extends StateMemory.MapHolder<StateKey> {
-            justThrown?: boolean
-            justSetCircleGlow?: boolean
+            lastThrowFrame?: number
+            lastSetCircleGlowFrame?: number
         }
     }
     interface EntityStates {
@@ -29,11 +29,8 @@ function getEntityState(this: ig.ENTITY.Crosshair, player?: StateKey) {
             isAiming = this.controller.isAiming()
         })
     }
-    const justThrown = this.justThrown
-    this.justThrown = false
-
-    const justSetCircleGlow = this.justSetCircleGlow
-    this.justSetCircleGlow = false
+    const justThrown = this.lastThrowFrame == ig.system.frame - 1
+    const justSetCircleGlow = this.lastSetCircleGlowFrame == ig.system.frame - 1
 
     assert(this.thrower.netid)
     return {
@@ -108,11 +105,11 @@ prestart(() => {
     if (PHYSICS) {
         ig.ENTITY.Crosshair.inject({
             setThrown() {
-                this.justThrown = true
+                this.lastThrowFrame = ig.system.frame
                 return this.parent()
             },
             setCircleGlow() {
-                this.justSetCircleGlow = true
+                this.lastSetCircleGlowFrame = ig.system.frame
                 return this.parent()
             },
         })
