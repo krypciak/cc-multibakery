@@ -169,7 +169,7 @@ export class CCMap extends InstanceUpdateable {
     private async loadResources() {
         await runTask(this.inst, () => MapDataLoad.loadMapResources())
         runTask(this.inst, () => {
-            sc.model.enterNewGame()
+            sc.model.enterRunning()
             sc.model.enterGame()
 
             this.display.setPosCameraHandle({ x: ig.game.size.x / 2, y: ig.game.size.y / 2 })

@@ -341,7 +341,7 @@ export class Client extends InstanceUpdateable {
             sc.party.contacts = msc.party.contacts
             multi.server.party.onPlayerCreate(this.username)
 
-            sc.model.enterNewGame()
+            sc.model.enterRunning()
             sc.model.enterGame()
             for (const entry of ig.interact.entries) ig.interact.removeEntry(entry)
 

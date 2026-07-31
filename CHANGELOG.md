@@ -25,6 +25,7 @@
 - Fix invalid party handling on player map change
 - Fix bombs and water bubbles phantoms on remote if remote player enters after bomb/water bubble has respawned at least once
 - Fix "Break" box gui not displaying on client instances and remote
+- Fix combatant status effects not decaying
 
 ## [0.8.2] 2026-07-26
 
