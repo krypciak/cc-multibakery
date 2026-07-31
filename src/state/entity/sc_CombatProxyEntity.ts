@@ -109,6 +109,7 @@ prestart(() => {
             for (const netid of packet.destroyCombatProxies) {
                 const entity = ig.game.entitiesByNetid[netid]
                 if (!entity) {
+                    console.warn('destroyCombatProxies entity:', netid, 'not found!')
                     continue
                 }
                 assert(entity instanceof sc.CombatProxyEntity)
@@ -146,7 +147,7 @@ prestart(() => {
             },
         })
     }
-})
+}, 2) /* before entity-death.ts */
 
 declare global {
     namespace sc {
