@@ -69,7 +69,6 @@ function getEntityState(this: ig.ENTITY.ElementPole, player?: StateKey) {
 
 function setEntityState(this: ig.ENTITY.ElementPole, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
-    console.log(state)
 
     if (state.active !== undefined) {
         this.active = state.active
@@ -88,7 +87,6 @@ function setEntityState(this: ig.ENTITY.ElementPole, state: Return) {
     }
 
     if (state.state) {
-        console.log(state.state)
         this.charge.state = getPoleStateObject(state.state)
     }
 
