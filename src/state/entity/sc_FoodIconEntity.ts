@@ -55,7 +55,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.FoodIconEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.FoodIconEntity, ignoreDeath: true })
+    registerNetEntity({ entityClass: sc.FoodIconEntity })
 
     sc.FoodIconEntity.forceRemotePhysics = true
 }, 2)
