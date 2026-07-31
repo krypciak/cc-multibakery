@@ -16,6 +16,12 @@ declare global {
     }
 }
 
+function getStatusEntries(combatant: ig.ENTITY.Combatant) {
+    type Rec = Record<keyof typeof combatant.statusGui.statusEntries, number>
+    if (!combatant.statusGui) return {} as Rec
+    return Object.fromEntries(Object.entries(combatant.statusGui.statusEntries).map(([k, v]) => [k, v.value])) as Rec
+}
+
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
@@ -34,6 +40,8 @@ export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
         combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time as f32),
         combatantLabelAlign: memory.diff(this.combatantLabelInfo?.align),
         combatantLabelOffY: memory.diff(this.combatantLabelInfo?.offY),
+
+        statusGui: memory.diffRecord(getStatusEntries(this)),
     }
 }
 
@@ -78,6 +86,25 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
         if (state.sp !== undefined) {
             this.params.currentSp = state.sp
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.SP_CHANGED)
+        }
+    }
+
+    if (this.statusGui) {
+        if (state.statusGui !== undefined) {
+            for (const type of Object.keys(state.statusGui) as (keyof typeof state.statusGui)[]) {
+                const v = state.statusGui[type]
+                const obj = this.statusGui.statusEntries[type]
+                const diff = v - obj.value
+                if (v >= 1) {
+                    this.statusGui.setStatusEntryStick(type, true)
+                } else if (v == 0) {
+                    this.statusGui.clearStatusEntry(type)
+                    obj.value = 0
+                } else {
+                    if (diff > 0) this.statusGui.setStatusEntry(type, v)
+                    else this.statusGui.updateStatusEntry(type, v)
+                }
+            }
         }
     }
 

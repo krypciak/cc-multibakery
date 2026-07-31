@@ -16,7 +16,7 @@ prestart(() => {
         get(packet, conn) {
             const memory = StateMemory.getBy(partiesStateMemory, conn)
 
-            packet.parties = memory.diffRecord2Deep<keyof MultiParty, MultiParty>(
+            packet.parties = memory.diffRecord2Deep<string, keyof MultiParty, MultiParty>(
                 multi.server.party.parties,
                 {
                     players: (a, b) => a.length != b.length || a.some((v, i) => v != b[i]),

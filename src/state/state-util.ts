@@ -132,11 +132,11 @@ export class StateMemory {
         }
     }
 
-    diffRecord2Deep<K2 extends string, R extends PartialRecord<K2, unknown>>(
-        currRecord: Record<string, R>,
+    diffRecord2Deep<K1 extends PropertyKey, K2 extends string, R extends PartialRecord<K2, unknown>>(
+        currRecord: Record<K1, R>,
         notEqMap: { [K in keyof R]?: (a: R[K], b: R[K]) => boolean } = {},
         cloneMap: { [K in keyof R]?: (obj: R[K]) => R[K] } = {}
-    ): Record<string, R> | undefined {
+    ): Record<K1, R> | undefined {
         function cloneRecord(rec: R): R {
             return Object.fromEntries(
                 Object.entries(rec).map(([k, v]) => [k, cloneMap[k as keyof R]?.(v as R[keyof R]) ?? v])
@@ -144,11 +144,13 @@ export class StateMemory {
         }
         const i = this.i++
         if (this.data.length <= i) {
-            this.data.push(Object.fromEntries(Object.entries(currRecord).map(([k, v]) => [k, cloneRecord(v)])))
+            this.data.push(
+                Object.fromEntries(Object.entries(currRecord).map(([k, v]) => [k as K1, cloneRecord(v as R)]))
+            )
             return currRecord
         } else {
-            const lastRecord = this.data[i] as Record<string, R>
-            const changed: Record<string, R> = {}
+            const lastRecord = this.data[i] as Record<K1, R>
+            const changed = {} as Record<K1, R>
             let atLeastOne = false
 
             for (const key1 in currRecord) {
@@ -173,7 +175,8 @@ export class StateMemory {
                     }
                 }
             }
-            for (const key1 in lastRecord) {
+            for (const _key1 in lastRecord) {
+                const key1 = _key1 as K1
                 if (currRecord[key1] === undefined && lastRecord[key1] !== undefined) {
                     lastRecord[key1] = undefined as any
                     changed[key1] = undefined as any

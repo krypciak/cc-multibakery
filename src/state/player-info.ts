@@ -93,7 +93,7 @@ prestart(() => {
             const isInPartyMenu = conn.clients.some(c => c.inst.sc.menu.currentMenu == sc.MENU_SUBMENU.SOCIAL)
 
             const entries = multi.server.getPlayerInfoEntries()
-            packet.playerInfo = memory.diffRecord2Deep<keyof PartialPlayerInfoEntry, PartialPlayerInfoEntry>(
+            packet.playerInfo = memory.diffRecord2Deep<Username, keyof PartialPlayerInfoEntry, PartialPlayerInfoEntry>(
                 entries,
                 {
                     tpInfo(a, b) {
