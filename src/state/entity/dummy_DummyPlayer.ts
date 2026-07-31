@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import type { StateKey } from '../states'
+import type { StateKey } from '../map-state-handlers'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as igEntityPlayer from './ig_ENTITY_Player-base'
 import type { u32 } from 'ts-binarifier/src/type-aliases'

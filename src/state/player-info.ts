@@ -1,5 +1,5 @@
 import type { GlobalStateHandler } from './global-state-handlers'
-import type { GlobalStateKey } from './states'
+import type { GlobalStateKey } from './global-state-handlers'
 import { StateMemory } from './state-util'
 import { isRemote } from '../server/remote/remote-server-types'
 import { assert } from '../misc/assert'

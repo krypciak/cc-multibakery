@@ -1,7 +1,7 @@
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
-import type { StateKey } from '../states'
+import type { StateKey } from '../map-state-handlers'
 import type { u8 } from 'ts-binarifier/src/type-aliases'
 
 declare global {

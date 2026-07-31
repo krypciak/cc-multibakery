@@ -1,5 +1,5 @@
 import type { GlobalStateHandler } from './global-state-handlers'
-import type { GlobalStateKey } from './states'
+import type { GlobalStateKey } from './global-state-handlers'
 import { StateMemory } from './state-util'
 import { type MultiParty, type MultiPartyId, type PartialMultiParty } from '../party/party'
 import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'

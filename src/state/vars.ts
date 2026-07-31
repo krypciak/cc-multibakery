@@ -1,6 +1,7 @@
 import { prestart } from '../loading-stages'
 import type { MapStateHandler } from './map-state-handlers'
-import type { GlobalStateKey, StateKey } from './states'
+import type { GlobalStateKey } from './global-state-handlers'
+import type { StateKey } from './map-state-handlers'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'

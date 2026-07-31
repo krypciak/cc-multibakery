@@ -3,8 +3,8 @@ import {
     clearCollectedState,
     getGlobalStateUpdatePacket,
     getEntityStateUpdatePacket,
-    type StateKey,
 } from '../../state/states'
+import type { StateKey } from '../../state/map-state-handlers'
 import type { CCMap } from '../ccmap/ccmap'
 import type { NetConnection } from '../../net/net-connection'
 import { cleanRecord } from '../../state/state-util'

@@ -1,4 +1,4 @@
-import { type StateKey } from './states'
+import { type StateKey } from './map-state-handlers'
 import { StateMemory } from './state-util'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'

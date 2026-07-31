@@ -1,16 +1,12 @@
-import type { Client } from '../client/client'
-import type { NetConnection } from '../net/net-connection'
 import { globalStateHandlers } from './global-state-handlers'
+import type { GlobalStateKey } from './global-state-handlers'
 import { mapStateHandlers } from './map-state-handlers'
+import type { StateKey } from './map-state-handlers'
 
 declare global {
     interface StateUpdatePacket {}
     interface GlobalStateUpdatePacket {}
 }
-
-/* TODO: this */
-export type StateKey = Client
-export type GlobalStateKey = NetConnection
 
 declare global {
     namespace ig {

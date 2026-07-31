@@ -1,4 +1,6 @@
-import type { StateKey } from './states'
+import type { Client } from '../client/client'
+
+export type StateKey = Client
 
 export interface MapStateHandler {
     get: (packet: StateUpdatePacket, client?: StateKey, cache?: StateUpdatePacket) => void

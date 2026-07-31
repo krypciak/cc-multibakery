@@ -2,7 +2,7 @@ import { entityIgnoreDeath, type EntityNetid } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { getEntityTypeId } from '../../misc/entity-netid'
 import { shouldCollectStateData, StateMemory } from '../state-util'
-import type { StateKey } from '../states'
+import type { StateKey } from '../map-state-handlers'
 import type { RecordSize, u16, u4 } from 'ts-binarifier/src/type-aliases'
 import type { MapStateHandler } from '../map-state-handlers'
 

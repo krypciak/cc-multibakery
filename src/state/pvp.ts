@@ -1,5 +1,5 @@
 import type { MapStateHandler } from './map-state-handlers'
-import type { StateKey } from './states'
+import type { StateKey } from './map-state-handlers'
 import { cleanRecord, StateMemory } from './state-util'
 import type { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
 import type { COMBATANT_PARTY } from '../net/binary/binary-types'

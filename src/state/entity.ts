@@ -1,4 +1,4 @@
-import type { StateKey } from './states'
+import type { StateKey } from './map-state-handlers'
 import { assert } from '../misc/assert'
 import { entityApplyPriority, type EntityNetid, entityTypeidToClass, getEntityTypeId } from '../misc/entity-netid'
 import { cleanRecord } from './state-util'

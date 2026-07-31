@@ -1,5 +1,5 @@
 import type { GlobalStateHandler } from './global-state-handlers'
-import type { GlobalStateKey } from './states'
+import type { GlobalStateKey } from './global-state-handlers'
 import { StateMemory } from './state-util'
 import type { AreaName } from '../net/binary/binary-types'
 import { fromCamel } from '../misc/from-camel'
