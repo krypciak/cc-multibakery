@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler } from './states'
+import type { MapStateHandler } from './map-state-handlers'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../misc/assert'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
@@ -184,48 +184,46 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
     })
 }
 
-prestart(() => {
-    addStateHandler({
-        get(packet, client) {
-            const mapSteps = ig.eventStepsFired
-            if (mapSteps && mapSteps.size > 0) {
-                //     packet.steps ??= {}
-                //     packet.steps.map = [...mapSteps.values()].map(serializeStepGroup)
-                ig.eventStepsFired?.clear()
-            }
+export const eventStepsMapStateHandler: MapStateHandler = {
+    get(packet, client) {
+        const mapSteps = ig.eventStepsFired
+        if (mapSteps && mapSteps.size > 0) {
+            //     packet.steps ??= {}
+            //     packet.steps.map = [...mapSteps.values()].map(serializeStepGroup)
+            ig.eventStepsFired?.clear()
+        }
 
-            if (client) {
-                const clientSteps = client.inst.ig.eventStepsFired
-                if (clientSteps && clientSteps.size > 0) {
-                    packet.eventSteps ??= {}
-                    packet.eventSteps.clients ??= {}
-                    packet.eventSteps.clients[client.username] = [...clientSteps.values()].map(serializeStepGroup)
-                    clientSteps.clear()
+        if (client) {
+            const clientSteps = client.inst.ig.eventStepsFired
+            if (clientSteps && clientSteps.size > 0) {
+                packet.eventSteps ??= {}
+                packet.eventSteps.clients ??= {}
+                packet.eventSteps.clients[client.username] = [...clientSteps.values()].map(serializeStepGroup)
+                clientSteps.clear()
+            }
+        }
+    },
+    set(packet) {
+        if (!packet.eventSteps) return
+
+        // if (packet.steps.map) {
+        //     assert(ig.ccmap)
+        //     runSteps(packet.steps.map, ig.ccmap.inst)
+        // }
+
+        if (packet.eventSteps.clients) {
+            for (const username in packet.eventSteps.clients) {
+                const client = multi.server.clients.get(username)
+                if (!client) {
+                    console.warn(`steps.ts client not found!: "${username}"`)
+                    continue
                 }
+
+                runSteps(packet.eventSteps.clients[username], client.inst)
             }
-        },
-        set(packet) {
-            if (!packet.eventSteps) return
-
-            // if (packet.steps.map) {
-            //     assert(ig.ccmap)
-            //     runSteps(packet.steps.map, ig.ccmap.inst)
-            // }
-
-            if (packet.eventSteps.clients) {
-                for (const username in packet.eventSteps.clients) {
-                    const client = multi.server.clients.get(username)
-                    if (!client) {
-                        console.warn(`steps.ts client not found!: "${username}"`)
-                        continue
-                    }
-
-                    runSteps(packet.eventSteps.clients[username], client.inst)
-                }
-            }
-        },
-    })
-}, 99) /* this needs to run before game-model-state, otherwise it will crash on dialog cutscene skip */
+        }
+    },
+}
 
 let eventStepWhitelist: Set<number>
 prestart(() => {

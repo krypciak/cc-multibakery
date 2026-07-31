@@ -1,10 +1,10 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
-import { poststart, preload, prestart } from '../loading-stages'
+import { poststart, preload } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { getServerDetails } from '../net/web-server-utils'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
-import { addStateHandler } from '../state/states'
 import { isBunTest } from './test-bridge'
+import type { MapStateHandler } from '../state/map-state-handlers'
 
 preload(() => {
     if (!TEST) return
@@ -104,23 +104,20 @@ declare global {
         }
     }
 }
-prestart(() => {
-    if (!TEST) return
-    addStateHandler({
-        get(packet) {
-            packet.testDone = ig.mapShared?.testDone
-        },
-        set(packet) {
-            if (!packet.testDone) return
+export const testMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.testDone = ig.mapShared?.testDone
+    },
+    set(packet) {
+        if (!packet.testDone) return
 
-            createAndSendRaport()
+        createAndSendRaport()
 
-            assert(ig.ccmap)
-            scheduleTask(ig.ccmap.inst, () => {
-                for (const client of ig.ccmap!.clients) {
-                    runTask(multi.server.inst, () => multi.server.leaveClient(client))
-                }
-            })
-        },
-    })
-})
+        assert(ig.ccmap)
+        scheduleTask(ig.ccmap.inst, () => {
+            for (const client of ig.ccmap!.clients) {
+                runTask(multi.server.inst, () => multi.server.leaveClient(client))
+            }
+        })
+    },
+}

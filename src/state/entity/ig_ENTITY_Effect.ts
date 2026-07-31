@@ -1,11 +1,11 @@
 import { assert } from '../../misc/assert'
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Zero } from '../state-util'
 import type { StateKey } from '../states'
 import type { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
 import { isPhysics } from '../../server/physics/physics-server-types'
+import type { MapStateHandler } from '../map-state-handlers'
 
 declare global {
     namespace ig.ENTITY {
@@ -142,33 +142,33 @@ declare global {
         }
     }
 }
+export const clearEffectsMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.clearEffects = ig.mapShared.clearEffects
+    },
+    clear() {
+        ig.mapShared.clearEffects = undefined
+    },
+    set(packet) {
+        for (const player of ig.game.entities) {
+            if (!(player instanceof dummy.DummyPlayer)) continue
+            ig.EffectTools.clearEffects(player, 'modeAura')
+        }
+
+        if (!packet.clearEffects) return
+
+        for (const [netid, withTheSameGroup] of packet.clearEffects) {
+            const entity = ig.game.entitiesByNetid[netid]
+            if (!entity) {
+                // console.warn('entity', netid, 'not found, tried to effect clear')
+                continue
+            }
+            ig.EffectTools.clearEffects(entity, withTheSameGroup)
+        }
+    },
+}
+
 prestart(() => {
-    addStateHandler({
-        get(packet) {
-            packet.clearEffects = ig.mapShared.clearEffects
-        },
-        clear() {
-            ig.mapShared.clearEffects = undefined
-        },
-        set(packet) {
-            for (const player of ig.game.entities) {
-                if (!(player instanceof dummy.DummyPlayer)) continue
-                ig.EffectTools.clearEffects(player, 'modeAura')
-            }
-
-            if (!packet.clearEffects) return
-
-            for (const [netid, withTheSameGroup] of packet.clearEffects) {
-                const entity = ig.game.entitiesByNetid[netid]
-                if (!entity) {
-                    // console.warn('entity', netid, 'not found, tried to effect clear')
-                    continue
-                }
-                ig.EffectTools.clearEffects(entity, withTheSameGroup)
-            }
-        },
-    })
-
     if (!PHYSICSNET) return
     const orig = ig.EffectTools.clearEffects
     ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
@@ -191,29 +191,29 @@ declare global {
         }
     }
 }
-prestart(() => {
-    addStateHandler({
-        get(packet) {
-            packet.stopEffects = ig.mapShared.stopEffects
-        },
-        clear() {
-            ig.mapShared.stopEffects = undefined
-        },
-        set(packet) {
-            if (!packet.stopEffects) return
+export const stopEffectsMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.stopEffects = ig.mapShared.stopEffects
+    },
+    clear() {
+        ig.mapShared.stopEffects = undefined
+    },
+    set(packet) {
+        if (!packet.stopEffects) return
 
-            for (const netid of packet.stopEffects) {
-                const entity = ig.game.entitiesByNetid[netid]
-                if (!entity) {
-                    // console.warn('effect', netid, 'not found, tried to stop')
-                    continue
-                }
-                assert(entity instanceof ig.ENTITY.Effect)
-                entity.stop()
+        for (const netid of packet.stopEffects) {
+            const entity = ig.game.entitiesByNetid[netid]
+            if (!entity) {
+                // console.warn('effect', netid, 'not found, tried to stop')
+                continue
             }
-        },
-    })
+            assert(entity instanceof ig.ENTITY.Effect)
+            entity.stop()
+        }
+    },
+}
 
+prestart(() => {
     if (!PHYSICSNET) return
     ig.ENTITY.Effect.inject({
         stop() {

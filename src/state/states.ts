@@ -1,5 +1,6 @@
 import type { Client } from '../client/client'
 import type { NetConnection } from '../net/net-connection'
+import { mapStateHandlers } from './map-state-handlers'
 
 declare global {
     interface StateUpdatePacket {}
@@ -21,16 +22,6 @@ declare global {
     }
 }
 
-interface Handler {
-    get: (packet: StateUpdatePacket, client?: StateKey, cache?: StateUpdatePacket) => void
-    clear?: () => void
-    set: (packet: StateUpdatePacket) => void
-}
-const handlers: Handler[] = []
-export function addStateHandler(handler: Handler) {
-    handlers.push(handler)
-}
-
 interface GlobalHandler {
     get: (packet: GlobalStateUpdatePacket, conn: GlobalStateKey, cache?: GlobalStateUpdatePacket) => void
     clear?: () => void
@@ -42,7 +33,7 @@ export function addGlobalStateHandler(handler: GlobalHandler) {
 }
 
 export function getEntityStateUpdatePacket(dest: StateUpdatePacket = {}, client?: StateKey, cache?: StateUpdatePacket) {
-    for (const { get } of handlers) get(dest, client, cache)
+    for (const { get } of mapStateHandlers) get(dest, client, cache)
 
     return dest
 }
@@ -58,7 +49,7 @@ export function getGlobalStateUpdatePacket(
 }
 
 export function clearCollectedState() {
-    for (const { clear } of handlers) clear?.()
+    for (const { clear } of mapStateHandlers) clear?.()
     for (const { clear } of globalHandlers) clear?.()
 }
 
@@ -68,7 +59,7 @@ export function applyStateUpdatePacket(packet: StateUpdatePacket, tick: number, 
     ig.system.tick = tick
     ig.shared.settingStateImmediately = immediately
 
-    for (const { set } of handlers) set(packet)
+    for (const { set } of mapStateHandlers) set(packet)
 
     ig.system.tick = backup
     ig.shared.settingState = false

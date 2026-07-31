@@ -1,9 +1,9 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler } from './states'
 import type { EntityNetid } from '../misc/entity-netid'
 import { assert } from '../misc/assert'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { shouldCollectStateData } from './state-util'
+import type { MapStateHandler } from './map-state-handlers'
 
 interface StepObj {
     settings: any //ig.ActionStepBase.Settings
@@ -20,45 +20,41 @@ declare global {
     }
 }
 
-prestart(() => {
-    addStateHandler({
-        get(packet, client) {
-            if (!client) return
-            const netid = client.dummy.netid
-            const entry = ig.mapShared.actionStepsFired?.[netid]
-            if (!entry) return
+export const actionStepsMapStateHandler: MapStateHandler = {
+    get(packet, client) {
+        if (!client) return
+        const netid = client.dummy.netid
+        const entry = ig.mapShared.actionStepsFired?.[netid]
+        if (!entry) return
 
-            packet.actionSteps ??= {}
-            packet.actionSteps[netid] = entry
-        },
-        clear() {
-            ig.mapShared.actionStepsFired = undefined
-        },
-        set(packet) {
-            if (!packet.actionSteps) return
+        packet.actionSteps ??= {}
+        packet.actionSteps[netid] = entry
+    },
+    clear() {
+        ig.mapShared.actionStepsFired = undefined
+    },
+    set(packet) {
+        if (!packet.actionSteps) return
 
-            for (const netidStr in packet.actionSteps) {
-                const netid = netidStr as unknown as EntityNetid
-                const player = ig.game.entitiesByNetid[netid]
-                assert(player instanceof dummy.DummyPlayer)
-                const client = player.getClient()
-                runTask(client.inst, () => {
-                    const steps: ig.ActionStepBase.Settings[] = packet.actionSteps![netid].map(
-                        ({ settings }) => settings
-                    )
-                    const action = new ig.Action(`multibakery-remote-action`, steps)
+        for (const netidStr in packet.actionSteps) {
+            const netid = netidStr as unknown as EntityNetid
+            const player = ig.game.entitiesByNetid[netid]
+            assert(player instanceof dummy.DummyPlayer)
+            const client = player.getClient()
+            runTask(client.inst, () => {
+                const steps: ig.ActionStepBase.Settings[] = packet.actionSteps![netid].map(({ settings }) => settings)
+                const action = new ig.Action(`multibakery-remote-action`, steps)
 
-                    player.currentAction = action
+                player.currentAction = action
 
-                    action.run(player)
+                action.run(player)
 
-                    player.currentAction = null
-                    player.currentActionStep = null
-                })
-            }
-        },
-    })
-}, 200)
+                player.currentAction = null
+                player.currentActionStep = null
+            })
+        }
+    },
+}
 
 let actionStepWhitelist: Set<number>
 prestart(() => {
@@ -122,34 +118,32 @@ declare global {
     }
 }
 
-prestart(() => {
-    addStateHandler({
-        get(packet, client) {
-            if (!client || !ig.mapShared.clearActionAttached) return
-            const netid = client.dummy.netid
-            if (!ig.mapShared.clearActionAttached[netid]) return
+export const clearActionAttachedStateHandler: MapStateHandler = {
+    get(packet, client) {
+        if (!client || !ig.mapShared.clearActionAttached) return
+        const netid = client.dummy.netid
+        if (!ig.mapShared.clearActionAttached[netid]) return
 
-            packet.clearActionAttached ??= {}
-            packet.clearActionAttached[netid] = ig.mapShared.clearActionAttached[netid]
-        },
-        clear() {
-            ig.mapShared.clearActionAttached = undefined
-        },
-        set(packet) {
-            if (!packet.clearActionAttached) return
+        packet.clearActionAttached ??= {}
+        packet.clearActionAttached[netid] = ig.mapShared.clearActionAttached[netid]
+    },
+    clear() {
+        ig.mapShared.clearActionAttached = undefined
+    },
+    set(packet) {
+        if (!packet.clearActionAttached) return
 
-            for (const netidStr in packet.clearActionAttached) {
-                const netid = netidStr as unknown as EntityNetid
-                const player = ig.game.entitiesByNetid[netid]
-                assert(player instanceof dummy.DummyPlayer)
-                const client = player.getClient()
-                runTask(client.inst, () => {
-                    player.clearActionAttached()
-                })
-            }
-        },
-    })
-})
+        for (const netidStr in packet.clearActionAttached) {
+            const netid = netidStr as unknown as EntityNetid
+            const player = ig.game.entitiesByNetid[netid]
+            assert(player instanceof dummy.DummyPlayer)
+            const client = player.getClient()
+            runTask(client.inst, () => {
+                player.clearActionAttached()
+            })
+        }
+    },
+}
 
 prestart(() => {
     dummy.DummyPlayer.inject({

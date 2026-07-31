@@ -1,13 +1,13 @@
 import { assert } from '../../misc/assert'
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { addStateHandler } from '../states'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import type { StateKey } from '../states'
 import { resolveProxyFromType } from './proxy-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
+import type { MapStateHandler } from '../map-state-handlers'
 
 declare global {
     namespace sc {
@@ -96,27 +96,28 @@ declare global {
         }
     }
 }
-prestart(() => {
-    addStateHandler({
-        get(packet) {
-            packet.destroyCombatProxies = ig.mapShared.destroyCombatProxies
-        },
-        clear() {
-            ig.mapShared.destroyCombatProxies = undefined
-        },
-        set(packet) {
-            if (!packet.destroyCombatProxies) return
-            for (const netid of packet.destroyCombatProxies) {
-                const entity = ig.game.entitiesByNetid[netid]
-                if (!entity) {
-                    console.warn('destroyCombatProxies entity:', netid, 'not found!')
-                    continue
-                }
-                assert(entity instanceof sc.CombatProxyEntity)
-                entity.destroy()
+export const destroyCombatProxiesMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.destroyCombatProxies = ig.mapShared.destroyCombatProxies
+    },
+    clear() {
+        ig.mapShared.destroyCombatProxies = undefined
+    },
+    set(packet) {
+        if (!packet.destroyCombatProxies) return
+        for (const netid of packet.destroyCombatProxies) {
+            const entity = ig.game.entitiesByNetid[netid]
+            if (!entity) {
+                console.warn('destroyCombatProxies entity:', netid, 'not found!')
+                continue
             }
-        },
-    })
+            assert(entity instanceof sc.CombatProxyEntity)
+            entity.destroy()
+        }
+    },
+}
+
+prestart(() => {
     if (PHYSICSNET) {
         sc.CombatProxyEntity.inject({
             destroy(type) {
@@ -147,7 +148,7 @@ prestart(() => {
             },
         })
     }
-}, 2) /* before entity-death.ts */
+})
 
 declare global {
     namespace sc {

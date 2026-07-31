@@ -1,5 +1,5 @@
-import { prestart } from '../loading-stages'
-import { addStateHandler, type StateKey } from './states'
+import type { MapStateHandler } from './map-state-handlers'
+import type { StateKey } from './states'
 import { cleanRecord, StateMemory } from './state-util'
 import type { u3, u6, u8 } from 'ts-binarifier/src/type-aliases'
 import type { COMBATANT_PARTY } from '../net/binary/binary-types'
@@ -27,74 +27,72 @@ declare global {
     }
 }
 
-prestart(() => {
-    addStateHandler({
-        get(packet, client) {
-            if (packet.pvp) return
+export const pvpMapStateHandler: MapStateHandler = {
+    get(packet, client) {
+        if (packet.pvp) return
 
-            ig.mapShared.pvpStatePlayerMemory ??= {}
-            const memory = StateMemory.getBy(ig.mapShared.pvpStatePlayerMemory, client)
+        ig.mapShared.pvpStatePlayerMemory ??= {}
+        const memory = StateMemory.getBy(ig.mapShared.pvpStatePlayerMemory, client)
 
-            const parties = sc.pvp.parties?.map(p => p.id)
+        const parties = sc.pvp.parties?.map(p => p.id)
 
-            packet.pvp = cleanRecord({
-                on: memory.diff(sc.pvp.multiplayerPvp && sc.pvp.state !== 0),
-                parties: parties && memory.diffArray(parties),
-                winPoints: memory.diff(sc.pvp.winPoints),
-                state: memory.diff(sc.pvp.state),
-                points: memory.diffRecord(sc.pvp.points),
-                round: memory.diff(sc.pvp.round),
-                justRearrangedHpBars: sc.pvp.justRearrangedHpBars,
+        packet.pvp = cleanRecord({
+            on: memory.diff(sc.pvp.multiplayerPvp && sc.pvp.state !== 0),
+            parties: parties && memory.diffArray(parties),
+            winPoints: memory.diff(sc.pvp.winPoints),
+            state: memory.diff(sc.pvp.state),
+            points: memory.diffRecord(sc.pvp.points),
+            round: memory.diff(sc.pvp.round),
+            justRearrangedHpBars: sc.pvp.justRearrangedHpBars,
+        })
+        sc.pvp.justRearrangedHpBars = undefined
+    },
+    set(packet) {
+        if (!packet.pvp) return
+
+        if (packet.pvp.winPoints !== undefined) {
+            sc.pvp.winPoints = packet.pvp.winPoints
+        }
+
+        if (packet.pvp.parties) {
+            sc.pvp.parties = packet.pvp.parties.map(id => {
+                const party = multi.server.party.parties[id]
+                assert(party)
+                return party
             })
-            sc.pvp.justRearrangedHpBars = undefined
-        },
-        set(packet) {
-            if (!packet.pvp) return
+        }
 
-            if (packet.pvp.winPoints !== undefined) {
-                sc.pvp.winPoints = packet.pvp.winPoints
+        if (packet.pvp.on !== undefined) {
+            if (packet.pvp.on) {
+                if (!sc.pvp.multiplayerPvp) sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
+            } else {
+                if (sc.pvp.multiplayerPvp) sc.pvp.stop()
             }
+        }
 
-            if (packet.pvp.parties) {
-                sc.pvp.parties = packet.pvp.parties.map(id => {
-                    const party = multi.server.party.parties[id]
-                    assert(party)
-                    return party
-                })
+        let rearrangeHpBars = false
+        if (packet.pvp.state !== undefined) {
+            const state = packet.pvp.state
+            sc.pvp.state = state
+
+            if (sc.pvp.hpBars) rearrangeHpBars = true
+            if (state == 2) {
+                if (sc.pvp.state != 2) sc.pvp.finalizeRoundStart()
+            } else if (state == 3) {
+                sc.pvp.showKOGuis()
             }
+        }
 
-            if (packet.pvp.on !== undefined) {
-                if (packet.pvp.on) {
-                    if (!sc.pvp.multiplayerPvp) sc.pvp.startMultiplayerPvp(sc.pvp.winPoints)
-                } else {
-                    if (sc.pvp.multiplayerPvp) sc.pvp.stop()
-                }
-            }
+        if (packet.pvp.round !== undefined && sc.pvp.round != packet.pvp.round && sc.pvp.state != 0) {
+            sc.pvp.round = packet.pvp.round - 1
+            sc.pvp.startNextRound(true)
+        }
 
-            let rearrangeHpBars = false
-            if (packet.pvp.state !== undefined) {
-                const state = packet.pvp.state
-                sc.pvp.state = state
+        if (packet.pvp.points) {
+            StateMemory.applyChangeRecord(sc.pvp.points, packet.pvp.points)
+        }
 
-                if (sc.pvp.hpBars) rearrangeHpBars = true
-                if (state == 2) {
-                    if (sc.pvp.state != 2) sc.pvp.finalizeRoundStart()
-                } else if (state == 3) {
-                    sc.pvp.showKOGuis()
-                }
-            }
-
-            if (packet.pvp.round !== undefined && sc.pvp.round != packet.pvp.round && sc.pvp.state != 0) {
-                sc.pvp.round = packet.pvp.round - 1
-                sc.pvp.startNextRound(true)
-            }
-
-            if (packet.pvp.points) {
-                StateMemory.applyChangeRecord(sc.pvp.points, packet.pvp.points)
-            }
-
-            if (packet.pvp.justRearrangedHpBars) rearrangeHpBars = true
-            if (rearrangeHpBars) sc.pvp.rearrangeHpBars()
-        },
-    })
-})
+        if (packet.pvp.justRearrangedHpBars) rearrangeHpBars = true
+        if (rearrangeHpBars) sc.pvp.rearrangeHpBars()
+    },
+}

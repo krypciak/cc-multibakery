@@ -1,5 +1,5 @@
 import { prestart } from '../loading-stages'
-import { addStateHandler } from './states'
+import type { MapStateHandler } from './map-state-handlers'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
@@ -27,47 +27,50 @@ declare global {
     }
 }
 
-prestart(() => {
-    const { spawnHitNumber, spawnHealingNumber } = ig.ENTITY.HitNumber
+export const hitNumberSpawnMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.hitNumber = ig.mapShared.hitNumberSpawned
+    },
+    clear() {
+        ig.mapShared.hitNumberSpawned = undefined
+    },
+    set(packet) {
+        if (!packet.hitNumber) return
+        if (!sc.options.get('damage-numbers') || sc.combat.hideDamageNumbers) return
 
-    addStateHandler({
-        get(packet) {
-            packet.hitNumber = ig.mapShared.hitNumberSpawned
-        },
-        clear() {
-            ig.mapShared.hitNumberSpawned = undefined
-        },
-        set(packet) {
-            if (!packet.hitNumber) return
-            if (!sc.options.get('damage-numbers') || sc.combat.hideDamageNumbers) return
+        const onlyShowCrit = sc.options.get('damage-numbers-crit')
 
-            const onlyShowCrit = sc.options.get('damage-numbers-crit')
+        for (const {
+            isHealing,
+            pos,
+            combatant: combatantNetid,
+            damage,
+            size,
+            strength,
+            shieldResult,
+            isCrit,
+            weakness: appendix,
+        } of packet.hitNumber) {
+            const combatant = ig.game.entitiesByNetid[combatantNetid]
+            assert(combatant)
+            assert(combatant instanceof ig.ENTITY.Combatant)
 
-            for (const {
-                isHealing,
-                pos,
-                combatant: combatantNetid,
-                damage,
-                size,
-                strength,
-                shieldResult,
-                isCrit,
-                weakness: appendix,
-            } of packet.hitNumber) {
-                const combatant = ig.game.entitiesByNetid[combatantNetid]
-                assert(combatant)
-                assert(combatant instanceof ig.ENTITY.Combatant)
-
-                if (isHealing) {
-                    spawnHealingNumber(pos, combatant, damage)
-                } else {
-                    if (!onlyShowCrit || isCrit) {
-                        spawnHitNumber(pos, combatant, damage, size!, strength!, shieldResult, isCrit, appendix)
-                    }
+            if (isHealing) {
+                spawnHealingNumber(pos, combatant, damage)
+            } else {
+                if (!onlyShowCrit || isCrit) {
+                    spawnHitNumber(pos, combatant, damage, size!, strength!, shieldResult, isCrit, appendix)
                 }
             }
-        },
-    })
+        }
+    },
+}
+
+let spawnHitNumber: ig.ENTITY.HitNumberConstructor['spawnHitNumber']
+let spawnHealingNumber: ig.ENTITY.HitNumberConstructor['spawnHealingNumber']
+prestart(() => {
+    spawnHitNumber = ig.ENTITY.HitNumber.spawnHitNumber
+    spawnHealingNumber = ig.ENTITY.HitNumber.spawnHealingNumber
 
     ig.ENTITY.HitNumber.forceRemotePhysics = true
     ig.ENTITY.HitNumberSum.forceRemotePhysics = true
@@ -130,28 +133,26 @@ declare global {
         }
     }
 }
+export const hitNumberClearMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.hitNumberClear = ig.mapShared.hitNumberClear
+    },
+    clear() {
+        ig.mapShared.hitNumberClear = undefined
+    },
+    set(packet) {
+        if (!packet.hitNumberClear) return
 
+        for (const netid of packet.hitNumberClear) {
+            const combatant = ig.game.entitiesByNetid[netid]
+            if (!combatant) continue
+            assert(combatant instanceof ig.ENTITY.Combatant)
+
+            combatant.clearDamageSum()
+        }
+    },
+}
 prestart(() => {
-    addStateHandler({
-        get(packet) {
-            packet.hitNumberClear = ig.mapShared.hitNumberClear
-        },
-        clear() {
-            ig.mapShared.hitNumberClear = undefined
-        },
-        set(packet) {
-            if (!packet.hitNumberClear) return
-
-            for (const netid of packet.hitNumberClear) {
-                const combatant = ig.game.entitiesByNetid[netid]
-                if (!combatant) continue
-                assert(combatant instanceof ig.ENTITY.Combatant)
-
-                combatant.clearDamageSum()
-            }
-        },
-    })
-
     if (PHYSICSNET) {
         ig.ENTITY.Combatant.inject({
             clearDamageSum() {

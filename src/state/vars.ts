@@ -1,5 +1,6 @@
 import { prestart } from '../loading-stages'
-import { addGlobalStateHandler, addStateHandler, type GlobalStateKey, type StateKey } from './states'
+import type { MapStateHandler } from './map-state-handlers'
+import { addGlobalStateHandler, type GlobalStateKey, type StateKey } from './states'
 import { addVarModifyListener } from '../misc/var-set-event'
 import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
@@ -46,40 +47,39 @@ function extractMapNameOutOfMapsVar(path: string): MapName {
     return fromCamel(map)
 }
 
+export const varsMapStateHandler: MapStateHandler = {
+    get(packet, client) {
+        ig.mapShared.varsEverSent ??= new WeakSet()
+
+        packet.vars = ig.mapShared.varsChanged
+
+        if (!client || !ig.mapShared.varsEverSent.has(client)) {
+            if (client) ig.mapShared.varsEverSent.add(client)
+
+            packet.vars ??= {}
+            flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
+        }
+    },
+    clear() {
+        ig.mapShared.varsChanged = undefined
+    },
+    set(packet) {
+        if (!packet.vars) return
+
+        for (const path in packet.vars) {
+            const value = packet.vars[path]
+
+            const obj = ig.vars._getAccessObject(path)
+            assert(obj)
+            obj.obj[obj.key] = value
+        }
+        ig.game.varsChangedDeferred()
+    },
+}
+
 prestart(() => {
-    addStateHandler({
-        get(packet, client) {
-            ig.mapShared.varsEverSent ??= new WeakSet()
-
-            packet.vars = ig.mapShared.varsChanged
-
-            if (!client || !ig.mapShared.varsEverSent.has(client)) {
-                if (client) ig.mapShared.varsEverSent.add(client)
-
-                packet.vars ??= {}
-                flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
-            }
-        },
-        clear() {
-            ig.mapShared.varsChanged = undefined
-        },
-        set(packet) {
-            if (!packet.vars) return
-
-            for (const path in packet.vars) {
-                const value = packet.vars[path]
-
-                const obj = ig.vars._getAccessObject(path)
-                assert(obj)
-                obj.obj[obj.key] = value
-            }
-            ig.game.varsChangedDeferred()
-        },
-    })
-
     const globalEverSent = new WeakSet<GlobalStateKey>()
     let globalVarsChanged: VarObj | undefined = undefined
-
     addGlobalStateHandler({
         get(packet, conn) {
             packet.vars = globalVarsChanged

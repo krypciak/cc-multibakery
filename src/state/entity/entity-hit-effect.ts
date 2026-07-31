@@ -1,9 +1,9 @@
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
-import { addStateHandler } from '../states'
 import type { u16 } from 'ts-binarifier/src/type-aliases'
 import type { EntityNetid } from '../../misc/entity-netid'
 import { wrapIgnoreEffectNetid } from './effect-netid'
+import type { MapStateHandler } from '../map-state-handlers'
 
 interface HitConfig {
     entity: EntityNetid
@@ -27,46 +27,46 @@ declare global {
     }
 }
 
-prestart(() => {
-    addStateHandler({
-        get(packet) {
-            packet.entityHitPackets = ig.mapShared.entityHitPackets
-        },
-        clear() {
-            ig.mapShared.entityHitPackets = undefined
-        },
-        set(packet) {
-            if (!packet.entityHitPackets) return
+export const entityHitMapStateHandler: MapStateHandler = {
+    get(packet) {
+        packet.entityHitPackets = ig.mapShared.entityHitPackets
+    },
+    clear() {
+        ig.mapShared.entityHitPackets = undefined
+    },
+    set(packet) {
+        if (!packet.entityHitPackets) return
 
-            for (const {
-                entity: entityNetid,
+        for (const {
+            entity: entityNetid,
+            hitPos,
+            hitDegree,
+            hitElement,
+            shieldResult: shielded,
+            critical,
+            ignoreSounds,
+            spriteFilter,
+        } of packet.entityHitPackets) {
+            const entity = ig.game.entitiesByNetid[entityNetid]
+            /* entity can be undefined when it triggers a hit effect and dies on the same frame.
+             * one could fix this, but I don't think it's worth the effort */
+            if (!entity) continue
+
+            sc.combat.showHitEffect(
+                entity,
                 hitPos,
                 hitDegree,
                 hitElement,
-                shieldResult: shielded,
+                shielded,
                 critical,
                 ignoreSounds,
-                spriteFilter,
-            } of packet.entityHitPackets) {
-                const entity = ig.game.entitiesByNetid[entityNetid]
-                /* entity can be undefined when it triggers a hit effect and dies on the same frame.
-                 * one could fix this, but I don't think it's worth the effort */
-                if (!entity) continue
+                spriteFilter
+            )
+        }
+    },
+}
 
-                sc.combat.showHitEffect(
-                    entity,
-                    hitPos,
-                    hitDegree,
-                    hitElement,
-                    shielded,
-                    critical,
-                    ignoreSounds,
-                    spriteFilter
-                )
-            }
-        },
-    })
-
+prestart(() => {
     if (!PHYSICSNET) return
 
     sc.Combat.inject({
