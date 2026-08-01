@@ -10,6 +10,7 @@
 - Add ig.ENTITY.WaterBubblePanel state
 - Add remote combatant elemental inflict status bar state
 - Add remote combatant break bar state
+- Add item block timer remote sync
 
 ### Fixed
 

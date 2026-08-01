@@ -54,6 +54,7 @@ export function getEntityState(this: ig.ENTITY.Player, player?: StateKey, memory
         skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
         elementLoad: memory.diff(this.model.elementLoad),
         hasOverload: memory.diff(this.model.hasOverload),
+        itemBlockTimer: memory.diff(this.model.itemBlockTimer),
     }
 }
 
@@ -122,6 +123,7 @@ export function setEntityState(this: ig.ENTITY.Player, state: Return) {
 
     if (state.elementLoad !== undefined) this.model.elementLoad = state.elementLoad
     if (state.hasOverload !== undefined) this.model.hasOverload = state.hasOverload
+    if (state.itemBlockTimer !== undefined) this.model.itemBlockTimer = state.itemBlockTimer
 }
 
 prestart(() => {
