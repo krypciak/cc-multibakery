@@ -4,15 +4,13 @@ import { StateMemory } from './state-util'
 import type { AreaName } from '../net/binary/binary-types'
 import { fromCamel } from '../misc/from-camel'
 
-type AreasObj = Record<AreaName, /* landmarks */ Record<string, true>>
-
 declare global {
     interface GlobalStateUpdatePacket {
-        areas?: AreasObj
+        areas?: PartialRecord<AreaName, /* landmarks */ PartialRecord<string, boolean>>
     }
 }
 
-let areaObj: AreasObj | undefined
+let areaObj: Record<string, Record<string, true>> | undefined
 const areaStateMemory: StateMemory.MapHolder<GlobalStateKey> = {}
 export const areasGlobalStateHandler: GlobalStateHandler = {
     get(packet, conn) {

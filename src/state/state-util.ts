@@ -132,11 +132,11 @@ export class StateMemory {
         }
     }
 
-    diffRecord2Deep<K1 extends PropertyKey, K2 extends string, R extends PartialRecord<K2, unknown>>(
+    diffRecord2Deep<K1 extends string, K2 extends string, R extends PartialRecord<K2, unknown>>(
         currRecord: Record<K1, R>,
         notEqMap: { [K in keyof R]?: (a: R[K], b: R[K]) => boolean } = {},
         cloneMap: { [K in keyof R]?: (obj: R[K]) => R[K] } = {}
-    ): Record<K1, R> | undefined {
+    ): PartialRecord<K1, R> | undefined {
         function cloneRecord(rec: R): R {
             return Object.fromEntries(
                 Object.entries(rec).map(([k, v]) => [k, cloneMap[k as keyof R]?.(v as R[keyof R]) ?? v])

@@ -6,7 +6,7 @@ import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
     interface GlobalStateUpdatePacket {
-        parties?: Record<MultiPartyId, PartialMultiParty> & RecordSize<u16>
+        parties?: PartialRecord<MultiPartyId, PartialMultiParty> & RecordSize<u16>
     }
 }
 
@@ -32,6 +32,7 @@ export const partyGlobalStateHandler: GlobalStateHandler = {
 
         for (const partyName in packet.parties) {
             const partyData = packet.parties[partyName]
+            if (!partyData) continue
             const party = multi.server.party.parties[partyName]
             if (!party) {
                 multi.server.party.addParty(partyData as MultiParty)
