@@ -16,12 +16,6 @@ declare global {
     }
 }
 
-function getStatusEntries(combatant: ig.ENTITY.Combatant) {
-    type Rec = Record<keyof typeof combatant.statusGui.statusEntries, number>
-    if (!combatant.statusGui) return {} as Rec
-    return Object.fromEntries(Object.entries(combatant.statusGui.statusEntries).map(([k, v]) => [k, v.value])) as Rec
-}
-
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
     return {
@@ -87,26 +81,10 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
             this.params.currentSp = state.sp
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.SP_CHANGED)
         }
+
     }
 
-    if (this.statusGui) {
-        if (state.statusGui !== undefined) {
-            for (const type of Object.keys(state.statusGui) as (keyof typeof state.statusGui)[]) {
-                const v = state.statusGui[type]
-                const obj = this.statusGui.statusEntries[type]
-                const diff = v - obj.value
-                if (v >= 1) {
-                    this.statusGui.setStatusEntryStick(type, true)
-                } else if (v == 0) {
-                    this.statusGui.clearStatusEntry(type)
-                    obj.value = 0
-                } else {
-                    if (diff > 0) this.statusGui.setStatusEntry(type, v)
-                    else this.statusGui.updateStatusEntry(type, v)
-                }
-            }
-        }
-    }
+    if (this.statusGui && state.statusGui !== undefined) setStatusEntries(this, state.statusGui)
 
     if (state.combatantLabelText !== undefined) {
         const text = state.combatantLabelText
@@ -140,3 +118,26 @@ prestart(() => {
         },
     })
 })
+
+function getStatusEntries(combatant: ig.ENTITY.Combatant) {
+    type Rec = Record<keyof typeof combatant.statusGui.statusEntries, number>
+    if (!combatant.statusGui) return {} as Rec
+    return Object.fromEntries(Object.entries(combatant.statusGui.statusEntries).map(([k, v]) => [k, v.value])) as Rec
+}
+function setStatusEntries(combatant: ig.ENTITY.Combatant, statusGui: ReturnType<typeof getStatusEntries>) {
+    for (const type of Object.keys(statusGui) as (keyof typeof statusGui)[]) {
+        const v = statusGui[type]
+        const obj = combatant.statusGui.statusEntries[type]
+        const diff = v - obj.value
+        if (v >= 1) {
+            combatant.statusGui.setStatusEntryStick(type, true)
+        } else if (v == 0) {
+            combatant.statusGui.clearStatusEntry(type)
+            obj.value = 0
+        } else {
+            if (diff > 0) combatant.statusGui.setStatusEntry(type, v)
+            else combatant.statusGui.updateStatusEntry(type, v)
+        }
+    }
+}
+
