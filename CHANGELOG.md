@@ -6,8 +6,7 @@
 
 ### Added
 
-- Use websocket network transport by default
-- Add option Settings->Server->Use websocket transport
+- Add option to enable experimental websocket network transport Settings->Server->Use websocket transport
 - Add ig.ENTITY.WaterBubblePanel state
 - Add remote combatant elemental inflict status bar state
 - Add remote combatant break bar state

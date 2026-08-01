@@ -182,7 +182,7 @@ function registerOpts() {
                     },
                     serverNetTransportUseWebsocket: {
                         type: 'CHECKBOX',
-                        init: true,
+                        init: false,
                         name: 'Use websocket transport',
                         description: 'websocket is a new experimental alternative to socket.io',
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
