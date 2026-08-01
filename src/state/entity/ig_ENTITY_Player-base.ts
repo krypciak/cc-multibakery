@@ -128,4 +128,14 @@ export function setEntityState(this: ig.ENTITY.Player, state: Return) {
 
 prestart(() => {
     ig.ENTITY.Player.inject({ getEntityState, setEntityState })
+
+    sc.QuickRingMenu.inject({
+        update() {
+            if (multi.server) {
+                const active = !sc.pvp.isActive() && sc.model.player.itemBlockTimer <= 0 && !sc.quickmodel.itemsBlocked
+                this.items.setActive(active)
+            }
+            this.parent()
+        },
+    })
 })

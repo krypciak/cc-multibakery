@@ -31,6 +31,7 @@
 - Fix food icon not dying on remote when eating is interrupted
 - Fix attack circle glow only working for the first remote player on map
 - Fix sc.CombatProxyEntity sometimes getting killed before getting destroyed
+- Fix quick menu item button not activating when timer runs out when the menu is open
 
 ## [0.8.2] 2026-07-26
 
