@@ -75,7 +75,7 @@ const partyMemberConfigs = {
 
 class Godmode {
     // prettier-ignore
-    @profile((_self, model) => `${model instanceof dummy.PlayerModel ? model.dummy.data.username : model?.name}`)
+    @profile((_self, model) => `${model instanceof dummy.PlayerModel ? model.dummy.username : model?.name}`)
     static godmode(model = sc.model.player, { circuitBranch = true }: GodmodeSettings = {}) {
         sc.stats.statsEnabled = true
 

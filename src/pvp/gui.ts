@@ -186,7 +186,7 @@ prestart(() => {
                 this.lowerColor = '#12d711'
                 this.upperColor = '#7aff7a'
             }
-            const text = combatant instanceof dummy.DummyPlayer ? combatant.data.username : combatant.name!
+            const text = combatant instanceof dummy.DummyPlayer ? combatant.username : combatant.name!
 
             this.usernameText = new ig.TextBlock(sc.fontsystem.tinyFont, wrapColor(text, COLOR.YELLOW), {
                 maxWidth: undefined,

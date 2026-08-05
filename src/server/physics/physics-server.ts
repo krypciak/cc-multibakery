@@ -23,7 +23,7 @@ import {
     registerChargeTimingsChangeListener,
     unregisterChargeTimingsChangeListener,
 } from '../../mod-compatibility/cc-variable-charge-time'
-import { getServerPingTimeout, Opts } from '../../options'
+import { getServerPingTimeout } from '../../options'
 
 import './physics-server-sender'
 import './storage/storage'

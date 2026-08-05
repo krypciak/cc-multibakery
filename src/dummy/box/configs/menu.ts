@@ -38,13 +38,13 @@ prestart(() => {
 })
 
 function getText(player: dummy.DummyPlayer): string | undefined {
-    const menu = player.data.currentMenu ?? -1
+    const menu = player.currentMenu ?? -1
     if (menuMap[menu]) return menuMap[menu]
 
-    const state = player.data.currentSubState ?? -1
+    const state = player.currentSubState ?? -1
     if (stateMap[state]) return stateMap[state]
 
-    if (player.data.inCutscene) return '(Cutscene)'
+    if (player.inCutscene) return '(Cutscene)'
 }
 
 export const config: DummyBoxGuiConfig = {

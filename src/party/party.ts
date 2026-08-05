@@ -107,7 +107,7 @@ export class MultiPartyManager implements sc.Model {
         } else {
             assert(onMap == ig.game.mapName)
             for (const entity of ig.game.entities) {
-                if (entity instanceof dummy.DummyPlayer && party.players.includes(entity.data.username)) {
+                if (entity instanceof dummy.DummyPlayer && party.players.includes(entity.username)) {
                     combatants.push(entity)
                 }
             }

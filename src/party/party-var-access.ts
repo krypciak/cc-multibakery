@@ -28,7 +28,7 @@ export function multiPartyVarAccess(path: string, keys: string[], party?: MultiP
         if (byName) {
             const name = keys[2]
             const combatant = combatants.find(c =>
-                c instanceof dummy.DummyPlayer ? c.data.username == name : c.name == name
+                c instanceof dummy.DummyPlayer ? c.username == name : c.name == name
             )
             return ig.Vars.forwardVar(combatant, keys, 3)
         } else {

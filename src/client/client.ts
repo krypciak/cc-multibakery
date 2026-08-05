@@ -434,7 +434,7 @@ export class Client extends InstanceUpdateable {
             this.dummy = ig.game.spawnEntity(dummy.DummyPlayer, 0, 0, 0, {
                 netid: this.reservedNetid,
                 inputManager: this.inputManager,
-                data: { username: this.username },
+                username: this.username,
             })
 
             if (multi.server.settings.godmode) {
@@ -444,7 +444,7 @@ export class Client extends InstanceUpdateable {
             this.loadAndApplyPlayerEntityState()
         } else {
             let player = this.getMap().inst.ig.game.entities.find(
-                e => e instanceof dummy.DummyPlayer && !e._killed && e.data.username == this.username
+                e => e instanceof dummy.DummyPlayer && !e._killed && e.username == this.username
             ) as dummy.DummyPlayer | undefined
 
             player ??= dummy.DummyPlayer.create(this.reservedNetid, { username: this.username })

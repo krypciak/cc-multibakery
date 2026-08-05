@@ -23,20 +23,19 @@ declare global {
         namespace DummyPlayer {
             interface Settings extends ig.Entity.Settings {
                 inputManager: dummy.InputManager
-                data: dummy.DummyPlayer.Data
-            }
-            interface Data {
                 username: Username
-                isControlBlocked?: boolean
-                inCutscene?: boolean
             }
         }
         interface DummyPlayer extends ig.ENTITY.Player {
             inputManager: dummy.InputManager
-            data: dummy.DummyPlayer.Data
             itemConsumer: dummy.ItemConsumption
             model: dummy.PlayerModel
-            isCollTypeChangedDueToBeingInCutscene?: boolean
+
+            username: Username
+            forceBlockControl?: boolean
+            inCutscene?: boolean
+            currentMenu?: sc.MENU_SUBMENU
+            currentSubState?: sc.GAME_MODEL_SUBSTATE
 
             setInputManager(this: this, inputManager: InputManager): void
             getHeadIdx(this: this): number
@@ -55,11 +54,11 @@ global.dummy = window.dummy ??= {} as any
 prestart(() => {
     dummy.DummyPlayer = ig.ENTITY.Player.extend({
         init(_x, _y, _z, settings) {
-            settings.name = settings.data.username
+            settings.name = settings.username
+            Object.assign(this, settings)
 
             sc.PlayerBaseEntity.prototype.init.call(this, 0, 0, 0, settings)
 
-            this.data = settings.data
             this.setInputManager(settings.inputManager)
 
             this.levelUpNotifier = new sc.PlayerLevelNotifier()
@@ -83,7 +82,7 @@ prestart(() => {
             return sc.party.models[playerName].getHeadIdx()
         },
         getClient(noAssert) {
-            const client = multi.server.clients.get(this.data.username)
+            const client = multi.server.clients.get(this.username)
             if (!noAssert) assert(client)
             return client!
         },

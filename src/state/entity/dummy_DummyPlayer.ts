@@ -26,12 +26,12 @@ function getEntityState(this: dummy.DummyPlayer, player?: StateKey) {
     return {
         ...igEntityPlayer.getEntityState.call(this, player, memory),
 
-        username: memory.diff(this.data.username),
+        username: memory.diff(this.username),
         skin: memory.diff(this.currentSkinName ?? ''),
-        isControlBlocked: memory.diff(this.data.isControlBlocked),
-        inCutscene: memory.diff(this.data.inCutscene),
-        currentMenu: memory.diff(this.data.currentMenu as u32),
-        currentSubState: memory.diff(this.data.currentSubState),
+        isControlBlocked: memory.diff(this.isControlBlocked),
+        inCutscene: memory.diff(this.inCutscene),
+        currentMenu: memory.diff(this.currentMenu as u32),
+        currentSubState: memory.diff(this.currentSubState),
 
         combatArtLabelText: memory.diff(this.combatArtLabelText),
         showElementalOverloadLabel: memory.diff(this.model.showElementalOverloadLabel),
@@ -46,10 +46,10 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
         this.setSkin(state.skin, true)
     }
 
-    if (state.isControlBlocked !== undefined) this.data.isControlBlocked = state.isControlBlocked
-    if (state.inCutscene !== undefined) this.data.inCutscene = state.inCutscene
-    if (state.currentMenu !== undefined) this.data.currentMenu = state.currentMenu
-    if (state.currentSubState !== undefined) this.data.currentSubState = state.currentSubState
+    if (state.isControlBlocked !== undefined) this.isControlBlocked = state.isControlBlocked
+    if (state.inCutscene !== undefined) this.inCutscene = state.inCutscene
+    if (state.currentMenu !== undefined) this.currentMenu = state.currentMenu
+    if (state.currentSubState !== undefined) this.currentSubState = state.currentSubState
 
     if (state.combatArtLabelText !== undefined) this.combatArtLabelText = state.combatArtLabelText
     if (state.showElementalOverloadLabel !== undefined)
@@ -68,7 +68,7 @@ prestart(() => {
 
         const player = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
             netid,
-            data: { username },
+            username,
             inputManager: new dummy.input.Puppet.InputManager(),
         })
 
