@@ -15,7 +15,6 @@ import { isUsernameValid } from '../misc/username-util'
 import { applyMapStateUpdatePacket } from '../state/map-state-handlers'
 import { teleportPlayerToProperMarker } from '../server/ccmap/teleport-fix'
 import { InstanceUpdateable } from '../server/instance-updateable'
-import { updateDummyData } from './injects'
 import { MapDataLoad } from '../server/ccmap/data-load'
 import { instanceinatorCopyInstanceConfig } from '../server/server-types'
 import type { MapTpInfo } from '../server/server-types'
@@ -142,8 +141,6 @@ export class Client extends InstanceUpdateable {
     update() {
         super.update()
         if (this.destroyed) return
-
-        updateDummyData(this)
     }
 
     deferredUpdate() {

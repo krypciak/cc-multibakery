@@ -8,6 +8,10 @@
 
 - Add player buff remote state
 
+### Fixed
+
+- Disallow opening the quick menu on remote when player is performing action
+
 ## [0.8.3] 2026-08-01
 
 ### Added

@@ -32,7 +32,7 @@ declare global {
             model: dummy.PlayerModel
 
             username: Username
-            forceBlockControl?: boolean
+            remoteForceBlockControl?: boolean
             inCutscene?: boolean
             currentMenu?: sc.MENU_SUBMENU
             currentSubState?: sc.GAME_MODEL_SUBSTATE
@@ -89,20 +89,37 @@ prestart(() => {
         getMap() {
             return this.getClient().getMap()
         },
-
         update() {
             /* client only null when client after client is destroyed */
             const client = this.getClient(true)
+
+            const parent = () => {
+                if (isPhysics(multi.server) && client) {
+                    this.currentMenu = client.inst.sc.menu.currentMenu
+                    this.currentSubState = client.inst.sc.model.currentSubState
+                    this.remoteForceBlockControl = !!this.isControlBlocked()
+                    this.inCutscene = !!client.inst.ig.game.isControlBlocked()
+
+                    const inp = client.inputManager
+                    const inMenu = this.currentSubState != sc.GAME_MODEL_SUBSTATE.RUNNING
+                    if (inMenu) {
+                        inp.block.blockBoth('PAUSED')
+                    } else {
+                        inp.block.unblockBoth('PAUSED')
+                    }
+                }
+                this.parent()
+            }
             if (client?.ready) {
                 const mapTick = ig.system.tick
                 runTask(client.inst, () => {
                     const clientTickBackup = ig.system.tick
                     ig.system.tick = mapTick
-                    inputBackup(this.inputManager, () => this.parent())
+                    inputBackup(this.inputManager, parent)
                     ig.system.tick = clientTickBackup
                 })
             } else {
-                inputBackup(this.inputManager, () => this.parent())
+                inputBackup(this.inputManager, parent)
             }
         },
         onKill(_dontRespawn?: boolean) {
@@ -122,7 +139,8 @@ prestart(() => {
             if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
         },
         isControlBlocked() {
-            return this.data.isControlBlocked || this.parent()
+            if (isRemote(multi.server) && this.remoteForceBlockControl) return true
+            return this.currentSubState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU || this.parent()
         },
         updateSkinPet(showSpawnFx) {
             return inputBackup(this.inputManager, () => this.parent(showSpawnFx))

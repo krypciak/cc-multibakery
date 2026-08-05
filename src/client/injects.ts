@@ -1,8 +1,6 @@
 import { poststart, prestart } from '../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { type Client } from './client'
 import { broadcastAcrossInstances } from './client-map-util'
-import { isPhysics } from '../server/physics/physics-server-types'
 
 prestart(() => {
     ig.Physics.inject({
@@ -93,35 +91,6 @@ prestart(() => {
         })
     }
 })
-
-declare global {
-    namespace dummy.DummyPlayer {
-        interface Data {
-            currentMenu?: sc.MENU_SUBMENU
-            currentSubState?: sc.GAME_MODEL_SUBSTATE
-        }
-    }
-}
-export function updateDummyData(client: Client) {
-    if (!isPhysics(multi.server)) return
-    const inp = client.inputManager
-
-    const menu = sc.menu.currentMenu
-    const subState = sc.model.currentSubState
-    if (inp.player) {
-        inp.player.data.currentMenu = menu
-        inp.player.data.currentSubState = subState
-        inp.player.data.isControlBlocked = subState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU
-        inp.player.data.inCutscene = ig.client!.inst.ig.game.isControlBlocked()
-    }
-
-    const inMenu = subState != sc.GAME_MODEL_SUBSTATE.RUNNING
-    if (inMenu) {
-        inp.block.blockBoth('PAUSED')
-    } else {
-        inp.block.unblockBoth('PAUSED')
-    }
-}
 
 prestart(() => {
     sc.BounceSwitchGroups.inject({
