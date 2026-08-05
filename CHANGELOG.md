@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add player buff remote state
+
 ## [0.8.3] 2026-08-01
 
 ### Added

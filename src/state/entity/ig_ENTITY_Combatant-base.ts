@@ -1,12 +1,13 @@
-import { StateMemory } from '../state-util'
+import { shouldCollectStateData, StateMemory } from '../state-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { prestart } from '../../loading-stages'
 import { notifyMapAndPlayerInsts } from '../../server/ccmap/injects'
 import type { COMBATANT_PARTY } from '../../net/binary/binary-types'
 import { addCombatantParty } from '../../party/combatant-party-api'
 import { isRemote } from '../../server/remote/remote-server-types'
-import type { f32 } from 'ts-binarifier/src/type-aliases'
+import type { f32, u16, u4 } from 'ts-binarifier/src/type-aliases'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
+import { assert } from '../../misc/assert'
 
 declare global {
     namespace sc {
@@ -29,6 +30,10 @@ export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
         baseParams: memory.diffRecord(this.params?.baseParams ?? ({} as sc.CombatParams.BaseParams)),
         spLevel: memory.diff(this.params?.maxSp),
         sp: memory.diff(this.params?.currentSp),
+
+        buffsRemoved: memory.diffRecord(this.params?.buffsRemoved ?? {}),
+        buffs: memory.diffRecord2Deep(getBuffs(this)),
+        currentItemBuffs: memory.diff(this.params?.currentItemBuffs),
 
         combatantLabelText: memory.diff(this.combatantLabelInfo?.text),
         combatantLabelTimer: memory.diff(this.combatantLabelInfo?.time as f32),
@@ -82,6 +87,7 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
             notifyMapAndPlayerInsts(this.params, sc.COMBAT_PARAM_MSG.SP_CHANGED)
         }
 
+        setBuffs(this, state)
     }
 
     if (this.statusGui && state.statusGui !== undefined) setStatusEntries(this, state.statusGui)
@@ -141,3 +147,136 @@ function setStatusEntries(combatant: ig.ENTITY.Combatant, statusGui: ReturnType<
     }
 }
 
+declare global {
+    namespace sc {
+        interface StatChange {
+            statNames: sc.StatChange.StatName[]
+        }
+    }
+}
+prestart(() => {
+    sc.StatChange.inject({
+        init(stats, ...args) {
+            this.statNames = stats
+            this.parent(stats, ...args)
+        },
+    })
+})
+
+declare global {
+    namespace sc {
+        interface CombatParams {
+            buffsRemoved?: Record<u4, u16>
+        }
+    }
+}
+
+prestart(() => {
+    sc.CombatParams.inject({
+        removeBuff(buff) {
+            if (shouldCollectStateData()) {
+                const i = this.buffs.indexOf(buff)
+                const rec = (this.buffsRemoved ??= {})
+                rec[i] ??= 0
+                rec[i]++
+            }
+            return this.parent(buff)
+        },
+    })
+})
+
+function getBuffs(combatant: ig.ENTITY.Combatant) {
+    return Object.fromEntries(
+        (combatant.params?.buffs ?? []).map((buff, i) => [
+            i,
+            {
+                statNames: buff.statNames as string[] | undefined,
+
+                itemID: buff instanceof sc.ItemBuff ? buff.itemID : undefined,
+                time: buff instanceof sc.ItemBuff ? buff.time : undefined,
+                timer: buff instanceof sc.ItemBuff ? buff.timer : undefined,
+
+                active: buff instanceof sc.ActionBuff ? buff.active : undefined,
+                name: buff instanceof sc.ActionBuff ? buff.name : undefined,
+                hacked: buff instanceof sc.ActionBuff ? buff.hacked : undefined,
+            },
+        ])
+    )
+}
+
+function createBuff(data: NonNullable<NonNullable<Return['buffs']>[string]>) {
+    assert(data.statNames)
+    if (data.time !== undefined) {
+        assert(data.itemID !== undefined)
+        return new sc.ItemBuff(data.statNames, data.time, data.itemID)
+    } else {
+        assert(data.name !== undefined)
+        assert(data.hacked !== undefined)
+        return new sc.ActionBuff(data.statNames, data.name, data.hacked)
+    }
+}
+
+function setBuffs(combatant: ig.ENTITY.Combatant, state: Return) {
+    const p = combatant.params!
+    const cbuffs = p.buffs
+
+    if (state.currentItemBuffs !== undefined) p.currentItemBuffs = state.currentItemBuffs
+
+    if (state.buffsRemoved !== undefined) {
+        const indexes = Object.keys(state.buffsRemoved)
+            .map(Number)
+            .sort((a, b) => b - a)
+        for (const i of indexes) {
+            const cbuff = cbuffs[i]
+            if (!cbuff) continue
+            cbuff.clear()
+            cbuffs.splice(i, 1)
+            sc.Model.notifyObserver(p, sc.COMBAT_PARAM_MSG.BUFF_REMOVED, cbuff)
+            sc.Model.notifyObserver(p, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
+        }
+        runTasks(ig.mapShared.ccmap.getClientInstances(true), () => {
+            const buffGui = sc.gui.statusHud?.lowerGui?.buffGui
+            buffGui?.update()
+        })
+    }
+
+    const buffs = state.buffs
+    if (buffs !== undefined) {
+        const indexes = Object.keys(buffs)
+            .map(Number)
+            .sort((a, b) => b - a)
+        for (const i of indexes) {
+            const data = buffs[i]
+            let cbuff = cbuffs[i]
+            if (!data) {
+                assert(!cbuff, 'buffsRemoved didnt remove buff properly!')
+            } else {
+                if (cbuff) {
+                    if (data.statNames !== undefined) {
+                        if (cbuff instanceof sc.ActionBuff) {
+                            data.name ??= cbuff.name
+                            data.hacked ??= cbuff.hacked
+                            data.active ??= cbuff.active
+                        } else if (cbuff instanceof sc.ItemBuff) {
+                            data.itemID ??= cbuff.itemID
+                            data.time ??= cbuff.time
+                            data.timer ??= cbuff.timer
+                        }
+                        assert(
+                            cbuff.statNames.length == data.statNames.length &&
+                                cbuff.statNames.every((v, i) => v == data.statNames![i])
+                        )
+                    }
+                    if (data.timer != undefined) (cbuff as sc.ItemBuff).timer = data.timer
+                    if (data.active !== undefined) (cbuff as sc.ActionBuff).active = data.active
+                } else {
+                    cbuff = createBuff(data)
+                    assert(p.buffs.length == i)
+                    p.buffs[i] = cbuff
+                    sc.Model.notifyObserver(p, sc.COMBAT_PARAM_MSG.BUFF_ADDED, cbuff)
+                    sc.Model.notifyObserver(p, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
+                }
+            }
+        }
+    }
+}
