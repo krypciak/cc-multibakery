@@ -22,7 +22,7 @@ function getEntityState(this: ig.ENTITY.NPC, player?: StateKey) {
         config: memory.diff(Object.values(this.configs).indexOf(this.defaultConfig) as i16),
         activeStateIdx: memory.diff(this.activeStateIdx as i16),
 
-        ...scActorEntity.getEntityState.call(this, memory),
+        ...scActorEntity.getEntityState.call(this, player, memory),
     }
 }
 

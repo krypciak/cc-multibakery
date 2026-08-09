@@ -20,7 +20,7 @@ function getEntityState(this: ig.ENTITY.Enemy, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        ...igEntityCombatant.getEntityState.call(this, memory),
+        ...igEntityCombatant.getEntityState.call(this, player, memory),
 
         enemyType: memory.onlyOnce(this.enemyName),
     }

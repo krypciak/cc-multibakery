@@ -42,7 +42,7 @@ export function getEntityState(this: ig.ENTITY.Player, player?: StateKey, memory
             : undefined
 
     return {
-        ...scPlayerBaseEntity.getEntityState.call(this, memory),
+        ...scPlayerBaseEntity.getEntityState.call(this, memory, player),
 
         interactObject: memory.diff(this.interactObject?.entity?.netid),
 

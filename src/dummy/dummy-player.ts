@@ -32,7 +32,6 @@ declare global {
             model: dummy.PlayerModel
 
             username: Username
-            remoteForceBlockControl?: boolean
             inCutscene?: boolean
             currentMenu?: sc.MENU_SUBMENU
             currentSubState?: sc.GAME_MODEL_SUBSTATE
@@ -97,7 +96,6 @@ prestart(() => {
                 if (isPhysics(multi.server) && client) {
                     this.currentMenu = client.inst.sc.menu.currentMenu
                     this.currentSubState = client.inst.sc.model.currentSubState
-                    this.remoteForceBlockControl = !!this.isControlBlocked()
                     this.inCutscene = !!client.inst.ig.game.isControlBlocked()
 
                     const inp = client.inputManager
@@ -139,7 +137,6 @@ prestart(() => {
             if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
         },
         isControlBlocked() {
-            if (isRemote(multi.server) && this.remoteForceBlockControl) return true
             return this.currentSubState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU || this.parent()
         },
         updateSkinPet(showSpawnFx) {

@@ -23,7 +23,7 @@ function getEntityState(this: sc.CombatProxyEntity, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        ...scActorEntity.getEntityState.call(this, memory),
+        ...scActorEntity.getEntityState.call(this, player, memory),
         proxyType: memory.onlyOnce(this.proxyType),
         combatant: memory.onlyOnce(this.combatant.netid),
     }

@@ -8,6 +8,7 @@ import { isRemote } from '../../server/remote/remote-server-types'
 import type { f32, u16, u4 } from 'ts-binarifier/src/type-aliases'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
+import type { StateKey } from '../map-state-handlers'
 
 declare global {
     namespace sc {
@@ -18,9 +19,9 @@ declare global {
 }
 
 type Return = ReturnType<typeof getEntityState>
-export function getEntityState(this: ig.ENTITY.Combatant, memory: StateMemory) {
+export function getEntityState(this: ig.ENTITY.Combatant, player: StateKey | undefined, memory: StateMemory) {
     return {
-        ...scActorEntity.getEntityState.call(this, memory),
+        ...scActorEntity.getEntityState.call(this, player, memory),
 
         firstState: memory.onlyOnce(true),
         party: memory.diff(this.party as COMBATANT_PARTY),

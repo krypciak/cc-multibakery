@@ -4,13 +4,14 @@ import * as igEntityCombatant from './ig_ENTITY_Combatant-base'
 import type { u10, u7 } from 'ts-binarifier/src/type-aliases'
 import { assert } from '../../misc/assert'
 import { isRemote } from '../../server/remote/remote-server-types'
+import type { StateKey } from '../map-state-handlers'
 
 type Return = ReturnType<typeof getEntityState>
-export function getEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory) {
+export function getEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, memory: StateMemory, player?: StateKey) {
     /* model can be null for sc.PartyMemberEntity right after leaving the party */
     const model = this.model as typeof this.model | undefined
     return {
-        ...igEntityCombatant.getEntityState.call(this, memory),
+        ...igEntityCombatant.getEntityState.call(this, player, memory),
 
         modelName: model && memory.diff(model.name),
 

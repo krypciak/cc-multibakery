@@ -34,7 +34,6 @@ import { gameModelStateMapStateHandler } from './game-model-state'
 import { pvpMapStateHandler } from './pvp'
 import { hitNumberClearMapStateHandler, hitNumberSpawnMapStateHandler } from './hit-number'
 import { varsMapStateHandler } from './vars'
-import { actionStepsMapStateHandler, clearActionAttachedStateHandler } from './action-steps'
 
 const mapStateHandlers: MapStateHandler[] = [
     clearEffectsMapStateHandler,
@@ -49,8 +48,6 @@ const mapStateHandlers: MapStateHandler[] = [
     hitNumberSpawnMapStateHandler,
     hitNumberClearMapStateHandler,
     varsMapStateHandler,
-    clearActionAttachedStateHandler,
-    actionStepsMapStateHandler,
 ]
 
 if (TEST) {

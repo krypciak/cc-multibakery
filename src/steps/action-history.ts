@@ -1,11 +1,11 @@
 import { prestart } from '../loading-stages'
 import { isPhysics } from '../server/physics/physics-server-types'
-import { onActionStepStart } from '../state/action-steps'
+import { onActionStepStart } from '../state/entity/sc_ActorEntity-base'
 
 prestart(() => {
-    function startStep(step: ig.ActionStepBase, actor: ig.ActorEntity) {
+    function startStep(action: ig.Action, step: ig.ActionStepBase, actor: ig.ActorEntity) {
         step.start(actor)
-        onActionStepStart(step, actor)
+        onActionStepStart(action, step, actor)
     }
     ig.Action.inject({
         run(actor) {
@@ -19,7 +19,7 @@ prestart(() => {
                 step = this.rootStep
                 if (!step) return true
                 if (actor.stepTimer > 0) actor.stepTimer = 0
-                startStep(step, actor)
+                startStep(this, step, actor)
                 if (oldCurrentAction != actor.currentAction) return false
                 actor.currentActionStep = step
             }
@@ -51,7 +51,7 @@ prestart(() => {
                     )
                 }
                 actor.currentActionStep = step
-                if (step) startStep(step, actor)
+                if (step) startStep(this, step, actor)
 
                 if (oldCurrentAction != actor.currentAction || step != actor.currentActionStep) return false
             }

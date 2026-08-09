@@ -28,7 +28,6 @@ function getEntityState(this: dummy.DummyPlayer, player?: StateKey) {
 
         username: memory.diff(this.username),
         skin: memory.diff(this.currentSkinName ?? ''),
-        remoteForceBlockControl: memory.diff(this.remoteForceBlockControl),
         inCutscene: memory.diff(this.inCutscene),
         currentMenu: memory.diff(this.currentMenu as u32),
         currentSubState: memory.diff(this.currentSubState),
@@ -46,7 +45,6 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
         this.setSkin(state.skin, true)
     }
 
-    if (state.remoteForceBlockControl !== undefined) this.remoteForceBlockControl = state.remoteForceBlockControl
     if (state.inCutscene !== undefined) this.inCutscene = state.inCutscene
     if (state.currentMenu !== undefined) this.currentMenu = state.currentMenu
     if (state.currentSubState !== undefined) this.currentSubState = state.currentSubState

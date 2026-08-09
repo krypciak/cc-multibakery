@@ -8,6 +8,7 @@ import type { EntityNetid } from '../misc/entity-netid'
 import type { Username } from '../net/binary/binary-types'
 import { runEvent } from '../steps/event-steps-run'
 import { isRemote } from '../server/remote/remote-server-types'
+import { deserializeStepSettingsRecursive, serializeStepSettingsRecursive } from './step-settings-serializer'
 
 interface StepObj {
     settings: any // ig.EventStepBase.Settings
@@ -45,87 +46,40 @@ declare global {
     }
 }
 
-function serializeStepSettingsRecursive(data: any) {
-    if (data && typeof data == 'object') {
-        const keys = (Array.isArray(data) ? data.keys() : Object.keys(data).values()) as ArrayIterator<any>
-        for (const key of keys) {
-            let value = data[key]
-            if (!value) continue
-
-            if (typeof value === 'string' || value instanceof ig.LangLabel) {
-                data[key] = ig.LangLabel.bakeVars(value)
-            } else if (typeof value === 'object') {
-                if (value instanceof ig.Class) {
-                    if (value instanceof ig.Entity) {
-                        assert(value.netid)
-                        data[key] = { netid: value.netid }
-                    } else if (
-                        value instanceof sc.InputFieldDialog ||
-                        value instanceof sc.ObjectSliderDialog ||
-                        value instanceof ig.Action ||
-                        value instanceof ig.EventCall
-                    ) {
-                        data[key] = undefined
-                    } else {
-                        assert(false)
-                    }
-                } else if (key == 'entity' && typeof value == 'object') {
-                    const entity = ig.Event.getEntity(value)
-                    if (entity?.netid) {
-                        data[key] = { netid: entity.netid }
-                    } else {
-                        serializeStepSettingsRecursive(value)
-                    }
-                } else {
-                    serializeStepSettingsRecursive(value)
-                }
-            } else if (typeof value == 'function') {
-                data[key] = undefined
-            }
-        }
-    }
-}
-
+/* copies */
 function serializeStepGroup(group: StepGroupDeserialized): StepGroupSerialized {
-    group = ig.copy(group)
+    const newGroup: Partial<StepGroupSerialized> = {
+        type: group.type,
+        eventCallId: group.eventCallId,
+        end: group.end,
+    }
+
     if (group.callEntity) {
         assert(group.callEntity.netid)
-        group.callEntity = group.callEntity.netid as any
+        newGroup.callEntity = group.callEntity.netid as any
     }
 
-    for (const step of group.steps) {
-        serializeStepSettingsRecursive(step.data)
-
+    newGroup.steps = new Array(group.steps.length)
+    for (let i = 0; i < group.steps.length; i++) {
+        const step = group.steps[i]
+        const newStep = (newGroup.steps[i] = {
+            data: serializeStepSettingsRecursive(step.data),
+            settings: { ...step.settings },
+            input: step.input,
+        })
         /* remove branch step settings */
-        for (let i = 0; step.settings[i]; i++) {
-            delete step.settings[i]
+        for (let i = 0; newStep.settings[i]; i++) {
+            delete newStep.settings[i]
         }
         /* from ig.EVENT_STEP.SHOW_INPUT_DIALOG */
-        if (step.settings.accepted) step.settings.accepted = []
+        if (newStep.settings.accepted) newStep.settings.accepted = []
 
-        serializeStepSettingsRecursive(step.settings)
+        newStep.settings = serializeStepSettingsRecursive(newStep.settings)
     }
-    return group as StepGroupSerialized
+    return newGroup as StepGroupSerialized
 }
 
-function deserializeStepSettingsRecursive(data: any) {
-    if (data && typeof data == 'object') {
-        for (const key in data) {
-            const value = data[key]
-            if (value && typeof value === 'object') {
-                if ('netid' in value) {
-                    const netid = value.netid as EntityNetid
-                    const entity = ig.game.entitiesByNetid[netid]
-                    assert(entity)
-                    data[key] = entity
-                } else {
-                    deserializeStepSettingsRecursive(value)
-                }
-            }
-        }
-    }
-}
-
+/* in place */
 function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized {
     if (group.callEntity) {
         const netid = group.callEntity as unknown as EntityNetid
@@ -212,6 +166,7 @@ export const eventStepsMapStateHandler: MapStateHandler = {
         // }
 
         if (packet.eventSteps.clients) {
+            // console.log(packet.eventSteps.clients)
             for (const username in packet.eventSteps.clients) {
                 const client = multi.server.clients.get(username)
                 if (!client) {
@@ -332,8 +287,8 @@ prestart(() => {
             this.eventCallId = eventCallIdCounter++
         },
         setDone() {
-            if (!shouldCollectStateData() || this.eventAttached.length == 0) return this.parent()
             this.parent()
+            if (!shouldCollectStateData()) return
             const group = getGroup(this)
             group.end = true
         },
@@ -344,7 +299,7 @@ prestart(() => {
     if (!REMOTE) return
     ig.EventCall.inject({
         setDone() {
-            if (!isRemote(multi.server) || this.eventAttached.length == 0 || forceSetDone) return this.parent()
+            if (!isRemote(multi.server) || forceSetDone) return this.parent()
         },
     })
 })
