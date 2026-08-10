@@ -1,6 +1,6 @@
 import { prestart } from '../loading-stages'
 import { isPhysics } from '../server/physics/physics-server-types'
-import { onActionStepStart } from '../state/entity/sc_ActorEntity-base'
+import { onActionStepStart } from '../state/entity/ig_ActorEntity-base'
 
 prestart(() => {
     function startStep(action: ig.Action, step: ig.ActionStepBase, actor: ig.ActorEntity) {
