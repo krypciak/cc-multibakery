@@ -90,7 +90,8 @@ const actionSettingsEverSent = new WeakMap<StateKey, Set<ActionId>>()
 function getActionSettingsToSend(action: Nullable<ig.Action> | undefined, player: StateKey | undefined) {
     if (!action) return
     const actionUniqueId = action.uniqueId
-    if (actionUniqueId === undefined || !player) return
+    assert(actionUniqueId !== undefined)
+    if (!player) return
 
     let set = actionSettingsEverSent.get(player)
     if (!set) {
@@ -162,7 +163,7 @@ const deserializedActionCache: Record<ActionId, ig.Action> = {}
 
 function getActionFromActionUnion(union: ActionStepHistoryEntry['actionUnion']): ig.Action {
     assert(union)
-    if (union.uniqueId) {
+    if (union.uniqueId !== undefined) {
         const action = deserializedActionCache[union.uniqueId]
         assert(action)
         return action

@@ -1,5 +1,5 @@
 import type { i16, i24 } from 'ts-binarifier/src/type-aliases'
-import { prestart } from '../../loading-stages'
+import { postload, prestart } from '../../loading-stages'
 import { deserializeStepSettingsRecursive, serializeStepSettingsRecursive } from '../step-settings-serializer'
 
 export type ActionId = i24
@@ -32,28 +32,27 @@ declare global {
     }
 }
 
-let actionIdCounter = 0
-prestart(() => {
-    ig.Action.inject({
-        init(name, steps, parallelMove, repeating) {
-            this.stepSettings = steps
-            this.uniqueId = actionIdCounter++
-            this.parent(name, steps, parallelMove, repeating)
-        },
-        getStepsFlatArray() {
-            if (this.stepsFlatArray) return this.stepsFlatArray
-            this.stepsFlatArray = []
-            if (this.rootStep) visitStepRecursive(this.rootStep, step => this.stepsFlatArray!.push(step))
+postload(() => {
+    ig.module('multibakery.action-inject')
+    ig._loadQueue.unshift(ig._loadQueue.pop()!)
+    ig.requires('impact.base.action').defines(() => {
+        let actionIdCounter = 0
+        ig.Action.inject({
+            init(name, steps, parallelMove, repeating) {
+                this.stepSettings = steps
+                this.uniqueId = actionIdCounter++
+                this.parent(name, steps, parallelMove, repeating)
+            },
+            getStepsFlatArray() {
+                if (this.stepsFlatArray) return this.stepsFlatArray
+                this.stepsFlatArray = []
+                if (this.rootStep) visitStepRecursive(this.rootStep, step => this.stepsFlatArray!.push(step))
 
-            return this.stepsFlatArray
-        },
+                return this.stepsFlatArray
+            },
+        })
     })
 })
-
-/* TODO: */
-/* this can have entity references! */
-/* do we really want to reconstruct the actions entirely? */
-/* do we really want to send all the steps and not just the whitelisted ones? */
 
 type SerializedStepSettings = any
 
