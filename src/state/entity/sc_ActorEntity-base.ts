@@ -26,6 +26,7 @@ export function getEntityState(this: sc.ActorEntity, player: StateKey | undefine
         ...igAnimatedEntity.getEntityState.call(this, memory),
 
         face: memory.diffVec2(this.face),
+        jumpedWithSound: this.lastJumpWithSoundsFrame == ig.system.frame - 1,
 
         actionStepHistory,
         hasCurrentAction: memory.diff(!!this.currentAction),
@@ -36,6 +37,20 @@ export function setEntityState(this: sc.ActorEntity, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 
     if (state.face) this.face = state.face
+
+    if (state.jumpedWithSound) {
+        function getSoundFromColl(
+            coll: ig.CollEntry,
+            soundType: keyof typeof sc.ACTOR_SOUND = 'none'
+        ): sc.ACTOR_SOUND_BASE {
+            const terrain = ig.terrain.getTerrain(coll, true, true)
+            const entry = sc.ACTOR_SOUND[soundType]
+            return (entry as any)[terrain] || entry[ig.TERRAIN_DEFAULT]
+        }
+
+        const entry = getSoundFromColl(this.coll, this.soundType)
+        ig.SoundHelper.playAtEntity(entry.jump, this, null, null, 700)
+    }
 
     if (state.actionStepHistory && multi.server && !ig.shared.settingStateImmediately) {
         // console.log(JSON.stringify(state.actionStepHistory, null, 4))
@@ -83,6 +98,22 @@ export function setEntityState(this: sc.ActorEntity, state: Return) {
         this.currentActionStep = null
     }
 }
+
+declare global {
+    namespace sc {
+        interface ActorEntity {
+            lastJumpWithSoundsFrame?: number
+        }
+    }
+}
+prestart(() => {
+    sc.ActorEntity.inject({
+        onJump(addedHeight, ignoreSounds) {
+            this.parent(addedHeight, ignoreSounds)
+            if (!ignoreSounds) this.lastJumpWithSoundsFrame = ig.system.frame
+        },
+    })
+})
 
 /* ideally the state key should be GlobalStateKey, but this is good enough */
 const actionSettingsEverSent = new WeakMap<StateKey, Set<ActionId>>()
