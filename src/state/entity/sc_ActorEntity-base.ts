@@ -5,11 +5,12 @@ import * as igActorEntity from './ig_ActorEntity-base'
 
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: sc.ActorEntity, player: StateKey | undefined, memory: StateMemory) {
+    const jumped = this.lastJumpWithSoundsFrame == ig.system.frame - 1
     return {
         ...igActorEntity.getEntityState.call(this, player, memory),
 
         face: memory.diffVec2(this.face),
-        jumpedWithSound: this.lastJumpWithSoundsFrame == ig.system.frame - 1,
+        jumpedWithSound: jumped ? true : undefined,
     }
 }
 
