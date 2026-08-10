@@ -13,6 +13,7 @@ import {
     type StepIndex,
 } from './action-serializer'
 import type { EntityNetid } from '../../misc/entity-netid'
+import { isRemote } from '../../server/remote/remote-server-types'
 
 type Return = ReturnType<typeof getEntityState>
 export function getEntityState(this: sc.ActorEntity, player: StateKey | undefined, memory: StateMemory) {
@@ -37,7 +38,7 @@ export function setEntityState(this: sc.ActorEntity, state: Return) {
 
     if (state.animationFixed !== undefined) this.animationFixed = state.animationFixed
 
-    if (state.actionStepHistory && multi.server && !ig.shared.settingStateImmediately) {
+    if (state.actionStepHistory && isRemote(multi.server)) {
         // console.log(JSON.stringify(state.actionStepHistory, null, 4))
         for (const { instPlayerNetid, type, actionUnion, stepIndex } of state.actionStepHistory) {
             let inst = ig.mapShared.ccmap.inst
