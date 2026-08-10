@@ -26,6 +26,7 @@ export function getEntityState(this: sc.ActorEntity, player: StateKey | undefine
         ...igAnimatedEntity.getEntityState.call(this, memory),
 
         face: memory.diffVec2(this.face),
+        animationFixed: memory.diff(this.animationFixed),
         jumpedWithSound: this.lastJumpWithSoundsFrame == ig.system.frame - 1,
 
         actionStepHistory,
@@ -37,19 +38,31 @@ export function setEntityState(this: sc.ActorEntity, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 
     if (state.face) this.face = state.face
+    if (state.animationFixed !== undefined) this.animationFixed = state.animationFixed
+
+    /* footstep sounds */
+    if (
+        !this.jumping &&
+        !this.animationFixed &&
+        this.stepFx.frames &&
+        !Vec2.isZero(this.coll.accelDir) &&
+        this.coll.relativeVel >= ig.ACTOR_RUN_THRESHOLD
+    ) {
+        const frame = this.animState.getFrame()
+        if (frame != this.stepFx.lastFrame) {
+            const sound = getSoundFromColl(this.coll, this.soundType)
+            if (frame == this.stepFx.frames[0]) {
+                ig.SoundHelper.playAtEntity(sound.step1, this, null, null, 700)
+            } else if (frame == this.stepFx.frames[1]) {
+                ig.SoundHelper.playAtEntity(sound.step2, this, null, null, 700)
+            }
+            this.stepFx.lastFrame = frame
+        }
+    } else this.stepFx.lastFrame = -1
 
     if (state.jumpedWithSound) {
-        function getSoundFromColl(
-            coll: ig.CollEntry,
-            soundType: keyof typeof sc.ACTOR_SOUND = 'none'
-        ): sc.ACTOR_SOUND_BASE {
-            const terrain = ig.terrain.getTerrain(coll, true, true)
-            const entry = sc.ACTOR_SOUND[soundType]
-            return (entry as any)[terrain] || entry[ig.TERRAIN_DEFAULT]
-        }
-
-        const entry = getSoundFromColl(this.coll, this.soundType)
-        ig.SoundHelper.playAtEntity(entry.jump, this, null, null, 700)
+        const sound = getSoundFromColl(this.coll, this.soundType)
+        ig.SoundHelper.playAtEntity(sound.jump, this, null, null, 700)
     }
 
     if (state.actionStepHistory && multi.server && !ig.shared.settingStateImmediately) {
@@ -114,6 +127,12 @@ prestart(() => {
         },
     })
 })
+
+function getSoundFromColl(coll: ig.CollEntry, type: keyof typeof sc.ACTOR_SOUND): sc.ACTOR_SOUND_BASE {
+    var c = ig.terrain.getTerrain(coll, true, true),
+        e = sc.ACTOR_SOUND[type] || sc.ACTOR_SOUND.none
+    return (e as any)[c] ?? e[ig.TERRAIN_DEFAULT]
+}
 
 /* ideally the state key should be GlobalStateKey, but this is good enough */
 const actionSettingsEverSent = new WeakMap<StateKey, Set<ActionId>>()

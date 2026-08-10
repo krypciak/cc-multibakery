@@ -17,6 +17,7 @@ export function getEntityState(this: ig.AnimatedEntity, memory: StateMemory) {
         externAnimSheetName: memory.diff(this.externAnimSheetName),
 
         accelDir: memory.diffVec2(this.coll.accelDir),
+        relativeVel: memory.diff(this.coll.relativeVel),
         animAlpha: memory.diff(this.animState.alpha),
     }
 }
@@ -51,6 +52,7 @@ export function setEntityState(this: ig.AnimatedEntity, state: Return) {
     }
 
     if (state.accelDir) this.coll.accelDir = state.accelDir
+    if (state.relativeVel !== undefined) this.coll.relativeVel = state.relativeVel
     if (state.animAlpha !== undefined) this.animState.alpha = state.animAlpha
 
     if (state.resetAnimTimer) this.animState.timer = 0
