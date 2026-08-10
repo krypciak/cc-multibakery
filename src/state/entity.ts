@@ -32,6 +32,33 @@ declare global {
     }
 }
 
+function getSortedStates(rawStates: Record<EntityNetid, EntityStateUnion>) {
+    const states = Object.entries(rawStates).map(([k, v]) => {
+        const netid: EntityNetid = parseInt(k as string)
+
+        return [getEntityTypeId(netid), netid, v] as const
+    })
+    states.sort(([typeA], [typeB]) => entityApplyPriority[typeA] - entityApplyPriority[typeB])
+    return states
+}
+
+export const entityCreateMapStateHandler: MapStateHandler = {
+    get() {},
+    set(packet) {
+        if (!packet.states) return
+
+        const states = getSortedStates(packet.states)
+        for (const [typeId, netid, data] of states) {
+            let entity: ig.Entity | undefined = ig.game.entitiesByNetid[netid]
+            if (entity) continue
+            const clazz = entityTypeidToClass[typeId]
+            if (!clazz.create) continue
+
+            clazz.create(netid, data)
+        }
+    },
+}
+
 export const entityStateMapStateHandler: MapStateHandler = {
     get(packet, client, cache) {
         for (const entity of ig.game.entities) {
@@ -51,23 +78,10 @@ export const entityStateMapStateHandler: MapStateHandler = {
     set(packet) {
         if (!packet.states) return
 
-        const states = Object.entriesT(packet.states).map(([k, v]) => {
-            const netid: EntityNetid = parseInt(k as string)
-
-            return [getEntityTypeId(netid), netid, v] as const
-        })
-        states.sort(([typeA], [typeB]) => entityApplyPriority[typeA] - entityApplyPriority[typeB])
-
-        for (const [typeId, netid, data] of states) {
+        const states = getSortedStates(packet.states)
+        for (const [_typeId, netid, data] of states) {
             let entity: ig.Entity | undefined = ig.game.entitiesByNetid[netid]
-            if (!entity) {
-                const clazz = entityTypeidToClass[typeId]
-                if (!clazz.create) continue
-
-                entity = clazz.create(netid, data)
-                if (!entity) continue
-            }
-            assert(entity)
+            if (!entity) continue
             assert(isStateEntity(entity))
             entity.setEntityState(data)
         }

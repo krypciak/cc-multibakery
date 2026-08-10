@@ -27,7 +27,7 @@ export interface MapStateHandler {
 import { clearEffectsMapStateHandler, stopEffectsMapStateHandler } from './entity/ig_ENTITY_Effect'
 import { entityDeathMapStateHandler } from './entity/entity-death'
 import { destroyCombatProxiesMapStateHandler } from './entity/sc_CombatProxyEntity'
-import { entityStateMapStateHandler } from './entity'
+import { entityCreateMapStateHandler, entityStateMapStateHandler } from './entity'
 import { entityHitMapStateHandler } from './entity/entity-hit-effect'
 import { eventStepsMapStateHandler } from './event-steps'
 import { gameModelStateMapStateHandler } from './game-model-state'
@@ -40,6 +40,7 @@ const mapStateHandlers: MapStateHandler[] = [
     stopEffectsMapStateHandler,
     destroyCombatProxiesMapStateHandler,
     entityDeathMapStateHandler,
+    entityCreateMapStateHandler,
     entityStateMapStateHandler,
     entityHitMapStateHandler,
     eventStepsMapStateHandler,
