@@ -11,6 +11,7 @@
 ### Fixed
 
 - Disallow opening the quick menu on remote when player is performing action
+- Fix no door opening sound on remote
 
 ## [0.8.3] 2026-08-01
 
