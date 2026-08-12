@@ -10,7 +10,7 @@ import { runEvent } from '../steps/event-steps-run'
 import { isRemote } from '../server/remote/remote-server-types'
 import { deserializeStepSettingsRecursive, serializeStepSettingsRecursive } from './step-settings-serializer'
 
-interface StepObj {
+export interface StepObj {
     settings: any // ig.EventStepBase.Settings
     data?: Record<string, unknown>
     input?: ig.Event.Vars
@@ -27,7 +27,7 @@ interface StepGroupDeserialized extends StepGroupBase {
     callEntity?: ig.Entity
 }
 
-interface StepGroupSerialized extends StepGroupBase {
+export interface StepGroupSerialized extends StepGroupBase {
     callEntity?: EntityNetid
 }
 

@@ -105,7 +105,7 @@ function getActionSettingsToSend(action: Nullable<ig.Action> | undefined, player
     }
 }
 
-interface ActionStepHistoryEntry {
+export interface ActionStepHistoryEntry {
     instPlayerNetid?: EntityNetid
     type: 'start' | 'clearActionAttached'
 

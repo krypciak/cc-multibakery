@@ -5,12 +5,13 @@ import { cleanRecord } from './state-util'
 import type { MapStateHandler } from './map-state-handlers'
 
 type EntityStateUnion = EntityStates[keyof EntityStates]
+export type EntityStateRecord = Record<EntityNetid, EntityStateUnion>
 
 declare global {
     interface EntityStates {}
 
     interface StateUpdatePacket {
-        states?: Record<EntityNetid, EntityStateUnion> & { entityStateRecordUnion?: never }
+        states?: EntityStateRecord & { entityStateRecordUnion?: never }
     }
 }
 

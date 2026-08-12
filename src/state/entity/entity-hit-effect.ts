@@ -5,7 +5,7 @@ import type { EntityNetid } from '../../misc/entity-netid'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 import type { MapStateHandler } from '../map-state-handlers'
 
-interface HitConfig {
+export interface HitConfig {
     entity: EntityNetid
     hitPos: Vec3
     hitDegree: sc.ATTACK_TYPE

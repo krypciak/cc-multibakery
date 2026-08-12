@@ -4,7 +4,7 @@ import { assert } from '../misc/assert'
 import { shouldCollectStateData } from './state-util'
 import type { EntityNetid } from '../misc/entity-netid'
 
-interface HitNumberConfig {
+export interface HitNumberConfig {
     isHealing?: boolean
     pos: Vec3
     combatant: EntityNetid
