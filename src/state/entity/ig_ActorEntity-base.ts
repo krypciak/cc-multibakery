@@ -204,10 +204,10 @@ export function onActionStepStart(action: ig.Action, step: ig.ActionStepBase, _a
 
     if (!shouldCollectStateData()) return
 
-    if (isStepClassIdInActionStepWhitelist(step.classId)) {
-        const name = instanceinator.instances[instanceinator.id].name
-        console.log(fcn(actor), 'starting', fcn(step), 'on', name, step.settings)
-    }
+    // if (isStepClassIdInActionStepWhitelist(step.classId)) {
+    //     const name = instanceinator.instances[instanceinator.id].name
+    //     console.log(fcn(actor), 'starting', fcn(step), 'on', name, step.settings)
+    // }
 
     actor.actionStepHistory.push({ frame: ig.system.frame, instId: instanceinator.id, type: 'start', action, step })
 }
