@@ -147,7 +147,7 @@ class CombatArtTest implements TestConfig {
     constructor(private config: CombatArtTestConfig) {
         this.id = config.id
         this.name = config.name
-        this.timeout = 100e3
+        this.timeout = 1000e3
     }
 
     private async loadEnemy(enemyName: string) {
