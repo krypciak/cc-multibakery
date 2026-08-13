@@ -83,7 +83,7 @@ importers:
         version: 0.60.0
       ts-binarifier:
         specifier: github:krypciak/ts-binarifier
-        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/c04fafb01c3c6348cd4334623c9a17efe7992276
+        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/33f0d5d10ee98284478ee546a6eb32d314a6ce59
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -534,8 +534,8 @@ packages:
     resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/0beba4bf60ccf74b3931bad3a446534f131990c4}
     version: 1.0.0
 
-  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/e50d91835efd532ef4b7adc0f64f8f8fa9e3f962:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/e50d91835efd532ef4b7adc0f64f8f8fa9e3f962}
+  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/51be764d7218b02466e03a4ebc92acdbcf475b2f:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/51be764d7218b02466e03a4ebc92acdbcf475b2f}
     version: 1.0.0
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999:
@@ -725,8 +725,8 @@ packages:
     resolution: {integrity: sha512-Pugqs6M0m7Lv1I7FtxN4aoyToKg1C4tu+/381vH35y8oENM/Ai7f7C4StcoK4/+BSw9ebcS8jRiVrORFKCALLw==}
     engines: {node: ^20.0.0 || >=22.0.0}
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/c04fafb01c3c6348cd4334623c9a17efe7992276:
-    resolution: {gitHosted: true, integrity: sha512-wpsn8rmyX7ZP+ueWaviNmMPN3S9XSPYCEhdFOu8yOQfUY/b4w1D2TF1k7vXfoniWUrfpIOkHipVgf2k/TGj32Q==, tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/c04fafb01c3c6348cd4334623c9a17efe7992276}
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/33f0d5d10ee98284478ee546a6eb32d314a6ce59:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/33f0d5d10ee98284478ee546a6eb32d314a6ce59}
     version: 1.0.0
 
   typescript@6.0.3:
@@ -1075,7 +1075,7 @@ snapshots:
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/885fcd3b210d5d8da84820c611ec90c07a1a1095
 
-  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/e50d91835efd532ef4b7adc0f64f8f8fa9e3f962:
+  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/51be764d7218b02466e03a4ebc92acdbcf475b2f:
     dependencies:
       '@types/semver': 7.7.1
       bun: 1.3.14
@@ -1101,7 +1101,7 @@ snapshots:
   crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c:
     dependencies:
       '@jspm/core': 2.1.0
-      ccmoddb: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/e50d91835efd532ef4b7adc0f64f8f8fa9e3f962
+      ccmoddb: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/51be764d7218b02466e03a4ebc92acdbcf475b2f
       core-js: 3.49.0
       fflate: 0.8.3
       js-fileexplorer: 1.0.0
@@ -1356,7 +1356,7 @@ snapshots:
 
   tinypool@2.1.0: {}
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/c04fafb01c3c6348cd4334623c9a17efe7992276: {}
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/33f0d5d10ee98284478ee546a6eb32d314a6ce59: {}
 
   typescript@6.0.3: {}
 
