@@ -52,7 +52,7 @@ const mapStateHandlers: MapStateHandler[] = [
 ]
 
 if (TEST) {
-    await import('../test/test-setup-mod-side').then(o => mapStateHandlers.push(o.testMapStateHandler))
+    import('../test/test-setup-mod-side').then(o => mapStateHandlers.push(o.testMapStateHandler))
 }
 
 export function getMapStateUpdatePacket(dest: StateUpdatePacket = {}, client?: StateKey, cache?: StateUpdatePacket) {
