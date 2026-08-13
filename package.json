@@ -15,7 +15,7 @@
         "buildCrossnode": "bun build/build.ts build dev=false remote=false target=esnext crossnode",
         "buildTest": "bun build/build.ts build dev target=esnext crossnode test",
         "format": "oxfmt",
-        "test": "bun run buildTest && bun test --parallel=6 --isolate --concurrent",
+        "test": "bun run buildTest && bun test --parallel=2 --isolate --concurrent",
         "server": "bun run buildCrossnode && NODE_NO_WARNINGS=1 node --enable-source-maps scripts/server.js",
         "serverBun": "bun run buildCrossnode && bun run scripts/server.js"
     },
