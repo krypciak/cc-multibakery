@@ -1,6 +1,6 @@
 import { deepEqual } from '../misc/deep-equal'
 import { assert } from '../misc/assert'
-import type { DescribeFunc, ExpectFunc, TestFunc, TestRunner } from './test-runner'
+import type { AfterAllFunc, DescribeFunc, ExpectFunc, TestFunc, TestRunner } from './test-runner'
 
 function importAsyncHooks(): typeof import('async_hooks') | undefined {
     const isBun = typeof global.Bun !== 'undefined'
@@ -47,6 +47,8 @@ export class SimpleTestManager implements TestRunner {
     private described: Record<string, SimpleTestConfig[]> = {}
     private als = AsyncLocalStorage ? new AsyncLocalStorage<string>() : undefined
     private describeStack: string[] = []
+
+    private afterAllCallbacks: (() => void)[] = []
 
     private passCount = 0
     private failCount = 0
@@ -161,8 +163,15 @@ export class SimpleTestManager implements TestRunner {
         }
     }
 
+    afterAll: AfterAllFunc = callback => {
+        this.afterAllCallbacks.push(callback)
+    }
+
     private allFinished() {
         assert(this.isFinished())
+
+        for (const func of this.afterAllCallbacks) func()
+
         this.printSummary()
         multi.destroy()
 

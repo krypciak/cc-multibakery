@@ -9,8 +9,11 @@ export type TestFunc = (
 ) => void | Promise<void>
 export type ExpectFunc = (value?: unknown, msg?: string) => { toEqual(expectedValue?: unknown): void }
 
+export type AfterAllFunc = (callback: () => void) => void
+
 export interface TestRunner {
     describe: DescribeFunc
     test: TestFunc
     expect: ExpectFunc
+    afterAll: AfterAllFunc
 }

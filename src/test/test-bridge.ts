@@ -53,6 +53,7 @@ class TestBridge implements TestRunner {
     describe: TestRunner['describe'] = (...args) => this.testManager.describe(...args)
     test: TestRunner['test'] = (...args) => this.testManager.test(...args)
     expect: TestRunner['expect'] = (...args) => this.testManager.expect(...args)
+    afterAll: TestRunner['afterAll'] = (...args) => this.testManager.afterAll(...args)
 
     addTest(test: TestConfig) {
         assert(!this.tests[test.id])

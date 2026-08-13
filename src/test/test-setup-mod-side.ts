@@ -1,5 +1,5 @@
 import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
-import { poststart, preload } from '../loading-stages'
+import { poststart, preload, prestart } from '../loading-stages'
 import { assert } from '../misc/assert'
 import { getServerDetails } from '../net/web-server-utils'
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
@@ -12,10 +12,14 @@ preload(() => {
     TEST && import('./combat/combat-art-test')
 }, 1)
 
+function isRemote() {
+    return process.argv.length > 2 && process.argv[2] == 'remoteServer'
+}
+
 poststart(() => {
     if (!TEST || isBunTest()) return
 
-    if (process.argv.length > 2 && process.argv[2] == 'remoteServer') {
+    if (isRemote()) {
         execRemote()
     } else {
         execPhysics()
@@ -121,3 +125,10 @@ export const testMapStateHandler: MapStateHandler = {
         })
     },
 }
+
+prestart(() => {
+    if (!PROFILE || isRemote()) return
+    tester.afterAll(() => {
+        // multi.perf.printStats('physics sender encodePacket')
+    })
+})
