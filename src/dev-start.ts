@@ -125,7 +125,7 @@ class DevStart {
     @profile()
     static async startDevServer() {
         if (!PHYSICS) return
-        if (!DEV) return
+        if (!(DEV || CROSSNODE) || TEST) return
 
         this.server = multi.createPhysicsServer(createSettings())
         multi.setServer(this.server)
@@ -214,7 +214,7 @@ prestart(() => {
 })
 
 poststart(() => {
-    if (!DEV || TEST) return
+    if (!(DEV || CROSSNODE) || TEST) return
 
     if (PHYSICS && isInServerDir()) {
         DevStart.startDevServer()
