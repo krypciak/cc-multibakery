@@ -222,12 +222,12 @@ class CombatArtTest implements TestConfig {
         if (!this.map) return
         this.map.inst.ig.mapShared.testDone = true
 
-        const raport = await multi.test.remoteRaports[this.id]
+        const report = await multi.test.remoteReports[this.id]
 
-        tester.expect(raport.crashed, 'remote crashed').toEqual(false)
-        tester.expect(raport.playerZoom, 'player zoom not 1!').toEqual(1)
-        if (raport.errors) {
-            tester.expect(raport.errors.length, `errors: [${raport.errors.map(e => `"${e}"`).join(', ')}]`).toEqual(0)
+        tester.expect(report.crashed, 'remote crashed').toEqual(false)
+        tester.expect(report.playerZoom, 'player zoom not 1!').toEqual(1)
+        if (report.errors) {
+            tester.expect(report.errors.length, `errors: [${report.errors.map(e => `"${e}"`).join(', ')}]`).toEqual(0)
         }
     }
 

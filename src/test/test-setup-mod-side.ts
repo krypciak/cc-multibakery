@@ -44,7 +44,7 @@ function execPhysics() {
     TEST && import('./combat/hexacast/combat-art-hexacast-wave.test')
 }
 
-export interface TestRemoteClientRaport {
+export interface TestRemoteClientReport {
     crashed: boolean
     playerZoom?: number
     errors?: string[]
@@ -55,10 +55,10 @@ export interface TestRemoteClientRequestConfig {
     port: number
 }
 
-let raportSent = false
+let reportSent = false
 async function execRemote() {
     ig.system.startRunLoop = () => {
-        createAndSendRaport()
+        createAndSendReport()
         process.exit(0)
     }
 
@@ -74,7 +74,7 @@ async function execRemote() {
     }
 }
 
-function createRaport(): TestRemoteClientRaport {
+function createReport(): TestRemoteClientReport {
     if (!multi.server) return { crashed: true }
     const client = multi.server.clients.values().next().value
     if (!client) return { crashed: true }
@@ -87,12 +87,12 @@ function createRaport(): TestRemoteClientRaport {
     }
 }
 
-function createAndSendRaport() {
-    if (raportSent) return
-    raportSent = true
+function createAndSendReport() {
+    if (reportSent) return
+    reportSent = true
 
-    const raport = createRaport()
-    console.log('RAPORT:', JSON.stringify(raport))
+    const report = createReport()
+    console.log('REPORT:', JSON.stringify(report))
 }
 declare global {
     interface StateUpdatePacket {
@@ -111,7 +111,7 @@ export const testMapStateHandler: MapStateHandler = {
     set(packet) {
         if (!packet.testDone) return
 
-        createAndSendRaport()
+        createAndSendReport()
 
         assert(ig.ccmap)
         scheduleTask(ig.ccmap.inst, () => {

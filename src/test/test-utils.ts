@@ -8,7 +8,7 @@ import type { TestConfig } from './test-bridge'
 import type { Client } from '../client/client'
 import type { CCMap } from '../server/ccmap/ccmap'
 import { assertPhysics } from '../server/physics/physics-server-types'
-import type { TestRemoteClientRaport, TestRemoteClientRequestConfig } from './test-setup-mod-side'
+import type { TestRemoteClientReport, TestRemoteClientRequestConfig } from './test-setup-mod-side'
 
 import './test-setup-mod-side'
 
@@ -26,7 +26,7 @@ class MultibakeryTestUtils {
     private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
     private disablePerfFlags = true
     private printRemoteServerLogs = false
-    remoteRaports: Record<string, Promise<TestRemoteClientRaport>> = {}
+    remoteReports: Record<string, Promise<TestRemoteClientReport>> = {}
 
     async setupServerIfNeeded() {
         assert(TEST)
@@ -137,8 +137,8 @@ class MultibakeryTestUtils {
     private async spawnRemoteServer(config: TestRemoteClientRequestConfig) {
         const child_process: typeof import('child_process') = (0, eval)(`require('child_process')`)
 
-        let resolve: (raport: TestRemoteClientRaport) => void
-        this.remoteRaports[config.username] = new Promise<TestRemoteClientRaport>(res => (resolve = res))
+        let resolve: (report: TestRemoteClientReport) => void
+        this.remoteReports[config.username] = new Promise<TestRemoteClientReport>(res => (resolve = res))
 
         const errors: string[] = []
 
@@ -156,12 +156,12 @@ class MultibakeryTestUtils {
             const data = String(dataRaw).trim()
             print && console.log(`REMOTE ${config.username}: ${data}`)
 
-            if (data.startsWith('RAPORT:')) {
-                const raportStr = data.substring(data.indexOf(' ')).trim()
-                const raport: TestRemoteClientRaport = JSON.parse(raportStr)
-                raport.errors ??= []
-                raport.errors.push(...errors)
-                resolve(raport)
+            if (data.startsWith('REPORT:')) {
+                const reportStr = data.substring(data.indexOf(' ')).trim()
+                const report: TestRemoteClientReport = JSON.parse(reportStr)
+                report.errors ??= []
+                report.errors.push(...errors)
+                resolve(report)
             }
         })
 
