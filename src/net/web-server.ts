@@ -98,7 +98,7 @@ export class PhysicsHttpServer {
         window.addEventListener('beforeunload', this.stopFunc)
 
         return new Promise<void>((resolve, reject) => {
-            const port = this.netInfo.connection.httpPort
+            let port = this.netInfo.connection.httpPort
             this.httpServer.on('error', e => {
                 let error: string
                 if ('code' in e && e.code === 'EADDRINUSE') {
@@ -110,12 +110,14 @@ export class PhysicsHttpServer {
                 this.destroy()
                 reject(e)
             })
-            this.httpServer.on('listening', () => {
+            this.httpServer.listen(port, () => {
+                const obj = this.httpServer.address()
+                if (obj && typeof obj === 'object') {
+                    port = this.netInfo.connection.httpPort = obj.port
+                }
                 console.log('http server listening to', port)
                 resolve()
             })
-
-            this.httpServer.listen(port)
         })
     }
 

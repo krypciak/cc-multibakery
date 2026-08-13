@@ -59,7 +59,7 @@ class MultibakeryTestUtils {
 
                 netInfo: {
                     connection: {
-                        httpPort: 33406,
+                        httpPort: 0,
                         transport: { type: 'socket.io' },
                     },
                     details: {
@@ -112,7 +112,7 @@ class MultibakeryTestUtils {
     private async requestRemoteClientToJoin(username: string) {
         assertPhysics(multi.server)
         const port = multi.server.settings.netInfo?.connection.httpPort
-        assert(port, 'net manager is not running!')
+        assert(port !== undefined, 'net manager is not running!')
 
         await this.spawnRemoteServer({ port, username })
 
