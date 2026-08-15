@@ -72,7 +72,7 @@ prestart(() => {
 
         return player
     }
-    registerNetEntity({ entityClass: dummy.DummyPlayer })
+    registerNetEntity({ entityClass: dummy.DummyPlayer, temporary: true })
 
     if (REMOTE) {
         dummy.DummyPlayer.inject({

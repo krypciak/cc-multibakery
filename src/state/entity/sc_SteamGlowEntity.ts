@@ -37,7 +37,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.SteamGlowEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.SteamGlowEntity })
+    registerNetEntity({ entityClass: sc.SteamGlowEntity, temporary: true  })
 }, 2)
 
 prestart(() => {

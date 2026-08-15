@@ -39,5 +39,5 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.IceDiskEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.IceDiskEntity })
+    registerNetEntity({ entityClass: sc.IceDiskEntity, temporary: true })
 }, 2)

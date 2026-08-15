@@ -43,7 +43,7 @@ prestart(() => {
     ig.ENTITY.BounceSwitch.create = () => {
         throw new Error('ig.ENTITY.BounceSwitch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.BounceSwitch, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.BounceSwitch })
     ig.ENTITY.BounceSwitch.forceRemotePhysics = true
 
     if (!REMOTE) return

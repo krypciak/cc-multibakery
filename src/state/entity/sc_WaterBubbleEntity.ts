@@ -43,5 +43,5 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.WaterBubbleEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.WaterBubbleEntity })
+    registerNetEntity({ entityClass: sc.WaterBubbleEntity, temporary: true })
 }, 2)

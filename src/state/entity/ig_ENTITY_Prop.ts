@@ -29,7 +29,7 @@ prestart(() => {
     ig.ENTITY.Prop.create = () => {
         throw new Error('ig.ENTITY.Prop.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Prop, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Prop })
 }, 2)
 
 prestart(() => {

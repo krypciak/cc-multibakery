@@ -110,6 +110,7 @@ prestart(() => {
         entityClass: ig.ENTITY.Effect,
         applyPriority: 2000,
         ignoreDeath: true,
+        temporary: true,
     })
 
     ig.ENTITY.Effect.forceRemotePhysics = true

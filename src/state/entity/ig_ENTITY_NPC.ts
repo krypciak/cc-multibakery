@@ -61,7 +61,7 @@ prestart(() => {
     ig.ENTITY.NPC.create = () => {
         throw new Error('ig.ENTITY.NPC.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.NPC, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.NPC })
 
     if (REMOTE) {
         ig.ENTITY.NPC.inject({

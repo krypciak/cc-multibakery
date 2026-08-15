@@ -47,5 +47,5 @@ prestart(() => {
     ig.ENTITY.SteamPipe.create = () => {
         throw new Error('ig.ENTITY.SteamPipe.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.SteamPipe, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.SteamPipe })
 }, 2)

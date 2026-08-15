@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.RegenDestruct.create = () => {
         throw new Error('ig.ENTITY.RegenDestruct.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.RegenDestruct, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.RegenDestruct })
 }, 2)

@@ -45,7 +45,7 @@ prestart(() => {
     ig.ENTITY.Door.create = () => {
         throw new Error('ig.ENTITY.Door.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Door, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Door })
 }, 2)
 
 declare global {

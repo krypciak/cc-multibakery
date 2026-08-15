@@ -97,7 +97,7 @@ prestart(() => {
 
         return crosshair
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Crosshair, applyPriority: 3000 })
+    registerNetEntity({ entityClass: ig.ENTITY.Crosshair, applyPriority: 3000, temporary: true })
 
     ig.ENTITY.Crosshair.forceRemotePhysics = true
     ig.ENTITY.CrosshairDot.forceRemotePhysics = true

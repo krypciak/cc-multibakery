@@ -81,7 +81,7 @@ prestart(() => {
         const ball = ig.game.spawnEntity(ig.ENTITY.Ball, 0, 0, 0, settings)
         return ball
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Ball })
+    registerNetEntity({ entityClass: ig.ENTITY.Ball, temporary: true })
 
     if (REMOTE) {
         ig.ENTITY.Ball.inject({

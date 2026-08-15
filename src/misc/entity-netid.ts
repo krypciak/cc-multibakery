@@ -75,16 +75,16 @@ const classIdToTypeid: Record<number, EntityTypeId> = {}
 export const entityTypeidToClass: Record<EntityTypeId, EntityClass> = {}
 export const entityApplyPriority: Record<EntityTypeId, number> = {}
 export const entityIgnoreDeath: Set<EntityTypeId> = new Set()
-export const entityStatic: Set<EntityTypeId> = new Set()
+export const entityTemporary: Set<EntityTypeId> = new Set()
 
 interface RegisterNetEntitySettings {
     entityClass: EntityClass
     applyPriority?: number
     ignoreDeath?: boolean
-    isStatic?: boolean
+    temporary?: boolean
 }
 
-export function registerNetEntity({ entityClass, applyPriority, ignoreDeath, isStatic }: RegisterNetEntitySettings) {
+export function registerNetEntity({ entityClass, applyPriority, ignoreDeath, temporary }: RegisterNetEntitySettings) {
     const typeid = nextNetidType()
     assert(!entityTypeidToClass[typeid], `entity typeid duplicate! ${typeid}`)
     entityTypeidToClass[typeid] = entityClass
@@ -92,7 +92,7 @@ export function registerNetEntity({ entityClass, applyPriority, ignoreDeath, isS
     entityApplyPriority[typeid] = applyPriority ?? 1000
 
     if (ignoreDeath) entityIgnoreDeath.add(typeid)
-    if (isStatic) entityStatic.add(typeid)
+    if (temporary) entityTemporary.add(typeid)
 }
 
 export function createNetid(

@@ -40,7 +40,7 @@ prestart(() => {
     ig.ENTITY.PushPullBlock.create = () => {
         throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock })
 
     if (!REMOTE) return
 

@@ -38,7 +38,7 @@ prestart(() => {
     ig.ENTITY.DynamicPlatform.create = () => {
         throw new Error('ig.ENTITY.DynamicPlatform.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.DynamicPlatform, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.DynamicPlatform })
 
     if (REMOTE) {
         ig.ENTITY.DynamicPlatform.inject({

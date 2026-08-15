@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.SteamOven.create = () => {
         throw new Error('ig.ENTITY.SteamOven.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.SteamOven, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.SteamOven })
 }, 2)

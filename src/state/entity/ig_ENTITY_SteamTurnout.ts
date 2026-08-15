@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.SteamTurnout.create = () => {
         throw new Error('ig.ENTITY.SteamTurnout.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.SteamTurnout, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.SteamTurnout })
 }, 2)

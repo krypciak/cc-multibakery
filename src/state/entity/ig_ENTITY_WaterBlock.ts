@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.WaterBlock.create = () => {
         throw new Error('ig.ENTITY.WaterBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.WaterBlock, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.WaterBlock })
 }, 2)

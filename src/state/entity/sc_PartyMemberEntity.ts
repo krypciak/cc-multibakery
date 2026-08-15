@@ -44,5 +44,5 @@ prestart(() => {
         entity.multiParty = party
         return entity
     }
-    registerNetEntity({ entityClass: sc.PartyMemberEntity })
+    registerNetEntity({ entityClass: sc.PartyMemberEntity, temporary: true })
 }, 2)

@@ -39,5 +39,5 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.FerroEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.FerroEntity })
+    registerNetEntity({ entityClass: sc.FerroEntity, temporary: true })
 }, 2)

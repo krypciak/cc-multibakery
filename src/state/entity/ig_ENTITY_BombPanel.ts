@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.BombPanel.create = () => {
         throw new Error('ig.ENTITY.BombPanel.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.BombPanel, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.BombPanel })
 }, 2)

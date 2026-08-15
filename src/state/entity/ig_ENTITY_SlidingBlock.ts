@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.SlidingBlock.create = () => {
         throw new Error('ig.ENTITY.SlidingBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.SlidingBlock, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.SlidingBlock })
 }, 2)

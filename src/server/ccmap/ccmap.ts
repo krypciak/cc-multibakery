@@ -11,7 +11,7 @@ import { linkOptions } from '../physics/storage/storage'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapName } from '../../net/binary/binary-types'
 import { instanceinatorCopyInstanceConfig } from '../server-types'
-import { createNetid, entityStatic, getEntityTypeId, type EntityNetid } from '../../misc/entity-netid'
+import { createNetid, entityTemporary, getEntityTypeId, type EntityNetid } from '../../misc/entity-netid'
 import { isRemote } from '../remote/remote-server-types'
 import { assertPhysics } from '../physics/physics-server-types'
 import type { TestConfig } from '../../test/test-bridge'
@@ -241,10 +241,11 @@ export class CCMap extends InstanceUpdateable {
         runTask(this.inst, () => {
             for (const entity of ig.game.entities) {
                 const typeid = getEntityTypeId(entity.netid)
-                if (!entityStatic.has(typeid)) {
+                if (entityTemporary.has(typeid)) {
                     entity.kill()
                 }
             }
+            ig.game.deferredMapEntityUpdate()
         })
     }
 

@@ -51,7 +51,7 @@ prestart(() => {
     ig.ENTITY.Switch.create = () => {
         throw new Error('ig.ENTITY.Switch.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Switch, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Switch })
 
     if (!REMOTE) return
 

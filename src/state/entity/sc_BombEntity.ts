@@ -44,7 +44,7 @@ prestart(() => {
         const entity = ig.game.spawnEntity(sc.BombEntity, x, y, z, settings)
         return entity
     }
-    registerNetEntity({ entityClass: sc.BombEntity })
+    registerNetEntity({ entityClass: sc.BombEntity, temporary: true })
 }, 2)
 
 prestart(() => {

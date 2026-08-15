@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.BallChanger.create = () => {
         throw new Error('ig.ENTITY.BallChanger.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.BallChanger, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.BallChanger })
 }, 2)

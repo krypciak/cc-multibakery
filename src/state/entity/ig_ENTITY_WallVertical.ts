@@ -15,5 +15,5 @@ declare global {
 }
 
 prestart(() => {
-    registerNetEntity({ entityClass: ig.ENTITY.WallVertical, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.WallVertical })
 }, 2)

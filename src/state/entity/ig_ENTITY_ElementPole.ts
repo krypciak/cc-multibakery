@@ -107,7 +107,7 @@ prestart(() => {
     ig.ENTITY.ElementPole.create = () => {
         throw new Error('ig.ENTITY.ElementPole.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.ElementPole, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.ElementPole })
 }, 2)
 
 prestart(() => {

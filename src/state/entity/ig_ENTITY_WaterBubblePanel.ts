@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.WaterBubblePanel.create = () => {
         throw new Error('ig.ENTITY.WaterBubblePanel.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.WaterBubblePanel, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.WaterBubblePanel })
 }, 2)

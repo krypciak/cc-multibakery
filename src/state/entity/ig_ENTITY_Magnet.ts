@@ -34,5 +34,5 @@ prestart(() => {
     ig.ENTITY.Magnet.create = () => {
         throw new Error('ig.ENTITY.Magnet.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.Magnet, isStatic: true })
+    registerNetEntity({ entityClass: ig.ENTITY.Magnet })
 }, 2)
