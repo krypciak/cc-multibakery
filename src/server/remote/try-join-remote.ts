@@ -29,6 +29,8 @@ class TryJoinRemote {
         const server = new RemoteServer({
             displayServerInstance: Opts.serverDisplayServerInstance,
             displayMaps: Opts.serverDisplayMaps,
+            forceMapsActive: Opts.serverForceMapsActive,
+            displayInactiveMaps: Opts.serverDisplayInactiveMaps,
             displayClientInstances: Opts.serverDisplayClientInstances,
             displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
 
