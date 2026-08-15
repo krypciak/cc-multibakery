@@ -15,10 +15,8 @@ export class CCMapDisplay implements OnLinkChange {
     }
 
     removeUnneededGuis() {
-        for (let i = ig.gui.guiHooks.length - 1; i >= 0; i--) {
-            const hook = ig.gui.guiHooks[i]
-            const gui = hook.gui
-            if (
+        function isBad(gui: ig.GuiElementBase) {
+            return (
                 gui instanceof sc.ElementalLoadOverlayGui ||
                 gui instanceof ig.GuiImageContainer ||
                 gui instanceof ig.OverlayCornerGui ||
@@ -35,10 +33,9 @@ export class CCMapDisplay implements OnLinkChange {
                 gui instanceof sc.TitleScreenGui ||
                 gui instanceof sc.RightHudGui ||
                 gui instanceof sc.MasterOverlayGui
-            ) {
-                ig.gui.guiHooks.splice(i, 1)
-            }
+            )
         }
+        ig.gui.guiHooks = ig.gui.guiHooks.filter(hook => !isBad(hook.gui))
     }
 
     setPosCameraHandle(pos: Vec2) {
