@@ -112,6 +112,8 @@ prestart(() => {
                             target.getPos(pos)
                             map.display.setPosCameraHandle(pos)
                         }
+                    } else {
+                        map.display.setPosCameraHandle(Vec2.create())
                     }
                 }
             }
