@@ -16,14 +16,13 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { RemoteSender } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { applyModCompatibilityList } from '../mod-compatibility-list'
-import { entityIgnoreDeath, entityStatic, getEntityTypeId } from '../../misc/entity-netid'
 import { createNetTransportClient } from '../../net/net-transport'
 import { profile } from '../../misc/performance-profiling'
+import type { RemoteServerSettings } from './remote-server-types'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
 import './injects'
-import type { RemoteServerSettings } from './remote-server-types'
 
 export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
@@ -104,16 +103,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     private async resetMapState(map: CCMap) {
-        runTask(map.inst, () => {
-            for (const entity of map.inst.ig.game.entities) {
-                if (!entity.netid) continue
-                const type = getEntityTypeId(entity.netid)
-                if (!entityStatic.has(type) && !entityIgnoreDeath.has(type)) {
-                    entity.kill()
-                }
-            }
-        })
-
+        map.killTemporaryEntities()
         await Promise.all(
             map.clients.map(async client => {
                 const joinData: ClientJoinData = {
