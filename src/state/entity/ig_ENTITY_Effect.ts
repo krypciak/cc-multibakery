@@ -5,7 +5,7 @@ import { shouldCollectStateData, StateMemory, undefinedIfFalsy, undefinedIfVec3Z
 import type { StateKey } from '../map-state-handlers'
 import type { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
 import { isPhysics } from '../../server/physics/physics-server-types'
-import type { MapStateHandler } from '../map-state-handlers'
+import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 
 declare global {
     namespace ig.ENTITY {
@@ -133,85 +133,24 @@ prestart(() => {
 }, 2)
 
 declare global {
-    interface StateUpdatePacket {
-        clearEffects?: [EntityNetid, string | undefined][]
-    }
-    namespace ig {
-        interface MapSharedVars {
-            clearEffects?: [EntityNetid, string | undefined][]
+    interface MapStateOrderedEvents {
+        stopEffect: {
+            type: 'stopEffect'
+            netid: EntityNetid
         }
     }
 }
-export const clearEffectsMapStateHandler: MapStateHandler = {
-    get(packet) {
-        packet.clearEffects = ig.mapShared.clearEffects
-    },
-    clear() {
-        ig.mapShared.clearEffects = undefined
-    },
-    set(packet) {
-        for (const player of ig.game.entities) {
-            if (!(player instanceof dummy.DummyPlayer)) continue
-            ig.EffectTools.clearEffects(player, 'modeAura')
+registerOrderedEvent('stopEffect', {
+    set({ netid }) {
+        const entity = ig.game.entitiesByNetid[netid]
+        if (!entity) {
+            // console.warn('effect', netid, 'not found, tried to stop')
+            return
         }
-
-        if (!packet.clearEffects) return
-
-        for (const [netid, withTheSameGroup] of packet.clearEffects) {
-            const entity = ig.game.entitiesByNetid[netid]
-            if (!entity) {
-                // console.warn('entity', netid, 'not found, tried to effect clear')
-                continue
-            }
-            ig.EffectTools.clearEffects(entity, withTheSameGroup)
-        }
+        assert(entity instanceof ig.ENTITY.Effect)
+        entity.stop()
     },
-}
-
-prestart(() => {
-    if (!PHYSICSNET) return
-    const orig = ig.EffectTools.clearEffects
-    ig.EffectTools.clearEffects = (entity, withTheSameGroup) => {
-        orig(entity, withTheSameGroup)
-        if (!entity.netid || !shouldCollectStateData()) return
-        if (withTheSameGroup == 'modeAura') return
-
-        ig.mapShared.clearEffects ??= []
-        ig.mapShared.clearEffects.push([entity.netid, withTheSameGroup])
-    }
-}, 0)
-
-declare global {
-    interface StateUpdatePacket {
-        stopEffects?: EntityNetid[]
-    }
-    namespace ig {
-        interface MapSharedVars {
-            stopEffects?: EntityNetid[]
-        }
-    }
-}
-export const stopEffectsMapStateHandler: MapStateHandler = {
-    get(packet) {
-        packet.stopEffects = ig.mapShared.stopEffects
-    },
-    clear() {
-        ig.mapShared.stopEffects = undefined
-    },
-    set(packet) {
-        if (!packet.stopEffects) return
-
-        for (const netid of packet.stopEffects) {
-            const entity = ig.game.entitiesByNetid[netid]
-            if (!entity) {
-                // console.warn('effect', netid, 'not found, tried to stop')
-                continue
-            }
-            assert(entity instanceof ig.ENTITY.Effect)
-            entity.stop()
-        }
-    },
-}
+})
 
 prestart(() => {
     if (!PHYSICSNET) return
@@ -219,11 +158,10 @@ prestart(() => {
         stop() {
             this.parent()
             if (!shouldCollectStateData() || !this.netid) return
-            ig.mapShared.stopEffects ??= []
-            ig.mapShared.stopEffects.push(this.netid)
+            pushOrderedEvent({ type: 'stopEffect', netid: this.netid })
         },
     })
-}, 0)
+})
 
 declare global {
     namespace ig {

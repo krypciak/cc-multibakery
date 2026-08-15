@@ -24,9 +24,7 @@ export interface MapStateHandler {
     set: (packet: StateUpdatePacket) => void
 }
 
-import { clearEffectsMapStateHandler, stopEffectsMapStateHandler } from './entity/ig_ENTITY_Effect'
-import { entityDeathMapStateHandler } from './entity/entity-death'
-import { destroyCombatProxiesMapStateHandler } from './entity/sc_CombatProxyEntity'
+import { orderedEventsMapStateHandler } from './ordered-events'
 import { entityCreateMapStateHandler, entityStateMapStateHandler } from './entity'
 import { entityHitMapStateHandler } from './entity/entity-hit-effect'
 import { eventStepsMapStateHandler } from './event-steps'
@@ -36,10 +34,7 @@ import { hitNumberClearMapStateHandler, hitNumberSpawnMapStateHandler } from './
 import { varsMapStateHandler } from './vars'
 
 const mapStateHandlers: MapStateHandler[] = [
-    clearEffectsMapStateHandler,
-    stopEffectsMapStateHandler,
-    destroyCombatProxiesMapStateHandler,
-    entityDeathMapStateHandler,
+    orderedEventsMapStateHandler,
     entityCreateMapStateHandler,
     entityStateMapStateHandler,
     entityHitMapStateHandler,

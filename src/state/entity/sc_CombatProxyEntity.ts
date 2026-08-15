@@ -7,7 +7,7 @@ import { resolveProxyFromType } from './proxy-util'
 import * as scActorEntity from './sc_ActorEntity-base'
 import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
-import type { MapStateHandler } from '../map-state-handlers'
+import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 
 declare global {
     namespace sc {
@@ -87,43 +87,31 @@ prestart(() => {
 }, 2)
 
 declare global {
-    interface StateUpdatePacket {
-        destroyCombatProxies?: EntityNetid[]
-    }
-    namespace ig {
-        interface MapSharedVars {
-            destroyCombatProxies?: EntityNetid[]
+    interface MapStateOrderedEvents {
+        destroyCombatProxies: {
+            type: 'destroyCombatProxies'
+            netid: EntityNetid
         }
     }
 }
-export const destroyCombatProxiesMapStateHandler: MapStateHandler = {
-    get(packet) {
-        packet.destroyCombatProxies = ig.mapShared.destroyCombatProxies
-    },
-    clear() {
-        ig.mapShared.destroyCombatProxies = undefined
-    },
-    set(packet) {
-        if (!packet.destroyCombatProxies) return
-        for (const netid of packet.destroyCombatProxies) {
-            const entity = ig.game.entitiesByNetid[netid]
-            if (!entity) {
-                console.warn('destroyCombatProxies entity:', netid, 'not found!')
-                continue
-            }
-            assert(entity instanceof sc.CombatProxyEntity)
-            entity.destroy()
+registerOrderedEvent('destroyCombatProxies', {
+    set({ netid }) {
+        const entity = ig.game.entitiesByNetid[netid]
+        if (!entity) {
+            console.warn('destroyCombatProxies entity:', netid, 'not found!')
+            return
         }
+        assert(entity instanceof sc.CombatProxyEntity)
+        entity.destroy()
     },
-}
+})
 
 prestart(() => {
     if (PHYSICSNET) {
         sc.CombatProxyEntity.inject({
             destroy(type) {
                 if (shouldCollectStateData() && !this.destroyType) {
-                    ig.mapShared.destroyCombatProxies ??= []
-                    ig.mapShared.destroyCombatProxies.push(this.netid)
+                    pushOrderedEvent({ type: 'destroyCombatProxies', netid: this.netid })
                 }
                 wrapIgnoreEffectNetid(() => this.parent(type))
             },
