@@ -22,7 +22,7 @@ declare global {
 }
 
 export const gameModelStateMapStateHandler: MapStateHandler = {
-    get(packet, client) {
+    get(packet, player) {
         const mapMemory = StateMemory.get(ig.mapShared.gameModelStateMemory)
         ig.mapShared.gameModelStateMemory ??= mapMemory
 
@@ -32,14 +32,14 @@ export const gameModelStateMapStateHandler: MapStateHandler = {
             packet.gameModelState.map = mapState
         }
 
-        if (client) {
+        if (player?.getClient(true)) {
             ig.mapShared.gameModelStatePlayerMemory ??= {}
-            const playerMemory = StateMemory.getBy(ig.mapShared.gameModelStatePlayerMemory, client)
-            const playerState = playerMemory.diff(client.inst.sc.model.currentState)
+            const playerMemory = StateMemory.getBy(ig.mapShared.gameModelStatePlayerMemory, player)
+            const playerState = playerMemory.diff(player.getClient().inst.sc.model.currentState)
             if (playerState !== undefined) {
                 packet.gameModelState ??= {}
                 packet.gameModelState.clients ??= {}
-                packet.gameModelState.clients[client.username] = playerState
+                packet.gameModelState.clients[player.username] = playerState
             }
         }
     },

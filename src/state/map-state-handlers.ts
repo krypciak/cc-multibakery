@@ -1,10 +1,8 @@
-import type { Client } from '../client/client'
-
 declare global {
     interface StateUpdatePacket {}
 }
 
-export type StateKey = Client
+export type StateKey = dummy.DummyPlayer
 
 declare global {
     namespace ig {

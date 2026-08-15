@@ -139,7 +139,7 @@ function runSteps(steps: StepGroupSerialized[], inst: InstanceinatorInstance) {
 }
 
 export const eventStepsMapStateHandler: MapStateHandler = {
-    get(packet, client) {
+    get(packet, player) {
         const mapSteps = ig.eventStepsFired
         if (mapSteps && mapSteps.size > 0) {
             //     packet.steps ??= {}
@@ -147,12 +147,12 @@ export const eventStepsMapStateHandler: MapStateHandler = {
             ig.eventStepsFired?.clear()
         }
 
-        if (client) {
-            const clientSteps = client.inst.ig.eventStepsFired
+        if (player?.getClient(true)) {
+            const clientSteps = player.getClient().inst.ig.eventStepsFired
             if (clientSteps && clientSteps.size > 0) {
                 packet.eventSteps ??= {}
                 packet.eventSteps.clients ??= {}
-                packet.eventSteps.clients[client.username] = [...clientSteps.values()].map(serializeStepGroup)
+                packet.eventSteps.clients[player.username] = [...clientSteps.values()].map(serializeStepGroup)
                 clientSteps.clear()
             }
         }

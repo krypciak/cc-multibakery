@@ -35,9 +35,9 @@ export function getEntityState(this: ig.ENTITY.Player, player?: StateKey, memory
 
     memory ??= StateMemory.getBy(this, player)
 
-    const items = !player || this == player.dummy ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
+    const items = !player || this == player ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
     const itemsDiff =
-        !player || this == player.dummy
+        !player || this == player
             ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null> & RecordSize<u11>)
             : undefined
 
@@ -50,8 +50,8 @@ export function getEntityState(this: ig.ENTITY.Player, player?: StateKey, memory
         itemsDiff: items ? undefined : itemsDiff,
         charge: memory.diff(chargeLevel as u3),
         credit: memory.diff(this.model.credit),
-        skillPoints: !player || this == player.dummy ? memory.diffArray(this.model.skillPoints) : undefined,
-        skills: !player || this == player.dummy ? memory.diffArray(getSkills.call(this)) : undefined,
+        skillPoints: !player || this == player ? memory.diffArray(this.model.skillPoints) : undefined,
+        skills: !player || this == player ? memory.diffArray(getSkills.call(this)) : undefined,
         elementLoad: memory.diff(this.model.elementLoad),
         hasOverload: memory.diff(this.model.hasOverload),
         itemBlockTimer: memory.diff(this.model.itemBlockTimer),

@@ -86,7 +86,7 @@ export class PhysicsSender {
                 }
 
                 if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
-                this.getMapUpdatePacket(map, dest, client, cachePacket)
+                this.getMapUpdatePacket(map, dest, client.dummy, cachePacket)
             }
 
             const connPackets: Record<MapName, StateUpdatePacket> = {}
