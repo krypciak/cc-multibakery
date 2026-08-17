@@ -32,7 +32,7 @@ const eventMap: {
 export function registerOrderedEvent<T extends EventUnion['type']>(
     type: T,
     handler: {
-        set(data: Extract<EventUnion, { type: T }>): void
+        set(data: Extract<EventUnion, { type: T }>, packet?: StateUpdatePacket): void
     }
 ) {
     eventMap[type] = handler as (typeof eventMap)[T]

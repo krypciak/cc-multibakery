@@ -1,4 +1,5 @@
 import './entity/entity-death'
+import './entity/entity-spawn'
 import './entity/entity-hit-effect'
 
 /* these modules cannot export anything,

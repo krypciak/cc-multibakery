@@ -1,10 +1,11 @@
 import type { StateKey } from './map-state-handlers'
 import { assert } from '../misc/assert'
-import { entityApplyPriority, type EntityNetid, entityTypeidToClass, getEntityTypeId } from '../misc/entity-netid'
+import { entityApplyPriority, type EntityNetid, getEntityTypeId } from '../misc/entity-netid'
 import { cleanRecord } from './state-util'
 import type { MapStateHandler } from './map-state-handlers'
+import { getOrCreateEntityFromState } from './entity/entity-spawn'
 
-type EntityStateUnion = EntityStates[keyof EntityStates]
+export type EntityStateUnion = EntityStates[keyof EntityStates]
 export type EntityStateRecord = Record<EntityNetid, EntityStateUnion>
 
 declare global {
@@ -33,33 +34,6 @@ declare global {
     }
 }
 
-function getSortedStates(rawStates: Record<EntityNetid, EntityStateUnion>) {
-    const states = Object.entries(rawStates).map(([k, v]) => {
-        const netid: EntityNetid = parseInt(k as string)
-
-        return [getEntityTypeId(netid), netid, v] as const
-    })
-    states.sort(([typeA], [typeB]) => entityApplyPriority[typeA] - entityApplyPriority[typeB])
-    return states
-}
-
-export const entityCreateMapStateHandler: MapStateHandler = {
-    get() {},
-    set(packet) {
-        if (!packet.states) return
-
-        const states = getSortedStates(packet.states)
-        for (const [typeId, netid, data] of states) {
-            let entity: ig.Entity | undefined = ig.game.entitiesByNetid[netid]
-            if (entity) continue
-            const clazz = entityTypeidToClass[typeId]
-            if (!clazz.create) continue
-
-            clazz.create(netid, data)
-        }
-    },
-}
-
 export const entityStateMapStateHandler: MapStateHandler = {
     get(packet, client, cache) {
         for (const entity of ig.game.entities) {
@@ -79,12 +53,17 @@ export const entityStateMapStateHandler: MapStateHandler = {
     set(packet) {
         if (!packet.states) return
 
-        const states = getSortedStates(packet.states)
-        for (const [_typeId, netid, data] of states) {
-            let entity: ig.Entity | undefined = ig.game.entitiesByNetid[netid]
+        const states = Object.entries(packet.states).map(([k, v]) => [parseInt(k as string) as EntityNetid, v] as const)
+        states.sort(
+            ([netidA], [netidB]) =>
+                entityApplyPriority[getEntityTypeId(netidA)] - entityApplyPriority[getEntityTypeId(netidB)]
+        )
+
+        for (const [netid, state] of states) {
+            const entity = getOrCreateEntityFromState(netid, state)
             if (!entity) continue
             assert(isStateEntity(entity))
-            entity.setEntityState(data)
+            entity.setEntityState(state)
         }
     },
 }
