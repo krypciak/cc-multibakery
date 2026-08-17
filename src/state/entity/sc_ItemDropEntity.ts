@@ -1,7 +1,7 @@
 import { assert } from '../../misc/assert'
 import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
-import { createFakeEffectSheet } from '../entity-state'
+import { createFakeEffectSheet } from './entity-state'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././map-state-handlers'
 import type { u8 } from 'ts-binarifier/src/type-aliases'

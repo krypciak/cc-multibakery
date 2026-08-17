@@ -2,7 +2,7 @@ import { entityTypeidToClass, getEntityTypeId, type EntityNetid } from '../../mi
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
-import type { EntityStateUnion } from '../entity-state'
+import type { EntityStateUnion } from './entity-state'
 
 declare global {
     interface MapStateOrderedEvents {

@@ -1,9 +1,9 @@
-import type { StateKey } from './map-state-handlers'
-import { assert } from '../misc/assert'
-import { entityApplyPriority, type EntityNetid, getEntityTypeId } from '../misc/entity-netid'
-import { cleanRecord } from './state-util'
-import type { MapStateHandler } from './map-state-handlers'
-import { getOrCreateEntityFromState } from './entity/entity-spawn'
+import type { StateKey } from '../map-state-handlers'
+import { assert } from '../../misc/assert'
+import { entityApplyPriority, type EntityNetid, getEntityTypeId } from '../../misc/entity-netid'
+import { cleanRecord } from '../state-util'
+import type { MapStateHandler } from '../map-state-handlers'
+import { getOrCreateEntityFromState } from './entity-spawn'
 
 export type EntityStateUnion = EntityStates[keyof EntityStates]
 export type EntityStateRecord = Record<EntityNetid, EntityStateUnion>

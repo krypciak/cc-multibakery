@@ -1,7 +1,7 @@
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import type { StateKey } from '../map-state-handlers'
-import { createFakeEffectSheet } from '../entity-state'
+import { createFakeEffectSheet } from './entity-state'
 import { StateMemory } from '../state-util'
 import { isRemote } from '../../server/remote/remote-server-types'
 
