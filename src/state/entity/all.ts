@@ -1,6 +1,7 @@
 import './entity-death'
 import './entity-spawn'
 import './entity-hit-effect'
+import './actor-action-steps'
 
 /* these modules cannot export anything,
  * or else it might screw up import order

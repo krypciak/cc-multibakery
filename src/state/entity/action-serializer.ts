@@ -1,6 +1,10 @@
 import type { i16, i24 } from 'ts-binarifier/src/type-aliases'
 import { postload, prestart } from '../../loading-stages'
 import { deserializeStepSettingsRecursive, serializeStepSettingsRecursive } from '../step-settings-serializer'
+import type { GlobalStateHandler, GlobalStateKey } from '../global-state-handlers'
+import { assert } from '../../misc/assert'
+import { addActionStepStartListener } from '../../steps/action-history'
+import { shouldCollectStateData } from '../state-util'
 
 export type ActionId = i24
 export type StepIndex = i16
@@ -27,7 +31,7 @@ declare global {
             getStepsFlatArray(): ig.ActionStepBase[]
         }
         interface StepBase {
-            stepIndex: StepIndex
+            stepIndex?: StepIndex
         }
     }
 }
@@ -72,7 +76,7 @@ function serializeActionStepSettings(settings: ig.ActionStepBase.Settings): Seri
 }
 
 const serializedActionsCache = new WeakMap<ig.Action, SerializedAction>()
-export function serializeAction(action: ig.Action): SerializedAction {
+function serializeAction(action: ig.Action): SerializedAction {
     if (serializedActionsCache.has(action)) return serializedActionsCache.get(action)!
 
     const whitelistedSteps: ig.ActionStepBase[] = []
@@ -102,7 +106,7 @@ function deserializeActionStepSettings(settings: SerializedStepSettings): ig.Act
     return settings
 }
 
-export function deserializeAction({
+function deserializeAction({
     uniqueId,
     name,
     parallelMove,
@@ -147,4 +151,69 @@ prestart(() => {
 
 export function isStepClassIdInActionStepWhitelist(id: number) {
     return actionStepWhitelistClassIds.has(id)
+}
+
+declare global {
+    interface GlobalStateUpdatePacket {
+        actionSettings?: SerializedAction[]
+    }
+}
+
+function getActionSettingsToSend(action: Nullable<ig.Action> | undefined, conn: GlobalStateKey | undefined) {
+    if (!action) return
+    const actionUniqueId = action.uniqueId
+    assert(actionUniqueId !== undefined)
+    if (!conn) return
+
+    let set = actionSettingsEverSent.get(conn)
+    if (!set) {
+        set = new Set()
+        actionSettingsEverSent.set(conn, set)
+    }
+    if (!set.has(actionUniqueId)) {
+        set.add(actionUniqueId)
+        return serializeAction(action)
+    }
+}
+let possibleEventsToSend = new Set<ig.Action>()
+
+addActionStepStartListener(action => {
+    if (!shouldCollectStateData()) return
+
+    /* set stepIndex on whitelisted steps */
+    serializeAction(action)
+
+    possibleEventsToSend.add(action)
+})
+
+const actionSettingsEverSent = new WeakMap<GlobalStateKey, Set<ActionId>>()
+
+export const actionSettingsGlobalStateHandler: GlobalStateHandler = {
+    get(packet, conn) {
+        const settingsArr: SerializedAction[] = []
+        for (const action of possibleEventsToSend) {
+            const set = getActionSettingsToSend(action, conn)
+            if (set) settingsArr.push(set)
+        }
+        if (settingsArr.length > 0) {
+            packet.actionSettings = settingsArr
+        }
+    },
+    clear() {
+        possibleEventsToSend.clear()
+    },
+    set(packet) {
+        if (!packet.actionSettings) return
+
+        for (const settings of packet.actionSettings) {
+            deserializedActionCache[settings.uniqueId] ??= deserializeAction(settings)
+        }
+    },
+}
+
+const deserializedActionCache: Record<ActionId, ig.Action> = {}
+export function getDeserializedActionFromActionId(actionId: ActionId) {
+    const action = deserializedActionCache[actionId]
+    assert(action)
+    return action
 }

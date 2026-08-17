@@ -1,11 +1,16 @@
 import { prestart } from '../loading-stages'
 import { isPhysics } from '../server/physics/physics-server-types'
-import { onActionStepStart } from '../state/entity/ig_ActorEntity-base'
+
+type Listener = (action: ig.Action, step: ig.ActionStepBase, actor: ig.ActorEntity) => void
+const actionStepStartListeners: Listener[] = []
+export function addActionStepStartListener(listener: Listener) {
+    actionStepStartListeners.push(listener)
+}
 
 prestart(() => {
     function startStep(action: ig.Action, step: ig.ActionStepBase, actor: ig.ActorEntity) {
         step.start(actor)
-        onActionStepStart(action, step, actor)
+        for (const listener of actionStepStartListeners) listener(action, step, actor)
     }
     ig.Action.inject({
         run(actor) {
