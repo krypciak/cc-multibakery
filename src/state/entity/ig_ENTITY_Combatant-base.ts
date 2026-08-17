@@ -56,11 +56,13 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
     }
 
     if (this.params) {
-        if (state.defeated !== undefined) {
-            this.params.defeated = state.defeated
-        }
-        if (state.locked !== undefined) {
-            this.params.forceReportLocked = state.locked
+        if (isRemote(multi.server)) {
+            if (state.defeated !== undefined) {
+                this.params.defeated = state.defeated
+            }
+            if (state.locked !== undefined) {
+                this.params.forceReportLocked = state.locked
+            }
         }
         if (state.hp !== undefined) {
             this.params.currentHp = state.hp

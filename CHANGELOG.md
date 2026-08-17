@@ -14,6 +14,7 @@
 - Fix no door opening sound on remote
 - Fix no jumping sounds on remote
 - Fix footstep sounds playing when dashing on remote
+- Fix player lock status not working after entering a new map
 
 ## [0.8.3] 2026-08-01
 
