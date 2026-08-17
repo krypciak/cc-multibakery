@@ -3,7 +3,7 @@ import { assert } from './misc/assert'
 import { preload } from './loading-stages'
 
 import './misc/entity-netid'
-import './state/entity-all'
+import './state/entity/all'
 import './server/physics/create-physics-server'
 import './server/remote/try-join-remote'
 import './game-loop'

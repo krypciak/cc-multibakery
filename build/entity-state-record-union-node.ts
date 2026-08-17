@@ -149,10 +149,10 @@ import type {
 } from 'ts-binarifier/src/types'
 import { addImport } from 'ts-binarifier/src/code-gen-imports'
 import { getOrDefineFunction } from 'ts-binarifier/src/code-gen-functions'
-const entityImportOrder = (await fs.promises.readFile('src/state/entity-all.ts', 'utf8'))
+const entityImportOrder = (await fs.promises.readFile('src/state/entity/all.ts', 'utf8'))
     .split('\n')
-    .filter(line => line.startsWith("import './entity/"))
-    .map(line => line.trim().slice("import './entity/".length, -1))
+    .filter(line => line.startsWith("import './"))
+    .map(line => line.trim().slice("import './".length, -1))
     .filter(line => line.startsWith('sc') || line.startsWith('ig') || line.startsWith('dummy'))
     .map(line => line.replace(/_/g, '.'))
 
