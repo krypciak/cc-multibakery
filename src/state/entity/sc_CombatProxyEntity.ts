@@ -102,7 +102,8 @@ registerOrderedEvent('destroyCombatProxies', {
     set({ netid }) {
         const entity = ig.game.entitiesByNetid[netid]
         if (!entity) {
-            console.warn('destroyCombatProxies entity:', netid, 'not found!')
+            // sometimes it already got destroyed by actorClearActionAttached
+            // console.warn('destroyCombatProxies entity not found:', netid)
             return
         }
         assert(entity instanceof sc.CombatProxyEntity)

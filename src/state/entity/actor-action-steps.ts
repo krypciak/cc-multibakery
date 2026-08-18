@@ -29,7 +29,9 @@ registerOrderedEvent('actorActionStep', {
     set({ netid, instPlayerNetid, actionId, stepIndex }) {
         const actor = ig.game.entitiesByNetid[netid]
         if (!actor) {
-            console.warn('actorActionStep actor not found:', netid)
+            if (stepIndex !== undefined) {
+                console.warn('actorActionStep actor not found:', netid, 'failed to run a step')
+            }
             return
         }
         assert(actor instanceof ig.ActorEntity)

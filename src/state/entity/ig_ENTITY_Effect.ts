@@ -57,8 +57,9 @@ function resolveObjects(state: Return) {
     let target
     if (state.target) {
         target = ig.game.entitiesByNetid[state.target]
-        if (!target && !targetNotFoundIgnoreEffectNames.has(state.effectName ?? ''))
+        if (!target && !targetNotFoundIgnoreEffectNames.has(state.effectName ?? '')) {
             console.warn('resolveObjects target not found:', state.target)
+        }
     }
     let target2
     if (state.target2) {
