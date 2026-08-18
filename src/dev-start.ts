@@ -22,6 +22,7 @@ const defaultMap: MapTpInfo = {
     // marker: 'to_pvp',
 
     // map: 'tree-dng/f4/boss',
+    // map: 'multibakery/mba-dev',
     map: 'multibakery/mba-lobby',
     // map: 'multibakery/mba-testing',
     // map: 'multibakery/mba-outdoors',
