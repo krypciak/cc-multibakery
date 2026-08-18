@@ -25,7 +25,7 @@ function getEntityState(this: sc.CombatProxyEntity, player?: StateKey) {
     return {
         ...scActorEntity.getEntityState.call(this, player, memory),
         proxyType: memory.onlyOnce(this.proxyType),
-        combatant: memory.onlyOnce(this.combatant.netid),
+        sourceEntity: memory.onlyOnce(this.sourceEntity.netid),
     }
 }
 function setEntityState(this: sc.CombatProxyEntity, state: Return) {
@@ -41,13 +41,13 @@ prestart(() => {
     sc.CombatProxyEntity.create = (netid: EntityNetid, state: Return) => {
         if (!state.proxyType) return
         assert(state.pos)
-        assert(state.combatant)
+        assert(state.sourceEntity)
         assert(state.face)
 
         const { x, y, z } = state.pos
 
-        const combatant = ig.game.entitiesByNetid[state.combatant]
-        assert(combatant, `sc.CombatantProxyEntity#create target not found:  ${state.combatant}`)
+        const combatant = ig.game.entitiesByNetid[state.sourceEntity]
+        assert(combatant, `sc.CombatantProxyEntity#create target not found:  ${state.sourceEntity}`)
         assert(combatant instanceof sc.BasicCombatant)
 
         const proxy = resolveProxyFromType(state.proxyType)

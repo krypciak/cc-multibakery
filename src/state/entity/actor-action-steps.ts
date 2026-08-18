@@ -123,8 +123,9 @@ prestart(() => {
 
     ig.ActorEntity.inject({
         clearActionAttached(condition, secondConditionArg) {
+            const origLen = this.actionAttached.length
             this.parent(condition, secondConditionArg)
-            if (!shouldCollectStateData()) return
+            if (condition || secondConditionArg || origLen == 0 || !shouldCollectStateData()) return
 
             pushOrderedEvent({
                 type: 'actorClearActionAttached',
