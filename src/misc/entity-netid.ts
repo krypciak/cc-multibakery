@@ -2,6 +2,7 @@ import type { u20, u6 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { assert } from './assert'
 import { isRemote } from '../server/remote/remote-server-types'
+import { scheduleNextTask } from 'cc-instanceinator/src/inst-util'
 
 interface EntityClass extends ImpactClass<any> {
     new (x: number, y: number, z: number, settings: any): any
@@ -161,8 +162,11 @@ prestart(() => {
         onKill() {
             this.parent()
             if (this.netid) {
-                // console.log(ig.game.mapName, fcn(this), this.netid, 'deleting')
-                delete ig.game.entitiesByNetid[this.netid]
+                const inst = instanceinator.instances[instanceinator.id]
+                scheduleNextTask(inst, () => {
+                    // console.log(ig.game.mapName, fcn(this), this.netid, 'deleting')
+                    delete ig.game.entitiesByNetid[this.netid]
+                })
             }
         },
     })
