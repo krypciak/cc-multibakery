@@ -118,7 +118,7 @@ class MultibakeryTestUtils {
 
         let client: Client | undefined
         let map: CCMap | undefined
-        await multi.test.updateLoop(multi.server.inst, this.actualTps * 15, () => {
+        await multi.test.updateLoop(multi.server.inst, this.actualTps * 10, () => {
             client = multi.server.clients.get(username)
             if (client?.ready) {
                 map = client.getMap()

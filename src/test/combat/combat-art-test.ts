@@ -105,7 +105,8 @@ async function executeCombatArt(
 
             return true
         }
-        return ig.game.entities.filter(shouldInclude)
+        const entities = ig.game.entities.filter(shouldInclude)
+        return entities
     }
 
     await multi.test.updateLoop(
@@ -147,7 +148,7 @@ class CombatArtTest implements TestConfig {
     constructor(private config: CombatArtTestConfig) {
         this.id = config.id
         this.name = config.name
-        this.timeout = 1000e3
+        this.timeout = 200e3
     }
 
     private async loadEnemy(enemyName: string) {
