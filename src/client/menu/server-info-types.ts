@@ -22,8 +22,11 @@ function isServerDetailsBase(data: unknown): data is ServerDetailsBase {
 
 export interface ServerDetailsRemote extends ServerDetailsBase {
     hasIcon?: boolean
+
     gameTps: number
     forceConsistentTickTimes?: boolean
+    gameLoopIntervalTps?: number
+
     modCompatibility: ModCompatibilityList
     mapSwitchDelay?: number
 

@@ -36,6 +36,8 @@ class TryJoinRemote {
 
             gameTps: netInfo.details.gameTps,
             forceConsistentTickTimes: netInfo.details.forceConsistentTickTimes,
+            gameLoopIntervalTps: netInfo.details.gameLoopIntervalTps,
+
             netInfo: netInfo as any,
             modCompatibility: netInfo.details.modCompatibility,
             mapSwitchDelay: netInfo.details.mapSwitchDelay,
