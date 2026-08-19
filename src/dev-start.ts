@@ -134,6 +134,11 @@ class DevStart {
         await this.startServer()
         await this.createClients(1)
 
+        ig.vars.set('maps.multibakery/mbaLobby.buildingName', 'mbaDev')
+        ig.vars.set('maps.multibakery/mbaLobby.devTeleporter', true)
+        ig.vars.set('maps.multibakery/mbaLobby._entity74_triggered', true)
+        ig.vars.set('maps.multibakery/mbaLobby._entity76_triggered', true)
+
         if (false as boolean) splitClientsIntoGroups(5)
     }
 
