@@ -219,6 +219,7 @@ export class Client extends InstanceUpdateable {
             ])
             assert(map)
             assert(map.initialized)
+            assert(!map.inst.destroyed)
 
             const oldMap = multi.server.maps.get(this.tpInfo.map)
             if (oldMap) {
@@ -455,7 +456,7 @@ export class Client extends InstanceUpdateable {
     getMap(noAssert?: false): CCMap
     getMap(noAssert?: any): CCMap | undefined {
         const map = multi.server.maps.get(this.tpInfo.map)
-        if (!noAssert) assert(map)
+        if (!noAssert) assert(map, `Client#getMap: map not found: ${this.tpInfo.map}`)
         return map
     }
 

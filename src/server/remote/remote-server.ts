@@ -132,6 +132,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
 
             const map = multi.server.maps.get(mapName)
             assert(map?.initialized)
+            assert(!map.destroyed)
 
             if (stateUpdatePacket.kicks) {
                 for (const username in stateUpdatePacket.kicks) {

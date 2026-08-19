@@ -264,7 +264,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     getPlayerInfoEntries() {
         return Object.fromEntries(
             [...multi.server.clients.values()]
-                .filter(client => client.dummy)
+                .filter(client => client.ready)
                 .map(client => [client.username, this.getPlayerInfoOf(client.username)])
         )
     }

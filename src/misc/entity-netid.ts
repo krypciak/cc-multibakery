@@ -151,7 +151,7 @@ prestart(() => {
                 return
             }
 
-            assert(!ig.game.entitiesByNetid[netid], 'Entity netid overlap')
+            assert(!ig.game.entitiesByNetid[netid], `Entity netid overlap: ${netid}`)
             this.netid = netid
             ig.game.entitiesByNetid[this.netid] = this
         },
