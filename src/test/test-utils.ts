@@ -26,6 +26,7 @@ class MultibakeryTestUtils {
     private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
     private disablePerfFlags = true
     private printRemoteServerLogs = false
+    private remoteJavascriptEngine: 'bun' | 'node' = 'node'
     remoteReports: Record<string, Promise<TestRemoteClientReport>> = {}
 
     async setupServerIfNeeded() {
@@ -145,9 +146,17 @@ class MultibakeryTestUtils {
         const print = this.printRemoteServerLogs
 
         print && console.log('REMOTE spawning', config)
+
+        const jsEngine = this.remoteJavascriptEngine
+
         const child = child_process.spawn(
-            'bun',
-            ['run', 'scripts/server.js', 'remoteServer', `${JSON.stringify(config)}`],
+            jsEngine,
+            [
+                ...(jsEngine == 'node' ? ['--enable-source-maps', '--no-warnings'] : ['run']),
+                'scripts/server.js',
+                'remoteServer',
+                `${JSON.stringify(config)}`,
+            ],
             {
                 cwd: 'assets/mods/cc-multibakery',
             }
