@@ -11,7 +11,7 @@ import { linkOptions } from '../physics/storage/storage'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { MapName } from '../../net/binary/binary-types'
 import { instanceinatorCopyInstanceConfig } from '../server-types'
-import { createNetid, entityTemporary, getEntityTypeId, type EntityNetid } from '../../misc/entity-netid'
+import { createNetid, type EntityNetid } from '../../misc/entity-netid'
 import { isRemote } from '../remote/remote-server-types'
 import { assertPhysics } from '../physics/physics-server-types'
 import type { TestConfig } from '../../test/test-bridge'
@@ -232,21 +232,9 @@ export class CCMap extends InstanceUpdateable {
 
         if (client.dummy) this.leaveEntity(client.dummy)
 
-        if (this.clients.length == 0) {
-            this.killTemporaryEntities()
+        if (isRemote(multi.server) && this.clients.length == 0) {
+            multi.server.unloadMap(this)
         }
-    }
-
-    killTemporaryEntities() {
-        runTask(this.inst, () => {
-            for (const entity of ig.game.entities) {
-                const typeid = getEntityTypeId(entity.netid)
-                if (entityTemporary.has(typeid)) {
-                    entity.kill()
-                }
-            }
-            ig.game.deferredMapEntityUpdate()
-        })
     }
 
     private leaveEntity(e: ig.Entity) {
@@ -259,11 +247,8 @@ export class CCMap extends InstanceUpdateable {
     }
 
     update() {
-        // console.log('map update')
         super.update()
         if (this.destroyed) return
-
-        if (this.forceUpdateForFrames > 0) this.forceUpdateForFrames--
     }
 
     deferredUpdate() {
@@ -271,6 +256,10 @@ export class CCMap extends InstanceUpdateable {
         if (this.destroyed) return
 
         ig.soundManager.update()
+
+        if (this.forceUpdateForFrames > 0) {
+            this.forceUpdateForFrames--
+        }
     }
 
     getClientInstances(includeMapInst?: boolean) {
@@ -279,6 +268,7 @@ export class CCMap extends InstanceUpdateable {
         return insts
     }
 
+    /* dont call directly! call multi.server.unloadMap */
     destroy() {
         if (this.destroyed) return
 

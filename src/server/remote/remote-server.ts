@@ -103,7 +103,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     }
 
     private async resetMapState(map: CCMap) {
-        map.killTemporaryEntities()
         await Promise.all(
             map.clients.map(async client => {
                 const joinData: ClientJoinData = {
