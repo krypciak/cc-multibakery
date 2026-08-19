@@ -34,6 +34,7 @@ declare global {
             username: Username
             inCutscene?: boolean
             currentMenu?: sc.MENU_SUBMENU
+            currentGameState?: sc.GAME_MODEL_STATE
             currentSubState?: sc.GAME_MODEL_SUBSTATE
 
             setInputManager(this: this, inputManager: InputManager): void
@@ -95,6 +96,7 @@ prestart(() => {
             const parent = () => {
                 if (isPhysics(multi.server) && client) {
                     this.currentMenu = client.inst.sc.menu.currentMenu
+                    this.currentGameState = client.inst.sc.model.currentState
                     this.currentSubState = client.inst.sc.model.currentSubState
                     this.inCutscene = !!client.inst.ig.game.isControlBlocked()
 

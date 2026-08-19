@@ -1,70 +1,34 @@
-import { type StateKey } from './map-state-handlers'
 import { StateMemory } from './state-util'
 import { assert } from '../misc/assert'
-import { runTask } from 'cc-instanceinator/src/inst-util'
-import type { Username } from '../net/binary/binary-types'
 import type { MapStateHandler } from './map-state-handlers'
 
-interface GameModelState {
-    map?: sc.GAME_MODEL_STATE
-    clients?: Record<Username, sc.GAME_MODEL_STATE>
-}
 declare global {
     interface StateUpdatePacket {
-        gameModelState?: GameModelState
+        gameModelState?: sc.GAME_MODEL_STATE
     }
     namespace ig {
         interface MapSharedVars {
             gameModelStateMemory?: StateMemory
-            gameModelStatePlayerMemory?: StateMemory.MapHolder<StateKey>
         }
     }
 }
 
+export function setGameModelState(state: sc.GAME_MODEL_STATE) {
+    if (state == sc.GAME_MODEL_STATE.GAME) {
+        sc.model.enterGame()
+    } else if (state == sc.GAME_MODEL_STATE.CUTSCENE) {
+        sc.model.enterCutscene()
+    }
+}
+
 export const gameModelStateMapStateHandler: MapStateHandler = {
-    get(packet, player) {
+    get(packet) {
         const mapMemory = StateMemory.get(ig.mapShared.gameModelStateMemory)
         ig.mapShared.gameModelStateMemory ??= mapMemory
-
-        const mapState = mapMemory.diff(sc.model.currentState)
-        if (mapState !== undefined) {
-            packet.gameModelState ??= {}
-            packet.gameModelState.map = mapState
-        }
-
-        if (player?.getClient(true)) {
-            ig.mapShared.gameModelStatePlayerMemory ??= {}
-            const playerMemory = StateMemory.getBy(ig.mapShared.gameModelStatePlayerMemory, player)
-            const playerState = playerMemory.diff(player.getClient().inst.sc.model.currentState)
-            if (playerState !== undefined) {
-                packet.gameModelState ??= {}
-                packet.gameModelState.clients ??= {}
-                packet.gameModelState.clients[player.username] = playerState
-            }
-        }
+        packet.gameModelState = mapMemory.diff(sc.model.currentState)
     },
     set(packet) {
-        if (!packet.gameModelState) return
-        function setEntityState(state: sc.GAME_MODEL_STATE) {
-            if (state == sc.GAME_MODEL_STATE.GAME) {
-                sc.model.enterGame()
-            } else if (state == sc.GAME_MODEL_STATE.CUTSCENE) {
-                sc.model.enterCutscene()
-            }
-        }
-
-        if (packet.gameModelState.map !== undefined) {
-            setEntityState(packet.gameModelState.map)
-        }
-
-        if (packet.gameModelState.clients) {
-            for (const username in packet.gameModelState.clients) {
-                const state = packet.gameModelState.clients[username]
-                const client = multi.server.clients.get(username)
-                assert(client)
-
-                runTask(client.inst, () => setEntityState(state))
-            }
-        }
+        if (packet.gameModelState === undefined) return
+        setGameModelState(packet.gameModelState)
     },
 }

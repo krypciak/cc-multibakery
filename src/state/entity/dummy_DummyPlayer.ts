@@ -7,6 +7,8 @@ import * as igEntityPlayer from './ig_ENTITY_Player-base'
 import type { u32 } from 'ts-binarifier/src/type-aliases'
 import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
+import { setGameModelState } from '../game-model-state'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace dummy {
@@ -28,9 +30,11 @@ function getEntityState(this: dummy.DummyPlayer, player?: StateKey) {
 
         username: memory.diff(this.username),
         skin: memory.diff(this.currentSkinName ?? ''),
-        inCutscene: memory.diff(this.inCutscene),
+
         currentMenu: memory.diff(this.currentMenu as u32),
+        currentGameState: memory.diff(this.currentGameState),
         currentSubState: memory.diff(this.currentSubState),
+        inCutscene: memory.diff(this.inCutscene),
 
         combatArtLabelText: memory.diff(this.combatArtLabelText),
         showElementalOverloadLabel: memory.diff(this.model.showElementalOverloadLabel),
@@ -45,9 +49,17 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
         this.setSkin(state.skin, true)
     }
 
-    if (state.inCutscene !== undefined) this.inCutscene = state.inCutscene
     if (state.currentMenu !== undefined) this.currentMenu = state.currentMenu
+    if (state.currentGameState !== undefined) {
+        const gameState = state.currentGameState
+        this.currentGameState = gameState
+        const client = this.getClient(true)
+        if (client) {
+            runTask(client.inst, () => setGameModelState(gameState))
+        }
+    }
     if (state.currentSubState !== undefined) this.currentSubState = state.currentSubState
+    if (state.inCutscene !== undefined) this.inCutscene = state.inCutscene
 
     if (state.combatArtLabelText !== undefined) this.combatArtLabelText = state.combatArtLabelText
     if (state.showElementalOverloadLabel !== undefined)
