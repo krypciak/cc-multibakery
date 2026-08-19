@@ -125,8 +125,8 @@ export const varsGlobalStateHandler: GlobalStateHandler = {
         runTasks(
             [...mapsToNotify]
                 .map(mapName => multi.server.maps.get(mapName))
-                .filter(Boolean)
-                .map(map => map!.inst),
+                .map(map => map?.inst!)
+                .filter(Boolean),
             () => ig.game.varsChangedDeferred()
         )
     },
