@@ -161,11 +161,13 @@ prestart(() => {
         },
         onKill() {
             this.parent()
-            if (this.netid) {
+            const netid = this.netid
+            if (netid) {
                 const inst = instanceinator.instances[instanceinator.id]
                 scheduleNextTask(inst, () => {
-                    // console.log(ig.game.mapName, fcn(this), this.netid, 'deleting')
-                    delete ig.game.entitiesByNetid[this.netid]
+                    // console.log(ig.game.mapName, fcn(this), netid, 'deleting')
+                    assert(ig.game.entitiesByNetid[netid] == this)
+                    delete ig.game.entitiesByNetid[netid]
                 })
             }
         },
