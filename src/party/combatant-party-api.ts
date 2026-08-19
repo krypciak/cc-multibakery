@@ -96,12 +96,24 @@ prestart(() => {
 // ig.ENTITY.Combatant#addSpikeDamage probably? doesn't need fix
 // sc.EnemyType#resolveDefeat depends on sc.Combat#getPartyHpFactor
 prestart(() => {
-    // ig.GUI.StatusBar#showHpBar needs a more complex fix, not sure what end result is optimal
-    // ig.GUI.StatusBar#update idk maybe fine?
     ig.GUI.StatusBar.inject({
-        _drawHpBar(renderer) {
-            if (!ig.client?.dummy) return this.parent(renderer)
-            return playerPartyFix(ig.client.dummy.party, () => this.parent(renderer))
+        showHpBar(...args) {
+            if (!ig.client?.dummy) return this.parent(...args)
+            return playerPartyFix(ig.client.dummy.party, () => this.parent(...args))
+        },
+        update() {
+            const player = ig.client?.dummy
+            if (!player) return this.parent()
+            return playerPartyFix(player.party, () => {
+                const orig = sc.model.isCutscene
+                sc.model.isCutscene = () => player.currentGameState == sc.GAME_MODEL_STATE.CUTSCENE
+                this.parent()
+                sc.model.isCutscene = orig
+            })
+        },
+        _drawHpBar(...args) {
+            if (!ig.client?.dummy) return this.parent(...args)
+            return playerPartyFix(ig.client.dummy.party, () => this.parent(...args))
         },
     })
 })
