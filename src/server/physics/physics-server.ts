@@ -238,7 +238,6 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             username: client.username,
             character: model.name,
             tpInfo: client.tpInfo,
-            nextTpInfo: client.nextTpInfo,
             netid: client.reservedNetid ?? client.dummy?.netid,
             pos: {
                 x: client.dummy.coll.pos.x / mapSize.x,

@@ -22,7 +22,6 @@ export interface PlayerInfoEntry {
     username: Username
     character: string
     tpInfo: MapTpInfo
-    nextTpInfo?: MapTpInfo
     netid: EntityNetid
     pos: Vec2
 
@@ -51,7 +50,6 @@ interface PartialPlayerInfoEntry {
     username?: Username
     character?: string
     tpInfo?: MapTpInfo
-    nextTpInfo?: MapTpInfo
     netid?: EntityNetid
     pos?: Vec2
 
@@ -100,11 +98,6 @@ export const playerInfoGlobalStateHandler: GlobalStateHandler = {
                     if (!b) return !!a
                     return a.map != b.map || a.marker != b.marker
                 },
-                nextTpInfo(a, b) {
-                    if (!a) return !!b
-                    if (!b) return !!a
-                    return a.map != b.map || a.marker != b.marker
-                },
                 pos: (a, b) => isInMapMenu && (a?.x !== b?.x || a?.y !== b?.y),
                 stats(a, b) {
                     if (!isInPartyMenu) return false
@@ -137,7 +130,6 @@ export const playerInfoGlobalStateHandler: GlobalStateHandler = {
             },
             {
                 tpInfo: tpInfo => tpInfo && { ...tpInfo },
-                nextTpInfo: nextTpInfo => nextTpInfo && { ...nextTpInfo },
                 pos: v => v && Vec2.create(v),
                 stats: stats => stats && { ...stats },
                 equip: equip => equip && { ...equip },
@@ -160,17 +152,6 @@ export const playerInfoGlobalStateHandler: GlobalStateHandler = {
                     if (v !== undefined) {
                         // @ts-expect-error
                         entry[key] = v
-                    }
-                }
-
-                if (entry.nextTpInfo) {
-                    const client = multi.server.clients.get(username)
-                    if (!client?.ready) continue
-                    if (!entry.nextTpInfo.map) {
-                        client.nextTpInfo = entry.nextTpInfo
-                    } else {
-                        client.reservedNetid = entry.netid
-                        client.teleport(entry.nextTpInfo)
                     }
                 }
             }

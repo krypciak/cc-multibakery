@@ -17,8 +17,10 @@ import { areasGlobalStateHandler } from './areas'
 import { playerInfoGlobalStateHandler } from './player-info'
 import { partyGlobalStateHandler } from './party'
 import { actionSettingsGlobalStateHandler } from './entity/action-serializer'
+import { playerTeleportGlobalStateHandler } from './player-teleport'
 
 const globalStateHandlers: GlobalStateHandler[] = [
+    playerTeleportGlobalStateHandler,
     varsGlobalStateHandler,
     areasGlobalStateHandler,
     playerInfoGlobalStateHandler,

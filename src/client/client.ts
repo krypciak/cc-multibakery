@@ -31,13 +31,13 @@ import './injects'
 import './menu/server-list-menu'
 import './menu/pause/pause-screen'
 import './menu/map-overlay'
+import { notifyRemoteAboutTeleport } from '../state/player-teleport'
 
 export class Client extends InstanceUpdateable {
     username: Username
     inputManager!: dummy.InputManager
     dummy!: dummy.DummyPlayer
     tpInfo: MapTpInfo = { map: '' }
-    nextTpInfo?: MapTpInfo
     ready: boolean = false
     reservedNetid?: EntityNetid
     kickReason?: string
@@ -194,7 +194,7 @@ export class Client extends InstanceUpdateable {
     }
 
     @profile((self, _, __) => `${self.username}`)
-    async teleport(tpInfo: MapTpInfo, noDelay?: boolean) {
+    async teleport(tpInfo: MapTpInfo, initialJoin?: boolean) {
         try {
             this.startTeleportOverlay()
             runTask(this.inst, () => {
@@ -207,15 +207,20 @@ export class Client extends InstanceUpdateable {
                 multi.storage.createAndSavePlayerStateWithClient(this, tpInfo)
             }
 
-            this.nextTpInfo = tpInfo
             const map = multi.server.getMap(tpInfo)
-            if (isPhysics(multi.server)) this.reservedNetid ??= map.reservePlayerNetid()
+            if (isPhysics(multi.server)) {
+                this.reservedNetid ??= map.reservePlayerNetid()
+                if (!initialJoin) {
+                    notifyRemoteAboutTeleport(this.username, this.reservedNetid, tpInfo)
+                }
+            }
 
             this.ready = false
 
             await Promise.all([
                 map.initIfNeeded(),
-                noDelay || new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
+                initialJoin ||
+                    new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
             ])
             assert(map)
             assert(map.initialized)
@@ -246,7 +251,6 @@ export class Client extends InstanceUpdateable {
             await map.loadResourcesIfNeeded()
 
             this.ready = true
-            this.nextTpInfo = { map: '' }
 
             this.linkMapToInstanceStage2(map)
 
