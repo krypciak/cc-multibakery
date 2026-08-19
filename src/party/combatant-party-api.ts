@@ -95,9 +95,16 @@ prestart(() => {
 })
 // ig.ENTITY.Combatant#addSpikeDamage probably? doesn't need fix
 // sc.EnemyType#resolveDefeat depends on sc.Combat#getPartyHpFactor
-// ig.GUI.StatusBar#showHpBar needs a more complex fix, not sure what end result is optimal
-// ig.GUI.StatusBar#update idk maybe fine?
-// ig.GUI.StatusBar#_drawHpBar idk maybe fine?
+prestart(() => {
+    // ig.GUI.StatusBar#showHpBar needs a more complex fix, not sure what end result is optimal
+    // ig.GUI.StatusBar#update idk maybe fine?
+    ig.GUI.StatusBar.inject({
+        _drawHpBar(renderer) {
+            if (!ig.client?.dummy) return this.parent(renderer)
+            return playerPartyFix(ig.client.dummy.party, () => this.parent(renderer))
+        },
+    })
+})
 // sc.ENEMY_REACTION.HIT_REACTION#hitApply arena players shoud just have sc.COMBATANT_PART.PLAYER anyways
 prestart(() => {
     ig.ENTITY.JumpPanel.inject({
