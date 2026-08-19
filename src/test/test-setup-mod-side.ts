@@ -62,8 +62,10 @@ export interface TestRemoteClientRequestConfig {
 let reportSent = false
 async function execRemote() {
     ig.system.startRunLoop = () => {
-        createAndSendReport()
-        process.exit(0)
+        setTimeout(() => {
+            createAndSendReport()
+            process.exit(0)
+        }, 0)
     }
 
     const config: TestRemoteClientRequestConfig = JSON.parse(process.argv[3])
