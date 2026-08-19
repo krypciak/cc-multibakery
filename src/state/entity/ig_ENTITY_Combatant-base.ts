@@ -124,7 +124,7 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
         } else {
             const entity = ig.game.entitiesByNetid[state.target]
             if (!entity) {
-                console.warn('ig.ENTITY.Combatant target not found:', state.target)
+                // console.warn('ig.ENTITY.Combatant target not found:', state.target)
             } else {
                 assert(entity instanceof ig.ENTITY.Combatant)
                 this.setTarget(entity)
