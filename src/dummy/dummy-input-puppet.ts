@@ -57,7 +57,7 @@ prestart(() => {
     initInputManager()
 }, 4)
 
-export const disallowedInputActions = ['snapshot', 'savedialog', 'langedit', 'fullscreen'] as const
+export const disallowedInputActions: ig.Input.KnownAction[] = ['snapshot', 'savedialog', 'langedit', 'fullscreen']
 
 export function isInputData(data: any): data is InputData {
     if (typeof data != 'object') return false

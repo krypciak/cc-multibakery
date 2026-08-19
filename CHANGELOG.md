@@ -17,6 +17,7 @@
 - Fix player lock status not working after entering a new map
 - Fix warnings on some combat arts
 - Fix wrong health bar color on remote for combatants with target
+- Fix cc-map-screenshot compatibility
 
 ## [0.8.3] 2026-08-01
 
