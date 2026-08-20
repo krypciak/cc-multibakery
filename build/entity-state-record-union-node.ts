@@ -58,7 +58,7 @@ class EntityStateRecordUnionNode extends Node {
             })
         )
 
-        addImport(data.imports, '../../state/entity', 'EntityStateRecord', true)
+        addImport(data.imports, '../../state/entity/entity-state', 'EntityStateRecord', true)
 
         const statesVar = 'states'
         const mainFunction = getOrDefineFunction(data, {
