@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import { isRemote } from '../../server/remote/remote-server-types'
+import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 
 declare global {
     namespace ig.ENTITY {
@@ -18,24 +19,19 @@ function getEntityState(this: ig.ENTITY.OneTimeSwitch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
+        ...igAnimatedEntity.getEntityState.call(this, memory),
+
         isOn: memory.diff(this.isOn),
     }
 }
 function setEntityState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
+    igAnimatedEntity.setEntityState.call(this, state)
+
     if (state.isOn !== undefined && this.isOn != state.isOn) {
         this.isOn = state.isOn
-        if (this.isOn) {
-            if (ig.shared.settingStateImmediately) {
-                this.finalizeOn()
-            } else {
-                this.setOn()
-                ig.SoundHelper.playAtEntity(this.sounds.hit, this)
-                ig.SoundHelper.playAtEntity(this.sounds.bing, this)
-            }
-        } else {
-            this.setOff()
-            if (this.animSheet.hasAnimation('tmpOnEnd')) this.setCurrentAnim('tmpOnEnd', true, this.getOffAnim())
-            else this.setCurrentAnim(this.getOffAnim())
+        if (state.isOn && !ig.shared.settingStateImmediately) {
+            ig.SoundHelper.playAtEntity(this.sounds.hit, this)
+            ig.SoundHelper.playAtEntity(this.sounds.bing, this)
         }
     }
 }
