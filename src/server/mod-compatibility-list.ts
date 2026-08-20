@@ -6,7 +6,11 @@ import { semver } from '../misc/nwjs-version-popup'
 import { modMetadata } from '../mod-metadata'
 import { assert } from '../misc/assert'
 import { getBinaryClassHashes } from '../net/binary/binary-class-hashes'
-import { filterOutCCUILibWidgetsGivenWhitelist, getCCUILibWidgetsList } from '../mod-compatibility/nax-ccuilib'
+import {
+    filterOutCCUILibWidgetsGivenWhitelist,
+    getCCUILibWidgetsList,
+    hasCCUILibWidget,
+} from '../mod-compatibility/nax-ccuilib'
 
 const knownClientModsWithJson = ['menu-ui-replacer', 'extendable-severed-heads', 'bobrank', 'NamedSaves', 'xpc-litter']
 
@@ -67,6 +71,7 @@ interface ModCompatibilityErrorList {
     }[]
     incompatible?: { modId: string }[]
     missingAddons?: { addonId: string }[]
+    missingWidgets?: { widgetId: string }[]
     binaryClassHashMismatch?: string[]
 }
 
@@ -102,6 +107,12 @@ export function isModCompatibilityListSatisfied(list: ModCompatibilityList): {
     for (const addonId of list.requiredAddons) {
         if (!ig.extensions.enabled[addonId]) {
             ;(errors.missingAddons ??= []).push({ addonId: addonId })
+        }
+    }
+
+    for (const widgetId of list.ccuilibWidgets) {
+        if (!hasCCUILibWidget(widgetId)) {
+            ;(errors.missingWidgets ??= []).push({ widgetId: widgetId })
         }
     }
 
@@ -143,11 +154,15 @@ export function getModCompatibilityErrorListText(errors: ModCompatibilityErrorLi
     }
     if (errors.missingAddons) {
         text += 'Missing game addons:\n'
-        text += errors.missingAddons.map(({ addonId }) => `- ${wrapColor(addonId, COLOR.YELLOW)}`)
+        text += errors.missingAddons.map(({ addonId }) => `- ${wrapColor(addonId, COLOR.YELLOW)}`).join('\n')
+    }
+    if (errors.missingWidgets) {
+        text += 'Missing CCUILib widgets:\n'
+        text += errors.missingWidgets.map(({ widgetId }) => `- ${wrapColor(widgetId, COLOR.YELLOW)}`).join('\n')
     }
     if (errors.binaryClassHashMismatch) {
         text += 'Binary encoding classes hash mismatch:\n'
-        text += errors.binaryClassHashMismatch.map(className => `- ${wrapColor(className, COLOR.YELLOW)}`)
+        text += errors.binaryClassHashMismatch.map(className => `- ${wrapColor(className, COLOR.YELLOW)}`).join('\n')
     }
     return text
 }

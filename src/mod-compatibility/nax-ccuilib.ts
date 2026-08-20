@@ -51,3 +51,7 @@ export function filterOutCCUILibWidgetsGivenWhitelist(inst: InstanceinatorInstan
 
     qrmw.widgets = Object.fromEntries(Object.entries(qrmw.widgets).filter(([k]) => widgets.has(k)))
 }
+
+export function hasCCUILibWidget(name: string): boolean {
+    return !!nax.ccuilib.QuickRingMenuWidgets.widgets[name]
+}
