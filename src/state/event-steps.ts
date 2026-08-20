@@ -84,8 +84,7 @@ function deserializeStepGroup(group: StepGroupSerialized): StepGroupDeserialized
     if (group.callEntity) {
         const netid = group.callEntity as unknown as EntityNetid
         const entity = ig.game.entitiesByNetid[netid]
-        assert(entity)
-        group.callEntity = entity as any
+        if (entity) group.callEntity = entity as any
     }
 
     for (const step of group.steps) {

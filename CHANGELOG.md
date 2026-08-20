@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix rare remote crash when an event is triggered on an killed entity
+
 ## [0.8.4] 2026-08-19
 
 ### Added
