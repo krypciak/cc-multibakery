@@ -8,6 +8,7 @@
 
 - Fix rare remote crash when an event is triggered on an killed entity
 - Fix ig.ENTITY.OneTimeSwitch with activeTime rendering incorrectly on remote 
+- Fix remote crash when player re-enters the same map immediately
 
 ## [0.8.4] 2026-08-19
 

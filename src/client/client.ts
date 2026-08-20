@@ -228,7 +228,7 @@ export class Client extends InstanceUpdateable {
 
             const oldMap = multi.server.maps.get(this.tpInfo.map)
             if (oldMap) {
-                oldMap.leave(this)
+                if (oldMap != map) oldMap.leave(this)
                 for (const obj of oldMap.onLinkChange) obj.onClientUnlink?.(this)
             }
 
@@ -238,7 +238,7 @@ export class Client extends InstanceUpdateable {
 
             this.reservedNetid = undefined
 
-            map.enter(this)
+            if (oldMap != map) map.enter(this)
 
             runTask(map.inst, () => {
                 teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
@@ -445,11 +445,9 @@ export class Client extends InstanceUpdateable {
 
             this.loadAndApplyPlayerEntityState()
         } else {
-            let player = this.getMap().inst.ig.game.entities.find(
-                e => e instanceof dummy.DummyPlayer && !e._killed && e.username == this.username
-            ) as dummy.DummyPlayer | undefined
-
+            let player = ig.game.entitiesByNetid[this.reservedNetid] as dummy.DummyPlayer | undefined
             player ??= dummy.DummyPlayer.create(this.reservedNetid, { username: this.username })
+            assert(player.netid == this.reservedNetid)
             this.dummy = player
         }
 
