@@ -4,5 +4,5 @@ allowBuilds:
     node: true
     core-js: false
 overrides:
-    ws: ^8.0.0
+    ws: ^8.21.3
 blockExoticSubdeps: false
