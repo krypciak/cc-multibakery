@@ -2,18 +2,18 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { getServerPingTimeout, Opts } from '../../options'
 import { filterClientOptionModelValues } from '../../client/client-option-model-link'
 import { assert } from '../../misc/assert'
+import { getCCUILibRingConfFrom } from '../../mod-compatibility/nax-ccuilib'
 
 export async function createPhysicsServerFromCurrentState() {
     const username = Opts.clientLogin
-    multi.storage.createAndSavePlayerState(
-        username,
-        ig.game.playerEntity,
-        {
+    multi.storage.createAndSavePlayerState(username, ig.game.playerEntity, {
+        tpInfo: {
             map: ig.game.mapName.toPath('', ''),
             marker: ig.game.marker,
         },
-        filterClientOptionModelValues(sc.options.values)
-    )
+        optionModelValues: filterClientOptionModelValues(sc.options.values),
+        ccuilibRingConf: getCCUILibRingConfFrom(window.nax),
+    })
 
     const playerDataBackup = {
         pos: Vec3.create(ig.game.playerEntity.coll.pos),

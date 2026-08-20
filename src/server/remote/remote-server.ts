@@ -41,8 +41,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         if (!REMOTE) return
 
         await super.start()
-
-        if (this.settings.modCompatibility) applyModCompatibilityList(this.inst, this.settings.modCompatibility)
     }
 
     @profile()

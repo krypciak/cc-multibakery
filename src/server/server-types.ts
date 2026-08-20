@@ -4,6 +4,8 @@ import type { ClientSettings } from '../client/client-types'
 import type { EntityNetid } from '../misc/entity-netid'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { NetConnection } from '../net/net-connection'
+import { isRemote } from './remote/remote-server-types'
+import { applyModCompatibilityList } from './mod-compatibility-list'
 
 export interface MapTpInfo {
     map: MapName
@@ -61,7 +63,15 @@ export interface ClientCreateAndJoinSettings {
 }
 
 export function instanceinatorCopyInstanceConfig(): InstanceinatorCopyInstanceConfig {
-    return { cacheKey: 'multibakery', hideTitleScreen: true }
+    return {
+        cacheKey: 'multibakery',
+        hideTitleScreen: true,
+        preLoad(inst) {
+            if (isRemote(multi.server) && multi.server.settings.modCompatibility) {
+                applyModCompatibilityList(inst, multi.server.settings.modCompatibility)
+            }
+        },
+    }
 }
 
 export function showTryNetJoinResponseDialog(joinData: ClientJoinData, resp: ClientJoinAckData) {

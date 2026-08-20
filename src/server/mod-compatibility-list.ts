@@ -6,6 +6,7 @@ import { semver } from '../misc/nwjs-version-popup'
 import { modMetadata } from '../mod-metadata'
 import { assert } from '../misc/assert'
 import { getBinaryClassHashes } from '../net/binary/binary-class-hashes'
+import { filterOutCCUILibWidgetsGivenWhitelist, getCCUILibWidgetsList } from '../mod-compatibility/nax-ccuilib'
 
 const knownClientModsWithJson = ['menu-ui-replacer', 'extendable-severed-heads', 'bobrank', 'NamedSaves', 'xpc-litter']
 
@@ -40,7 +41,7 @@ export function getModCompatibilityList(): ModCompatibilityList {
         version: m.version,
     }))
 
-    const widgets = Object.keys(nax.ccuilib.QuickRingMenuWidgets.widgets).filter(k => !k.startsWith('dummy'))
+    const widgets = getCCUILibWidgetsList()
 
     const addons: AddonId[] = (
         ['fish-gear', 'flying-hedgehag', 'scorpion-robo', 'snowman-tank', 'post-game'] as const
@@ -170,8 +171,5 @@ export function showModCompatibilityListPopup(errors: ModCompatibilityErrorList)
 }
 
 export function applyModCompatibilityList(inst: InstanceinatorInstance, list: ModCompatibilityList) {
-    const qrmw = inst.nax!.ccuilib.QuickRingMenuWidgets
-    const widgets = new Set(list.ccuilibWidgets)
-
-    qrmw.widgets = Object.fromEntries(Object.entries(qrmw.widgets).filter(([k]) => widgets.has(k)))
+    filterOutCCUILibWidgetsGivenWhitelist(inst, list.ccuilibWidgets)
 }

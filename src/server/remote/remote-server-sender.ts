@@ -1,4 +1,4 @@
-import type { f64 } from 'ts-binarifier/src/type-aliases'
+import type { f64, u20 } from 'ts-binarifier/src/type-aliases'
 import {
     filterClientOptionModelValues,
     type ClientOptionModelValues,
@@ -18,6 +18,7 @@ import { cleanRecord, StateMemory } from '../../state/state-util'
 import { assertRemote } from './remote-server-types'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
 import { profile } from '../../misc/performance-profiling'
+import { getCCUILibRingConfFrom } from '../../mod-compatibility/nax-ccuilib'
 
 let remoteSenderStateMemory: StateMemory | undefined
 const maxInputFieldTextLength = 50
@@ -44,6 +45,7 @@ export interface RemoteServerClientPacket {
     gamepad?: GamepadManagerData
     inputFieldText?: string
     options?: PartialRecord<KeyType, f64> // ClientOptionModelValues
+    ccuilibRingConf?: Record<u20, string> // CCUILibRingConf
 }
 function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientPackets {
     const data = _data as RemoteServerClientPackets
@@ -106,7 +108,7 @@ export class RemoteSender {
                 const options = filterClientOptionModelValues(
                     (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
                 )
-
+                const ccuilibRingConf = memory.isFirstTime() ? getCCUILibRingConfFrom(client.inst.nax!) : undefined
                 packet = {
                     input,
                     gamepad,
@@ -114,6 +116,7 @@ export class RemoteSender {
                         inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)
                     ),
                     options: memory.diffRecord(options),
+                    ccuilibRingConf,
                 }
             }
 

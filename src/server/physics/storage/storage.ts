@@ -10,16 +10,21 @@ import { copy } from '../../../misc/object-copy'
 import type { ClientOptionModelValues } from '../../../client/client-option-model-link'
 import type { Client } from '../../../client/client'
 import { profile } from '../../../misc/performance-profiling'
+import { getCCUILibRingConfFrom, type CCUILibRingConf } from '../../../mod-compatibility/nax-ccuilib'
 
 import './save-slot-button'
 import './pause-screen-save-button'
 
 type PlayerGetStateReturn = ReturnType<typeof getEntityState>
 export type StoragePlayerEntityState = Partial<PlayerGetStateReturn>
-export interface StoragePlayerState {
-    entityState?: StoragePlayerEntityState
+
+interface StoragePlayerStateBase {
     tpInfo?: MapTpInfo
     optionModelValues?: ClientOptionModelValues
+    ccuilibRingConf?: CCUILibRingConf
+}
+export interface StoragePlayerState extends StoragePlayerStateBase {
+    entityState?: StoragePlayerEntityState
 }
 
 export interface MultibakerySaveData {
@@ -145,28 +150,22 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
     }
 
     // creates state with no references (deep copy)
-    private createPlayerState(
-        player: ig.ENTITY.Player,
-        tpInfo: MapTpInfo,
-        optionModelValues: ClientOptionModelValues
-    ): StoragePlayerState {
+    private createPlayerState(player: ig.ENTITY.Player, base: StoragePlayerStateBase): StoragePlayerState {
         return {
             entityState: {
                 ...copy(player.getEntityState!() as PlayerGetStateReturn),
                 animAlpha: 1,
             },
-            tpInfo: { ...tpInfo },
-            optionModelValues: { ...optionModelValues },
+            ...base,
         }
     }
 
     createAndSavePlayerState(
         username: Username,
         player: ig.ENTITY.Player,
-        tpInfo: MapTpInfo,
-        optionModelValues: ClientOptionModelValues
+        base: StoragePlayerStateBase
     ): StoragePlayerState {
-        return this.savePlayerState(username, this.createPlayerState(player, tpInfo, optionModelValues))
+        return this.savePlayerState(username, this.createPlayerState(player, base))
     }
 
     savePlayerState(username: Username, state: StoragePlayerState): StoragePlayerState {
@@ -175,12 +174,24 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         return (this.currentData.players[username] = state)
     }
 
-    createAndSavePlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
-        return this.createAndSavePlayerState(client.username, client.dummy, tpInfo, client.inst.sc.options.clientValues)
+    private createPlayerStateBaseFromClient(client: Client, tpInfo: MapTpInfo | undefined): StoragePlayerStateBase {
+        return {
+            tpInfo: tpInfo ?? client.tpInfo,
+            optionModelValues: client.inst.sc.options.clientValues,
+            ccuilibRingConf: getCCUILibRingConfFrom(client.inst.nax!),
+        }
     }
 
-    createPlayerStateWithClient(client: Client, tpInfo: MapTpInfo = client.tpInfo) {
-        return this.createPlayerState(client.dummy, tpInfo, client.inst.sc.options.clientValues)
+    createAndSavePlayerStateWithClient(client: Client, tpInfo?: MapTpInfo) {
+        return this.createAndSavePlayerState(
+            client.username,
+            client.dummy,
+            this.createPlayerStateBaseFromClient(client, tpInfo)
+        )
+    }
+
+    createPlayerStateWithClient(client: Client, tpInfo?: MapTpInfo) {
+        return this.createPlayerState(client.dummy, this.createPlayerStateBaseFromClient(client, tpInfo))
     }
 
     private savePlayerStates() {

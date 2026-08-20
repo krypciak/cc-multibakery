@@ -11,6 +11,7 @@
 - Add remote sound for ig.ENTITY.BounceSwitch
 - Add remote sound for ig.ENTITY.BounceBlock
 - Add remote sound for ig.ENTITY.BallChanger
+- Add seperate nax-ccuilib quick ring configs for each client
 
 ### Fixed
 
@@ -18,6 +19,7 @@
 - Fix ig.ENTITY.OneTimeSwitch with activeTime rendering incorrectly on remote 
 - Fix remote crash when player re-enters the same map immediately
 - Fix remote crash on Gatling Arctillery
+- Improve nax-ccuilib widgets compatibility on remote
 
 ## [0.8.4] 2026-08-19
 

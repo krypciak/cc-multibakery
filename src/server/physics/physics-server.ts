@@ -29,6 +29,7 @@ import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
+import { setCCUILibRingConf } from '../../mod-compatibility/nax-ccuilib'
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     physics: boolean = true
@@ -206,6 +207,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
 
             if (packet.options) {
                 loadClientOptionModelState(client, packet.options)
+            }
+
+            if (packet.ccuilibRingConf) {
+                setCCUILibRingConf(client, packet.ccuilibRingConf)
             }
         }
     }

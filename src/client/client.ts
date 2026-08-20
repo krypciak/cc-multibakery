@@ -26,12 +26,13 @@ import { isRemote } from '../server/remote/remote-server-types'
 import type { EntityNetid } from '../misc/entity-netid'
 import { profile } from '../misc/performance-profiling'
 import type { StoragePlayerEntityState } from '../server/physics/storage/storage'
+import { notifyRemoteAboutTeleport } from '../state/player-teleport'
+import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility/nax-ccuilib'
 
 import './injects'
 import './menu/server-list-menu'
 import './menu/pause/pause-screen'
 import './menu/map-overlay'
-import { notifyRemoteAboutTeleport } from '../state/player-teleport'
 
 export class Client extends InstanceUpdateable {
     username: Username
@@ -65,6 +66,7 @@ export class Client extends InstanceUpdateable {
         this.inst.ig.client = this
         assert(this.inst.ig.game)
         this.initOptionModel()
+        this.initCCUILibRing()
 
         this.inputManager = this.initInputManager()
 
@@ -109,6 +111,11 @@ export class Client extends InstanceUpdateable {
         initClientOptionModel(this)
         const playerState = multi.storage.getPlayerState(this.username)
         loadClientOptionModelState(this, playerState?.optionModelValues ?? multi.server.inst.sc.options.values)
+    }
+
+    private initCCUILibRing() {
+        const playerState = multi.storage.getPlayerState(this.username)
+        setCCUILibRingConf(this, playerState?.ccuilibRingConf ?? getCCUILibRingConfFrom(multi.server.inst.nax!))
     }
 
     protected attemptRecovery(e: unknown) {
