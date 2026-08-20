@@ -4,6 +4,14 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add remote sound for ig.ENTITY.RegenDestruct
+- Add remote sound for ig.ENTITY.Destructible
+- Add remote sound for ig.ENTITY.BounceSwitch
+- Add remote sound for ig.ENTITY.BounceBlock
+- Add remote sound for ig.ENTITY.BallChanger
+
 ### Fixed
 
 - Fix rare remote crash when an event is triggered on an killed entity

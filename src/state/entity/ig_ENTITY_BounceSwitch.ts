@@ -2,7 +2,8 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
-import { wrapIgnoreEffectNetid } from './effect-netid'
+import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -17,22 +18,12 @@ type Return = ReturnType<typeof getEntityState>
 function getEntityState(this: ig.ENTITY.BounceSwitch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
     return {
-        isOn: memory.diff(this.isOn),
+        ...igAnimatedEntity.getEntityState.call(this, memory),
     }
 }
 
 function setEntityState(this: ig.ENTITY.BounceSwitch, state: Return) {
-    if (state.isOn !== undefined) {
-        this.isOn = state.isOn
-        if (ig.shared.settingStateImmediately) {
-            this.setCurrentAnim(this.isOn ? 'on' : 'off')
-        } else {
-            if (this.isOn) {
-                this.setCurrentAnim('rolling')
-                this.timer = 0.5
-            }
-        }
-    }
+    igAnimatedEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
@@ -44,13 +35,12 @@ prestart(() => {
         throw new Error('ig.ENTITY.BounceSwitch.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.BounceSwitch })
-    ig.ENTITY.BounceSwitch.forceRemotePhysics = true
 
-    if (!REMOTE) return
-
-    ig.ENTITY.BounceSwitch.inject({
-        animationEnded(animation) {
-            wrapIgnoreEffectNetid(() => this.parent(animation))
-        },
-    })
+    if (PHYSICSNET) {
+        ig.ENTITY.BounceSwitch.inject({
+            ballHit(ballLike, blockDir) {
+                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+            },
+        })
+    }
 }, 2)

@@ -2,7 +2,8 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
-import type { u2 } from 'ts-binarifier/src/type-aliases'
+import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -18,29 +19,12 @@ function getEntityState(this: ig.ENTITY.BounceBlock, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        blockState: memory.diff(this.blockState as u2),
+        ...igAnimatedEntity.getEntityState.call(this, memory),
     }
 }
 
 function setEntityState(this: ig.ENTITY.BounceBlock, state: Return) {
-    if (state.blockState !== undefined) {
-        this.blockState = state.blockState as 0 | 1 | 2
-        if (ig.shared.settingStateImmediately) {
-            if (this.blockState) {
-                this.onGroupResolve(true)
-            } else {
-                this.setCurrentAnim('off')
-            }
-        } else {
-            if (this.blockState == 0) {
-                this.setCurrentAnim('off')
-            } else if (this.blockState == 1) {
-                this.setCurrentAnim('on')
-            } else if (this.blockState == 2) {
-                this.onGroupResolve()
-            }
-        }
-    }
+    igAnimatedEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
@@ -52,5 +36,15 @@ prestart(() => {
         throw new Error('ig.ENTITY.BounceBlock.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.BounceBlock })
-    ig.ENTITY.BounceBlock.forceRemotePhysics = true
+
+    if (PHYSICSNET) {
+        ig.ENTITY.BounceBlock.inject({
+            ballHit(ballLike, blockDir) {
+                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+            },
+            animationEnded(animation) {
+                return wrapCollectSounds(() => this.parent(animation))
+            },
+        })
+    }
 }, 2)

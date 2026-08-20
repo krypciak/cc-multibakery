@@ -2,6 +2,7 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
+import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 import { isRemote } from '../../server/remote/remote-server-types'
 
 declare global {
@@ -18,16 +19,11 @@ function getEntityState(this: ig.ENTITY.DynamicPlatform, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        pos: memory.diffVec3(this.coll.pos),
+        ...igAnimatedEntity.getEntityState.call(this, memory),
     }
 }
 function setEntityState(this: ig.ENTITY.DynamicPlatform, state: Return) {
-    this.update()
-
-    if (state.pos) {
-        this.setPos(state.pos.x, state.pos.y, state.pos.z)
-        this.coll.baseZPos = state.pos.z
-    }
+    igAnimatedEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {

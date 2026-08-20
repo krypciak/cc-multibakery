@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -35,4 +36,12 @@ prestart(() => {
         throw new Error('ig.ENTITY.BallChanger.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.BallChanger })
+
+    if (PHYSICSNET) {
+        ig.ENTITY.BallChanger.inject({
+            ballHit(ballLike, blockDir) {
+                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+            },
+        })
+    }
 }, 2)

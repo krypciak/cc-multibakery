@@ -70,15 +70,9 @@ function getEntityState(this: ig.ENTITY.ElementPole, player?: StateKey) {
 function setEntityState(this: ig.ENTITY.ElementPole, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 
-    if (state.active !== undefined) {
-        this.active = state.active
-    }
-    if (state.element !== undefined) {
-        this.charge.element = state.element
-    }
-    if (state.prevElement !== undefined) {
-        this.charge.prevElement = state.prevElement
-    }
+    if (state.active !== undefined) this.active = state.active
+    if (state.element !== undefined) this.charge.element = state.element
+    if (state.prevElement !== undefined) this.charge.prevElement = state.prevElement
 
     if (state.lightHandles) {
         for (const handle of this.charge.lightHandles) handle.stop()
@@ -86,17 +80,10 @@ function setEntityState(this: ig.ENTITY.ElementPole, state: Return) {
         for (const z of state.lightHandles) this.addLight(z)
     }
 
-    if (state.state) {
-        this.charge.state = getPoleStateObject(state.state)
-    }
+    if (state.state) this.charge.state = getPoleStateObject(state.state)
 
-    if (state.timerTime !== undefined) {
-        this.charge.timer.timer = state.timerTime
-    }
-
-    if (state.timerDuration !== undefined) {
-        this.charge.timer.duration = state.timerDuration
-    }
+    if (state.timerTime !== undefined) this.charge.timer.timer = state.timerTime
+    if (state.timerDuration !== undefined) this.charge.timer.duration = state.timerDuration
 }
 
 prestart(() => {

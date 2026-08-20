@@ -25,18 +25,10 @@ function getEntityState(this: ig.ENTITY.SteamPipe, player?: StateKey) {
 }
 
 function setEntityState(this: ig.ENTITY.SteamPipe, state: Return) {
-    if (state.duration !== undefined) {
-        this.steam.duration = state.duration
-    }
-    if (state.startTimer !== undefined) {
-        this.steam.startTimer = state.startTimer
-    }
-    if (state.endTimer !== undefined) {
-        this.steam.endTimer = state.endTimer
-    }
-    if (state.startPoint !== undefined) {
-        this.steam.startPoint = state.startPoint
-    }
+    if (state.duration !== undefined) this.steam.duration = state.duration
+    if (state.startTimer !== undefined) this.steam.startTimer = state.startTimer
+    if (state.endTimer !== undefined) this.steam.endTimer = state.endTimer
+    if (state.startPoint !== undefined) this.steam.startPoint = state.startPoint
 }
 
 prestart(() => {
