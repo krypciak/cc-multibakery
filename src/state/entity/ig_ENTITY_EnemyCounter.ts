@@ -2,6 +2,8 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
+import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 import type { u8 } from 'ts-binarifier/src/type-aliases'
 
 declare global {
@@ -18,23 +20,19 @@ function getEntityState(this: ig.ENTITY.EnemyCounter, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
+        ...igAnimatedEntity.getEntityState.call(this, memory),
         postCount: memory.diff(this.postCount as u8),
     }
 }
 function setEntityState(this: ig.ENTITY.EnemyCounter, state: Return) {
+    igAnimatedEntity.setEntityState.call(this, state)
+
     if (state.postCount !== undefined && this.postCount != state.postCount) {
         this.postCount = state.postCount
         this.timer = this.MAX_FLASH_TIME
 
         if (this.postCount == 0) {
             this.done = true
-        }
-        if (!ig.shared.settingStateImmediately) {
-            if (this.done) {
-                ig.SoundHelper.playAtEntity(this.sounds.done, this)
-            } else {
-                ig.SoundHelper.playAtEntity(this.sounds.count, this)
-            }
         }
     }
 }
@@ -48,4 +46,12 @@ prestart(() => {
         throw new Error('ig.ENTITY.EnemyCounter.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.EnemyCounter })
+
+    if (PHYSICSNET) {
+        ig.ENTITY.EnemyCounter.inject({
+            decreaseCount() {
+                return wrapCollectSounds(() => this.parent())
+            },
+        })
+    }
 }, 2)

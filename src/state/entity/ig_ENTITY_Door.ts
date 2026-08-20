@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -17,24 +18,13 @@ type Return = ReturnType<typeof getEntityState>
 function getEntityState(this: ig.ENTITY.Door, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
-    const opened = this.lastOpened?.frame == ig.system.frame - 1
     return {
         ...igAnimatedEntity.getEntityState.call(this, memory),
-
-        opened: opened ? true : undefined,
-        openGlobalSound: memory.diff(this.lastOpened?.globalSound),
     }
 }
 
 function setEntityState(this: ig.ENTITY.Door, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
-
-    if (state.opened === true) {
-        if (this.openSound) {
-            if (state.openGlobalSound) this.openSound.play()
-            else ig.SoundHelper.playAtEntity(this.openSound, this)
-        }
-    }
 }
 
 prestart(() => {
@@ -58,8 +48,7 @@ declare global {
 prestart(() => {
     ig.ENTITY.Door.inject({
         open(globalSound, openTimer) {
-            this.parent(globalSound, openTimer)
-            this.lastOpened = { frame: ig.system.frame, globalSound }
+            return wrapCollectSounds(() => this.parent(globalSound, openTimer))
         },
     })
 })

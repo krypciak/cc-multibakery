@@ -4,6 +4,7 @@ import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import { isRemote } from '../../server/remote/remote-server-types'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -20,20 +21,10 @@ function getEntityState(this: ig.ENTITY.OneTimeSwitch, player?: StateKey) {
 
     return {
         ...igAnimatedEntity.getEntityState.call(this, memory),
-
-        isOn: memory.diff(this.isOn),
     }
 }
 function setEntityState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
-
-    if (state.isOn !== undefined && this.isOn != state.isOn) {
-        this.isOn = state.isOn
-        if (state.isOn && !ig.shared.settingStateImmediately) {
-            ig.SoundHelper.playAtEntity(this.sounds.hit, this)
-            ig.SoundHelper.playAtEntity(this.sounds.bing, this)
-        }
-    }
 }
 
 prestart(() => {
@@ -46,15 +37,19 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch })
 
-    if (!REMOTE) return
+    if (REMOTE) {
+        ig.ENTITY.OneTimeSwitch.inject({
+            varsChanged() {
+                if (!isRemote(multi.server)) return this.parent()
+            },
+        })
+    }
 
-    ig.ENTITY.OneTimeSwitch.inject({
-        ballHit(ball) {
-            if (!isRemote(multi.server)) return this.parent(ball)
-            return false
-        },
-        varsChanged() {
-            if (!isRemote(multi.server)) return this.parent()
-        },
-    })
+    if (PHYSICSNET) {
+        ig.ENTITY.OneTimeSwitch.inject({
+            ballHit(ballLike, blockDir) {
+                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+            },
+        })
+    }
 }, 2)

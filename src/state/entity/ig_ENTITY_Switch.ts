@@ -3,6 +3,8 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import { isRemote } from '../../server/remote/remote-server-types'
+import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -18,29 +20,11 @@ function getEntityState(this: ig.ENTITY.Switch, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
-        pos: memory.diffVec3(this.coll.pos),
-        isOn: memory.diff(this.isOn),
+        ...igAnimatedEntity.getEntityState.call(this, memory),
     }
 }
 function setEntityState(this: ig.ENTITY.Switch, state: Return) {
-    if (state.pos) {
-        this.setPos(state.pos.x, state.pos.y, state.pos.z)
-        this.coll.baseZPos = state.pos.z
-    }
-
-    if (state.isOn !== undefined && this.isOn != state.isOn) {
-        this.isOn = state.isOn
-        const anim = this.isOn ? 'switchOn' : 'switchOff'
-        const followUpAnim = this.isOn ? 'on' : 'off'
-
-        if (ig.shared.settingStateImmediately) {
-            this.setCurrentAnim(followUpAnim, true, null, true)
-        } else {
-            this.setCurrentAnim(anim, true, followUpAnim, true)
-            ig.SoundHelper.playAtEntity(this.sounds.hit, this)
-            ig.SoundHelper.playAtEntity(this.sounds.bing, this)
-        }
-    }
+    igAnimatedEntity.setEntityState.call(this, state)
 }
 
 prestart(() => {
@@ -53,15 +37,19 @@ prestart(() => {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Switch })
 
-    if (!REMOTE) return
+    if (REMOTE) {
+        ig.ENTITY.Switch.inject({
+            varsChanged() {
+                if (!isRemote(multi.server)) return this.parent()
+            },
+        })
+    }
 
-    ig.ENTITY.Switch.inject({
-        ballHit(ball) {
-            if (!isRemote(multi.server)) return this.parent(ball)
-            return false
-        },
-        varsChanged() {
-            if (!isRemote(multi.server)) return this.parent()
-        },
-    })
+    if (PHYSICSNET) {
+        ig.ENTITY.Switch.inject({
+            ballHit(ballLike, blockDir) {
+                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+            },
+        })
+    }
 }, 2)
