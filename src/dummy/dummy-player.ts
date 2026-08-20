@@ -72,6 +72,8 @@ prestart(() => {
             sc.Model.addObserver(sc.playerSkins, this)
             this.charging.fx = new sc.CombatCharge(this, true)
             sc.combat.addActiveCombatant(this)
+
+            this._updateCameraHandle()
         },
         setInputManager(inputManager) {
             this.inputManager = inputManager
@@ -125,18 +127,6 @@ prestart(() => {
         onKill(_dontRespawn?: boolean) {
             this.parent(true)
             this.model.destroy()
-        },
-        showChargeEffect(level) {
-            /* prevent crashes */
-            if (!this.cameraHandle) this.cameraHandle = { setZoom() {} } as any
-            this.parent(level)
-            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
-        },
-        clearCharge() {
-            /* prevent crashes */
-            this.cameraHandle ??= { setZoom() {} } as any
-            this.parent()
-            if (!(this.cameraHandle instanceof ig.Camera.TargetHandle)) this.cameraHandle = undefined as any
         },
         isControlBlocked() {
             return this.currentSubState == sc.GAME_MODEL_SUBSTATE.ONMAPMENU || this.parent()
