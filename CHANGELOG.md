@@ -20,6 +20,7 @@
 - Fix remote crash when player re-enters the same map immediately
 - Fix remote crash on Gatling Arctillery
 - Improve nax-ccuilib widgets compatibility on remote
+- Fix hit numbers sometimes having a different color on remote
 
 ## [0.8.4] 2026-08-19
 

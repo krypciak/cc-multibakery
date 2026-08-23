@@ -92,7 +92,7 @@ prestart(() => {
             backup(pos, combatant, damage, size, strength, shieldResult, isCrit, appendix)
         )
     }
-})
+}, 0)
 // ig.ENTITY.Combatant#addSpikeDamage probably? doesn't need fix
 // sc.EnemyType#resolveDefeat depends on sc.Combat#getPartyHpFactor
 prestart(() => {
