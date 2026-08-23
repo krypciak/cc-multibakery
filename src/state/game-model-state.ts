@@ -1,5 +1,4 @@
 import { StateMemory } from './state-util'
-import { assert } from '../misc/assert'
 import type { MapStateHandler } from './map-state-handlers'
 
 declare global {

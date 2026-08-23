@@ -27,7 +27,6 @@ import { entityStateMapStateHandler } from './entity/entity-state'
 import { eventStepsMapStateHandler } from './event-steps'
 import { gameModelStateMapStateHandler } from './game-model-state'
 import { pvpMapStateHandler } from './pvp'
-import { hitNumberClearMapStateHandler, hitNumberSpawnMapStateHandler } from './hit-number'
 import { varsMapStateHandler } from './vars'
 
 const mapStateHandlers: MapStateHandler[] = [
@@ -36,8 +35,6 @@ const mapStateHandlers: MapStateHandler[] = [
     eventStepsMapStateHandler,
     gameModelStateMapStateHandler,
     pvpMapStateHandler,
-    hitNumberSpawnMapStateHandler,
-    hitNumberClearMapStateHandler,
     varsMapStateHandler,
 ]
 
