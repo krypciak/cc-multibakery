@@ -3,75 +3,46 @@ import { shouldCollectStateData } from '../state-util'
 import type { u16 } from 'ts-binarifier/src/type-aliases'
 import type { EntityNetid } from '../../misc/entity-netid'
 import { wrapIgnoreEffectNetid } from './effect-netid'
-import type { MapStateHandler } from '../map-state-handlers'
-
-export interface HitConfig {
-    entity: EntityNetid
-    hitPos: Vec3
-    hitDegree: sc.ATTACK_TYPE
-    hitElement: sc.ELEMENT
-    shieldResult: sc.SHIELD_RESULT
-    critical: boolean
-    ignoreSounds: boolean
-    spriteFilter?: u16[]
-}
+import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 
 declare global {
-    interface StateUpdatePacket {
-        entityHitPackets?: HitConfig[]
-    }
-    namespace ig {
-        interface MapSharedVars {
-            entityHitPackets?: HitConfig[]
+    interface MapStateOrderedEvents {
+        entityHitEffect: {
+            type: 'entityHitEffect'
+            netid: EntityNetid
+            hitPos: Vec3
+            hitDegree: sc.ATTACK_TYPE
+            hitElement: sc.ELEMENT
+            shieldResult: sc.SHIELD_RESULT
+            critical: boolean
+            ignoreSounds: boolean
+            spriteFilter?: u16[]
         }
     }
 }
-
-export const entityHitMapStateHandler: MapStateHandler = {
-    get(packet) {
-        packet.entityHitPackets = ig.mapShared.entityHitPackets
-    },
-    clear() {
-        ig.mapShared.entityHitPackets = undefined
-    },
-    set(packet) {
-        if (!packet.entityHitPackets) return
-
-        for (const {
-            entity: entityNetid,
+registerOrderedEvent('entityHitEffect', {
+    set({ netid, hitPos, hitDegree, hitElement, shieldResult, critical, ignoreSounds, spriteFilter }) {
+        const entity = ig.game.entitiesByNetid[netid]
+        if (!entity) return
+        sc.combat.showHitEffect(
+            entity,
             hitPos,
             hitDegree,
             hitElement,
-            shieldResult: shielded,
+            shieldResult,
             critical,
             ignoreSounds,
-            spriteFilter,
-        } of packet.entityHitPackets) {
-            const entity = ig.game.entitiesByNetid[entityNetid]
-            /* entity can be undefined when it triggers a hit effect and dies on the same frame.
-             * one could fix this, but I don't think it's worth the effort */
-            if (!entity) continue
-
-            sc.combat.showHitEffect(
-                entity,
-                hitPos,
-                hitDegree,
-                hitElement,
-                shielded,
-                critical,
-                ignoreSounds,
-                spriteFilter
-            )
-        }
+            spriteFilter
+        )
     },
-}
+})
 
 prestart(() => {
     if (!PHYSICSNET) return
 
     sc.Combat.inject({
         showHitEffect(entity, hitPos, hitDegree, hitElement, shieldResult, critical, ignoreSounds, spriteFilter) {
-            if (!shouldCollectStateData())
+            if (!shouldCollectStateData()) {
                 return this.parent(
                     entity,
                     hitPos,
@@ -82,6 +53,7 @@ prestart(() => {
                     ignoreSounds,
                     spriteFilter
                 )
+            }
 
             const handle = wrapIgnoreEffectNetid(() =>
                 this.parent(entity, hitPos, hitDegree, hitElement, shieldResult, critical, ignoreSounds, spriteFilter)
@@ -89,12 +61,12 @@ prestart(() => {
 
             if (entity.netid === undefined) {
                 console.warn(
-                    `sc.Combat#showHitEffect entity (${findClassName(entity)}) is not an net entity! remote clients will crash!`
+                    `sc.Combat#showHitEffect entity (${fcn(entity)}) is not an net entity! remote clients will crash!`
                 )
             }
-            ig.mapShared.entityHitPackets ??= []
-            ig.mapShared.entityHitPackets.push({
-                entity: entity.netid,
+            pushOrderedEvent({
+                type: 'entityHitEffect',
+                netid: entity.netid,
                 hitPos,
                 hitDegree,
                 hitElement,
@@ -103,7 +75,6 @@ prestart(() => {
                 ignoreSounds,
                 spriteFilter,
             })
-
             return handle
         },
     })

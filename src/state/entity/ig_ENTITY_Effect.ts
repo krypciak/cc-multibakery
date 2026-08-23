@@ -160,7 +160,7 @@ prestart(() => {
             start(entity) {
                 if (isPhysics(multi.server) && entity.target && !entity.target.netid) {
                     console.warn(
-                        `entity.target (${findClassName(entity.target)}) is not an net entity! on ig.EFFECT_ENTRY.COPY_SPRITE#start, clients will crash!`
+                        `entity.target (${fcn(entity.target)}) is not an net entity! on ig.EFFECT_ENTRY.COPY_SPRITE#start, clients will crash!`
                     )
                 }
                 this.parent(entity)
