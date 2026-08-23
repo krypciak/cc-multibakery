@@ -54,7 +54,9 @@ export class NetManagerPhysicsServer {
                 connection.readyForSendingUpdate = true
             } else if (type == 'leave') {
                 if (!isClientLeaveData(data)) return
-                onClose('leave', data)
+                if (multi.server == server && !server.destroyed) {
+                    server.onNetClientLeave(connection, data)
+                }
             }
         }
 

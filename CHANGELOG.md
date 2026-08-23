@@ -22,6 +22,7 @@
 - Improve nax-ccuilib widgets compatibility on remote
 - Fix hit numbers sometimes having a different color on remote
 - Fix dead entities not being killed on remote when joining after the entitiy's death
+- Fix physics server closing connection when multiple players joined from one connection and only one player leaves
 
 ## [0.8.4] 2026-08-19
 

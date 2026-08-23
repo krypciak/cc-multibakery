@@ -24,12 +24,12 @@ import {
     unregisterChargeTimingsChangeListener,
 } from '../../mod-compatibility/cc-variable-charge-time'
 import { getServerPingTimeout } from '../../options'
+import { setCCUILibRingConf } from '../../mod-compatibility/nax-ccuilib'
 
 import './physics-server-sender'
 import './storage/storage'
 import './disable-idle-pose'
 import './event/event'
-import { setCCUILibRingConf } from '../../mod-compatibility/nax-ccuilib'
 
 export class PhysicsServer extends Server<PhysicsServerSettings> {
     physics: boolean = true
