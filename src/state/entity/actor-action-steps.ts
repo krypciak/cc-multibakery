@@ -93,9 +93,11 @@ function getInst(instPlayerNetid: number | undefined) {
     let inst = ig.mapShared.ccmap.inst
     if (instPlayerNetid !== undefined) {
         const player = ig.game.entitiesByNetid[instPlayerNetid]
-        assert(player instanceof dummy.DummyPlayer)
-        const client = player.getClient(true)
-        if (client) inst = client.inst
+        if (player) {
+            assert(player instanceof dummy.DummyPlayer)
+            const client = player.getClient(true)
+            if (client) inst = client.inst
+        }
     }
     return inst
 }
