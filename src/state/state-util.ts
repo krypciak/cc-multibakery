@@ -4,7 +4,7 @@ export function shouldCollectStateData(): boolean {
     return isPhysics(multi.server) && multi.server.anyRemoteClientsOn
 }
 
-export function undefinedIfFalsy<T>(obj: T): T | undefined {
+export function undefinedIfFalsy<T>(obj: T): NonNullable<T> | undefined {
     return obj ? obj : undefined
 }
 export function undefinedIfVec2Zero(vec: Vec2): Vec2 | undefined {

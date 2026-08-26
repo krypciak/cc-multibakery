@@ -35,11 +35,16 @@ export function getEntityState(this: ig.ENTITY.Player, player?: StateKey, memory
 
     memory ??= StateMemory.getBy(this, player)
 
-    const items = !player || this == player ? memory.onlyOnce(this.model.items as (ItemType | null)[]) : undefined
-    const itemsDiff =
-        !player || this == player
-            ? memory.diffRecord(this.model.items as Record<ItemType, u10 | null> & RecordSize<u11>)
-            : undefined
+    type ItemCount = u10
+    type ItemRecord = Record<ItemType, ItemCount | undefined>
+
+    let items: (ItemCount | undefined)[] | undefined
+    let itemsDiff: (ItemRecord & RecordSize<u11>) | undefined
+    if (!player || this == player) {
+        const itemsWithoutNull = this.model.items.map(v => v ?? undefined)
+        items = memory.onlyOnce(itemsWithoutNull)
+        itemsDiff = memory.diffRecord(itemsWithoutNull)
+    }
 
     return {
         ...scPlayerBaseEntity.getEntityState.call(this, memory, player),
@@ -83,14 +88,14 @@ export function setEntityState(this: ig.ENTITY.Player, state: Return) {
         this.interactObject = entity.pushPullable
     } else this.interactObject = null
 
-    if (state.items) this.model.items = state.items
+    if (state.items) this.model.items = state.items.map(v => v ?? null)
     if (state.itemsDiff) {
         for (const idStr of Object.keys(state.itemsDiff)) {
             const id = parseInt(idStr)
             const amount = state.itemsDiff[id]
             const oldAmount = this.model.items[id]
 
-            this.model.items[id] = amount
+            this.model.items[id] = amount ?? null
 
             if ((amount ?? 0) > (oldAmount ?? 0)) {
                 notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.ITEM_OBTAINED, {

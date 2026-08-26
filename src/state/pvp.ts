@@ -28,11 +28,11 @@ declare global {
 }
 
 export const pvpMapStateHandler: MapStateHandler = {
-    get(packet, client) {
+    get(packet, player) {
         if (packet.pvp) return
 
         ig.mapShared.pvpStatePlayerMemory ??= {}
-        const memory = StateMemory.getBy(ig.mapShared.pvpStatePlayerMemory, client)
+        const memory = StateMemory.getBy(ig.mapShared.pvpStatePlayerMemory, player)
 
         const parties = sc.pvp.parties?.map(p => p.id)
 

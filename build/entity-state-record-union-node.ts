@@ -50,27 +50,33 @@ class EntityStateRecordUnionNode extends Node {
         const entriesVar = `entries`
         addImport(data.imports, '../../misc/entity-netid', 'getEntityTypeId')
 
-        const functions: FunctionConfig[] = this.values.map(({ node, name }) =>
+        const functions = this.values.map(({ node, name }) =>
             getOrDefineFunction(data, {
                 name: 'encodeEntity_' + this.sanitizeEntityNameForFunctionName(name),
                 arguments: ['encoder: Encoder', `data: EntityStates['${name}']`],
-                body: node.genEncode({ ...data, varName: 'data', indent: 0 }),
+                body: node.genEncode({
+                    ...data,
+                    varCounter: resetVarCounterForFunction(data.varCounter),
+                    varName: 'data',
+                    indent: 0,
+                }),
             })
         )
 
         addImport(data.imports, '../../state/entity/entity-state', 'EntityStateRecord', true)
 
+        const varCounter = resetVarCounterForFunction(data.varCounter)
         const statesVar = 'states'
         const mainFunction = getOrDefineFunction(data, {
             name: 'encodeEntityStates',
             arguments: ['encoder: Encoder', `${statesVar}: EntityStateRecord`],
             body:
                 `const ${entriesVar} = Object.entries(${statesVar}) as unknown as [keyof typeof ${statesVar}, any][]\n` +
-                this.recordSizeNode.genEncode({ ...data, indent: 0, varName: `${entriesVar}.length` }) +
+                this.recordSizeNode.genEncode({ ...data, varCounter, indent: 0, varName: `${entriesVar}.length` }) +
                 '\n' +
                 `for (const [${netidVar}, ${valueVar}] of ${entriesVar}) {\n` +
                 Node.indent(1) +
-                this.netidNode.genEncode({ ...data, varName: netidVar, indent: 1 }) +
+                this.netidNode.genEncode({ ...data, varCounter, varName: netidVar, indent: 1 }) +
                 '\n' +
                 Node.indent(1) +
                 `const ${idVar} = getEntityTypeId(${netidVar})` +
@@ -148,7 +154,7 @@ import type {
     SharedPrintConfig,
 } from 'ts-binarifier/src/types'
 import { addImport } from 'ts-binarifier/src/code-gen-imports'
-import { getOrDefineFunction } from 'ts-binarifier/src/code-gen-functions'
+import { getOrDefineFunction, resetVarCounterForFunction } from 'ts-binarifier/src/code-gen-functions'
 const entityImportOrder = (await fs.promises.readFile('src/state/entity/all.ts', 'utf8'))
     .split('\n')
     .filter(line => line.startsWith("import './"))
