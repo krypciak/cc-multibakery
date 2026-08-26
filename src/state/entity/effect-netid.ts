@@ -6,9 +6,11 @@ let ignoreEffectNetidCount = 0
 export function wrapIgnoreEffectNetid<R>(func: () => R) {
     assert(ignoreEffectNetidCount >= 0)
     ignoreEffectNetidCount++
-    const ret = func()
-    ignoreEffectNetidCount--
-    return ret
+    try {
+        return func()
+    } finally {
+        ignoreEffectNetidCount--
+    }
 }
 
 prestart(() => {
