@@ -19,7 +19,7 @@ export function runEvent({
     Object.assign(eventCall.stack[0].vars, allInput)
     // console.log( 'pushing event call to:', instanceinator.id, ', steps:', stepsSettings.map(({ type }) => type), 'call:', eventCall)
 
-    eventCall.ignoreEventStepsCollection = ignoreEventStepsCollection
+    // eventCall.ignoreEventStepsCollection = ignoreEventStepsCollection
 
     if (!ig.game.events.blockingEventCall || type != ig.EventRunType.BLOCKING) {
         ig.game.events._startEventCall(eventCall)

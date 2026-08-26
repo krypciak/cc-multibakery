@@ -1,6 +1,11 @@
 import { prestart } from '../loading-stages'
 import { isRemote } from '../server/remote/remote-server-types'
-import { onEventStepStart } from '../state/event-steps'
+
+type Listener = (eventCall: ig.EventCall, step: ig.EventStepBase) => void
+const eventStepStartListeners: Listener[] = []
+export function addEventStepStartListener(listener: Listener) {
+    eventStepStartListeners.push(listener)
+}
 
 prestart(() => {
     if (!PHYSICS) return
@@ -16,7 +21,7 @@ prestart(() => {
 
                 step.start?.(stackEntry.stepData, this)
 
-                onEventStepStart(this, stackEntry)
+                for (const listener of eventStepStartListeners) listener(this, step)
 
                 if (step.getInlineEvent) {
                     const inlineEvent = step.getInlineEvent()

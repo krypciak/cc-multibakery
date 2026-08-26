@@ -65,4 +65,4 @@ prestart(() => {
             return runTask(client.inst, () => ig.game.events.callEvent(...args))
         },
     })
-})
+}, 999)

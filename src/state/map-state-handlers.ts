@@ -25,7 +25,6 @@ export interface MapStateHandler {
 import { orderedEventsMapStateHandler } from './ordered-events'
 import { entityStateMapStateHandler } from './entity/entity-state'
 import { entityDeathMapStateHandler } from './entity/entity-death'
-import { eventStepsMapStateHandler } from './event-steps'
 import { gameModelStateMapStateHandler } from './game-model-state'
 import { pvpMapStateHandler } from './pvp'
 import { varsMapStateHandler } from './vars'
@@ -34,7 +33,6 @@ const mapStateHandlers: MapStateHandler[] = [
     orderedEventsMapStateHandler,
     entityStateMapStateHandler,
     entityDeathMapStateHandler,
-    eventStepsMapStateHandler,
     gameModelStateMapStateHandler,
     pvpMapStateHandler,
     varsMapStateHandler,

@@ -7,10 +7,10 @@ import {
     getDeserializedActionFromActionId,
     isStepClassIdInActionStepWhitelist,
     type ActionId,
-    type StepIndex,
 } from './action-serializer'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { addActionStepStartListener } from '../../steps/action-history'
+import { getInstFromInstPlayerNetid, type StepIndex } from '../step-settings-serializer'
 
 declare global {
     interface MapStateOrderedEvents {
@@ -36,7 +36,7 @@ registerOrderedEvent('actorActionStep', {
         }
         assert(actor instanceof ig.ActorEntity)
 
-        const inst = getInst(instPlayerNetid)
+        const inst = getInstFromInstPlayerNetid(instPlayerNetid)
         if (actionId === undefined) {
             actor.currentAction = null
             return
@@ -89,19 +89,6 @@ addActionStepStartListener((action, step, _actor) => {
     })
 })
 
-function getInst(instPlayerNetid: number | undefined) {
-    let inst = ig.mapShared.ccmap.inst
-    if (instPlayerNetid !== undefined) {
-        const player = ig.game.entitiesByNetid[instPlayerNetid]
-        if (player) {
-            assert(player instanceof dummy.DummyPlayer)
-            const client = player.getClient(true)
-            if (client) inst = client.inst
-        }
-    }
-    return inst
-}
-
 declare global {
     interface MapStateOrderedEvents {
         actorClearActionAttached: {
@@ -117,7 +104,7 @@ registerOrderedEvent('actorClearActionAttached', {
         if (!actor) return
         assert(actor instanceof ig.ActorEntity)
 
-        const inst = getInst(instPlayerNetid)
+        const inst = getInstFromInstPlayerNetid(instPlayerNetid)
         runTask(inst, () => actor.clearActionAttached())
     },
 })

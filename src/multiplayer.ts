@@ -4,6 +4,7 @@ import { preload } from './loading-stages'
 
 import './misc/entity-netid'
 import './state/entity/all'
+import './state/event-steps'
 import './server/physics/create-physics-server'
 import './server/remote/try-join-remote'
 import './game-loop'

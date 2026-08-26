@@ -1,25 +1,18 @@
-import type { i16, i24 } from 'ts-binarifier/src/type-aliases'
+import type { i24 } from 'ts-binarifier/src/type-aliases'
 import { postload, prestart } from '../../loading-stages'
-import { deserializeStepSettingsRecursive, serializeStepSettingsRecursive } from '../step-settings-serializer'
+import {
+    deserializeStepSettingsRecursive,
+    serializeStepSettingsRecursive,
+    visitStepRecursive,
+} from '../step-settings-serializer'
 import type { GlobalStateHandler, GlobalStateKey } from '../global-state-handlers'
 import { assert } from '../../misc/assert'
 import { addActionStepStartListener } from '../../steps/action-history'
 import { shouldCollectStateData } from '../state-util'
 
 export type ActionId = i24
-export type StepIndex = i16
 
 const uniqueIdOffsest = 100000
-
-function visitStepRecursive<T extends ig.StepBase>(step: T, func: (step: T) => void, seen = new Set<ig.Class>()) {
-    if (seen.has(step)) return
-    seen.add(step)
-    func(step)
-    if (step._nextStep) visitStepRecursive(step._nextStep as T, func, seen)
-    if (step.branches) {
-        for (const branch of Object.values(step.branches)) if (branch) visitStepRecursive(branch as T, func, seen)
-    }
-}
 
 declare global {
     namespace ig {
@@ -29,9 +22,6 @@ declare global {
             stepsFlatArray?: ig.ActionStepBase[]
 
             getStepsFlatArray(): ig.ActionStepBase[]
-        }
-        interface StepBase {
-            stepIndex?: StepIndex
         }
     }
 }
@@ -153,12 +143,6 @@ export function isStepClassIdInActionStepWhitelist(id: number) {
     return actionStepWhitelistClassIds.has(id)
 }
 
-declare global {
-    interface GlobalStateUpdatePacket {
-        actionSettings?: SerializedAction[]
-    }
-}
-
 function getActionSettingsToSend(action: Nullable<ig.Action> | undefined, conn: GlobalStateKey | undefined) {
     if (!action) return
     const actionUniqueId = action.uniqueId
@@ -185,6 +169,12 @@ addActionStepStartListener(action => {
 
     possibleEventsToSend.add(action)
 })
+
+declare global {
+    interface GlobalStateUpdatePacket {
+        actionSettings?: SerializedAction[]
+    }
+}
 
 const actionSettingsEverSent = new WeakMap<GlobalStateKey, Set<ActionId>>()
 

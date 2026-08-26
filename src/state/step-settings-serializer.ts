@@ -1,3 +1,4 @@
+import type { i16 } from 'ts-binarifier/src/type-aliases'
 import { assert } from '../misc/assert'
 import type { EntityNetid } from '../misc/entity-netid'
 
@@ -60,4 +61,41 @@ export function deserializeStepSettingsRecursive(data: any) {
             }
         }
     }
+}
+
+/* step util functions */
+export type StepIndex = i16
+declare global {
+    namespace ig {
+        interface StepBase {
+            stepIndex?: StepIndex
+        }
+    }
+}
+
+export function visitStepRecursive<T extends ig.StepBase>(
+    step: T,
+    func: (step: T) => void,
+    seen = new Set<ig.Class>()
+) {
+    if (seen.has(step)) return
+    seen.add(step)
+    func(step)
+    if (step._nextStep) visitStepRecursive(step._nextStep as T, func, seen)
+    if (step.branches) {
+        for (const branch of Object.values(step.branches)) if (branch) visitStepRecursive(branch as T, func, seen)
+    }
+}
+
+export function getInstFromInstPlayerNetid(instPlayerNetid: number | undefined) {
+    let inst = ig.mapShared.ccmap.inst
+    if (instPlayerNetid !== undefined) {
+        const player = ig.game.entitiesByNetid[instPlayerNetid]
+        if (player) {
+            assert(player instanceof dummy.DummyPlayer)
+            const client = player.getClient(true)
+            if (client) inst = client.inst
+        }
+    }
+    return inst
 }
