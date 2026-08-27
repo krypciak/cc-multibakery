@@ -19,9 +19,29 @@ interface PlayerDrawerConstructor extends ImpactClass<PlayerDrawer> {
     new (floor: sc.MapFloor): PlayerDrawer
 }
 
-prestart(() => {
-    const iconSize = { x: 280, y: 436, w: 10, h: 9 }
+interface IconConfig {
+    gfx: ig.Image
+    offX: number
+    offY: number
+    sizeX: number
+    sizeY: number
+}
 
+/* cc-menu-ui-replacer, the TinyHead entry is custom */
+declare global {
+    interface Window {
+        customPlayerMenus?: Map<string, { gfx: ig.Image; TinyHead?: Omit<IconConfig, 'gfx'> }>
+    }
+}
+
+function getIconConfig(modelName: string): IconConfig {
+    const config = window.customPlayerMenus?.get(modelName)
+    return config?.TinyHead
+        ? { gfx: config.gfx, ...config.TinyHead }
+        : { gfx: new ig.Image('media/gui/menu.png'), offX: 280, offY: 436, sizeX: 10, sizeY: 9 }
+}
+
+prestart(() => {
     const PlayerDrawer: PlayerDrawerConstructor = ig.GuiElementBase.extend({
         gfx: new ig.Image('media/gui/menu.png'),
 
@@ -36,6 +56,7 @@ prestart(() => {
 
             const drawConfigs: {
                 pos: Vec2
+                iconConfig: IconConfig
                 username: Username
             }[] = []
 
@@ -53,23 +74,24 @@ prestart(() => {
                 if (!room) continue
 
                 const mapRecord = maps[mapName]
-                for (const { username, pos } of mapRecord) {
+                for (const { username, character, pos } of mapRecord) {
                     const realX = room.hook.pos.x + room.hook.size.x * pos.x
                     const realY = room.hook.pos.y + room.hook.size.y * pos.y
 
-                    drawConfigs.push({ pos: { x: realX, y: realY }, username })
+                    drawConfigs.push({ pos: { x: realX, y: realY }, iconConfig: getIconConfig(character), username })
                 }
             }
 
-            for (const { pos } of drawConfigs) {
-                const x = pos.x - iconSize.w / 2
-                const y = pos.y - iconSize.h / 2
-                renderer.addGfx(this.gfx, x, y, iconSize.x, iconSize.y, iconSize.w, iconSize.h)
+            for (const { pos, iconConfig } of drawConfigs) {
+                const { gfx, offX, offY, sizeX, sizeY } = iconConfig
+                const x = pos.x - sizeX / 2
+                const y = pos.y - sizeY / 2
+                renderer.addGfx(gfx, x, y, offX, offY, sizeX, sizeY)
             }
-            for (const { pos, username } of drawConfigs) {
+            for (const { pos, username, iconConfig } of drawConfigs) {
                 const textBlock = new ig.TextBlock(sc.fontsystem.tinyFont, wrapColor(username, COLOR.YELLOW), {})
                 const x = pos.x - textBlock.size.x / 2
-                const y = pos.y - textBlock.size.y - iconSize.h / 2
+                const y = pos.y - textBlock.size.y - iconConfig.sizeY / 2
                 renderer.addText(textBlock, x, y)
             }
         },

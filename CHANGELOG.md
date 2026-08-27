@@ -12,6 +12,7 @@
 - Add remote sound for ig.ENTITY.BounceBlock
 - Add remote sound for ig.ENTITY.BallChanger
 - Add seperate nax-ccuilib quick ring configs for each client
+- Add support for custom character head icons in the map menu
 
 ### Fixed
 
