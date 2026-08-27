@@ -89,13 +89,6 @@ declare global {
         }
         var Input: InputConstructor
     }
-    namespace ig {
-        interface Input {
-            _mouseGuiActive?: boolean
-            _currentDevice?: ig.INPUT_DEVICES
-            _mouse?: Vec2
-        }
-    }
 }
 prestart(() => {
     // prettier-ignore
@@ -106,19 +99,17 @@ prestart(() => {
 
             const self = this
 
-            self.mouse = realInput._mouse = realInput.mouse
-            self.mouseGuiActive = realInput._mouseGuiActive = realInput.mouseGuiActive
-            self.currentDevice = realInput._currentDevice = realInput.currentDevice
+            self.mouse = realInput.mouse
 
-            Object.defineProperties(realInput, {
-                "mouseGuiActive": {
-                    get() { return realInput._mouseGuiActive },
-                    set(v) { self.mouseGuiActive = realInput._mouseGuiActive = v },
+            Object.defineProperties(self, {
+                mouseGuiActive: {
+                    get() { return realInput.mouseGuiActive },
+                    set(_v) {},
                 },
-                "currentDevice": {
-                    get() { return realInput._currentDevice },
-                    set(v) { self.currentDevice = realInput._currentDevice = v },
-                },
+                currentDevice: {
+                    get() { return realInput.currentDevice },
+                    set(_v) {},
+                }
             })
         },
         state(action) {

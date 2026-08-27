@@ -44,7 +44,7 @@ export function getEntityState(this: ig.ENTITY.Combatant, player: StateKey | und
 
         statusGui: memory.diffRecord(getStatusEntries(this)),
 
-        target: memory.diff(this.target?.netid ?? 0 as EntityNetid),
+        target: memory.diff(this.target?.netid ?? (0 as EntityNetid)),
     }
 }
 
