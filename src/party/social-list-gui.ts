@@ -75,7 +75,13 @@ const popupConfigs: {
                             title: 'Party name',
                             initialValue: clickedParty.title,
                             saveToVar: 'tmp.newPartyName',
-                            validFunction: multi.server.party.isPartyTitleValid,
+                            validFunction: str => {
+                                return (
+                                    multi.server.party.isPartyTitleValid(str) &&
+                                    (str == clickedParty.title ||
+                                        Object.values(multi.server.party.parties).every(party => party.title != str))
+                                )
+                            },
                             accepted: [
                                 {
                                     type: 'RUN_JS_FUNCTION',
