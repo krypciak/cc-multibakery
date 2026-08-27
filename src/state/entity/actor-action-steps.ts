@@ -4,13 +4,17 @@ import { shouldCollectStateData } from '../state-util'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 import { assert } from '../../misc/assert'
 import {
-    getDeserializedActionFromActionId,
+    deserializeAction,
+    deserializeActionStepSettings,
     isStepClassIdInActionStepWhitelist,
-    type ActionId,
+    serializeAction,
+    serializeActionStepSettings,
+    type SerializedAction,
+    type SerializedStepSettings,
 } from './action-serializer'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { addActionStepStartListener } from '../../steps/action-history'
-import { getInstFromInstPlayerNetid, type StepIndex } from '../step-settings-serializer'
+import { getInstFromInstPlayerNetid } from '../step-settings-serializer'
 
 declare global {
     interface MapStateOrderedEvents {
@@ -19,17 +23,17 @@ declare global {
             netid: EntityNetid
 
             instPlayerNetid?: EntityNetid
-            actionId?: ActionId
-            stepIndex?: StepIndex
+            actionSettings: SerializedAction
+            stepSettings?: SerializedStepSettings
         }
     }
 }
 
 registerOrderedEvent('actorActionStep', {
-    set({ netid, instPlayerNetid, actionId, stepIndex }) {
+    set({ netid, instPlayerNetid, actionSettings, stepSettings }) {
         const actor = ig.game.entitiesByNetid[netid]
         if (!actor) {
-            if (stepIndex !== undefined) {
+            if (stepSettings !== undefined) {
                 console.warn('actorActionStep actor not found:', netid, 'failed to run a step')
             }
             return
@@ -37,20 +41,24 @@ registerOrderedEvent('actorActionStep', {
         assert(actor instanceof ig.ActorEntity)
 
         const inst = getInstFromInstPlayerNetid(instPlayerNetid)
-        if (actionId === undefined) {
+        if (actionSettings === undefined) {
             actor.currentAction = null
             return
         }
-        const action = getDeserializedActionFromActionId(actionId)
+        const action = deserializeAction(actionSettings)
         actor.currentAction = action
 
-        if (stepIndex === undefined) {
+        if (stepSettings === undefined) {
             actor.currentActionStep = null
             return
         }
-        const flatStepsArr = actor.currentAction.getStepsFlatArray()
-        const step = flatStepsArr[stepIndex]
-        assert(step)
+        const stepSettingsDeserialized = deserializeActionStepSettings(stepSettings)
+        const step = ig.StepHelpers.constructSteps(
+            [stepSettingsDeserialized],
+            ig.ACTION_STEP,
+            action.labeledSteps
+        ) as ig.ActionStepBase
+
         actor.currentActionStep = step
 
         assert(isStepClassIdInActionStepWhitelist(step.classId))
@@ -74,6 +82,12 @@ addActionStepStartListener((action, step, _actor) => {
 
     if (!shouldCollectStateData()) return
 
+    const actionSettings = serializeAction(action)
+
+    const stepSettings = isStepClassIdInActionStepWhitelist(step.classId)
+        ? serializeActionStepSettings(step.settings)
+        : undefined
+
     // if (isStepClassIdInActionStepWhitelist(step.classId)) {
     //     const name = instanceinator.instances[instanceinator.id].name
     //     console.log(fcn(actor), 'starting', fcn(step), 'on', name, step.settings)
@@ -84,8 +98,8 @@ addActionStepStartListener((action, step, _actor) => {
         type: 'actorActionStep',
         netid: actor.netid,
         instPlayerNetid: player?.netid,
-        actionId: action.uniqueId,
-        stepIndex: step.stepIndex,
+        actionSettings,
+        stepSettings,
     })
 })
 
