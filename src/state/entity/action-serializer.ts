@@ -206,14 +206,19 @@ export const actionSettingsGlobalStateHandler: GlobalStateHandler = {
         if (!packet.actionSettings) return
 
         for (const settings of packet.actionSettings) {
-            deserializedActionCache[settings.uniqueId] ??= deserializeAction(settings)
+            actionsToDeserialize[settings.uniqueId] ??= settings
         }
     },
 }
 
 const deserializedActionCache: Record<ActionId, ig.Action> = {}
+const actionsToDeserialize: Record<ActionId, SerializedAction> = {}
 export function getDeserializedActionFromActionId(actionId: ActionId) {
-    const action = deserializedActionCache[actionId]
-    assert(action)
+    let action = deserializedActionCache[actionId]
+    if (action) return action
+    const settings = actionsToDeserialize[actionId]
+    assert(settings)
+    delete actionsToDeserialize[actionId]
+    action = deserializedActionCache[actionId] = deserializeAction(settings)
     return action
 }
