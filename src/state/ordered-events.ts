@@ -47,6 +47,7 @@ export const orderedEventsMapStateHandler: MapStateHandler = {
     },
     set(packet) {
         if (!packet.orderedEvents) return
+
         for (const event of packet.orderedEvents) {
             const handler = eventMap[event.type]
             handler.set(event as any)

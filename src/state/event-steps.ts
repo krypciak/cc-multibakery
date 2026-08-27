@@ -5,14 +5,53 @@ import {
     getInstFromInstPlayerNetid,
     serializeStepSettingsRecursive,
 } from './step-settings-serializer'
-import { getDeserializedEventFromEventId, type EventId } from './event-serializer'
+import {
+    deserializeEventStepSettings,
+    isStepClassIdInEventStepWhitelist,
+    serializeEventStepSettings,
+    type SerializedStepSettings,
+} from './event-serializer'
 import type { i24 } from 'ts-binarifier/src/type-aliases'
 import { pushOrderedEvent, registerOrderedEvent } from './ordered-events'
 import { prestart } from '../loading-stages'
-import { shouldCollectStateData } from './state-util'
+import { shouldCollectStateData, StateMemory } from './state-util'
+import { isRemote } from '../server/remote/remote-server-types'
+import type { MapStateHandler, StateKey } from './map-state-handlers'
+import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { addEventStepStartListener } from '../steps/event-call-history'
 
 export type EventCallId = i24
 
+declare global {
+    namespace ig {
+        interface EventCall {
+            uniqueId: EventCallId
+            event: ig.Event
+            ignoreEventStepsCollection?: boolean
+        }
+    }
+}
+const remoteEventName = 'REMOTE_EVENT'
+
+prestart(() => {
+    if (!PHYSICSNET) return
+    let eventCallIdCounter = 0
+    ig.EventCall.inject({
+        init(event, ...args) {
+            this.uniqueId = eventCallIdCounter++
+            this.event = event
+            this.parent(event, ...args)
+        },
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+            if (this.event.name == remoteEventName) return false
+            return this.parent()
+        },
+    })
+})
+
+/* eventCallStart */
+const eventCallCache: Record<EventCallId, ig.EventCall> = {}
 const uniqueIdOffsest = 100000
 
 declare global {
@@ -20,36 +59,34 @@ declare global {
         eventCallStart: {
             type: 'eventCallStart'
 
-            eventId: EventId
             instPlayerNetid?: EntityNetid
 
             eventCallId: number
             runType: ig.EventRunType
             callEntityNetid?: EntityNetid
-            data?: Record<string, unknown>
-            input?: ig.Event.Vars
         }
     }
 }
 
 registerOrderedEvent('eventCallStart', {
-    set({ eventId, instPlayerNetid, eventCallId, runType, callEntityNetid, data, input }) {
+    set({ instPlayerNetid, eventCallId, runType, callEntityNetid }) {
         const inst = getInstFromInstPlayerNetid(instPlayerNetid)
-        const event = getDeserializedEventFromEventId(eventId)
-        const callEntity = callEntityNetid ? ig.game.entitiesByNetid[callEntityNetid] : undefined
-
-        const deserializedData = deserializeStepSettingsRecursive(data)
-
         runTask(inst, () => {
-            const eventCall = new ig.EventCall(event, input, runType, null, null, callEntity, deserializedData)
+            const event = new ig.Event({ name: remoteEventName, steps: [] })
+            const callEntity = callEntityNetid ? ig.game.entitiesByNetid[callEntityNetid] : undefined
+
+            const eventCall = new ig.EventCall(event, {}, runType)
+            eventCall.callEntity = callEntity
             eventCall.uniqueId = eventCallId + uniqueIdOffsest
-            console.log('eventCall!', eventCall)
+
+            eventCallCache[eventCallId] = eventCall
         })
     },
 })
 prestart(() => {
     if (!PHYSICSNET) return
 
+    ig.EventCall.inject({})
     ig.EventManager.inject({
         callEvent(event, runType, onStart, onEnd, input, callEntity, data) {
             const eventCall = this.parent(event, runType, onStart, onEnd, input, callEntity, data)
@@ -58,14 +95,11 @@ prestart(() => {
             pushOrderedEvent({
                 type: 'eventCallStart',
 
-                eventId: event.uniqueId,
                 instPlayerNetid: ig.client?.dummy?.netid,
 
                 eventCallId: eventCall.uniqueId,
                 runType,
                 callEntityNetid: callEntity?.netid,
-                data: serializeStepSettingsRecursive(data),
-                input: input as ig.Event.Vars ?? undefined,
             })
 
             return eventCall
@@ -73,27 +107,176 @@ prestart(() => {
     })
 })
 
+/* eventCallEnd */
 declare global {
-    namespace ig {
-        interface EventCall {
-            uniqueId: EventCallId
+    interface MapStateOrderedEvents {
+        eventCallEnd: {
+            type: 'eventCallEnd'
+            eventCallId: number
         }
     }
 }
 
+registerOrderedEvent('eventCallEnd', {
+    set({ eventCallId }) {
+        const eventCall = eventCallCache[eventCallId]
+        if (!eventCall) return
+
+        delete eventCallCache[eventCallId]
+
+        const inst = instanceinator.instances[eventCall._instanceId]
+        if (!inst) return
+
+        runTask(inst, () => {
+            eventCall.setDone()
+        })
+    },
+})
 prestart(() => {
     if (!PHYSICSNET) return
-    let eventCallIdCounter = 0
+
     ig.EventCall.inject({
-        init(...args) {
-            this.uniqueId = eventCallIdCounter++
-            this.parent(...args)
+        setDone() {
+            this.parent()
+            if (!shouldCollectStateData()) return
+
+            pushOrderedEvent({ type: 'eventCallEnd', eventCallId: this.uniqueId })
         },
     })
 })
 
-//     data: serializeStepSettingsRecursive(step.data),
-// deserializeStepSettingsRecursive(data)
+/* eventStep */
+declare global {
+    interface MapStateOrderedEvents {
+        eventStep: {
+            type: 'eventStep'
+
+            eventCallId: number
+            stepSettings: SerializedStepSettings
+            data: Record<string, unknown>
+            input: ig.Event.Vars
+        }
+    }
+}
+
+registerOrderedEvent('eventStep', {
+    set({ eventCallId, stepSettings, data }) {
+        const eventCall = eventCallCache[eventCallId]
+        if (!eventCall) return
+
+        const inst = instanceinator.instances[eventCall._instanceId]
+        if (!inst) return
+
+        runTask(inst, () => {
+            deserializeStepSettingsRecursive(data)
+
+            const stepSettingsDeserialized = deserializeEventStepSettings(stepSettings)
+            const step = ig.StepHelpers.constructSteps(
+                [stepSettingsDeserialized],
+                ig.EVENT_STEP,
+                {}
+            ) as ig.EventStepBase
+
+            ig.vars.setupCallScope({})
+            step.start(data, eventCall)
+            step.run(data)
+            ig.vars.setupCallScope(null)
+        })
+    },
+})
+
+if (PHYSICSNET) {
+    addEventStepStartListener((eventCall, step) => {
+        if (!shouldCollectStateData()) return
+
+        if (!isStepClassIdInEventStepWhitelist(step.classId) || eventCall.ignoreEventStepsCollection) return
+
+        pushOrderedEvent({
+            type: 'eventStep',
+
+            eventCallId: eventCall.uniqueId,
+            stepSettings: serializeEventStepSettings(step.settings),
+            data: serializeStepSettingsRecursive(eventCall.data ?? {}),
+            input: eventCall.stack?.[0]?.vars ?? {},
+        })
+    })
+}
+
+/* eventManager */
+interface EventManagerData {
+    runningEventCalls?: EventCallId[]
+    blockingEventCall?: EventCallId // -1 if null
+}
+
+declare global {
+    interface StateUpdatePacket {
+        eventManager?: PartialRecord<string, EventManagerData>
+    }
+    namespace ig {
+        interface MapSharedVars {
+            eventManagerPlayerMemory?: Record<string, StateMemory.MapHolder<StateKey>>
+        }
+    }
+}
+
+function isEqual(a: any, b: any) {
+    if (a === b) return true
+    if (Array.isArray(a) && Array.isArray(b)) {
+        return a.length === b.length && a.every((v, i) => v == b[i])
+    }
+    return false
+}
+
+function tryAddData(
+    packet: StateUpdatePacket,
+    player: StateKey | undefined,
+    key: string,
+    inst: InstanceinatorInstance
+) {
+    ig.mapShared.eventManagerPlayerMemory ??= {}
+    const memoryObj = (ig.mapShared.eventManagerPlayerMemory[key] ??= {})
+    const memory = StateMemory.getBy(memoryObj, player)
+
+    const events = inst.ig.game.events
+    const data: EventManagerData = {
+        runningEventCalls: events.runningEventCalls.map(c => c.uniqueId),
+        blockingEventCall: events.blockingEventCall?.uniqueId ?? -1,
+    }
+
+    const dataDiffed = memory.diffRecord(data, (a, b) => isEqual(a, b))
+    if (!dataDiffed) return
+
+    packet.eventManager ??= {}
+    packet.eventManager[key] = dataDiffed
+}
+
+export const eventManagerMapStateHandler: MapStateHandler = {
+    get(packet, player) {
+        tryAddData(packet, player, 'map', ig.mapShared.ccmap.inst)
+        if (player) tryAddData(packet, player, player.username, player.getClient().inst)
+    },
+    set(packet) {
+        if (!packet.eventManager) return
+
+        for (const key in packet.eventManager) {
+            const data = packet.eventManager[key]
+            if (!data) continue
+
+            const inst = key == 'map' ? ig.mapShared.ccmap.inst : multi.server.clients.get(key)?.inst
+            if (!inst) continue
+
+            if (data.blockingEventCall !== undefined) {
+                inst.ig.game.events.blockingEventCall =
+                    data.blockingEventCall == -1 ? null : eventCallCache[data.blockingEventCall]
+            }
+            if (data.runningEventCalls !== undefined) {
+                inst.ig.game.events.runningEventCalls = data.runningEventCalls
+                    .map(id => eventCallCache[id])
+                    .filter(Boolean)
+            }
+        }
+    },
+}
 
 // const eventCallMemory: Map<number, { eventAttached: ig.EventCall.EventAttached[] }> = new Map()
 // let forceSetDone = false
@@ -138,121 +321,10 @@ prestart(() => {
 //         }
 //     })
 // }
-
-// export const eventStepsMapStateHandler: MapStateHandler = {
-//     get(packet, player) {
-//         const mapSteps = ig.eventStepsFired
-//         if (mapSteps && mapSteps.size > 0) {
-//             //     packet.steps ??= {}
-//             //     packet.steps.map = [...mapSteps.values()].map(serializeStepGroup)
-//             ig.eventStepsFired?.clear()
-//         }
-//
-//         if (player?.getClient(true)) {
-//             const clientSteps = player.getClient().inst.ig.eventStepsFired
-//             if (clientSteps && clientSteps.size > 0) {
-//                 packet.eventSteps ??= {}
-//                 packet.eventSteps.clients ??= {}
-//                 packet.eventSteps.clients[player.username] = [...clientSteps.values()].map(serializeStepGroup)
-//                 clientSteps.clear()
-//             }
-//         }
-//     },
-//     set(packet) {
-//         if (!packet.eventSteps) return
-//
-//         // if (packet.steps.map) {
-//         //     assert(ig.ccmap)
-//         //     runSteps(packet.steps.map, ig.ccmap.inst)
-//         // }
-//
-//         if (packet.eventSteps.clients) {
-//             // console.log(packet.eventSteps.clients)
-//             for (const username in packet.eventSteps.clients) {
-//                 const client = multi.server.clients.get(username)
-//                 if (!client) {
-//                     console.warn(`steps.ts client not found!: "${username}"`)
-//                     continue
-//                 }
-//
-//                 runSteps(packet.eventSteps.clients[username], client.inst)
-//             }
-//         }
-//     },
-// }
 //
 // declare global {
 //     namespace ig {
 //         interface EventCall {
-//             ignoreEventStepsCollection?: boolean
 //         }
 //     }
 // }
-//
-// function getGroup(call: ig.EventCall) {
-//     ig.eventStepsFired ??= new Map()
-//     let group = ig.eventStepsFired.get(call)
-//     if (!group) {
-//         const eventId = call.event.uniqueId
-//         assert(eventId !== undefined)
-//         group = {
-//             eventId,
-//             steps: [],
-//             type: call.runType,
-//             callEntity: call.callEntity,
-//             eventCallId: call.eventCallId,
-//             end: false,
-//         }
-//         ig.eventStepsFired.set(call, group)
-//     }
-//     return group
-// }
-
-// export function onEventStepStart(
-//     call: ig.EventCall,
-//     { currentStep: step, stepData: data, vars }: ig.EventCall.StackEntry
-// ) {
-//     if (
-//         !step ||
-//         !eventStepWhitelist.has(step.classId) ||
-//         !shouldCollectStateData() ||
-//         call.ignoreEventStepsCollection
-//     ) {
-//         return
-//     }
-//
-//     const group = getGroup(call)
-//     assert(group.eventCallId == call.eventCallId)
-//     group.steps.push({
-//         settings: ig.StepHelpers.getStepSettings(step) as ig.EventStepBase.Settings,
-//         data,
-//         input: vars,
-//     })
-// }
-
-// prestart(() => {
-//     if (!PHYSICSNET) return
-//
-//     let eventCallIdCounter = 0
-//     ig.EventCall.inject({
-//         init(...args) {
-//             this.parent(...args)
-//             this.eventCallId = eventCallIdCounter++
-//         },
-//         setDone() {
-//             this.parent()
-//             if (!shouldCollectStateData()) return
-//             const group = getGroup(this)
-//             group.end = true
-//         },
-//     })
-// })
-//
-// prestart(() => {
-//     if (!REMOTE) return
-//     ig.EventCall.inject({
-//         setDone() {
-//             if (!isRemote(multi.server) || forceSetDone) return this.parent()
-//         },
-//     })
-// })

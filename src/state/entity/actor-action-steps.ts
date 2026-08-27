@@ -45,24 +45,26 @@ registerOrderedEvent('actorActionStep', {
             actor.currentAction = null
             return
         }
-        const action = deserializeAction(actionSettings)
-        actor.currentAction = action
-
-        if (stepSettings === undefined) {
-            actor.currentActionStep = null
-            return
-        }
-        const stepSettingsDeserialized = deserializeActionStepSettings(stepSettings)
-        const step = ig.StepHelpers.constructSteps(
-            [stepSettingsDeserialized],
-            ig.ACTION_STEP,
-            action.labeledSteps
-        ) as ig.ActionStepBase
-
-        actor.currentActionStep = step
-
-        assert(isStepClassIdInActionStepWhitelist(step.classId))
         runTask(inst, () => {
+            const action = deserializeAction(actionSettings)
+            actor.currentAction = action
+
+            if (stepSettings === undefined) {
+                actor.currentActionStep = null
+                return
+            }
+
+            const stepSettingsDeserialized = deserializeActionStepSettings(stepSettings)
+            const step = ig.StepHelpers.constructSteps(
+                [stepSettingsDeserialized],
+                ig.ACTION_STEP,
+                action.labeledSteps
+            ) as ig.ActionStepBase
+
+            actor.currentActionStep = step
+
+            assert(isStepClassIdInActionStepWhitelist(step.classId))
+
             // console.log(fcn(actor), 'starting', fcn(step), 'on', inst.name, step.settings)
             step.start(actor)
             step.run(actor)
@@ -70,38 +72,40 @@ registerOrderedEvent('actorActionStep', {
     },
 })
 
-addActionStepStartListener((action, step, _actor) => {
-    let actor = _actor as ig.ActorEntity & sc.GetCombatantRoot
+if (PHYSICSNET) {
+    addActionStepStartListener((action, step, _actor) => {
+        let actor = _actor as ig.ActorEntity & sc.GetCombatantRoot
 
-    if (!actor.netid) {
-        if (!(actor instanceof sc.NPCRunnerEntity)) {
-            console.warn('action started on actor', window.fcn?.(actor), 'that doesnt have netid!')
+        if (!actor.netid) {
+            if (!(actor instanceof sc.NPCRunnerEntity)) {
+                console.warn('action started on actor', window.fcn?.(actor), 'that doesnt have netid!')
+            }
+            return
         }
-        return
-    }
 
-    if (!shouldCollectStateData()) return
+        if (!shouldCollectStateData()) return
 
-    const actionSettings = serializeAction(action)
+        const actionSettings = serializeAction(action)
 
-    const stepSettings = isStepClassIdInActionStepWhitelist(step.classId)
-        ? serializeActionStepSettings(step.settings)
-        : undefined
+        const stepSettings = isStepClassIdInActionStepWhitelist(step.classId)
+            ? serializeActionStepSettings(step.settings)
+            : undefined
 
-    // if (isStepClassIdInActionStepWhitelist(step.classId)) {
-    //     const name = instanceinator.instances[instanceinator.id].name
-    //     console.log(fcn(actor), 'starting', fcn(step), 'on', name, step.settings)
-    // }
+        // if (isStepClassIdInActionStepWhitelist(step.classId)) {
+        //     const name = instanceinator.instances[instanceinator.id].name
+        //     console.log(fcn(actor), 'starting', fcn(step), 'on', name, step.settings)
+        // }
 
-    const player = ig.client?.dummy
-    pushOrderedEvent({
-        type: 'actorActionStep',
-        netid: actor.netid,
-        instPlayerNetid: player?.netid,
-        actionSettings,
-        stepSettings,
+        const player = ig.client?.dummy
+        pushOrderedEvent({
+            type: 'actorActionStep',
+            netid: actor.netid,
+            instPlayerNetid: player?.netid,
+            actionSettings,
+            stepSettings,
+        })
     })
-})
+}
 
 declare global {
     interface MapStateOrderedEvents {

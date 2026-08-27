@@ -13,20 +13,10 @@ export function runEvent({
     allInput?: ig.Event.Vars
     ignoreEventStepsCollection?: boolean
 }) {
-    const eventCall = new ig.EventCall(event, allData, type)
-    eventCall.callEntity = callEntity
+    const eventCall = ig.game.events.callEvent(event, type, null, null, allInput, callEntity, allData)
     eventCall.stack[0].stepData = allData
     Object.assign(eventCall.stack[0].vars, allInput)
-    // console.log( 'pushing event call to:', instanceinator.id, ', steps:', stepsSettings.map(({ type }) => type), 'call:', eventCall)
-
-    // eventCall.ignoreEventStepsCollection = ignoreEventStepsCollection
-
-    if (!ig.game.events.blockingEventCall || type != ig.EventRunType.BLOCKING) {
-        ig.game.events._startEventCall(eventCall)
-    } else {
-        eventCall.blocked = true
-        ig.game.events.blockedEventCallQueue.push(eventCall)
-    }
+    eventCall.ignoreEventStepsCollection = ignoreEventStepsCollection
 
     return eventCall
 }

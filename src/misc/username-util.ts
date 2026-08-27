@@ -6,7 +6,8 @@ export function isUsernameValid(username: Username): boolean {
         /^[a-zA-Z0-9-_ ]+$/.test(username) &&
         (!sc.party || !sc.party.models[username]) &&
         username != 'null' &&
-        username != 'undefined'
+        username != 'undefined' &&
+        username != 'map'
     )
 }
 

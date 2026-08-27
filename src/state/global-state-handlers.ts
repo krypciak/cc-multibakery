@@ -16,9 +16,7 @@ import { varsGlobalStateHandler } from './vars'
 import { areasGlobalStateHandler } from './areas'
 import { playerInfoGlobalStateHandler } from './player-info'
 import { partyGlobalStateHandler } from './party'
-import { actionSettingsGlobalStateHandler } from './entity/action-serializer'
 import { playerTeleportGlobalStateHandler } from './player-teleport'
-import { eventSettingsGlobalStateHandler } from './event-serializer'
 
 const globalStateHandlers: GlobalStateHandler[] = [
     playerTeleportGlobalStateHandler,
@@ -26,8 +24,6 @@ const globalStateHandlers: GlobalStateHandler[] = [
     areasGlobalStateHandler,
     playerInfoGlobalStateHandler,
     partyGlobalStateHandler,
-    actionSettingsGlobalStateHandler,
-    eventSettingsGlobalStateHandler,
 ]
 
 export function getGlobalStateUpdatePacket(

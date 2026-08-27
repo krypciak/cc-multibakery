@@ -3,42 +3,53 @@ import { assert } from '../misc/assert'
 import type { EntityNetid } from '../misc/entity-netid'
 
 /* copies */
-export function serializeStepSettingsRecursive(value: any, key: PropertyKey = '') {
+export function serializeStepSettingsRecursive(value: any, key: PropertyKey = '', depth: number = 0) {
     if (typeof value === 'string' || value instanceof ig.LangLabel) return ig.LangLabel.bakeVars(value)
     if (typeof value === 'function') return undefined
     if (!value || typeof value !== 'object') return value
 
-    if (value instanceof ig.Class) {
-        if (value instanceof ig.Entity) {
-            assert(value.netid)
-            return { netid: value.netid }
+    if (typeof value == 'object') {
+        if (value instanceof ig.Class) {
+            if (value instanceof ig.Entity) {
+                assert(value.netid)
+                return { netid: value.netid }
+            }
+            if (
+                value instanceof sc.InputFieldDialog ||
+                value instanceof sc.ObjectSliderDialog ||
+                value instanceof ig.Action ||
+                value instanceof ig.EventCall
+            ) {
+                return undefined
+            }
+            assert(false, `serializeStepSettingsRecursive unknown unhandled class type: ${fcn(value)}`)
         }
         if (
-            value instanceof sc.InputFieldDialog ||
-            value instanceof sc.ObjectSliderDialog ||
-            value instanceof ig.Action ||
-            value instanceof ig.EventCall
+            depth > 0 &&
+            'type' in value &&
+            typeof value.type == 'string' &&
+            (value.type in ig.EVENT_STEP || value.type in ig.ACTION_STEP)
         ) {
             return undefined
         }
-        assert(false, `serializeStepSettingsRecursive unknown unhandled class type: ${fcn(value)}`)
-    }
-    if (key == 'entity' && typeof value == 'object') {
-        const entity = ig.Event.getEntity(value)
-        if (entity?.netid) return { netid: entity.netid }
-        return serializeStepSettingsRecursive(value)
+
+        if (key == 'entity') {
+            const entity = ig.Event.getEntity(value)
+            if (entity?.netid) return { netid: entity.netid }
+            return serializeStepSettingsRecursive(value, undefined, depth + 1)
+        }
     }
 
     if (Array.isArray(value)) {
         const newArr: typeof value = new Array(value.length)
         for (let i = 0; i < newArr.length; i++) {
-            newArr[i] = serializeStepSettingsRecursive(value[i], i)
+            newArr[i] = serializeStepSettingsRecursive(value[i], i, depth + 1)
         }
-        return newArr
+        return newArr.filter(v => v !== undefined)
     } else {
         const newObj: typeof value = {}
         for (const key in value) {
-            newObj[key] = serializeStepSettingsRecursive(value[key], key)
+            newObj[key] = serializeStepSettingsRecursive(value[key], key, depth + 1)
         }
         return newObj
     }

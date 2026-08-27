@@ -28,6 +28,7 @@ import { entityDeathMapStateHandler } from './entity/entity-death'
 import { gameModelStateMapStateHandler } from './game-model-state'
 import { pvpMapStateHandler } from './pvp'
 import { varsMapStateHandler } from './vars'
+import { eventManagerMapStateHandler } from './event-steps'
 
 const mapStateHandlers: MapStateHandler[] = [
     orderedEventsMapStateHandler,
@@ -36,6 +37,7 @@ const mapStateHandlers: MapStateHandler[] = [
     gameModelStateMapStateHandler,
     pvpMapStateHandler,
     varsMapStateHandler,
+    eventManagerMapStateHandler,
 ]
 
 if (TEST) {
