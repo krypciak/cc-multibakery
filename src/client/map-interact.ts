@@ -65,6 +65,12 @@ function cloneMapInteractEntry(e: sc.MapInteractEntry): sc.MapInteractEntry {
     return ne
 }
 
+function addInteractEntryIfNotAlreadyThere(entry: sc.MapInteractEntry) {
+    const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
+    if (hasAlready) return
+    sc.mapInteract.addEntry(entry)
+}
+
 export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
     setIsBroadcasting(true)
     assert(!ig.ccmap)
@@ -73,7 +79,7 @@ export function initMapInteractEntries(mapInst: InstanceinatorInstance) {
     }
     for (const entry of mapInst.sc.mapInteract.entries) {
         if (entry.gui.subGui instanceof sc.XenoDialogIcon) continue
-        sc.mapInteract.addEntry(entry)
+        addInteractEntryIfNotAlreadyThere(entry)
     }
     setIsBroadcasting(false)
 }
@@ -93,9 +99,7 @@ prestart(() => {
             if (isBroadcasting()) return this.parent(entry)
 
             broadcastAcrossInstances(ig.mapShared.ccmap.getClientInstances(true), () => {
-                const hasAlready = sc.mapInteract.entries.find(a => a.entity == entry.entity)
-                if (hasAlready) return
-                sc.mapInteract.addEntry(entry)
+                addInteractEntryIfNotAlreadyThere(entry)
             })
         },
         removeEntry(entry) {

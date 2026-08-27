@@ -24,6 +24,7 @@
 - Fix dead entities not being killed on remote when joining after the entitiy's death
 - Fix physics server closing connection when multiple players joined from one connection and only one player leaves
 - Disallow duplicate player party titles
+- Fix duplicate interact entries on remote sometimes
 
 ## [0.8.4] 2026-08-19
 
