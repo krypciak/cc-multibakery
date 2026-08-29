@@ -188,6 +188,8 @@ export class CCMap extends InstanceUpdateable {
         if (!multi.server.settings.attemptCrashRecovery) throw e
 
         if (!TEST) console.error(`ccmap crashed, inst: ${instanceinator.id}`, e)
+
+        multi.server.inst.apply()
         multi.server.unloadMap(this)
 
         if (TEST && this.attachedTest) tester.testCrashed(this.attachedTest)
@@ -233,6 +235,7 @@ export class CCMap extends InstanceUpdateable {
         if (client.dummy) this.leaveEntity(client.dummy)
 
         if (isRemote(multi.server) && this.clients.length == 0) {
+            multi.server.inst.apply()
             multi.server.unloadMap(this)
         }
     }

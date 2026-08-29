@@ -202,6 +202,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
     }
 
     unloadMap(map: CCMap) {
+        assert(instanceinator.id == this.inst.id)
         assert(map)
         this.maps.delete(map.name)
         map.destroy()
