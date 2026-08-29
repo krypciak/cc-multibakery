@@ -46,6 +46,24 @@ function execPhysics() {
     TEST && import('./combat/hexacast/combat-art-hexacast-cold.test')
     TEST && import('./combat/hexacast/combat-art-hexacast-shock.test')
     TEST && import('./combat/hexacast/combat-art-hexacast-wave.test')
+
+    TEST && import('./combat/quadroguard/combat-art-quadroguard-neutral.test')
+    TEST && import('./combat/quadroguard/combat-art-quadroguard-heat.test')
+    TEST && import('./combat/quadroguard/combat-art-quadroguard-cold.test')
+    TEST && import('./combat/quadroguard/combat-art-quadroguard-shock.test')
+    TEST && import('./combat/quadroguard/combat-art-quadroguard-wave.test')
+
+    TEST && import('./combat/starcaller1/combat-art-starcaller1-neutral.test')
+    TEST && import('./combat/starcaller1/combat-art-starcaller1-heat.test')
+    TEST && import('./combat/starcaller1/combat-art-starcaller1-cold.test')
+    TEST && import('./combat/starcaller1/combat-art-starcaller1-shock.test')
+    TEST && import('./combat/starcaller1/combat-art-starcaller1-wave.test')
+
+    TEST && import('./combat/starcaller2/combat-art-starcaller2-neutral.test')
+    TEST && import('./combat/starcaller2/combat-art-starcaller2-heat.test')
+    TEST && import('./combat/starcaller2/combat-art-starcaller2-cold.test')
+    TEST && import('./combat/starcaller2/combat-art-starcaller2-shock.test')
+    TEST && import('./combat/starcaller2/combat-art-starcaller2-wave.test')
 }
 
 export interface TestRemoteClientReport {

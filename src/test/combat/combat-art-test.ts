@@ -264,6 +264,9 @@ class CombatArtTest implements TestConfig {
 poststart(() => {
     let tilingOrder = 0
     const models = ['Lea', 'triblader2', 'Hexacast1'] as const
+    // const models = ['Joern2'] as const
+    // const models = ['Starcaller2'] as const
+    // const models = ['Starcaller1'] as const
     for (const character of models) {
         const model = sc.party.models[character]
         assert(model, `missing player model: ${character}`)

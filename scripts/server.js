@@ -20,6 +20,12 @@ startCrossnode({
         'menu-ui-replacer',
         'extension-asset-preloader',
         'extendable-severed-heads',
+
+        'starcaller-2',
+
+        'lqm-joern-mod',
+        'font-utils',
+        'lub-summoner-frame',
     ],
     extensionWhitelist: ['post-game'],
 })
