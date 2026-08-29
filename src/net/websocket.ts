@@ -5,10 +5,13 @@ import type { NetTransport, NetTransportListenerFunctions } from './net-transpor
 import type { NetTransportServer } from './net-manager-physics'
 import { WebsocketPacketEncoderDecoder } from './binary/websocket-packet-encoder-decoder.generated'
 import type { WebSocket as WebSocketNode, WebSocketServer } from 'ws'
-import { getServerUrl } from './web-server-utils'
 import { assert } from '../misc/assert'
 import type { RecordSize, u24, u8 } from 'ts-binarifier/src/type-aliases'
 import type { TLSSocket } from 'tls'
+
+function getWebsocketUrl(connection: RemoteServerConnectionSettings) {
+    return `ws${connection.https ? 's' : ''}://${connection.host}:${connection.port}`
+}
 
 enum PacketType {
     CONNECT,
@@ -96,7 +99,7 @@ export class WsNetTransportClient implements NetTransportClient {
     }
 
     async connect(connectionSettings: RemoteServerConnectionSettings) {
-        const url = getServerUrl(connectionSettings)
+        const url = getWebsocketUrl(connectionSettings)
         this.ws = new WebSocket(url)
         this.ws.binaryType = 'arraybuffer'
 
