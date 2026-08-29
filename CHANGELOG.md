@@ -28,6 +28,7 @@
 - Fix duplicate interact entries on remote sometimes
 - Fix physics server not focusing gui's when hovering with mouse after using keyboard to navigate menus
 - Fix websocket transport not working on windows
+- Fix crashes related to ig.GuiHook#doStateTransition on mismatched instance
 
 ## [0.8.4] 2026-08-19
 

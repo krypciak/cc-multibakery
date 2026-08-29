@@ -72,27 +72,6 @@ prestart(() => {
 })
 
 prestart(() => {
-    if (ASSERT) {
-        ig.GuiHook.inject({
-            onAttach(hook) {
-                if (this._instanceId != hook!._instanceId) {
-                    console.warn('a sin has been committed', this._instanceId, hook!._instanceId)
-                    debugger
-                }
-                this.parent(hook)
-            },
-            doStateTransition(...args) {
-                if (this._instanceId != instanceinator.id) {
-                    console.warn('a sin has been committed', this._instanceId, instanceinator.id)
-                    debugger
-                }
-                this.parent(...args)
-            },
-        })
-    }
-})
-
-prestart(() => {
     sc.BounceSwitchGroups.inject({
         setCameraBall(groupName, ball) {
             if (!multi.server) return this.parent(groupName, ball)

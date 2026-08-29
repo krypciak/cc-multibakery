@@ -1,3 +1,4 @@
+import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../physics-server-types'
 import { setEventNextTriggeredBy, unsetEventNextTriggeredBy } from './event-manager'
@@ -27,18 +28,22 @@ prestart(() => {
         update() {
             if (!isPhysics(multi.server)) return this.parent()
 
-            const entities = findSetByEntityByVars(this.startCondition.vars)
-            if (entities.length > 0) {
-                const setBy = entities.find(e => e instanceof dummy.DummyPlayer) ?? entities[0]
-                setNextSetBy(setBy)
-            }
+            /* to fix calls from varsChanged */
+            const inst = instanceinator.instances[this._instanceId]
+            runTask(inst, () => {
+                const entities = findSetByEntityByVars(this.startCondition.vars)
+                if (entities.length > 0) {
+                    const setBy = entities.find(e => e instanceof dummy.DummyPlayer) ?? entities[0]
+                    setNextSetBy(setBy)
+                }
 
-            if (!this.forceRunOnMap) setEventNextTriggeredBy(this.startCondition)
+                if (!this.forceRunOnMap) setEventNextTriggeredBy(this.startCondition)
 
-            this.parent()
+                this.parent()
 
-            unsetEventNextTriggeredBy()
-            unsetNextSetBy()
+                unsetEventNextTriggeredBy()
+                unsetNextSetBy()
+            })
         },
     })
 })

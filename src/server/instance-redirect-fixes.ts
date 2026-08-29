@@ -2,6 +2,20 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 
+/* any -> any */
+prestart(() => {
+    ig.GuiHook.inject({
+        onAttach(hook) {
+            const inst = instanceinator.instances[this._instanceId]
+            return runTask(inst, () => this.parent(hook))
+        },
+        doStateTransition(...args) {
+            const inst = instanceinator.instances[this._instanceId]
+            return runTask(inst, () => this.parent(...args))
+        },
+    })
+})
+
 /* client -> map */
 prestart(() => {
     if (!PHYSICS) return
