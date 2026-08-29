@@ -198,18 +198,22 @@ class MultibakeryTestUtils {
                     return
                 }
                 try {
-                    const done = await func(frames)
+                    const done = await runTask(inst, () => func(frames))
                     if (done || ++frames >= maxFrames) {
                         res()
                     } else {
-                        scheduleTask(inst, loop)
+                        if (inst.destroyed) {
+                            res()
+                            return
+                        }
+                        scheduleTask(multi.server.inst, loop)
                     }
                 } catch (e) {
                     rej(e)
                     throw e
                 }
             }
-            runTask(inst, loop)
+            runTask(multi.server.inst, loop)
         })
     }
 

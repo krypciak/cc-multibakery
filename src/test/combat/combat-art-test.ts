@@ -220,8 +220,7 @@ class CombatArtTest implements TestConfig {
         if (!this.config.remote) return
 
         await multi.test.waitFrames(this.map.inst, 60)
-        if (!this.map) return
-        this.map.inst.ig.mapShared.testDone = true
+        if (this.map) this.map.inst.ig.mapShared.testDone = true
 
         const report = await multi.test.remoteReports[this.id]
 

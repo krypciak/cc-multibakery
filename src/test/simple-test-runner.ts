@@ -121,7 +121,7 @@ export class SimpleTestManager implements TestRunner {
                 `  ${success ? c(GREEN, PASS_SYM) : c(RED, FAIL_SYM)} ${describeName}${c(DIM, ' >')}${c(BOLD, ` ${name}`)} ${c(DIM, `[${config.totalTime}ms]`)}`
             )
             if (config.errorMessage) {
-                console.log(`${config.errorMessage}`)
+                console.log(config.errorMessage)
             }
 
             if (this.isFinished()) {
