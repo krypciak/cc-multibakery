@@ -142,7 +142,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             }
 
             if (stateUpdatePacket.crash) {
-                if (stateUpdatePacket.crash.tryReconnect) {
+                if (stateUpdatePacket.crash.tryReconnect && !TEST) {
                     this.resetMapState(map)
                 }
                 continue

@@ -254,7 +254,13 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         return executeWithStrategy(
             () => this.initAndJoinClient(client, tpInfo),
             connection
-                ? { type: 'delayNoAwait', delay: 40, then: () => connection.join(client) }
+                ? {
+                      type: 'delayNoAwait',
+                      delay: 40,
+                      then: () => {
+                          if (!client.destroyed) connection.join(client)
+                      },
+                  }
                 : awaitClientJoin
                   ? { type: 'await' }
                   : { type: 'noAwait' }
