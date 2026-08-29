@@ -140,6 +140,7 @@ export function getModCompatibilityErrorListText(errors: ModCompatibilityErrorLi
     if (errors.incompatible) {
         text += 'Incompatible mods:\n'
         text += errors.incompatible.map(({ modId }) => `- ${wrapColor(modId, COLOR.YELLOW)}`).join('\n')
+        text += '\n'
     }
     if (errors.versionMismatch) {
         text += 'Mod version mismatches:\n'
@@ -151,18 +152,22 @@ export function getModCompatibilityErrorListText(errors: ModCompatibilityErrorLi
                     `local ${wrapColor('v' + actual, COLOR.YELLOW)}`
             )
             .join('\n')
+        text += '\n'
     }
     if (errors.missingAddons) {
         text += 'Missing game addons:\n'
         text += errors.missingAddons.map(({ addonId }) => `- ${wrapColor(addonId, COLOR.YELLOW)}`).join('\n')
+        text += '\n'
     }
     if (errors.missingWidgets) {
         text += 'Missing CCUILib widgets:\n'
         text += errors.missingWidgets.map(({ widgetId }) => `- ${wrapColor(widgetId, COLOR.YELLOW)}`).join('\n')
+        text += '\n'
     }
     if (errors.binaryClassHashMismatch) {
         text += 'Binary encoding classes hash mismatch:\n'
         text += errors.binaryClassHashMismatch.map(className => `- ${wrapColor(className, COLOR.YELLOW)}`).join('\n')
+        text += '\n'
     }
     return text
 }
