@@ -20,12 +20,17 @@ No. The mod is still in beta and the current focus is making PVP stable. Don't b
 
 On the discord server above.
 
+### How to control a player with gamepad?
+
+**Pause menu -> Manage server -> Click the keyboard icon to switch to gamepad**  
+One player can input with keyboard and mouse, other players can use multiple gamepads.
+
 ### How can I play with my friends?
 
 #### Playing over LAN
 
 1. Open the **Mod Manager** and open multibakery settings;
-2. Enable **Server->Networking**
+2. Enable **Server -> Networking**
 3. Start the server from the **pause screen**
 4. Friends connected to the same local network should be able to find and join your server from the **Server** list
 
@@ -35,6 +40,9 @@ If your friends are not on the same local network, you need to make your server 
 
 - **Expose the server to the internet** using a tunneling or port-forwarding solution such as playit.gg or ngrok
 - **Create a virtual LAN** using a tool such as Tailscale or Hamachi (please don't actually use Hamachi), allowing everyone to connect as if they were on the same local network
+
+> [!NOTE]  
+> `cc-multibakery` servers uses TCP connections
 
 Once connected through one of these methods, your friends should be able to find or connect to your server using the same process as LAN players
 
