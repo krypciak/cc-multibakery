@@ -2,6 +2,7 @@ import { COLOR, wrapColor } from '../../misc/wrap-color'
 import { prestart } from '../../loading-stages'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
+import type { MenuUIReplacerPlayerConfig } from 'menu-ui-replacer/src/types'
 
 declare global {
     namespace sc {
@@ -19,20 +20,7 @@ interface PlayerDrawerConstructor extends ImpactClass<PlayerDrawer> {
     new (floor: sc.MapFloor): PlayerDrawer
 }
 
-interface IconConfig {
-    gfx: ig.Image
-    offX: number
-    offY: number
-    sizeX: number
-    sizeY: number
-}
-
-/* cc-menu-ui-replacer, the TinyHead entry is custom */
-declare global {
-    interface Window {
-        customPlayerMenus?: Map<string, { gfx: ig.Image; TinyHead?: Omit<IconConfig, 'gfx'> }>
-    }
-}
+type IconConfig = { gfx: ig.Image } & NonNullable<MenuUIReplacerPlayerConfig['TinyHead']>
 
 function getIconConfig(modelName: string): IconConfig {
     const config = window.customPlayerMenus?.get(modelName)

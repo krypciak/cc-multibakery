@@ -29,6 +29,7 @@
         "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
         "ccmodmanager": "github:CCDirectLink/CCModManager",
         "crossnode": "github:krypciak/crossnode",
+        "menu-ui-replacer": "github:CCDirectLink/cc-menu-ui-replacement",
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
         "socket.io": "^4.8.3",
         "socket.io-adapter": "^2.5.8",

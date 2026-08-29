@@ -1,5 +1,5 @@
-import './net/binary/binary-types'
-import 'ultimate-crosscode-typedefs'
+import type {} from './net/binary/binary-types'
+import type {} from 'ultimate-crosscode-typedefs'
 import type {} from 'cc-instanceinator/src/plugin'
 import type {} from 'crossnode/crossnode'
 import type {} from 'ccmodmanager/types/plugin'
@@ -8,7 +8,8 @@ import type {} from 'nax-ccuilib/src/ui/pause-screen/pause-screen-api'
 import type {} from 'nax-ccuilib/src/ui/quick-menu/quick-menu-extension'
 import type {} from 'cc-variable-charge-time/src/plugin'
 import type {} from 'cc-krypek-lib/src/plugin'
-import 'ts-binarifier/src/type-aliases'
+import type {} from 'menu-ui-replacer/src/plugin'
+import type {} from 'ts-binarifier/src/type-aliases'
 
 declare global {
     /* build constants */
