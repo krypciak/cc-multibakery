@@ -153,7 +153,7 @@ class MultibakeryTestUtils {
             jsEngine,
             [
                 ...(jsEngine == 'node' ? ['--enable-source-maps', '--no-warnings'] : ['run']),
-                'scripts/server.js',
+                'scripts/run.ts',
                 'remoteServer',
                 `${JSON.stringify(config)}`,
             ],

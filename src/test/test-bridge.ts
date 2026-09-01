@@ -4,7 +4,7 @@ import type { TestRunner } from './test-runner'
 
 export function isBunTest() {
     const isBun = typeof global.Bun !== 'undefined'
-    return isBun && !process.argv[1].endsWith('server.js')
+    return isBun && !process.argv[1].endsWith('run.ts')
 }
 
 declare global {

@@ -1,4 +1,4 @@
-import { PhysicsServer } from './server/physics/physics-server'
+import type { PhysicsServer } from './server/physics/physics-server'
 import type { PhysicsServerSettings } from './server/physics/physics-server-types'
 import { DEFAULT_HTTP_PORT } from './client/menu/default-server-list'
 import { addTitleScreenButton } from './misc/title-screen-button'
