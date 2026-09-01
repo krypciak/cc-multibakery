@@ -9,6 +9,7 @@ import type { Client } from '../client/client'
 import type { CCMap } from '../server/ccmap/ccmap'
 import { assertPhysics } from '../server/physics/physics-server-types'
 import type { TestRemoteClientReport, TestRemoteClientRequestConfig } from './test-setup-mod-side'
+import { chosenTestServerConfig as config } from './test-configs'
 
 import './test-setup-mod-side'
 
@@ -20,13 +21,6 @@ declare global {
 
 class MultibakeryTestUtils {
     private setupServerPromise: Promise<void> | undefined
-    private gameTps = 60
-    private actualTps = 240
-    private displayClientInstances = !window.crossnode?.options.nukeImageStack
-    private crossnodeForceWriteImage = false && !window.crossnode?.options.nukeImageStack
-    private disablePerfFlags = true
-    private printRemoteServerLogs = false
-    private remoteJavascriptEngine: 'bun' | 'node' = 'node'
     remoteReports: Record<string, Promise<TestRemoteClientReport>> = {}
 
     async setupServerIfNeeded() {
@@ -36,7 +30,7 @@ class MultibakeryTestUtils {
     }
 
     private async setupServer() {
-        if (this.disablePerfFlags) {
+        if (config.disablePerfFlags) {
             ig.perf.spriteShadow = false
             ig.perf.spriteOverlapSolver = false
             ig.perf.gui = false
@@ -47,29 +41,7 @@ class MultibakeryTestUtils {
             ig.perf.spriteFilter = false
         }
 
-        multi.setServer(
-            multi.createPhysicsServer({
-                gameTps: this.gameTps,
-                forceConsistentTickTimes: true,
-                gameLoopIntervalTps: this.actualTps,
-                displayClientInstances: this.displayClientInstances,
-                displayRemoteClientInstances: this.displayClientInstances,
-                attemptCrashRecovery: true,
-                useAnimationFrameAsFpsLimiter: true,
-                // displayServerInstance: true,
-
-                netInfo: {
-                    connection: {
-                        httpPort: 0,
-                        transport: { type: 'socket.io' },
-                    },
-                    details: {
-                        title: 'tests',
-                        description: 'do not join!',
-                    },
-                },
-            })
-        )
+        multi.setServer(multi.createPhysicsServer(config.serverSettings))
         await multi.server.start()
 
         instanceinator.displayFps = true
@@ -105,7 +77,7 @@ class MultibakeryTestUtils {
         }
 
         map.attachedTest = test
-        client.inst.crossnodeForceWriteImage = this.crossnodeForceWriteImage
+        client.inst.crossnodeForceWriteImage = config.crossnodeForceWriteImage
 
         return { client, map }
     }
@@ -119,7 +91,7 @@ class MultibakeryTestUtils {
 
         let client: Client | undefined
         let map: CCMap | undefined
-        await multi.test.updateLoop(multi.server.inst, this.actualTps * 10, () => {
+        await multi.test.updateLoop(multi.server.inst, multi.server.settings.gameLoopIntervalTps! * 10, () => {
             client = multi.server.clients.get(username)
             if (client?.ready) {
                 map = client.getMap()
@@ -135,19 +107,19 @@ class MultibakeryTestUtils {
         return { client, map }
     }
 
-    private async spawnRemoteServer(config: TestRemoteClientRequestConfig) {
+    private async spawnRemoteServer(remoteConfig: TestRemoteClientRequestConfig) {
         const child_process: typeof import('child_process') = (0, eval)(`require('child_process')`)
 
         let resolve: (report: TestRemoteClientReport) => void
-        this.remoteReports[config.username] = new Promise<TestRemoteClientReport>(res => (resolve = res))
+        this.remoteReports[remoteConfig.username] = new Promise<TestRemoteClientReport>(res => (resolve = res))
 
         const errors: string[] = []
 
-        const print = this.printRemoteServerLogs
+        const print = config.printRemoteServerLogs
 
-        print && console.log('REMOTE spawning', config)
+        print && console.log('REMOTE spawning', remoteConfig)
 
-        const jsEngine = this.remoteJavascriptEngine
+        const jsEngine = config.remoteJavascriptEngine
 
         const child = child_process.spawn(
             jsEngine,
@@ -155,7 +127,7 @@ class MultibakeryTestUtils {
                 ...(jsEngine == 'node' ? ['--enable-source-maps', '--no-warnings'] : ['run']),
                 'scripts/run.ts',
                 'remoteServer',
-                `${JSON.stringify(config)}`,
+                `${JSON.stringify(remoteConfig)}`,
             ],
             {
                 cwd: 'assets/mods/cc-multibakery',
@@ -163,7 +135,7 @@ class MultibakeryTestUtils {
         )
         child.stdout!.on('data', dataRaw => {
             const data = String(dataRaw).trim()
-            print && console.log(`REMOTE ${config.username}: ${data}`)
+            print && console.log(`REMOTE ${remoteConfig.username}: ${data}`)
 
             if (data.startsWith('REPORT:')) {
                 const reportStr = data.substring(data.indexOf(' ')).trim()
@@ -176,12 +148,12 @@ class MultibakeryTestUtils {
 
         child.stderr!.on('data', dataRaw => {
             const data = String(dataRaw).trim()
-            print && console.error(`REMOTE ${config.username}: ${data}`)
+            print && console.error(`REMOTE ${remoteConfig.username}: ${data}`)
             errors.push(data)
         })
 
         child.on('close', code => {
-            print && console.log(`REMOTE ${config.username}: Process exited with code ${code}`)
+            print && console.log(`REMOTE ${remoteConfig.username}: Process exited with code ${code}`)
         })
     }
 

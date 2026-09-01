@@ -1,6 +1,7 @@
 import { assert } from '../misc/assert'
 import { SimpleTestManager } from './simple-test-runner'
 import type { TestRunner } from './test-runner'
+import { chosenTestServerConfig as config } from './test-configs'
 
 export function isBunTest() {
     const isBun = typeof global.Bun !== 'undefined'
@@ -56,6 +57,7 @@ class TestBridge implements TestRunner {
     afterAll: TestRunner['afterAll'] = (...args) => this.testManager.afterAll(...args)
 
     addTest(test: TestConfig) {
+        if (config.testFilterRegex && !config.testFilterRegex.test(test.name)) return
         assert(!this.tests[test.id])
         let crashReject!: () => void
         const crashPromise = new Promise<void>((_resolve, reject) => (crashReject = reject))
