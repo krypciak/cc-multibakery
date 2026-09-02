@@ -22,7 +22,6 @@ enum PacketType {
 
 interface WsPacket {
     type: PacketType
-    sid?: string
     binData?: u8[] & RecordSize<u24>
     jsonData?: any
 }
@@ -37,12 +36,7 @@ interface SessionObject {
 
 export class WsNetTransportServer implements NetTransportServer {
     private wss!: WebSocketServer
-    private sessions = new Map<string, SessionObject>()
-
-    private sessionIdCounter = 0
-    private generateSessionId(): string {
-        return `${Date.now().toString(36)}-${(this.sessionIdCounter++).toString(36)}-${Math.random().toString(36).slice(2, 8)}`
-    }
+    private sessions: SessionObject[] = []
 
     private async getWs(): Promise<typeof import('ws')> {
         if (window.crossnode) {
@@ -66,13 +60,11 @@ export class WsNetTransportServer implements NetTransportServer {
         this.wss = new WebSocketServer({ server: httpServer })
 
         this.wss.on('connection', ws => {
-            const sid = this.generateSessionId()
-
-            const connectPacket = WebsocketPacketEncoderDecoder.encode({ type: PacketType.CONNECT, sid })
+            const connectPacket = WebsocketPacketEncoderDecoder.encode({ type: PacketType.CONNECT })
             ws.send(connectPacket)
 
             const sessionObject: SessionObject = { socket: ws, transport: undefined as any }
-            this.sessions.set(sid, sessionObject)
+            this.sessions.push(sessionObject)
 
             onConnection(listeners => {
                 const transport = new WsNetTransport(listeners, ws)
@@ -84,7 +76,7 @@ export class WsNetTransportServer implements NetTransportServer {
 
     async stop(): Promise<void> {
         this.wss?.close()
-        this.sessions.clear()
+        this.sessions = []
     }
 }
 
@@ -92,7 +84,6 @@ export interface WsNetTransportClientSettings {}
 
 export class WsNetTransportClient implements NetTransportClient {
     private ws!: WebSocket
-    private sid!: string
 
     createNetTransport(listeners: NetTransportListenerFunctions): NetTransport {
         return new WsNetTransport(listeners, this.ws)
@@ -108,9 +99,8 @@ export class WsNetTransportClient implements NetTransportClient {
                 const onConnectMessage = (event: MessageEvent) => {
                     const buf = new Uint8Array(event.data as ArrayBuffer)
                     const packet = WebsocketPacketEncoderDecoder.decode(buf)
-                    assert(packet.type === PacketType.CONNECT && packet.sid)
+                    assert(packet.type === PacketType.CONNECT)
 
-                    this.sid = packet.sid
                     this.ws.removeEventListener('message', onConnectMessage)
                     resolve()
                 }
