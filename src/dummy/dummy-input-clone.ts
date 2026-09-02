@@ -91,7 +91,6 @@ declare global {
     }
 }
 prestart(() => {
-    // prettier-ignore
     dummy.input.Clone.Input = ig.Input.extend({
         init(realInput, block) {
             this.realInput = realInput
@@ -103,13 +102,17 @@ prestart(() => {
 
             Object.defineProperties(self, {
                 mouseGuiActive: {
-                    get() { return realInput.mouseGuiActive },
+                    get() {
+                        return realInput.mouseGuiActive
+                    },
                     set(_v) {},
                 },
                 currentDevice: {
-                    get() { return realInput.currentDevice },
+                    get() {
+                        return realInput.currentDevice
+                    },
                     set(_v) {},
-                }
+                },
             })
         },
         state(action) {
@@ -131,6 +134,8 @@ prestart(() => {
             return this.realInput.clearPressed()
         },
 
+        // prettier-ignore
+        ...{
         initMouse() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         initKeyboard() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         initAccelerometer() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
@@ -151,6 +156,7 @@ prestart(() => {
         unbindAll() { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         touchStart(_key, _action) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
         touchEnd(_key, _action) { throw new Error('called dummy.input.Clone.Input unimplemented function') },
+        },
     })
 }, 3)
 
