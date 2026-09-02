@@ -6,7 +6,7 @@ import type { PlayerInfoEntry } from '../../state/player-info'
 import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
 import type { ClientSettings } from '../../client/client-types'
 import type { RemoteServerSettings } from './remote-server-types'
-import type { PacketMiddlewarePacket } from '../../net/packet'
+import type { NetPacket } from '../../net/packet'
 import { NetManagerRemoteServer } from '../../net/net-manager-remote'
 import { applyMapStateUpdatePacket } from '../../state/map-state-handlers'
 import { applyGlobalStateUpdatePacket } from '../../state/global-state-handlers'
@@ -72,7 +72,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await multi.destroyNextFrameAndStartLoop(reason)
     }
 
-    onNetReceiveUpdate(conn: NetConnection, netPacket: PacketMiddlewarePacket) {
+    onNetReceiveUpdate(conn: NetConnection, netPacket: NetPacket) {
         try {
             let updatePacket: PhysicsServerUpdatePacket
             if (this.settings.netInfo.details.forceJsonCommunication) {

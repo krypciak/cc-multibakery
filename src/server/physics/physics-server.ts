@@ -5,7 +5,7 @@ import type { ClientSettings } from '../../client/client-types'
 import type { ClientLeaveData } from '../remote/remote-server-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
 import type { CCMap } from '../ccmap/ccmap'
-import type { PacketMiddlewarePacket } from '../../net/packet'
+import type { NetPacket } from '../../net/packet'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
 import { Server } from '../server'
@@ -146,7 +146,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.updateAnyRemoteClientsOn()
     }
 
-    onNetReceiveUpdate(conn: NetConnection, netPacket: PacketMiddlewarePacket) {
+    onNetReceiveUpdate(conn: NetConnection, netPacket: NetPacket) {
         let updatePacket: RemoteServerUpdatePacket
         try {
             if (this.settings.netInfo!.details.forceJsonCommunication) {

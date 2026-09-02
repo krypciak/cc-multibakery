@@ -4,7 +4,7 @@ import { type HeartbeatConfig, Heartbeat } from './heartbeat'
 
 export type PacketEventType = 'ack' | 'update' | 'join' | 'leave' | 'ping1' | 'ready'
 
-export interface PacketMiddlewarePacket {
+export interface NetPacket {
     type: PacketEventType
     sentAt: f64
     seq: u16
@@ -22,15 +22,15 @@ export interface PacketMiddlewarePacket {
               binData: u8[] & RecordSize<u24>
           }
 }
-export type GenerateType = PacketMiddlewarePacket
+export type GenerateType = NetPacket
 
 interface PacketMiddlewareSettings {
     sendData: (buf: Uint8Array<ArrayBuffer>) => void
-    onData: (packet: PacketMiddlewarePacket, callback?: (data: any) => void) => void
+    onData: (packet: NetPacket, callback?: (data: any) => void) => void
 }
 
 export class PacketMiddleware {
-    private ackQueue = new Map<u32, (packet: PacketMiddlewarePacket) => void>()
+    private ackQueue = new Map<u32, (packet: NetPacket) => void>()
     private ackIdCounter = 0
     private seqCounter = 0
 
@@ -46,7 +46,7 @@ export class PacketMiddleware {
     receive(buf: Uint8Array) {
         this.heartbeat.onReceive()
 
-        const packet: PacketMiddlewarePacket = PacketEncoderDecoder.decode(buf)
+        const packet: NetPacket = PacketEncoderDecoder.decode(buf)
 
         if (packet.ack) {
             const { id, response } = packet.ack
@@ -96,7 +96,7 @@ export class PacketMiddleware {
         const isBin = data !== undefined && data instanceof Uint8Array
 
         const sentAt = performance.now()
-        const packet: PacketMiddlewarePacket = {
+        const packet: NetPacket = {
             type,
             sentAt,
             seq,

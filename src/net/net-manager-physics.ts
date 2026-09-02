@@ -3,7 +3,7 @@ import { assert } from '../misc/assert'
 import { isClientLeaveData, type ClientLeaveData } from '../server/remote/remote-server-types'
 import { isClientJoinData } from '../server/server-types'
 import { assertPhysics } from '../server/physics/physics-server-types'
-import { PacketMiddleware, type PacketMiddlewarePacket } from './packet'
+import { PacketMiddleware, type NetPacket } from './packet'
 import { NetConnection } from './net-connection'
 import { type NetTransport, type NetTransportListenerFunctions } from './net-transport'
 
@@ -40,7 +40,7 @@ export class NetManagerPhysicsServer {
         assertPhysics(server)
 
         const sendData = (buf: Uint8Array<ArrayBuffer>) => connection.transport.send(buf)
-        const onData = async (packet: PacketMiddlewarePacket, callback?: (data: any) => void) => {
+        const onData = async (packet: NetPacket, callback?: (data: any) => void) => {
             if (server != multi.server) return
 
             const jsonData = packet.data.type == 'json' ? packet.data.jsonData : undefined
