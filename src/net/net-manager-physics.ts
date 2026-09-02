@@ -3,7 +3,7 @@ import { assert } from '../misc/assert'
 import { isClientLeaveData, type ClientLeaveData } from '../server/remote/remote-server-types'
 import { isClientJoinData } from '../server/server-types'
 import { assertPhysics } from '../server/physics/physics-server-types'
-import { PacketMiddleware, type NetPacket } from './packet'
+import { PacketWrapper, type NetPacket } from './packet'
 import { NetConnection } from './net-connection'
 import { type NetTransport, type NetTransportListenerFunctions } from './net-transport'
 
@@ -71,7 +71,7 @@ export class NetManagerPhysicsServer {
             connection.close()
         }
 
-        const middleware = new PacketMiddleware(
+        const wrapper = new PacketWrapper(
             { sendData, onData },
             {
                 timeout: this.pingTimeout,
@@ -80,12 +80,12 @@ export class NetManagerPhysicsServer {
         )
 
         const transport = createNetTransport({
-            onReceive: data => middleware.receive(data),
+            onReceive: data => wrapper.receive(data),
             onBytesReceived: bytes => connection.onBytesReceived(bytes),
             onBytesSent: bytes => connection.onBytesSent(bytes),
             onClose,
         })
-        const connection = new NetConnection(middleware, transport)
+        const connection = new NetConnection(wrapper, transport)
         this.connections.push(connection)
     }
 

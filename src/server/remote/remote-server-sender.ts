@@ -125,7 +125,7 @@ export class RemoteSender {
         const toSend = this.encodePacket(cleanPacket)
         this.verifyPacketEncoding(toSend, cleanPacket)
 
-        conn.middleware.send('update', toSend)
+        conn.wrapper.send('update', toSend)
     }
 
     @profile(undefined, 'remote sender', true)

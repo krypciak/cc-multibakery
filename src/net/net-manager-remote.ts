@@ -4,7 +4,7 @@ import { assert } from '../misc/assert'
 import { NetConnection } from './net-connection'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import { assertRemote } from '../server/remote/remote-server-types'
-import { PacketMiddleware, type NetPacket } from './packet'
+import { PacketWrapper, type NetPacket } from './packet'
 import { profile } from '../misc/performance-profiling'
 
 export interface NetTransportClient {
@@ -40,7 +40,7 @@ export class NetManagerRemoteServer {
             if (multi.server != server) return
             server.onNetReceiveUpdate(this.conn!, packet)
         }
-        const middleware = new PacketMiddleware(
+        const wrapper = new PacketWrapper(
             { sendData, onData },
             {
                 timeout: this.pingTimeout,
@@ -49,13 +49,13 @@ export class NetManagerRemoteServer {
         )
 
         const transport = this.transportClient.createNetTransport({
-            onReceive: data => middleware.receive(data),
+            onReceive: data => wrapper.receive(data),
             onBytesReceived: bytes => connection.onBytesReceived(bytes),
             onBytesSent: bytes => connection.onBytesSent(bytes),
             onClose: reason => this.onDisconnect(`Connection closed: ${reason}`),
         })
 
-        const connection = new NetConnection(middleware, transport)
+        const connection = new NetConnection(wrapper, transport)
         connection.readyForSendingUpdate = true
         this.conn = connection
     }
@@ -68,26 +68,26 @@ export class NetManagerRemoteServer {
     }
 
     calculatePing(): number {
-        return this.conn?.middleware.heartbeat.getPing() ?? 0
+        return this.conn?.wrapper.heartbeat.getPing() ?? 0
     }
 
     @profile()
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
         assert(this.conn)
         assertRemote(multi.server)
-        const ack: ClientJoinAckData = await this.conn.middleware.sendWithAck('join', data)
+        const ack: ClientJoinAckData = await this.conn.wrapper.sendWithAck('join', data)
         return ack
     }
 
     async sendReady() {
         assert(this.conn)
-        this.conn.middleware.send('ready')
+        this.conn.wrapper.send('ready')
     }
 
     async sendLeave(data: ClientLeaveData): Promise<void> {
         assert(this.conn)
         assertRemote(multi.server)
-        this.conn.middleware.send('leave', data)
+        this.conn.wrapper.send('leave', data)
     }
 
     stop() {

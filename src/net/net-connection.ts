@@ -1,6 +1,6 @@
 import type { Client } from '../client/client'
 import type { NetTransport } from './net-transport'
-import { PacketMiddleware } from './packet'
+import { PacketWrapper } from './packet'
 
 export class NetConnection {
     clients: Client[] = []
@@ -11,7 +11,7 @@ export class NetConnection {
     bytesReceived: bigint = 0n
 
     constructor(
-        public middleware: PacketMiddleware,
+        public wrapper: PacketWrapper,
         public transport: NetTransport
     ) {}
 
@@ -38,6 +38,6 @@ export class NetConnection {
         for (const client of this.clients) {
             this.leave(client)
         }
-        this.middleware.destroy()
+        this.wrapper.destroy()
     }
 }

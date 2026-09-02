@@ -1,4 +1,4 @@
-import type { PacketMiddleware } from './packet'
+import type { PacketWrapper } from './packet'
 
 export interface HeartbeatConfig {
     /** Infinity to disable */
@@ -12,7 +12,7 @@ export class Heartbeat {
     private lastPingTimeDiff: number = 0
 
     constructor(
-        private middleware: PacketMiddleware,
+        private wrapper: PacketWrapper,
         config: HeartbeatConfig
     ) {
         const heartbeatInterval = 1000
@@ -38,7 +38,7 @@ export class Heartbeat {
 
     private async sendHeartbeatPacket() {
         const sendTime = performance.now()
-        await this.middleware.sendWithAck('ping1')
+        await this.wrapper.sendWithAck('ping1')
         const receiveTime = performance.now()
 
         const timeDiff = receiveTime - sendTime

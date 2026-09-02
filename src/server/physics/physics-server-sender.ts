@@ -103,7 +103,7 @@ export class PhysicsSender {
             const toSend = this.encodePacket(data)
             this.verifyPacketEncoding(toSend, data)
 
-            conn.middleware.send('update', toSend)
+            conn.wrapper.send('update', toSend)
         }
 
         this.clearCollectedState()

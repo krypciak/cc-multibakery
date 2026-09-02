@@ -24,12 +24,12 @@ export interface NetPacket {
 }
 export type GenerateType = NetPacket
 
-interface PacketMiddlewareSettings {
+interface PacketWrapperSettings {
     sendData: (buf: Uint8Array<ArrayBuffer>) => void
     onData: (packet: NetPacket, callback?: (data: any) => void) => void
 }
 
-export class PacketMiddleware {
+export class PacketWrapper {
     private ackQueue = new Map<u32, (packet: NetPacket) => void>()
     private ackIdCounter = 0
     private seqCounter = 0
@@ -37,7 +37,7 @@ export class PacketMiddleware {
     heartbeat: Heartbeat
 
     constructor(
-        private settings: PacketMiddlewareSettings,
+        private settings: PacketWrapperSettings,
         heartbeatConfig: HeartbeatConfig
     ) {
         this.heartbeat = new Heartbeat(this, heartbeatConfig)
