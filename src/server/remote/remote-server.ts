@@ -3,22 +3,22 @@ import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender
 import type { CCMap } from '../ccmap/ccmap'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
+import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
+import type { ClientSettings } from '../../client/client-types'
+import type { RemoteServerSettings } from './remote-server-types'
+import type { PacketMiddlewarePacket } from '../../net/packet'
 import { NetManagerRemoteServer } from '../../net/net-manager-remote'
 import { applyMapStateUpdatePacket } from '../../state/map-state-handlers'
 import { applyGlobalStateUpdatePacket } from '../../state/global-state-handlers'
 import { assert } from '../../misc/assert'
-import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
 import { Server } from '../server'
 import { Client } from '../../client/client'
-import type { ClientSettings } from '../../client/client-types'
 import { getServerPingTimeout, Opts } from '../../options'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { RemoteSender } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
-import { applyModCompatibilityList } from '../mod-compatibility-list'
 import { createNetTransportClient } from '../../net/net-transport'
 import { profile } from '../../misc/performance-profiling'
-import type { RemoteServerSettings } from './remote-server-types'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -72,14 +72,16 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         await multi.destroyNextFrameAndStartLoop(reason)
     }
 
-    onNetReceive(conn: NetConnection, data: unknown) {
+    onNetReceiveUpdate(conn: NetConnection, netPacket: PacketMiddlewarePacket) {
         try {
-            let packet: PhysicsServerUpdatePacket
+            let updatePacket: PhysicsServerUpdatePacket
             if (this.settings.netInfo.details.forceJsonCommunication) {
-                packet = data as any
+                assert(netPacket.data.type == 'json')
+                updatePacket = netPacket.data.jsonData
             } else {
-                const buf = new Uint8Array(data as ArrayBuffer)
-                packet = PhysicsUpdatePacketEncoderDecoder.decode(buf)
+                assert(netPacket.data.type == 'binary')
+                const buf = new Uint8Array(netPacket.data.binData)
+                updatePacket = PhysicsUpdatePacketEncoderDecoder.decode(buf)
             }
 
             // if (buf.length > 100) {
@@ -94,7 +96,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             //         json
             //     )
             // }
-            this.processPacket(conn, packet)
+            this.processUpdatePacket(conn, updatePacket)
         } catch (e) {
             console.error(`Error applying packet!`, e)
         }
@@ -112,7 +114,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         )
     }
 
-    private processPacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
+    private processUpdatePacket(_conn: NetConnection, data: PhysicsServerUpdatePacket) {
         // if (Object.keys(cleanRecord(data) ?? {}).length > 1) {
         //     console.log(JSON.stringify(data, null, 4))
         // }

@@ -5,7 +5,6 @@ import {
     type KeyType,
 } from '../../client/client-option-model-link'
 import {
-    disallowedInputActions,
     type GamepadManagerData,
     type InputData,
     isGamepadManagerData,
@@ -88,43 +87,29 @@ export class RemoteSender {
             const inst = client.inst
             assert(inst)
 
-            const inPauseScreen = inst.ig.inPauseScreen
-            let packet: RemoteServerClientPacket | undefined
+            if (inst.ig.inPauseScreen) continue
 
-            if (!inPauseScreen) {
-                const input = inst.ig.input.getInput()
-                if (input) {
-                    for (const action of disallowedInputActions) {
-                        delete input.presses?.[action]
-                        delete input.actions?.[action]
-                    }
-                }
+            const input = inst.ig.input.getInput()
+            const gamepad = inst.ig.gamepad.getInput()
 
-                const gamepad = inst.ig.gamepad.getInput()
+            const memory = StateMemory.get(remoteSenderStateMemory)
+            remoteSenderStateMemory ??= memory
 
-                const memory = StateMemory.get(remoteSenderStateMemory)
-                remoteSenderStateMemory ??= memory
-
-                const options = filterClientOptionModelValues(
-                    (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
-                )
-                const ccuilibRingConf = memory.isFirstTime() ? getCCUILibRingConfFrom(client.inst.nax!) : undefined
-                packet = {
-                    input,
-                    gamepad,
-                    inputFieldText: memory.diff(
-                        inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)
-                    ),
-                    options: memory.diffRecord(options),
-                    ccuilibRingConf,
-                }
+            const options = filterClientOptionModelValues(
+                (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
+            )
+            const ccuilibRingConf = memory.isFirstTime() ? getCCUILibRingConfFrom(client.inst.nax!) : undefined
+            const packet: RemoteServerClientPacket = {
+                input,
+                gamepad,
+                inputFieldText: memory.diff(inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)),
+                options: memory.diffRecord(options),
+                ccuilibRingConf,
             }
 
-            if (packet) {
-                const cleanPacket = cleanRecord(packet)
-                if (cleanPacket) {
-                    clientPackets[client.username] = cleanPacket
-                }
+            const cleanPacket = cleanRecord(packet)
+            if (cleanPacket) {
+                clientPackets[client.username] = cleanPacket
             }
         }
 

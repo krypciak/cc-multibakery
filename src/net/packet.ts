@@ -4,7 +4,7 @@ import { type HeartbeatConfig, Heartbeat } from './heartbeat'
 
 export type PacketEventType = 'ack' | 'update' | 'join' | 'leave' | 'ping1' | 'ready'
 
-interface PacketMiddlewarePacket {
+export interface PacketMiddlewarePacket {
     type: PacketEventType
     sentAt: f64
     seq: u16
@@ -26,11 +26,11 @@ export type GenerateType = PacketMiddlewarePacket
 
 interface PacketMiddlewareSettings {
     sendData: (buf: Uint8Array<ArrayBuffer>) => void
-    onData: (type: PacketEventType, buf: u8[], callback?: (data: any) => void) => void
+    onData: (packet: PacketMiddlewarePacket, callback?: (data: any) => void) => void
 }
 
 export class PacketMiddleware {
-    private ackQueue = new Map<u32, (data: any) => void>()
+    private ackQueue = new Map<u32, (packet: PacketMiddlewarePacket) => void>()
     private ackIdCounter = 0
     private seqCounter = 0
 
@@ -46,16 +46,14 @@ export class PacketMiddleware {
     receive(buf: Uint8Array) {
         this.heartbeat.onReceive()
 
-        const packet: GenerateType = PacketEncoderDecoder.decode(buf)
-
-        const data = packet.data.type == 'json' ? packet.data.jsonData : packet.data.binData
+        const packet: PacketMiddlewarePacket = PacketEncoderDecoder.decode(buf)
 
         if (packet.ack) {
             const { id, response } = packet.ack
             if (response) {
                 if (this.ackQueue.has(id)) {
                     const ack = this.ackQueue.get(id)!
-                    ack(data)
+                    ack(packet)
                     this.ackQueue.delete(id)
                 } else {
                     console.warn('ack id', id, 'missing!')
@@ -65,11 +63,11 @@ export class PacketMiddleware {
                 if (packet.type == 'ping1') {
                     callback()
                 } else {
-                    this.settings.onData(packet.type, data, callback)
+                    this.settings.onData(packet, callback)
                 }
             }
         } else {
-            this.settings.onData(packet.type, data)
+            this.settings.onData(packet)
         }
     }
 
@@ -80,7 +78,9 @@ export class PacketMiddleware {
     sendWithAck(type: PacketEventType, data?: any) {
         return new Promise<any>(resolve => {
             const ackId = this.ackIdCounter++
-            this.ackQueue.set(ackId, resolve)
+            this.ackQueue.set(ackId, packet =>
+                resolve(packet.data.type == 'json' ? packet.data.jsonData : packet.data.binData)
+            )
             this.encodePacketAndSend(type, data, { id: ackId, response: false })
         })
     }

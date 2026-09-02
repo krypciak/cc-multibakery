@@ -85,7 +85,7 @@ declare global {
 function getInput(this: ig.Input) {
     const memory = (this.memory = StateMemory.get(this.memory))
 
-    return cleanRecord({
+    const input = cleanRecord({
         currentDevice: memory.diff(this.currentDevice),
 
         isUsingMouse: memory.diff(this.isUsingMouse),
@@ -98,6 +98,13 @@ function getInput(this: ig.Input) {
         locks: memory.diffRecord(this.locks),
         actions: memory.diffRecord(this.actions),
     })
+    if (input) {
+        for (const action of disallowedInputActions) {
+            delete input.presses?.[action]
+            delete input.actions?.[action]
+        }
+    }
+    return input
 }
 
 prestart(() => {

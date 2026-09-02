@@ -3,7 +3,7 @@ import { assert } from '../misc/assert'
 import { isClientLeaveData, type ClientLeaveData } from '../server/remote/remote-server-types'
 import { isClientJoinData } from '../server/server-types'
 import { assertPhysics } from '../server/physics/physics-server-types'
-import { PacketMiddleware, type PacketEventType } from './packet'
+import { PacketMiddleware, type PacketMiddlewarePacket } from './packet'
 import { NetConnection } from './net-connection'
 import { type NetTransport, type NetTransportListenerFunctions } from './net-transport'
 
@@ -40,22 +40,24 @@ export class NetManagerPhysicsServer {
         assertPhysics(server)
 
         const sendData = (buf: Uint8Array<ArrayBuffer>) => connection.transport.send(buf)
-        const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
+        const onData = async (packet: PacketMiddlewarePacket, callback?: (data: any) => void) => {
             if (server != multi.server) return
 
+            const jsonData = packet.data.type == 'json' ? packet.data.jsonData : undefined
+            const type = packet.type
             if (type == 'update') {
-                server.onNetReceiveUpdate(connection, data)
+                server.onNetReceiveUpdate(connection, packet)
             } else if (type == 'join') {
                 if (!callback) return
-                if (!isClientJoinData(data)) return callback({ status: 'invalid_join_data' })
-                const { ackData } = await server.createAndJoinClient(data, { connection })
+                if (!isClientJoinData(jsonData)) return callback({ status: 'invalid_join_data' })
+                const { ackData } = await server.createAndJoinClient(jsonData, { connection })
                 callback(ackData)
             } else if (type == 'ready') {
                 connection.readyForSendingUpdate = true
             } else if (type == 'leave') {
-                if (!isClientLeaveData(data)) return
+                if (!isClientLeaveData(jsonData)) return
                 if (multi.server == server && !server.destroyed) {
-                    server.onNetClientLeave(connection, data)
+                    server.onNetClientLeave(connection, jsonData)
                 }
             }
         }

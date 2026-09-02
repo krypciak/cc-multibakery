@@ -4,7 +4,7 @@ import { assert } from '../misc/assert'
 import { NetConnection } from './net-connection'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import { assertRemote } from '../server/remote/remote-server-types'
-import { PacketMiddleware, type PacketEventType } from './packet'
+import { PacketMiddleware, type PacketMiddlewarePacket } from './packet'
 import { profile } from '../misc/performance-profiling'
 
 export interface NetTransportClient {
@@ -36,9 +36,9 @@ export class NetManagerRemoteServer {
         await this.transportClient.connect(this.connectionSettings)
 
         const sendData = (buf: Uint8Array<ArrayBuffer>) => connection.transport.send(buf)
-        const onData = async (type: PacketEventType, data: any, _callback?: (data: any) => void) => {
-            if (type != 'update' || multi.server != server) return
-            server.onNetReceive(this.conn!, data)
+        const onData = async (packet: PacketMiddlewarePacket, _callback?: (data: any) => void) => {
+            if (multi.server != server) return
+            server.onNetReceiveUpdate(this.conn!, packet)
         }
         const middleware = new PacketMiddleware(
             { sendData, onData },

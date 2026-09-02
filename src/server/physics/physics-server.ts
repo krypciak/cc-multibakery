@@ -1,24 +1,25 @@
 import type { PhysicsServerSettings } from './physics-server-types'
 import type { NetConnection } from '../../net/net-connection'
-import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
 import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
+import type { ClientSettings } from '../../client/client-types'
+import type { ClientLeaveData } from '../remote/remote-server-types'
+import type { PlayerInfoEntry } from '../../state/player-info'
+import type { CCMap } from '../ccmap/ccmap'
+import type { PacketMiddlewarePacket } from '../../net/packet'
+import type { MapName, Username } from '../../net/binary/binary-types'
+import { NetManagerPhysicsServer } from '../../net/net-manager-physics'
 import { Server } from '../server'
 import { isRemoteServerUpdatePacket, type RemoteServerUpdatePacket } from '../remote/remote-server-sender'
 import { assert } from '../../misc/assert'
 import { PhysicsHttpServer } from '../../net/web-server'
 import { Client } from '../../client/client'
-import type { ClientSettings } from '../../client/client-types'
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import type { ClientLeaveData } from '../remote/remote-server-types'
 import { startGameLoop } from '../../game-loop'
 import { PhysicsSender } from './physics-server-sender'
 import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update-packet-encoder-decoder.generated'
-import type { MapName, Username } from '../../net/binary/binary-types'
 import { loadClientOptionModelState } from '../../client/client-option-model-link'
 import { ServerDiscoveryServer } from '../../net/server-discovery'
-import type { PlayerInfoEntry } from '../../state/player-info'
 import { createNetTransportServer } from '../../net/net-transport'
-import type { CCMap } from '../ccmap/ccmap'
 import {
     registerChargeTimingsChangeListener,
     unregisterChargeTimingsChangeListener,
@@ -145,26 +146,28 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.updateAnyRemoteClientsOn()
     }
 
-    onNetReceiveUpdate(conn: NetConnection, data: unknown) {
-        let packet: RemoteServerUpdatePacket
+    onNetReceiveUpdate(conn: NetConnection, netPacket: PacketMiddlewarePacket) {
+        let updatePacket: RemoteServerUpdatePacket
         try {
             if (this.settings.netInfo!.details.forceJsonCommunication) {
-                packet = data as any
+                assert(netPacket.data.type == 'json')
+                updatePacket = netPacket.data.jsonData
             } else {
-                const buf = new Uint8Array(data as ArrayBuffer)
-                packet = RemoteUpdatePacketEncoderDecoder.decode(buf)
+                assert(netPacket.data.type == 'binary')
+                const buf = new Uint8Array(netPacket.data.binData)
+                updatePacket = RemoteUpdatePacketEncoderDecoder.decode(buf)
             }
 
-            if (!isRemoteServerUpdatePacket(packet)) {
+            if (!isRemoteServerUpdatePacket(updatePacket)) {
                 throw new Error('invalid json packet')
             }
         } catch (e) {
             console.log(e)
-            console.warn('invalid update packet received from', conn.clients, ', contents: ', data, ', closing')
+            console.warn('invalid update packet received from', conn.clients, ', contents: ', netPacket, ', closing')
             conn.close()
             return
         }
-        this.processUpdatePacket(conn, packet)
+        this.processUpdatePacket(conn, updatePacket)
     }
 
     private processUpdatePacket(conn: NetConnection, data: RemoteServerUpdatePacket) {
