@@ -86,7 +86,7 @@ importers:
         version: 0.60.0
       ts-binarifier:
         specifier: github:krypciak/ts-binarifier
-        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/0c7315f79ed62f681fc3c68de9e442a19e50e899
+        version: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/863293929470deaf8fcc30c461c1bebce577e4e3
       typescript:
         specifier: ^6.0.3
         version: 6.0.3
@@ -740,8 +740,8 @@ packages:
     resolution: {integrity: sha512-Pugqs6M0m7Lv1I7FtxN4aoyToKg1C4tu+/381vH35y8oENM/Ai7f7C4StcoK4/+BSw9ebcS8jRiVrORFKCALLw==}
     engines: {node: ^20.0.0 || >=22.0.0}
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/0c7315f79ed62f681fc3c68de9e442a19e50e899:
-    resolution: {gitHosted: true, integrity: sha512-hmQMeVLKqMoVD4lKZABXRcrCihjUzefG0BXw11e6k3o3PV9Tkmzs4PkQ+PaDRqzGzOwC3jPWy8qKmnirGDP6ow==, tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/0c7315f79ed62f681fc3c68de9e442a19e50e899}
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/863293929470deaf8fcc30c461c1bebce577e4e3:
+    resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/ts-binarifier/tar.gz/863293929470deaf8fcc30c461c1bebce577e4e3}
     version: 1.1.0
 
   typescript@6.0.3:
@@ -1390,7 +1390,7 @@ snapshots:
 
   tinypool@2.1.0: {}
 
-  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/0c7315f79ed62f681fc3c68de9e442a19e50e899: {}
+  ts-binarifier@https://codeload.github.com/krypciak/ts-binarifier/tar.gz/863293929470deaf8fcc30c461c1bebce577e4e3: {}
 
   typescript@6.0.3: {}
 

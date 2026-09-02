@@ -132,7 +132,7 @@ export class SocketIoNetTransport implements NetTransport {
         return this.socket.connected
     }
 
-    send(data: unknown) {
+    send(data: Uint8Array<ArrayBuffer>) {
         this.socket.emit('update', data)
     }
 

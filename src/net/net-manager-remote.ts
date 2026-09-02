@@ -35,7 +35,7 @@ export class NetManagerRemoteServer {
 
         await this.transportClient.connect(this.connectionSettings)
 
-        const sendData = (buf: Uint8Array) => connection.transport.send(buf)
+        const sendData = (buf: Uint8Array<ArrayBuffer>) => connection.transport.send(buf)
         const onData = async (type: PacketEventType, data: any, _callback?: (data: any) => void) => {
             if (type != 'update' || multi.server != server) return
             server.onNetReceive(this.conn!, data)

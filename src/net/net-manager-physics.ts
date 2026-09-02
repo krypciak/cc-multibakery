@@ -39,7 +39,7 @@ export class NetManagerPhysicsServer {
         const server = multi.server
         assertPhysics(server)
 
-        const sendData = (buf: Uint8Array) => connection.transport.send(buf)
+        const sendData = (buf: Uint8Array<ArrayBuffer>) => connection.transport.send(buf)
         const onData = async (type: PacketEventType, data: any, callback?: (data: any) => void) => {
             if (server != multi.server) return
 

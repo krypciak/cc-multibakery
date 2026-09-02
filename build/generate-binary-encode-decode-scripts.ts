@@ -41,12 +41,7 @@ const config: Config = {
             path: 'src/net/packet.ts',
             outPath: projectRoot + '/src/net/binary/packet-encoder-decoder.generated.ts',
             outClassName: 'PacketEncoderDecoder',
-        },
-        {
-            ...configBase,
-            path: 'src/net/websocket.ts',
-            outPath: projectRoot + '/src/net/binary/websocket-packet-encoder-decoder.generated.ts',
-            outClassName: 'WebsocketPacketEncoderDecoder',
+            insertTsIgnore: true,
         },
     ],
 }

@@ -3,29 +3,13 @@ import type { RemoteServerConnectionSettings } from '../server/remote/remote-ser
 import type { NetTransportClient } from './net-manager-remote'
 import type { NetTransport, NetTransportListenerFunctions } from './net-transport'
 import type { NetTransportServer } from './net-manager-physics'
-import { WebsocketPacketEncoderDecoder } from './binary/websocket-packet-encoder-decoder.generated'
 import type { WebSocket as WebSocketNode, WebSocketServer } from 'ws'
 import { assert } from '../misc/assert'
-import type { RecordSize, u24, u8 } from 'ts-binarifier/src/type-aliases'
 import type { TLSSocket } from 'tls'
 
 function getWebsocketUrl(connection: RemoteServerConnectionSettings) {
     return `ws${connection.https ? 's' : ''}://${connection.host}:${connection.port}`
 }
-
-enum PacketType {
-    CONNECT,
-    DISCONNECT,
-    EVENT,
-    CONNECT_ERROR,
-}
-
-interface WsPacket {
-    type: PacketType
-    binData?: u8[] & RecordSize<u24>
-    jsonData?: any
-}
-export type GenerateType = WsPacket
 
 export interface WsNetTransportServerSettings {}
 
@@ -60,9 +44,6 @@ export class WsNetTransportServer implements NetTransportServer {
         this.wss = new WebSocketServer({ server: httpServer })
 
         this.wss.on('connection', ws => {
-            const connectPacket = WebsocketPacketEncoderDecoder.encode({ type: PacketType.CONNECT })
-            ws.send(connectPacket)
-
             const sessionObject: SessionObject = { socket: ws, transport: undefined as any }
             this.sessions.push(sessionObject)
 
@@ -95,18 +76,7 @@ export class WsNetTransportClient implements NetTransportClient {
         this.ws.binaryType = 'arraybuffer'
 
         return new Promise<void>((resolve, reject) => {
-            this.ws.addEventListener('open', () => {
-                const onConnectMessage = (event: MessageEvent) => {
-                    const buf = new Uint8Array(event.data as ArrayBuffer)
-                    const packet = WebsocketPacketEncoderDecoder.decode(buf)
-                    assert(packet.type === PacketType.CONNECT)
-
-                    this.ws.removeEventListener('message', onConnectMessage)
-                    resolve()
-                }
-                this.ws.addEventListener('message', onConnectMessage)
-            })
-
+            this.ws.addEventListener('open', () => resolve())
             this.ws.addEventListener('error', (e: Event) => {
                 console.error('[ws] WebSocket error:', e)
                 reject(new Error('WebSocket connection failed'))
@@ -135,28 +105,17 @@ export class WsNetTransport implements NetTransport {
     private handleRawMessage(buf: Uint8Array) {
         if (this.closed) return
         this.listeners.onBytesReceived(BigInt(buf.byteLength))
-
-        const packet = WebsocketPacketEncoderDecoder.decode(buf)
-        if (packet.type === PacketType.EVENT) {
-            if (packet.binData) {
-                this.listeners.onReceive(new Uint8Array(packet.binData))
-            } else if (packet.jsonData) {
-                this.listeners.onReceive(packet.jsonData)
-            }
-        } else {
-            console.warn('[ws] unexpected packet type in transport:', PacketType[packet.type])
-        }
+        this.listeners.onReceive(buf)
     }
 
     isConnected() {
         return !this.closed && this.ws.readyState === this.ws.OPEN
     }
 
-    send(data: unknown) {
+    send(data: Uint8Array<ArrayBuffer>) {
         if (this.closed) return
-        const encoded = WebsocketPacketEncoderDecoder.encode({ type: PacketType.EVENT, binData: data as any })
-        this.listeners.onBytesSent(BigInt(encoded.byteLength))
-        this.ws.send(encoded)
+        this.listeners.onBytesSent(BigInt(data.byteLength))
+        this.ws.send(data)
     }
 
     close(): void {

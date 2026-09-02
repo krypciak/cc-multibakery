@@ -15,7 +15,7 @@ interface PacketMiddlewarePacket {
     data:
         | {
               type: 'json'
-              jsonData: any
+              jsonData?: any
           }
         | {
               type: 'binary'
@@ -25,7 +25,7 @@ interface PacketMiddlewarePacket {
 export type GenerateType = PacketMiddlewarePacket
 
 interface PacketMiddlewareSettings {
-    sendData: (buf: Uint8Array) => void
+    sendData: (buf: Uint8Array<ArrayBuffer>) => void
     onData: (type: PacketEventType, buf: u8[], callback?: (data: any) => void) => void
 }
 

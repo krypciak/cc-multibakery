@@ -37,7 +37,7 @@ export interface NetTransportListenerFunctions {
     onClose(reason: string): void
 }
 export interface NetTransport {
-    send(data: unknown): void
+    send(data: Uint8Array<ArrayBuffer>): void
     close(): void
     isConnected(): boolean
     getStatusInfo(): string
