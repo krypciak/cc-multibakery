@@ -1,4 +1,4 @@
-import type { RecordSize, u24, u32, u8 } from 'ts-binarifier/src/type-aliases'
+import type { f64, RecordSize, u16, u24, u32, u8 } from 'ts-binarifier/src/type-aliases'
 import { PacketEncoderDecoder } from './binary/packet-encoder-decoder.generated'
 import { type HeartbeatConfig, Heartbeat } from './heartbeat'
 
@@ -6,12 +6,21 @@ export type PacketEventType = 'ack' | 'update' | 'join' | 'leave' | 'ping1' | 'r
 
 interface PacketMiddlewarePacket {
     type: PacketEventType
+    sentAt: f64
+    seq: u16
     ack?: {
         id: u32
         response: boolean
     }
-    jsonData?: any
-    binData?: u8[] & RecordSize<u24>
+    data:
+        | {
+              type: 'json'
+              jsonData: any
+          }
+        | {
+              type: 'binary'
+              binData: u8[] & RecordSize<u24>
+          }
 }
 export type GenerateType = PacketMiddlewarePacket
 
@@ -23,6 +32,7 @@ interface PacketMiddlewareSettings {
 export class PacketMiddleware {
     private ackQueue = new Map<u32, (data: any) => void>()
     private ackIdCounter = 0
+    private seqCounter = 0
 
     heartbeat: Heartbeat
 
@@ -38,7 +48,7 @@ export class PacketMiddleware {
 
         const packet: GenerateType = PacketEncoderDecoder.decode(buf)
 
-        const data = packet.jsonData ?? packet.binData
+        const data = packet.data.type == 'json' ? packet.data.jsonData : packet.data.binData
 
         if (packet.ack) {
             const { id, response } = packet.ack
@@ -80,12 +90,26 @@ export class PacketMiddleware {
     }
 
     private encodePacketAndSend(type: PacketEventType, data: any, ack?: { id: u32; response: boolean }) {
+        const seq = this.seqCounter++
+        if (this.seqCounter >= 65536) this.seqCounter = 0
+
         const isBin = data !== undefined && data instanceof Uint8Array
+
+        const sentAt = performance.now()
         const packet: PacketMiddlewarePacket = {
             type,
+            sentAt,
+            seq,
             ack,
-            jsonData: isBin ? undefined : data,
-            binData: isBin ? (data as never as u8[]) : undefined,
+            data: isBin
+                ? {
+                      type: 'binary',
+                      binData: data as unknown as u8[],
+                  }
+                : {
+                      type: 'json',
+                      jsonData: data,
+                  },
         }
         const buf = PacketEncoderDecoder.encode(packet)
         this.settings.sendData(buf)
