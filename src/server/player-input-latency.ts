@@ -4,7 +4,7 @@ import type { u24 } from 'ts-binarifier/src/type-aliases'
 import { StateMemory } from '../state/state-util'
 import type { Client } from '../client/client'
 import type { RemoteServerUpdatePacket } from './remote/remote-server-sender'
-import { isRemote } from './remote/remote-server-types'
+import { assertRemote, isRemote } from './remote/remote-server-types'
 import { assertPhysics, isPhysics } from './physics/physics-server-types'
 import { assert } from '../misc/assert'
 
@@ -20,6 +20,7 @@ export interface PlayerInputLatencyEntry {
 }
 export interface RemotePlayerInputLatencyEntry extends PlayerInputLatencyEntry {
     sentAt?: number
+    physicsSentAt?: number
     physicsServerEntry?: PlayerInputLatencyEntry
     receivedAt?: number
 }
@@ -37,25 +38,52 @@ function getPlayerInputLatencyEntry(client: Client, seq: InputSequenceNumber) {
 }
 
 function printFinalStats(client: Client, seq: InputSequenceNumber) {
-    const entry = getPlayerInputLatencyEntry(client, seq)
-    const diff = entry.drawFinishedAt! - entry.inputAt!
+    const entry = getPlayerInputLatencyEntry(client, seq) as Required<RemotePlayerInputLatencyEntry>
+    if (entry.updateAt === undefined) return
+
     const { action } = seqToInputInfoMap[seq]
-    console.log(client.username, seq, action, 'took:', diff, 'ms')
+
+    let sum = 0
+    function prettyDiff(a: number, b: number, includeInSum = true): number {
+        const diff = b - a
+        if (includeInSum) sum += diff
+        return diff.round(1)
+    }
 
     if (isPhysics(multi.server)) {
         // prettier-ignore
-        console.log('total:', diff, 'ms', '\n',
-                'input -> apply', entry.applyAt! - entry.inputAt!, '\n',
-                'apply -> update', entry.updateAt! - entry.applyAt!, '\n',
-                'update -> drawAt', entry.drawAt! - entry.updateAt!, '\n',
-                'drawAt -> drawFinished', entry.drawFinishedAt! - entry.drawAt!)
+        console.log('player input latency', action, 'total:', prettyDiff(entry.inputAt, entry.drawFinishedAt, false), 'ms', '\n',
+                'input -> apply', prettyDiff(entry.inputAt, entry.applyAt), 'ms', '\n',
+                'apply -> update', prettyDiff(entry.applyAt, entry.updateAt), 'ms', '\n',
+                'update -> drawAt', prettyDiff(entry.updateAt, entry.drawAt), 'ms', '\n',
+                'drawAt -> drawFinished', prettyDiff(entry.drawAt, entry.drawFinishedAt), 'ms'
+        )
     } else {
+        const serverEntry = entry.physicsServerEntry as Required<PlayerInputLatencyEntry>
         // prettier-ignore
-        console.log('total:', diff, 'ms', '\n',
-                'input -> apply', entry.applyAt! - entry.inputAt!, '\n',
-                'apply -> update', entry.updateAt! - entry.applyAt!, '\n',
-                'update -> drawAt', entry.drawAt! - entry.updateAt!, '\n',
-                'drawAt -> drawFinished', entry.drawFinishedAt! - entry.drawAt!)
+        console.log('player input latency', action, 'total:', prettyDiff(entry.inputAt, entry.drawFinishedAt, false), 'ms', '\n',
+                'input -> apply', prettyDiff(entry.inputAt, entry.applyAt), 'ms', '\n',
+                'apply -> sent', prettyDiff(entry.applyAt, entry.sentAt), 'ms', '\n', 
+                '\n',
+                'sent -> physics input', prettyDiff(entry.sentAt, serverEntry.inputAt!), 'ms', '\n',
+                'physics input -> physics apply', prettyDiff(serverEntry.inputAt, serverEntry.applyAt!), 'ms', '\n',
+                'physics apply -> physics update', prettyDiff(serverEntry.applyAt, serverEntry.updateAt), 'ms', '\n',
+                'physics update -> physics sent', prettyDiff(serverEntry.updateAt, entry.physicsSentAt), 'ms', '\n', 
+                'physics sent -> received', prettyDiff(entry.physicsSentAt, entry.receivedAt), 'ms', '\n', 
+                '\n',
+                'received -> update', prettyDiff(entry.receivedAt, entry.updateAt), 'ms', '\n',
+                'update -> drawAt', prettyDiff(entry.updateAt, entry.drawAt), 'ms', '\n',
+                'drawAt -> drawFinished', prettyDiff(entry.drawAt, entry.drawFinishedAt), 'ms'
+        )
+    }
+    assert(entry.drawFinishedAt - entry.inputAt == sum, 'player input latency stats not summed correctly!')
+}
+function offsetPhysicsServerEntry(entry: Required<PlayerInputLatencyEntry>, clockOffset: number) {
+    for (const [k, v] of Object.entries(entry).filter(([_k, v]) => typeof v === 'number') as [
+        keyof Omit<PlayerInputLatencyEntry, 'username'>,
+        number,
+    ][]) {
+        entry[k] = v - clockOffset
     }
 }
 
@@ -68,6 +96,14 @@ export function addPlayerInputLatencyTime<T extends keyof RemotePlayerInputLaten
     const entry = getPlayerInputLatencyEntry(client, seq)
     // @ts-expect-error
     entry[key] = value
+
+    if (key == 'physicsServerEntry') {
+        assertRemote(multi.server)
+        assert(multi.server.netManager.conn)
+        const offset = multi.server.netManager.conn?.wrapper.heartbeat.clockOffset ?? 0
+        offsetPhysicsServerEntry(value as Required<PlayerInputLatencyEntry>, offset)
+    }
+
     // console.log(client.username, sequenceNumber, key, value)
 
     if (key == 'drawFinishedAt') {
@@ -259,6 +295,9 @@ export const playerInputLatencyGlobalStateHandler: GlobalStateHandler = {
         if (!packet.playerInputLatency) return
         const now = performance.now()
 
+        assertRemote(multi.server)
+        const physicsSentAt = multi.server.netManager.conn?.wrapper.heartbeat.lastReceivedPacketServerTime ?? 0
+
         for (const [seqStr, physicsEntry] of Object.entries(packet.playerInputLatency)) {
             if (!physicsEntry) continue
             const username = physicsEntry.username!
@@ -266,6 +305,7 @@ export const playerInputLatencyGlobalStateHandler: GlobalStateHandler = {
             if (!client) continue
 
             const seq = Number(seqStr) as InputSequenceNumber
+            addPlayerInputLatencyTime(client, seq, 'physicsSentAt', physicsSentAt)
             addPlayerInputLatencyTime(client, seq, 'physicsServerEntry', physicsEntry)
             addPlayerInputLatencyTime(client, seq, 'receivedAt', now)
 

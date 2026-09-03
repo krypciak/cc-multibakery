@@ -1,5 +1,4 @@
-import { CircularBuffer } from '../misc/circular-buffer'
-import type { PacketWrapper } from './packet'
+import type { NetPacket, PacketWrapper } from './packet'
 
 export interface HeartbeatConfig {
     /** Infinity to disable */
@@ -8,18 +7,18 @@ export interface HeartbeatConfig {
 }
 
 export class Heartbeat {
-    private lastReceivedPacket = performance.now() + 10e3
+    private lastReceivedPacket: number = performance.now() + 10e3
+    lastReceivedPacketServerTime: number = 0
     private heartbeatIntervalId?: NodeJS.Timeout
-    private lastPingRTT: number = 0
-    private clockOffsetCircularBuffer = new CircularBuffer<number>(5)
-    private clockOffsetMedian: number = 0
+    lastPingRTT: number = 0
+    clockOffsetMin: number = 0
 
     constructor(
         private wrapper: PacketWrapper,
         config: HeartbeatConfig
     ) {
         const heartbeatInterval = 1000
-        this.heartbeatIntervalId = setInterval(() => {
+        this.heartbeatIntervalId = setInterval(async () => {
             this.sendHeartbeatPacket()
 
             const now = performance.now()
@@ -30,25 +29,15 @@ export class Heartbeat {
         }, heartbeatInterval)
     }
 
-    onReceive() {
+    onReceive(packet: NetPacket) {
         const now = performance.now()
         this.lastReceivedPacket = now
-    }
 
-    getPing() {
-        return this.lastPingRTT
-    }
-
-    getClockOffset() {
-        return this.clockOffsetMedian
+        this.lastReceivedPacketServerTime = packet.sentAt - this.clockOffsetMin
     }
 
     private updateClockOffset(newClockOffset: number) {
-        this.clockOffsetCircularBuffer.push(newClockOffset)
-        const times = this.clockOffsetCircularBuffer.get()
-        times.sort((a, b) => a - b)
-        const median = times[Math.floor(times.length / 2)]
-        this.clockOffsetMedian = median
+        this.clockOffsetMin = Math.min(this.clockOffsetMin, newClockOffset)
     }
 
     private async sendHeartbeatPacket() {

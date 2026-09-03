@@ -22,7 +22,7 @@ abstract class BasicLabelDrawClass implements LabelDrawClass {
 export function createClientConnectionPingLabel(client: Client) {
     function getPing(): number {
         if (isRemote(multi.server)) {
-            return multi.server.netManager.calculatePing()
+            return multi.server.netManager.conn?.wrapper.heartbeat.lastPingRTT ?? 0
         } else {
             return 0
         }

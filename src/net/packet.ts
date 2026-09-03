@@ -44,9 +44,8 @@ export class PacketWrapper {
     }
 
     receive(buf: Uint8Array) {
-        this.heartbeat.onReceive()
-
         const packet: NetPacket = PacketEncoderDecoder.decode(buf)
+        this.heartbeat.onReceive(packet)
 
         if (packet.ack) {
             const { id, response } = packet.ack

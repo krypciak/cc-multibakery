@@ -67,10 +67,6 @@ export class NetManagerRemoteServer {
         multi.server.onNetDisconnect(reason)
     }
 
-    calculatePing(): number {
-        return this.conn?.wrapper.heartbeat.getPing() ?? 0
-    }
-
     @profile()
     async sendJoin(data: ClientJoinData): Promise<ClientJoinAckData> {
         assert(this.conn)
