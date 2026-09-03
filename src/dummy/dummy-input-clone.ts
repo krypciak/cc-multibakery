@@ -39,7 +39,7 @@ export class InputManagerBlock {
 
 class CloneInputManager {
     player!: dummy.DummyPlayer
-    input: ig.Input
+    input: dummy.input.Clone.Input
     gamepadManager: dummy.input.Clone.GamepadManager
     screen: Vec2 = { x: 0, y: 0 }
     inputType!: ig.INPUT_DEVICES | undefined

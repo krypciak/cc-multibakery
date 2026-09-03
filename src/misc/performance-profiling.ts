@@ -55,11 +55,9 @@ class CircularBuffer<T> {
     length(): number {
         return this.count
     }
-}
 
-declare global {
-    namespace multi {
-        var perf: Perf
+    toJSON() {
+        return this.get()
     }
 }
 
@@ -110,6 +108,12 @@ class Perf {
 }
 
 const perf = (PROFILE && new Perf()) as Perf
+
+declare global {
+    namespace multi {
+        var perf: Perf
+    }
+}
 
 prestart(() => {
     if (!PROFILE) return

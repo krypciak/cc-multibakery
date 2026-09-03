@@ -18,6 +18,7 @@ import { assertRemote } from './remote-server-types'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
 import { profile } from '../../misc/performance-profiling'
 import { getCCUILibRingConfFrom } from '../../mod-compatibility/nax-ccuilib'
+import { playerInputProfilingOnRemotePacketSent } from '../../state/player-input-latency'
 
 let remoteSenderStateMemory: StateMemory | undefined
 const maxInputFieldTextLength = 50
@@ -126,6 +127,7 @@ export class RemoteSender {
         this.verifyPacketEncoding(toSend, cleanPacket)
 
         conn.wrapper.send('update', toSend)
+        if (PROFILE) playerInputProfilingOnRemotePacketSent(cleanPacket)
     }
 
     @profile(undefined, 'remote sender', true)

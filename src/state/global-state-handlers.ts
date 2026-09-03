@@ -1,4 +1,10 @@
 import type { NetConnection } from '../net/net-connection'
+import { playerTeleportGlobalStateHandler } from './player-teleport'
+import { varsGlobalStateHandler } from './vars'
+import { areasGlobalStateHandler } from './areas'
+import { playerInfoGlobalStateHandler } from './player-info'
+import { partyGlobalStateHandler } from './party'
+import { playerInputLatencyGlobalStateHandler } from './player-input-latency'
 
 declare global {
     interface GlobalStateUpdatePacket {}
@@ -12,12 +18,6 @@ export interface GlobalStateHandler {
     set: (packet: GlobalStateUpdatePacket) => void
 }
 
-import { varsGlobalStateHandler } from './vars'
-import { areasGlobalStateHandler } from './areas'
-import { playerInfoGlobalStateHandler } from './player-info'
-import { partyGlobalStateHandler } from './party'
-import { playerTeleportGlobalStateHandler } from './player-teleport'
-
 const globalStateHandlers: GlobalStateHandler[] = [
     playerTeleportGlobalStateHandler,
     varsGlobalStateHandler,
@@ -25,6 +25,7 @@ const globalStateHandlers: GlobalStateHandler[] = [
     playerInfoGlobalStateHandler,
     partyGlobalStateHandler,
 ]
+if (PROFILE) globalStateHandlers.unshift(playerInputLatencyGlobalStateHandler)
 
 export function getGlobalStateUpdatePacket(
     dest: GlobalStateUpdatePacket = {},

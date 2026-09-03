@@ -190,31 +190,31 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             const packet = data.clients[username]
             if (!packet) continue
 
-            if (client.inst.ig.inPauseScreen) {
-                runTask(client.inst, () => sc.model.enterRunning())
-            }
+            runTask(client.inst, () => {
+                if (client.inst.ig.inPauseScreen) {
+                    sc.model.enterRunning()
+                }
 
-            if (packet.input) {
-                inp.mainInputData.pushInput(packet.input)
-            }
-            if (packet.gamepad) {
-                inp.mainGamepadManagerData.pushInput(packet.gamepad)
-            }
+                if (packet.input) {
+                    inp.mainInputData.pushInput(packet.input)
+                }
+                if (packet.gamepad) {
+                    inp.mainGamepadManagerData.pushInput(packet.gamepad)
+                }
 
-            if (packet.inputFieldText !== undefined) {
-                const text = packet.inputFieldText
-                runTask(client.inst, () => {
+                if (packet.inputFieldText !== undefined) {
+                    const text = packet.inputFieldText
                     ig.shownInputDialog?.setText(text)
-                })
-            }
+                }
 
-            if (packet.options) {
-                loadClientOptionModelState(client, packet.options)
-            }
+                if (packet.options) {
+                    loadClientOptionModelState(client, packet.options)
+                }
 
-            if (packet.ccuilibRingConf) {
-                setCCUILibRingConf(client, packet.ccuilibRingConf)
-            }
+                if (packet.ccuilibRingConf) {
+                    setCCUILibRingConf(client, packet.ccuilibRingConf)
+                }
+            })
         }
     }
 

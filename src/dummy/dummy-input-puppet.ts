@@ -1,4 +1,5 @@
 import { prestart } from '../loading-stages'
+import type { InputSequenceNumber } from '../state/player-input-latency'
 import { cleanRecord, StateMemory } from '../state/state-util'
 import { InputManagerBlock } from './dummy-input-clone'
 import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'
@@ -85,6 +86,13 @@ declare global {
 function getInput(this: ig.Input) {
     const memory = (this.memory = StateMemory.get(this.memory))
 
+    let sequenceNumbers = PROFILE
+        ? Object.entries(this.inputSequenceNumbers)
+              .filter(([_seq, e]) => e.stage == 'notYetSent')
+              .map(([seq]) => Number(seq) as InputSequenceNumber)
+        : undefined
+    if (sequenceNumbers?.length == 0) sequenceNumbers = undefined
+
     const input = cleanRecord({
         currentDevice: memory.diff(this.currentDevice),
 
@@ -97,6 +105,8 @@ function getInput(this: ig.Input) {
         presses: memory.diffRecord(this.presses),
         locks: memory.diffRecord(this.locks),
         actions: memory.diffRecord(this.actions),
+
+        sequenceNumbers,
     })
     if (input) {
         for (const action of disallowedInputActions) {
