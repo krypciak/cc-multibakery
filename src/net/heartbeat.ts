@@ -8,17 +8,20 @@ export interface HeartbeatConfig {
 
 export class Heartbeat {
     private lastReceivedPacket: number = performance.now() + 10e3
-    lastReceivedPacketServerTime: number = 0
     private heartbeatIntervalId?: NodeJS.Timeout
+    private minimumRTT: number = Infinity
+    private isHeartbeatPacketInFlight: boolean = false
+
+    lastReceivedPacketServerTime: number = 0
     lastPingRTT: number = 0
-    clockOffsetMin: number = 0
+    clockOffset: number = 0
 
     constructor(
         private wrapper: PacketWrapper,
         config: HeartbeatConfig
     ) {
         const heartbeatInterval = 1000
-        this.heartbeatIntervalId = setInterval(async () => {
+        this.heartbeatIntervalId = setInterval(() => {
             this.sendHeartbeatPacket()
 
             const now = performance.now()
@@ -33,24 +36,28 @@ export class Heartbeat {
         const now = performance.now()
         this.lastReceivedPacket = now
 
-        this.lastReceivedPacketServerTime = packet.sentAt - this.clockOffsetMin
-    }
-
-    private updateClockOffset(newClockOffset: number) {
-        this.clockOffsetMin = Math.min(this.clockOffsetMin, newClockOffset)
+        this.lastReceivedPacketServerTime = packet.sentAt - this.clockOffset
     }
 
     private async sendHeartbeatPacket() {
-        const sendTime = performance.now()
-        const serverTime = await this.wrapper.sendWithAck('ping1')
-        const receiveTime = performance.now()
+        if (this.isHeartbeatPacketInFlight) return
+        this.isHeartbeatPacketInFlight = true
 
-        const rtt = receiveTime - sendTime
+        try {
+            const sendTime = performance.now()
+            const serverTime = await this.wrapper.sendWithAck('ping1')
+            const receiveTime = performance.now()
 
-        const clockOffset = serverTime + rtt / 2 - sendTime
-        this.updateClockOffset(clockOffset)
+            const rtt = receiveTime - sendTime
+            if (rtt < this.minimumRTT) {
+                this.minimumRTT = rtt
+                this.clockOffset = serverTime - (sendTime + receiveTime) / 2
+            }
 
-        this.lastPingRTT = rtt
+            this.lastPingRTT = rtt
+        } finally {
+            this.isHeartbeatPacketInFlight = false
+        }
     }
 
     destroy() {
