@@ -55,7 +55,7 @@ export class SimpleTestManager implements TestRunner {
     private expectCount = 0
     private totalTests = 0
     private completedTests = 0
-    private allStartTime = Date.now()
+    private allStartTime = performance.now()
 
     describe: DescribeFunc = async (name, func) => {
         this.described[name] ??= []
@@ -76,7 +76,7 @@ export class SimpleTestManager implements TestRunner {
         assert(describeName, 'Called test without describe!')
         const arr = this.described[describeName]
         assert(arr)
-        const config: SimpleTestConfig = { name, state: 'running', startTime: Date.now() }
+        const config: SimpleTestConfig = { name, state: 'running', startTime: performance.now() }
         arr.push(config)
         this.totalTests++
 
@@ -107,7 +107,7 @@ export class SimpleTestManager implements TestRunner {
             }
         } finally {
             this.completedTests++
-            config.totalTime = Date.now() - config.startTime
+            config.totalTime = performance.now() - config.startTime
             assert(config.state != 'running')
             const success = config.state == 'success'
             if (success) {
@@ -179,11 +179,11 @@ export class SimpleTestManager implements TestRunner {
     }
 
     private printSummary() {
-        const totalTime = Date.now() - this.allStartTime
+        const totalTime = performance.now() - this.allStartTime
         console.log('')
         console.log(`  ${c(GREEN, `${this.passCount} pass`)}`)
         console.log(`  ${c(this.failCount > 0 ? RED : DIM, `${this.failCount} fail`)}`)
         console.log(`  ${this.expectCount} expect() calls`)
-        console.log(`Ran ${this.totalTests} tests. ${c(DIM, '[')}${c(BOLD, `${totalTime}ms`)}${c(DIM, ']')}`)
+        console.log(`Ran ${this.totalTests} tests. ${c(DIM, '[')}${c(BOLD, `${totalTime.round(1)}ms`)}${c(DIM, ']')}`)
     }
 }
