@@ -1,3 +1,4 @@
+import { CircularBuffer } from '../misc/circular-buffer'
 import type { PacketWrapper } from './packet'
 
 export interface HeartbeatConfig {
@@ -9,7 +10,9 @@ export interface HeartbeatConfig {
 export class Heartbeat {
     private lastReceivedPacket = performance.now() + 10e3
     private heartbeatIntervalId?: NodeJS.Timeout
-    private lastPingTimeDiff: number = 0
+    private lastPingRTT: number = 0
+    private clockOffsetCircularBuffer = new CircularBuffer<number>(5)
+    private clockOffsetMedian: number = 0
 
     constructor(
         private wrapper: PacketWrapper,
@@ -33,16 +36,32 @@ export class Heartbeat {
     }
 
     getPing() {
-        return this.lastPingTimeDiff
+        return this.lastPingRTT
+    }
+
+    getClockOffset() {
+        return this.clockOffsetMedian
+    }
+
+    private updateClockOffset(newClockOffset: number) {
+        this.clockOffsetCircularBuffer.push(newClockOffset)
+        const times = this.clockOffsetCircularBuffer.get()
+        times.sort((a, b) => a - b)
+        const median = times[Math.floor(times.length / 2)]
+        this.clockOffsetMedian = median
     }
 
     private async sendHeartbeatPacket() {
         const sendTime = performance.now()
-        await this.wrapper.sendWithAck('ping1')
+        const serverTime = await this.wrapper.sendWithAck('ping1')
         const receiveTime = performance.now()
 
-        const timeDiff = receiveTime - sendTime
-        this.lastPingTimeDiff = timeDiff
+        const rtt = receiveTime - sendTime
+
+        const clockOffset = serverTime + rtt / 2 - sendTime
+        this.updateClockOffset(clockOffset)
+
+        this.lastPingRTT = rtt
     }
 
     destroy() {

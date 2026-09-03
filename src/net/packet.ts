@@ -61,7 +61,7 @@ export class PacketWrapper {
             } else {
                 const callback = (cbData?: any) => this.sendAckResponse(packet.type, cbData, id)
                 if (packet.type == 'ping1') {
-                    callback()
+                    callback(performance.now())
                 } else {
                     this.settings.onData(packet, callback)
                 }

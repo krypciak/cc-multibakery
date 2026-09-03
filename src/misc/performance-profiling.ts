@@ -1,4 +1,5 @@
 import { prestart } from '../loading-stages'
+import { CircularBuffer } from './circular-buffer'
 
 function percentile(values: number[], p: number) {
     const index = Math.ceil(values.length * p) - 1
@@ -31,34 +32,6 @@ function printStats(stats: Stats, indent: number = 0) {
             `avg=${stats.avg.toFixed(2)} ` +
             `max=${stats.max.toFixed(2)}`
     )
-}
-
-class CircularBuffer<T> {
-    private arr: T[]
-    private index: number = 0
-    private count: number = 0
-
-    constructor(private capacity: number) {
-        this.arr = new Array(capacity)
-    }
-
-    push(value: T) {
-        this.arr[this.index] = value
-        this.index = (this.index + 1) % this.capacity
-        if (this.count < this.capacity) this.count++
-    }
-
-    get(): T[] {
-        return this.arr.slice(0, this.count)
-    }
-
-    length(): number {
-        return this.count
-    }
-
-    toJSON() {
-        return this.get()
-    }
 }
 
 class Perf {
