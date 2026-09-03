@@ -1,11 +1,11 @@
 import { prestart } from '../loading-stages'
-import type { GlobalStateHandler, GlobalStateKey } from './global-state-handlers'
+import type { GlobalStateHandler, GlobalStateKey } from '../state/global-state-handlers'
 import type { u24 } from 'ts-binarifier/src/type-aliases'
-import { StateMemory } from './state-util'
+import { StateMemory } from '../state/state-util'
 import type { Client } from '../client/client'
-import type { RemoteServerUpdatePacket } from '../server/remote/remote-server-sender'
-import { isRemote } from '../server/remote/remote-server-types'
-import { assertPhysics, isPhysics } from '../server/physics/physics-server-types'
+import type { RemoteServerUpdatePacket } from './remote/remote-server-sender'
+import { isRemote } from './remote/remote-server-types'
+import { assertPhysics, isPhysics } from './physics/physics-server-types'
 import { assert } from '../misc/assert'
 
 export type InputSequenceNumber = u24

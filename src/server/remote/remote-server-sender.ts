@@ -18,7 +18,7 @@ import { assertRemote } from './remote-server-types'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
 import { profile } from '../../misc/performance-profiling'
 import { getCCUILibRingConfFrom } from '../../mod-compatibility/nax-ccuilib'
-import { playerInputProfilingOnRemotePacketSent } from '../../state/player-input-latency'
+import { playerInputProfilingOnRemotePacketSent } from '../player-input-latency'
 
 let remoteSenderStateMemory: StateMemory | undefined
 const maxInputFieldTextLength = 50

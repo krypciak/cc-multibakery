@@ -4,7 +4,7 @@ import { varsGlobalStateHandler } from './vars'
 import { areasGlobalStateHandler } from './areas'
 import { playerInfoGlobalStateHandler } from './player-info'
 import { partyGlobalStateHandler } from './party'
-import { playerInputLatencyGlobalStateHandler } from './player-input-latency'
+import { playerInputLatencyGlobalStateHandler } from '../server/player-input-latency'
 
 declare global {
     interface GlobalStateUpdatePacket {}
