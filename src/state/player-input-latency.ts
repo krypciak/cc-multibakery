@@ -26,44 +26,56 @@ export interface RemotePlayerInputLatencyEntry extends PlayerInputLatencyEntry {
 
 const playerInputLatencyData = new WeakMap<Client, Record<number, Partial<RemotePlayerInputLatencyEntry>>>()
 
-export function addPlayerInputLatencyTime<T extends keyof RemotePlayerInputLatencyEntry>(
-    client: Client,
-    sequenceNumber: number,
-    key: keyof RemotePlayerInputLatencyEntry,
-    value: NonNullable<RemotePlayerInputLatencyEntry[T]>
-) {
+function getPlayerInputLatencyEntry(client: Client, seq: InputSequenceNumber) {
     let rec = playerInputLatencyData.get(client)
     if (!rec) {
         rec = {}
         playerInputLatencyData.set(client, rec)
     }
-    const entry = (rec[sequenceNumber] ??= { username: client.username })
+    const entry = (rec[seq] ??= { username: client.username })
+    return entry
+}
+
+function printFinalStats(client: Client, seq: InputSequenceNumber) {
+    const entry = getPlayerInputLatencyEntry(client, seq)
+    const diff = entry.drawFinishedAt! - entry.inputAt!
+    const { action } = seqToInputInfoMap[seq]
+    console.log(client.username, seq, action, 'took:', diff, 'ms')
+
+    if (isPhysics(multi.server)) {
+        // prettier-ignore
+        console.log('total:', diff, 'ms', '\n',
+                'input -> apply', entry.applyAt! - entry.inputAt!, '\n',
+                'apply -> update', entry.updateAt! - entry.applyAt!, '\n',
+                'update -> drawAt', entry.drawAt! - entry.updateAt!, '\n',
+                'drawAt -> drawFinished', entry.drawFinishedAt! - entry.drawAt!)
+    } else {
+        // prettier-ignore
+        console.log('total:', diff, 'ms', '\n',
+                'input -> apply', entry.applyAt! - entry.inputAt!, '\n',
+                'apply -> update', entry.updateAt! - entry.applyAt!, '\n',
+                'update -> drawAt', entry.drawAt! - entry.updateAt!, '\n',
+                'drawAt -> drawFinished', entry.drawFinishedAt! - entry.drawAt!)
+    }
+}
+
+export function addPlayerInputLatencyTime<T extends keyof RemotePlayerInputLatencyEntry>(
+    client: Client,
+    seq: InputSequenceNumber,
+    key: keyof RemotePlayerInputLatencyEntry,
+    value: NonNullable<RemotePlayerInputLatencyEntry[T]>
+) {
+    const entry = getPlayerInputLatencyEntry(client, seq)
     // @ts-expect-error
     entry[key] = value
     // console.log(client.username, sequenceNumber, key, value)
 
     if (key == 'drawFinishedAt') {
         const diff = entry.drawFinishedAt! - entry.inputAt!
-        const { action } = seqToInputInfoMap[sequenceNumber]
-        console.log(client.username, sequenceNumber, action, 'took:', diff, 'ms')
-
-        if (isPhysics(multi.server)) {
-            // prettier-ignore
-            console.log('total:', diff, 'ms', '\n',
-                'input -> apply', entry.applyAt! - entry.inputAt!, '\n',
-                'apply -> update', entry.updateAt! - entry.applyAt!, '\n',
-                'update -> drawAt', entry.drawAt! - entry.updateAt!, '\n',
-                'drawAt -> drawFinished', entry.drawFinishedAt! - entry.drawAt!)
-        } else {
-            // prettier-ignore
-            console.log('total:', diff, 'ms', '\n',
-                'input -> apply', entry.applyAt! - entry.inputAt!, '\n',
-                'apply -> update', entry.updateAt! - entry.applyAt!, '\n',
-                'update -> drawAt', entry.drawAt! - entry.updateAt!, '\n',
-                'drawAt -> drawFinished', entry.drawFinishedAt! - entry.drawAt!)
-        }
-
+        // label name used in other places
         multi.perf.addTimePoint('player input latency', client.username, diff)
+
+        printFinalStats(client, seq)
     }
 
     return entry

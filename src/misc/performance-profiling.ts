@@ -9,7 +9,7 @@ function percentile(values: number[], p: number) {
 type Stats = ReturnType<typeof calcNumericStats>
 function calcNumericStats(timesOrig: number[]) {
     const times = [...timesOrig]
-    if (times.length == 0) throw new Error('calcNumericStats supplied 0 length array!')
+    if (times.length == 0) return { count: 0, p50: NaN, p95: NaN, p99: NaN, min: NaN, max: NaN, avg: NaN }
     times.sort((a, b) => a - b)
     const p50 = percentile(times, 0.5)
     const p95 = percentile(times, 0.95)
@@ -20,18 +20,28 @@ function calcNumericStats(timesOrig: number[]) {
     return { count: times.length, p50, p95, p99, min, max, avg }
 }
 
-function printStats(stats: Stats, indent: number = 0) {
-    const pad = '  '.repeat(indent)
-    console.log(
-        pad +
-            `count=${stats.count} ` +
-            `min=${stats.min.toFixed(2)} ` +
-            `p50=${stats.p50.toFixed(2)} ` +
-            `p95=${stats.p95.toFixed(2)} ` +
-            `p99=${stats.p99.toFixed(2)} ` +
-            `avg=${stats.avg.toFixed(2)} ` +
-            `max=${stats.max.toFixed(2)}`
-    )
+function statsToString(stats: Partial<Stats>, precision: number = 2) {
+    let str = ''
+    if (stats.count !== undefined) str += `count=${stats.count} `
+    if (stats.min !== undefined) str += `min=${stats.min.toFixed(precision)} `
+    if (stats.p50 !== undefined) str += `p50=${stats.p50.toFixed(precision)} `
+    if (stats.p95 !== undefined) str += `p95=${stats.p95.toFixed(precision)} `
+    if (stats.p99 !== undefined) str += `p99=${stats.p99.toFixed(precision)} `
+    if (stats.avg !== undefined) str += `avg=${stats.avg.toFixed(precision)} `
+    if (stats.max !== undefined) str += `max=${stats.max.toFixed(precision)} `
+    return str.trimEnd()
+}
+
+function pick<K extends PropertyKey, V extends Record<K, unknown>>(obj: V, keys?: K[]): Partial<V> {
+    if (!keys) return obj
+    const newObj = {} as Partial<V>
+    for (const key of keys) newObj[key] = obj[key]
+    return newObj
+}
+
+interface PrintOptions {
+    precision?: number
+    keys?: (keyof Stats)[]
 }
 
 class Perf {
@@ -48,7 +58,13 @@ class Perf {
         arr.push(time)
     }
 
-    printStats(label: string, prefix?: string) {
+    printStatsToString(label: string, prefix: string, { precision, keys }: PrintOptions = {}) {
+        const times = this.getTimesCircularBuffer(label, prefix).get()
+        const stats = calcNumericStats(times)
+        return statsToString(pick(stats, keys), precision)
+    }
+
+    printStats(label: string, prefix?: string, printOptions?: PrintOptions) {
         const rec = this.data[label]
         if (!rec) {
             console.error(`no such label: "${label}"`)
@@ -73,9 +89,7 @@ class Perf {
 
         for (const prefix of prefixes) {
             console.log(`  ${prefix}:`)
-            const times = this.getTimesCircularBuffer(label, prefix).get()
-            const stats = calcNumericStats(times)
-            printStats(stats, 2)
+            console.log('  '.repeat(2) + this.printStatsToString(label, prefix, printOptions))
         }
     }
 }

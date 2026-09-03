@@ -8,8 +8,9 @@ import { runTask, filterInstanceObjectsFromArray } from 'cc-instanceinator/src/i
 import {
     createClientTransportInfoLabel,
     createClientNetworkPacketTrafficLabel,
-    createClientPingLabel,
+    createClientConnectionPingLabel,
     createServerTpsLabel,
+    createClientInputLatencyPingLabel,
 } from './instance-label-draw'
 import { isUsernameValid } from '../misc/username-util'
 import { applyMapStateUpdatePacket } from '../state/map-state-handlers'
@@ -73,8 +74,9 @@ export class Client extends InstanceUpdateable {
         new dummy.BoxGuiAddon.BoxGuiAddon(this.inst.ig.game)
 
         createServerTpsLabel(this.inst)
+        createClientInputLatencyPingLabel(this)
         if (isRemote(multi.server)) {
-            createClientPingLabel(this)
+            createClientConnectionPingLabel(this)
             createClientTransportInfoLabel(this)
             createClientNetworkPacketTrafficLabel(this)
         }

@@ -3,6 +3,12 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add player input latency measurement
+- Add player input latency display (only available in PROFILE builds)
+
 ## [0.8.5] 2026-08-29
 
 ### Added

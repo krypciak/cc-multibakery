@@ -84,6 +84,20 @@ function registerOpts() {
                         name: 'Closest player for sound',
                         description: 'Determine the sound volume based on the closest player to the sound',
                     },
+
+                    profilingOptionsInfo: {
+                        type: 'INFO',
+                        name: 'Profiling options (available when built with PROFILE flag)',
+                        description: '',
+                    },
+                    showClientInputLatency: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Show input latency',
+                        description: 'Show client input latency (from key press to draw) in milliseconds',
+                        hidden: () => !PROFILE,
+                    },
+
                     serverList: {
                         type: 'JSON_DATA',
                         init: serverListDefault,

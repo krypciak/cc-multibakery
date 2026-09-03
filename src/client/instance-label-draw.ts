@@ -3,6 +3,7 @@ import type { Client } from './client'
 import { Opts } from '../options'
 import { assertRemote, isRemote } from '../server/remote/remote-server-types'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { assert } from '../misc/assert'
 
 abstract class BasicLabelDrawClass implements LabelDrawClass {
     abstract condition(): boolean
@@ -18,7 +19,7 @@ abstract class BasicLabelDrawClass implements LabelDrawClass {
     }
 }
 
-export function createClientPingLabel(client: Client) {
+export function createClientConnectionPingLabel(client: Client) {
     function getPing(): number {
         if (isRemote(multi.server)) {
             return multi.server.netManager.calculatePing()
@@ -26,17 +27,32 @@ export function createClientPingLabel(client: Client) {
             return 0
         }
     }
-    class MsPingLabelDrawClass extends BasicLabelDrawClass {
-        avg = new ValueAverageOverTime(60)
+    class MsConnectionPingLabelDrawClass extends BasicLabelDrawClass {
         condition = () => Opts.showClientMsPing
         getText(): string {
             const ping = getPing()
-            this.avg.pushValue(ping)
-            const msPing = Math.max(0, this.avg.getAverage().floor())
-            return `${msPing}ms`
+            const pingStr = Math.round(ping)
+            return `hRTT: ${pingStr}ms`
         }
     }
-    client.inst.labelDrawClasses.push(new MsPingLabelDrawClass())
+    client.inst.labelDrawClasses.push(new MsConnectionPingLabelDrawClass())
+}
+
+export function createClientInputLatencyPingLabel(client: Client) {
+    if (!PROFILE) return
+    class MsConnectionPingLabelDrawClass extends BasicLabelDrawClass {
+        condition = () => Opts.showClientMsPing
+        getText(): string {
+            const client = ig.client
+            assert(client)
+            const stats = multi.perf.printStatsToString('player input latency', client.username, {
+                precision: 0,
+                keys: ['count', 'min', 'p50', 'p95', 'p99'],
+            })
+            return 'pil: ' + stats
+        }
+    }
+    client.inst.labelDrawClasses.push(new MsConnectionPingLabelDrawClass())
 }
 
 export function createClientTransportInfoLabel(client: Client) {
