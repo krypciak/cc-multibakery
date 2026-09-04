@@ -59,10 +59,9 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.startShell()
     }
 
-    update() {
-        super.update()
-
+    runUpdate() {
         RemoteSender.collectAndSend()
+        super.runUpdate()
     }
 
     async onNetDisconnect(reason: string) {

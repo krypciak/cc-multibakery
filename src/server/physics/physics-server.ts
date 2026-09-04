@@ -89,10 +89,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         this.startShell()
     }
 
-    update() {
-        super.update()
-
+    deferredUpdate() {
         if (this.netManager) PhysicsSender.collectAndSend()
+
+        super.update()
     }
 
     private updateAnyRemoteClientsOn() {
