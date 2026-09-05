@@ -7,8 +7,8 @@ export class NetConnection {
     closed: boolean = false
     readyForSendingUpdate: boolean = false
 
-    bytesSent: bigint = 0n
-    bytesReceived: bigint = 0n
+    bytesSent: number = 0
+    bytesReceived: number = 0
 
     constructor(
         public wrapper: PacketWrapper,
@@ -22,10 +22,10 @@ export class NetConnection {
         this.clients.erase(client)
     }
 
-    onBytesSent(bytes: bigint) {
+    onBytesSent(bytes: number) {
         this.bytesSent += bytes
     }
-    onBytesReceived(bytes: bigint) {
+    onBytesReceived(bytes: number) {
         this.bytesReceived += bytes
     }
 

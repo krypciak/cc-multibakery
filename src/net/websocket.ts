@@ -104,7 +104,7 @@ export class WsNetTransport implements NetTransport {
 
     private handleRawMessage(buf: Uint8Array) {
         if (this.closed) return
-        this.listeners.onBytesReceived(BigInt(buf.byteLength))
+        this.listeners.onBytesReceived(buf.byteLength)
         this.listeners.onReceive(buf)
     }
 
@@ -114,7 +114,7 @@ export class WsNetTransport implements NetTransport {
 
     send(data: Uint8Array<ArrayBuffer>) {
         if (this.closed) return
-        this.listeners.onBytesSent(BigInt(data.byteLength))
+        this.listeners.onBytesSent(data.byteLength)
         this.ws.send(data)
     }
 

@@ -114,11 +114,11 @@ export class SocketIoNetTransport implements NetTransport {
         socket.on('disconnect', () => listeners.onClose('disconnect'))
         socket.on('update', data => listeners.onReceive(data))
 
-        function bytesFromData(data: any): bigint {
+        function bytesFromData(data: any): number {
             if (multi.server?.measureTraffic && data) {
-                return BigInt(new Blob([data]).size)
+                return new Blob([data]).size
             }
-            return 0n
+            return 0
         }
 
         // @ts-expect-error

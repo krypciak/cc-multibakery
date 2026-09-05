@@ -32,8 +32,8 @@ export type NetTransportClientSettings =
 
 export interface NetTransportListenerFunctions {
     onReceive(data: Uint8Array): void
-    onBytesSent(bytes: bigint): void
-    onBytesReceived(bytes: bigint): void
+    onBytesSent(bytes: number): void
+    onBytesReceived(bytes: number): void
     onClose(reason: string): void
 }
 export interface NetTransport {

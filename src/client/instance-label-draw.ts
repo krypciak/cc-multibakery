@@ -77,15 +77,15 @@ export function createClientNetworkPacketTrafficLabel(client: Client) {
         avgReceived = new ValueAverageOverTime(10)
         condition = () => Opts.showPacketNetworkTraffic
 
-        private lastSent: bigint = 0n
-        private lastReceived: bigint = 0n
+        private lastSent: number = 0
+        private lastReceived: number = 0
 
         getText(): string {
-            const bytesSent = server.netManager.conn?.bytesSent ?? 0n
-            const bytesReceived = server.netManager.conn?.bytesReceived ?? 0n
+            const bytesSent = server.netManager.conn?.bytesSent ?? 0
+            const bytesReceived = server.netManager.conn?.bytesReceived ?? 0
 
-            const bytesSentDiff = Number(bytesSent - this.lastSent)
-            const bytesReceivedDiff = Number(bytesReceived - this.lastReceived)
+            const bytesSentDiff = bytesSent - this.lastSent
+            const bytesReceivedDiff = bytesReceived - this.lastReceived
 
             this.lastSent = bytesSent
             this.lastReceived = bytesReceived
@@ -110,15 +110,15 @@ export function createClientNetworkPacketTrafficLabel(client: Client) {
     class NetworkPacketSizeLabelDrawClass extends BasicLabelDrawClass {
         condition = () => Opts.showPacketNetworkSize
 
-        private lastSent: bigint = 0n
-        private lastReceived: bigint = 0n
+        private lastSent: number = 0
+        private lastReceived: number = 0
 
         getText(): string {
-            const bytesSent = server.netManager.conn?.bytesSent ?? 0n
-            const bytesReceived = server.netManager.conn?.bytesReceived ?? 0n
+            const bytesSent = server.netManager.conn?.bytesSent ?? 0
+            const bytesReceived = server.netManager.conn?.bytesReceived ?? 0
 
-            const bytesSentDiff = Number(bytesSent - this.lastSent)
-            const bytesReceivedDiff = Number(bytesReceived - this.lastReceived)
+            const bytesSentDiff = bytesSent - this.lastSent
+            const bytesReceivedDiff = bytesReceived - this.lastReceived
 
             this.lastSent = bytesSent
             this.lastReceived = bytesReceived
