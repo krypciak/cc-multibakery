@@ -66,6 +66,7 @@ function createSettings(): PhysicsServerSettings {
     return {
         gameTps: 60,
         useAnimationFrameLoop: true,
+        useAnimationFrameAsFpsLimiter: true,
         displayServerInstance: false,
         displayMaps: false,
         forceMapsActive: false,

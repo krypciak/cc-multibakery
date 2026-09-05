@@ -27,16 +27,17 @@ class TryJoinRemote {
         assert(netInfo.details)
 
         const server = new RemoteServer({
+            gameTps: netInfo.details.gameTps,
+            forceConsistentTickTimes: netInfo.details.forceConsistentTickTimes,
+            useAnimationFrameAsFpsLimiter: true,
+            gameLoopIntervalTps: netInfo.details.gameLoopIntervalTps,
+
             displayServerInstance: Opts.serverDisplayServerInstance,
             displayMaps: Opts.serverDisplayMaps,
             forceMapsActive: Opts.serverForceMapsActive,
             displayInactiveMaps: Opts.serverDisplayInactiveMaps,
             displayClientInstances: Opts.serverDisplayClientInstances,
             displayRemoteClientInstances: Opts.serverDisplayRemoteClientInstances,
-
-            gameTps: netInfo.details.gameTps,
-            forceConsistentTickTimes: netInfo.details.forceConsistentTickTimes,
-            gameLoopIntervalTps: netInfo.details.gameLoopIntervalTps,
 
             netInfo: netInfo as any,
             modCompatibility: netInfo.details.modCompatibility,

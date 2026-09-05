@@ -25,6 +25,7 @@ export async function createPhysicsServerFromCurrentState() {
     const server = multi.createPhysicsServer({
         gameTps: Opts.serverGameTps,
         useAnimationFrameLoop: Opts.serverUseAnimationFrameLoop,
+        useAnimationFrameAsFpsLimiter: true,
         godmode: Opts.serverGodmode,
         copyNewPlayerStats: Opts.serverCopyNewPlayerStats,
         displayServerInstance: Opts.serverDisplayServerInstance,
