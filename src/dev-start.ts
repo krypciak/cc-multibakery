@@ -65,15 +65,17 @@ const defaultMap: MapTpInfo = {
 function createSettings(): PhysicsServerSettings {
     return {
         gameTps: 60,
+        forceConsistentTickTimes: false,
         useAnimationFrameLoop: true,
         useAnimationFrameAsFpsLimiter: true,
+
         displayServerInstance: false,
         displayMaps: false,
         forceMapsActive: false,
         displayInactiveMaps: false,
         displayClientInstances: true,
         displayRemoteClientInstances: true,
-        forceConsistentTickTimes: false,
+
         attemptCrashRecovery: false,
         mapSwitchDelay: Opts.serverMapSwitchDelay,
         godmode: true,
