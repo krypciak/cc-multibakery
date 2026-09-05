@@ -196,7 +196,7 @@ function registerOpts() {
                     },
                     serverNetTransportUseWebsocket: {
                         type: 'CHECKBOX',
-                        init: false,
+                        init: true,
                         name: 'Use websocket transport',
                         description: 'websocket is a new experimental alternative to socket.io',
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
@@ -388,6 +388,10 @@ function registerOpts() {
         },
         opts
     )
+    if (!Opts.serverNetTransportUseWebsocket) {
+        console.warn('[cc-multibakery] enabling experimental websocket net trasport')
+        Opts.serverNetTransportUseWebsocket = true
+    }
     return opts
 }
 

@@ -13,6 +13,7 @@
 
 - Improve base player input latency by about ~20 ms
 - Limit remote player input queue to 3 frames
+- Enable websocket transport by default on startup
 
 ## [0.8.5] 2026-08-29
 
