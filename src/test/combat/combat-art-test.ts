@@ -19,7 +19,7 @@ async function executeCombatArt(
     const input = e.inputManager
     assert(input instanceof dummy.input.Puppet.InputManager)
 
-    const emptyInput = {
+    const emptyInput: InputData = {
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
         presses: {
             special: false,
@@ -39,7 +39,7 @@ async function executeCombatArt(
             x: 0.3 * ig.system.width,
             y: 0.5 * ig.system.height,
         },
-    } satisfies Partial<InputData> as NonNullable<InputData>
+    }
 
     const combartArtTypeConfigMap: Record<string, { triggerActions: ig.Input.KnownAction[]; preFrames: number }> = {
         ATTACK: { triggerActions: [], preFrames: 0 },
@@ -61,7 +61,7 @@ async function executeCombatArt(
     input.mainInputData.pushInput(chargeInp)
 
     await multi.test.updateLoop(inst, preFrames, () => {
-        input.mainInputData.pushInput(ig.copy(chargeInp))
+        input.mainInputData.pushInput(chargeInp)
     })
 
     setAction('special', true)
@@ -83,7 +83,7 @@ async function executeCombatArt(
     const chargeLevel = parseInt(combatArt[combatArt.length - 1])
     const chargeTime = chargeLevel * 4
     await multi.test.updateLoop(inst, chargeTime, () => {
-        input.mainInputData.pushInput(ig.copy(chargeInp))
+        input.mainInputData.pushInput(chargeInp)
         for (const action of triggerActions) setAction(action, false)
     })
 

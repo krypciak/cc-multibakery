@@ -78,6 +78,7 @@ function printFinalStats(client: Client, seq: InputSequenceNumber) {
     }
     assert(entry.drawFinishedAt - entry.inputAt == sum, 'player input latency stats not summed correctly!')
 }
+
 function offsetPhysicsServerEntry(entry: Required<PlayerInputLatencyEntry>, clockOffset: number) {
     for (const [k, v] of Object.entries(entry).filter(([_k, v]) => typeof v === 'number') as [
         keyof Omit<PlayerInputLatencyEntry, 'username'>,

@@ -1,12 +1,9 @@
+import type { u24 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import type { InputSequenceNumber } from '../server/player-input-latency'
 import { cleanRecord, StateMemory } from '../state/state-util'
 import { InputManagerBlock } from './dummy-input-clone'
 import { defaultGamepadAxesDeadzones, defaultGamepadButtonDeadzones } from './fixed-Html5GamepadHandler'
-
-export type InputData = ReturnType<typeof getInput>
-
-export type GamepadManagerData = ReturnType<typeof getGamepadInput>
 
 declare global {
     namespace dummy {
@@ -58,6 +55,7 @@ prestart(() => {
     initInputManager()
 }, 4)
 
+/* ig.Input */
 export const disallowedInputActions: ig.Input.KnownAction[] = ['snapshot', 'savedialog', 'langedit', 'fullscreen']
 
 export function isInputData(data: any): data is InputData {
@@ -78,12 +76,28 @@ declare global {
         interface Input {
             memory?: StateMemory
 
-            getInput(this: this): InputData
+            getInput(this: this): InputDataPacket | undefined
         }
     }
 }
 
-function getInput(this: ig.Input) {
+export interface InputData {
+    currentDevice?: ig.INPUT_DEVICES
+    isUsingMouse?: boolean
+    isUsingKeyboard?: boolean
+    ignoreKeyboard?: boolean
+    mouseGuiActive?: boolean
+    mouse?: Vec2
+    keyups?: ig.Input['keyups']
+    presses?: ig.Input['presses']
+    locks?: ig.Input['locks']
+    actions?: ig.Input['actions']
+}
+export interface InputDataPacket extends InputData {
+    sequenceNumbers?: u24[]
+}
+
+function getInput(this: ig.Input): InputDataPacket | undefined {
     const memory = (this.memory = StateMemory.get(this.memory))
 
     let sequenceNumbers = PROFILE
@@ -93,7 +107,7 @@ function getInput(this: ig.Input) {
         : undefined
     if (sequenceNumbers?.length == 0) sequenceNumbers = undefined
 
-    const input = cleanRecord({
+    const input: InputDataPacket | undefined = cleanRecord({
         currentDevice: memory.diff(this.currentDevice),
 
         isUsingMouse: memory.diff(this.isUsingMouse),
@@ -108,13 +122,29 @@ function getInput(this: ig.Input) {
 
         sequenceNumbers,
     })
-    if (input) {
-        for (const action of disallowedInputActions) {
-            delete input.presses?.[action]
-            delete input.actions?.[action]
-        }
+    if (!input) return
+
+    for (const action of disallowedInputActions) {
+        delete input.presses?.[action]
+        delete input.actions?.[action]
     }
     return input
+}
+
+function setInput(on: InputData, input: InputData) {
+    if (!input) return
+
+    if (input.currentDevice !== undefined) on.currentDevice = input.currentDevice
+    if (input.isUsingMouse !== undefined) on.isUsingMouse = input.isUsingMouse
+    if (input.isUsingKeyboard !== undefined) on.isUsingKeyboard = input.isUsingKeyboard
+    if (input.ignoreKeyboard !== undefined) on.ignoreKeyboard = input.ignoreKeyboard
+    if (input.mouseGuiActive !== undefined) on.mouseGuiActive = input.mouseGuiActive
+    if (input.mouse !== undefined) Vec2.assign((on.mouse ??= Vec2.create()), input.mouse)
+
+    StateMemory.applyChangeRecord((on.presses ??= {}), input.presses)
+    StateMemory.applyChangeRecord((on.keyups ??= {}), input.keyups)
+    StateMemory.applyChangeRecord((on.locks ??= {}), input.locks)
+    StateMemory.applyChangeRecord((on.actions ??= {}), input.actions)
 }
 
 prestart(() => {
@@ -136,10 +166,9 @@ prestart(() => {
 declare global {
     namespace dummy.input.Puppet {
         interface Input extends ig.Input {
-            inputQueue: InputData[]
+            inputQueue: InputDataPacket[]
 
-            setInput(this: this, input: InputData | undefined): void
-            pushInput(this: this, input: InputData): void
+            pushInput(this: this, input: InputDataPacket): void
             popInput(this: this): void
         }
         interface InputConstructor extends ImpactClass<Input> {
@@ -154,48 +183,43 @@ prestart(() => {
             this.bindings = ig.input.bindings
             this.inputQueue = []
         },
-        setInput(input) {
-            if (!input) return
-
-            if (input.currentDevice !== undefined) this.currentDevice = input.currentDevice
-            if (input.isUsingMouse !== undefined) this.isUsingMouse = input.isUsingMouse
-            if (input.isUsingKeyboard !== undefined) this.isUsingKeyboard = input.isUsingKeyboard
-            if (input.ignoreKeyboard !== undefined) this.ignoreKeyboard = input.ignoreKeyboard
-            if (input.mouseGuiActive !== undefined) this.mouseGuiActive = input.mouseGuiActive
-            if (input.mouse !== undefined) Vec2.assign(this.mouse, input.mouse)
-
-            StateMemory.applyChangeRecord(this.presses, input.presses)
-            StateMemory.applyChangeRecord(this.keyups, input.keyups)
-            StateMemory.applyChangeRecord(this.locks, input.locks)
-            StateMemory.applyChangeRecord(this.actions, input.actions)
-        },
         pushInput(input) {
             this.inputQueue.push(input)
         },
         popInput() {
             const input = this.inputQueue.shift()
-            this.setInput(input)
+            if (!input) return
+            setInput(this, input)
         },
         clearPressed() {},
     })
 }, 5)
 
+/* ig.GamepadManager */
 declare global {
     namespace ig {
         interface GamepadManager {
             memory?: StateMemory
 
-            getInput(this: this): GamepadManagerData | undefined
+            getInput(this: this): GamepadInputData | undefined
         }
     }
 }
-function getGamepadInput(this: ig.GamepadManager) {
+
+export interface GamepadInputData {
+    axesStates?: number[]
+    buttonStates?: number[]
+    pressedStates?: boolean[]
+    releasedStates?: boolean[]
+}
+
+function getGamepadInput(this: ig.GamepadManager): GamepadInputData | undefined {
     const gp = this.activeGamepads[0]
     if (!gp) return
 
     const memory = (this.memory = StateMemory.get(this.memory))
 
-    const packet = cleanRecord({
+    const packet: GamepadInputData | undefined = cleanRecord({
         axesStates: memory.diffArray(gp.axesStates),
         buttonStates: memory.diffArray(gp.buttonStates),
         pressedStates: memory.diffArray(gp.pressedStates),
@@ -203,12 +227,21 @@ function getGamepadInput(this: ig.GamepadManager) {
     })
     return packet
 }
+
+function setGamepadInput(gp: GamepadInputData, input: GamepadInputData) {
+    if (!input) return
+    if (input.buttonStates) gp.buttonStates = input.buttonStates
+    if (input.axesStates) gp.axesStates = input.axesStates
+    if (input.pressedStates) gp.pressedStates = input.pressedStates
+    if (input.releasedStates) gp.releasedStates = input.releasedStates
+}
+
 prestart(() => {
     ig.GamepadManager.inject({ getInput: getGamepadInput })
 })
 
-export function isGamepadManagerData(_data: unknown): _data is GamepadManagerData {
-    const data = _data as GamepadManagerData
+export function isGamepadManagerData(_data: unknown): _data is GamepadInputData {
+    const data = _data as GamepadInputData
     if (typeof data != 'object') return false
 
     if (data.buttonStates && typeof data.buttonStates != 'object') return false
@@ -219,6 +252,7 @@ export function isGamepadManagerData(_data: unknown): _data is GamepadManagerDat
     return true
 }
 
+const emptyGamepadStates = new Array(16).fill(null).map(_ => false)
 function getEmptyGamepad(): ig.Gamepad {
     // prettier-ignore
     return {
@@ -226,18 +260,17 @@ function getEmptyGamepad(): ig.Gamepad {
         axesDeadzones: defaultGamepadAxesDeadzones(),
         buttonStates: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
         axesStates: [0, 0, 0, 0],
-        pressedStates: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
-        releasedStates: [false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false],
+        pressedStates: [...emptyGamepadStates],
+        releasedStates: [...emptyGamepadStates],
     } satisfies Partial<ig.Gamepad> as ig.Gamepad
 }
 
 declare global {
     namespace dummy.input.Puppet {
         interface GamepadManager extends ig.GamepadManager {
-            inputQueue: GamepadManagerData[]
+            inputQueue: GamepadInputData[]
 
-            pushInput(this: this, input: GamepadManagerData): void
-            setInput(this: this, input: GamepadManagerData): void
+            pushInput(this: this, input: GamepadInputData): void
             popInput(this: this): void
         }
         interface GamepadManagerConstructor extends ImpactClass<GamepadManager> {
@@ -252,25 +285,21 @@ prestart(() => {
             this.activeGamepads = [getEmptyGamepad()]
             this.inputQueue = []
         },
-        setInput(input) {
+        pushInput(input) {
+            this.inputQueue.push(input)
+        },
+        popInput() {
+            const input = this.inputQueue.shift()
+
             const gp = this.activeGamepads[0]
+
             for (let i = 0; i < 16; i++) {
                 gp.pressedStates[i] = false
                 gp.releasedStates[i] = false
             }
 
             if (!input) return
-            if (input.buttonStates) gp.buttonStates = input.buttonStates
-            if (input.axesStates) gp.axesStates = input.axesStates
-            if (input.pressedStates) gp.pressedStates = input.pressedStates
-            if (input.releasedStates) gp.releasedStates = input.releasedStates
-        },
-        pushInput(input) {
-            this.inputQueue.push(input)
-        },
-        popInput() {
-            const input = this.inputQueue.shift()
-            this.setInput(input)
+            setGamepadInput(gp, input)
         },
         isSupported() {
             return true

@@ -14,7 +14,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     const input = e.inputManager
     assert(input instanceof dummy.input.Puppet.InputManager)
 
-    const emptyInput = {
+    const emptyInput: InputData = {
         currentDevice: ig.INPUT_DEVICES.GAMEPAD,
         presses: {
             aim: false,
@@ -30,7 +30,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             right: false,
             down: false,
         },
-    } satisfies Partial<InputData> as NonNullable<InputData>
+    }
 
     const inp: InputData = ig.copy(emptyInput)
 

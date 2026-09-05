@@ -5,8 +5,8 @@ import {
     type KeyType,
 } from '../../client/client-option-model-link'
 import {
-    type GamepadManagerData,
-    type InputData,
+    type GamepadInputData,
+    type InputDataPacket,
     isGamepadManagerData,
     isInputData,
 } from '../../dummy/dummy-input-puppet'
@@ -41,8 +41,8 @@ export function isRemoteServerUpdatePacket(_data: unknown): _data is RemoteServe
 }
 
 export interface RemoteServerClientPacket {
-    input?: InputData
-    gamepad?: GamepadManagerData
+    input?: InputDataPacket
+    gamepad?: GamepadInputData
     inputFieldText?: string
     options?: PartialRecord<KeyType, f64> // ClientOptionModelValues
     ccuilibRingConf?: Record<u20, string> // CCUILibRingConf
