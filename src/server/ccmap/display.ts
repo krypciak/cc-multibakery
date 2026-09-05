@@ -118,3 +118,16 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.Gui.inject({
+        onDeferredUpdate() {
+            if (!ig.ccmap) return this.parent()
+
+            const inst = instanceinator.instances[instanceinator.id]
+            if (!inst.display) return
+
+            return this.parent()
+        },
+    })
+})
