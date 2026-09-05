@@ -45,7 +45,7 @@ export function createClientInputLatencyPingLabel(client: Client) {
         getText(): string {
             const client = ig.client
             assert(client)
-            const stats = multi.perf.printStatsToString('player input latency', client.username, {
+            const stats = multi.perf.printStatsToString('player input latency total', client.username, {
                 precision: 0,
                 keys: ['count', 'min', 'p50', 'p95', 'p99'],
             })

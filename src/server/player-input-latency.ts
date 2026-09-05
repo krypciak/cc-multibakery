@@ -37,45 +37,60 @@ function getPlayerInputLatencyEntry(client: Client, seq: InputSequenceNumber) {
     return entry
 }
 
-function printFinalStats(client: Client, seq: InputSequenceNumber) {
+function printFinalStatsAndAddToPerf(client: Client, seq: InputSequenceNumber) {
     const entry = getPlayerInputLatencyEntry(client, seq) as Required<RemotePlayerInputLatencyEntry>
     if (entry.updateAt === undefined) return
 
     const { action } = seqToInputInfoMap[seq]
 
+    // label name used in other places
+    const labelPrefix = 'player input latency'
+
     let sum = 0
-    function prettyDiff(a: number, b: number, includeInSum = true): number {
-        const diff = b - a
+    function prt(label: string, value1: number, value2: number, includeInSum: boolean = true): any[] {
+        let diff = value2 - value1
         if (includeInSum) sum += diff
-        return diff.round(1)
+
+        multi.perf.addTimePoint(labelPrefix + ' ' + label, client.username, diff)
+
+        diff = diff.round(1)
+
+        return [label, diff, 'ms', '\n']
     }
 
+    const printArray: any[] = [
+        labelPrefix,
+        action,
+        ...prt('total', entry.inputAt, entry.drawFinishedAt, false),
+        ...prt('input -> apply', entry.inputAt, entry.applyAt),
+    ]
     if (isPhysics(multi.server)) {
-        // prettier-ignore
-        console.log('player input latency', action, 'total:', prettyDiff(entry.inputAt, entry.drawFinishedAt, false), 'ms', '\n',
-                'input -> apply', prettyDiff(entry.inputAt, entry.applyAt), 'ms', '\n',
-                'apply -> update', prettyDiff(entry.applyAt, entry.updateAt), 'ms', '\n',
-                'update -> drawAt', prettyDiff(entry.updateAt, entry.drawAt), 'ms', '\n',
-                'drawAt -> drawFinished', prettyDiff(entry.drawAt, entry.drawFinishedAt), 'ms'
+        printArray.push(
+            //
+            ...prt('apply -> update', entry.applyAt, entry.updateAt)
         )
     } else {
         const serverEntry = entry.physicsServerEntry as Required<PlayerInputLatencyEntry>
-        // prettier-ignore
-        console.log('player input latency', action, 'total:', prettyDiff(entry.inputAt, entry.drawFinishedAt, false), 'ms', '\n',
-                'input -> apply', prettyDiff(entry.inputAt, entry.applyAt), 'ms', '\n',
-                'apply -> sent', prettyDiff(entry.applyAt, entry.sentAt), 'ms', '\n', 
-                '\n',
-                'sent -> physics input', prettyDiff(entry.sentAt, serverEntry.inputAt!), 'ms', '\n',
-                'physics input -> physics apply', prettyDiff(serverEntry.inputAt, serverEntry.applyAt!), 'ms', '\n',
-                'physics apply -> physics update', prettyDiff(serverEntry.applyAt, serverEntry.updateAt), 'ms', '\n',
-                'physics update -> physics sent', prettyDiff(serverEntry.updateAt, entry.physicsSentAt), 'ms', '\n', 
-                'physics sent -> received', prettyDiff(entry.physicsSentAt, entry.receivedAt), 'ms', '\n', 
-                '\n',
-                'received -> update', prettyDiff(entry.receivedAt, entry.updateAt), 'ms', '\n',
-                'update -> drawAt', prettyDiff(entry.updateAt, entry.drawAt), 'ms', '\n',
-                'drawAt -> drawFinished', prettyDiff(entry.drawAt, entry.drawFinishedAt), 'ms'
+        printArray.push(
+            ...prt('apply -> sent', entry.applyAt, entry.sentAt),
+            '\n',
+            ...prt('sent -> physics input', entry.sentAt, serverEntry.inputAt!),
+            ...prt('physics input -> physics apply', serverEntry.inputAt, serverEntry.applyAt!),
+            ...prt('physics apply -> physics update', serverEntry.applyAt, serverEntry.updateAt),
+            ...prt('physics update -> physics sent', serverEntry.updateAt, entry.physicsSentAt),
+            ...prt('physics sent -> received', entry.physicsSentAt, entry.receivedAt),
+            '\n',
+            ...prt('received -> update', entry.receivedAt, entry.updateAt)
         )
+
+        const totalNetLatency = serverEntry.inputAt! - entry.sentAt + (entry.receivedAt - entry.physicsSentAt)
+        multi.perf.addTimePoint(labelPrefix + ' total net latency', client.username, totalNetLatency)
     }
+    printArray.push(
+        ...prt('update -> drawAt', entry.updateAt, entry.drawAt),
+        ...prt('drawAt -> drawFinished', entry.drawAt, entry.drawFinishedAt)
+    )
+    console.log(...printArray)
     assert(entry.drawFinishedAt - entry.inputAt == sum, 'player input latency stats not summed correctly!')
 }
 
@@ -108,11 +123,7 @@ export function addPlayerInputLatencyTime<T extends keyof RemotePlayerInputLaten
     // console.log(client.username, sequenceNumber, key, value)
 
     if (key == 'drawFinishedAt') {
-        const diff = entry.drawFinishedAt! - entry.inputAt!
-        // label name used in other places
-        multi.perf.addTimePoint('player input latency', client.username, diff)
-
-        printFinalStats(client, seq)
+        printFinalStatsAndAddToPerf(client, seq)
     }
 
     return entry

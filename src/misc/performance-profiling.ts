@@ -54,6 +54,7 @@ class Perf {
     }
 
     addTimePoint(label: string, prefix: string, time: number) {
+        time = Math.max(time, 0)
         const arr = this.getTimesCircularBuffer(label, prefix)
         arr.push(time)
     }
