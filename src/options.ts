@@ -6,6 +6,7 @@ import { DEFAULT_HTTP_PORT, serverListDefault } from './client/menu/default-serv
 import { isPhysics } from './server/physics/physics-server-types'
 import { isRemote } from './server/remote/remote-server-types'
 import { isPortValid } from './net/web-server-utils'
+import { PacketWrapper } from './net/packet'
 
 export let Opts: ReturnType<typeof modmanager.registerAndGetModOptions<ReturnType<typeof registerOpts>>>
 
@@ -13,6 +14,13 @@ const defaultClientUsername = '@DEFAULT_USERNAME'
 
 export function getServerPingTimeout() {
     return Opts.serverPingTimeout == Opts.flatOpts.serverPingTimeout.max ? Infinity : Opts.serverPingTimeout
+}
+
+function updatePacketWrapperDelayValues() {
+    PacketWrapper.packetSendDelay = Opts.packetSendDelay
+    PacketWrapper.packetSendDelayJitter = Opts.packetSendDelayJitter
+    PacketWrapper.packetReceiveDelay = Opts.packetReceiveDelay
+    PacketWrapper.packetReceiveDelayJitter = Opts.packetReceiveDelayJitter
 }
 
 function registerOpts() {
@@ -89,6 +97,7 @@ function registerOpts() {
                         type: 'INFO',
                         name: 'Profiling options (available when built with PROFILE flag)',
                         description: '',
+                        hidden: () => !PROFILE,
                     },
                     showClientInputLatency: {
                         type: 'CHECKBOX',
@@ -281,6 +290,67 @@ function registerOpts() {
                         name: 'Attempt crash recovery',
                         description: 'Attempt crash recovery on server crash',
                     },
+
+                    packetReceiveDelay: {
+                        type: 'OBJECT_SLIDER',
+                        init: 0,
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        thumbWidth: 60,
+                        name: 'Packet receive delay',
+                        description: 'Add delay to receiving packets for testing purposes',
+                        customNumberDisplay(index) {
+                            return index + ' ms'
+                        },
+                        changeEvent: updatePacketWrapperDelayValues,
+                        hidden: () => !PROFILE,
+                    },
+                    packetReceiveDelayJitter: {
+                        type: 'OBJECT_SLIDER',
+                        init: 0,
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        thumbWidth: 60,
+                        name: 'Packet receive delay jitter',
+                        description: 'Packet receive delay jitter',
+                        customNumberDisplay(index) {
+                            return index + ' ms'
+                        },
+                        changeEvent: updatePacketWrapperDelayValues,
+                        hidden: () => !PROFILE,
+                    },
+                    packetSendDelay: {
+                        type: 'OBJECT_SLIDER',
+                        init: 0,
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        thumbWidth: 60,
+                        name: 'Packet send delay',
+                        description: 'Add delay to sending packets for testing purposes',
+                        customNumberDisplay(index) {
+                            return index + ' ms'
+                        },
+                        changeEvent: updatePacketWrapperDelayValues,
+                        hidden: () => !PROFILE,
+                    },
+                    packetSendDelayJitter: {
+                        type: 'OBJECT_SLIDER',
+                        init: 0,
+                        min: 0,
+                        max: 100,
+                        step: 1,
+                        thumbWidth: 60,
+                        name: 'Packet send delay jitter',
+                        description: 'Packet send delay jitter',
+                        customNumberDisplay(index) {
+                            return index + 'ms'
+                        },
+                        changeEvent: updatePacketWrapperDelayValues,
+                        hidden: () => !PROFILE,
+                    },
                 },
                 'physics server': {
                     serverGameTps: {
@@ -388,10 +458,13 @@ function registerOpts() {
         },
         opts
     )
+
     if (!Opts.serverNetTransportUseWebsocket) {
         console.warn('[cc-multibakery] enabling experimental websocket net trasport')
         Opts.serverNetTransportUseWebsocket = true
     }
+    updatePacketWrapperDelayValues()
+
     return opts
 }
 

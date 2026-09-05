@@ -31,7 +31,7 @@ export type NetTransportClientSettings =
       } & WsNetTransportClientSettings)
 
 export interface NetTransportListenerFunctions {
-    onReceive(data: Uint8Array): void
+    onReceive(data: Uint8Array<ArrayBuffer>): void
     onBytesSent(bytes: number): void
     onBytesReceived(bytes: number): void
     onClose(reason: string): void

@@ -112,7 +112,7 @@ export class WsNetTransport implements NetTransport {
         } else assert(false)
     }
 
-    private handleRawMessage(buf: Uint8Array) {
+    private handleRawMessage(buf: Uint8Array<ArrayBuffer>) {
         if (this.closed) return
         this.listeners.onBytesReceived(buf.byteLength)
         this.listeners.onReceive(buf)

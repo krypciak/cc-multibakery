@@ -41,7 +41,7 @@ export function createClientConnectionPingLabel(client: Client) {
 export function createClientInputLatencyPingLabel(client: Client) {
     if (!PROFILE) return
     class MsConnectionPingLabelDrawClass extends BasicLabelDrawClass {
-        condition = () => Opts.showClientMsPing
+        condition = () => Opts.showClientInputLatency
         getText(): string {
             const client = ig.client
             assert(client)

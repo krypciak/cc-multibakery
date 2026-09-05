@@ -29,7 +29,35 @@ interface PacketWrapperSettings {
     onData: (packet: NetPacket, callback?: (data: any) => void) => void
 }
 
+class DelayQueue {
+    private last: Promise<void> = Promise.resolve()
+    addDelay(delay: number, jitter: number) {
+        const actualDelay = delay + Math.random() * jitter
+
+        const start = performance.now()
+
+        this.last = this.last.then(() => {
+            const elapsed = performance.now() - start
+            const remaining = actualDelay - elapsed
+            return new Promise<void>(resolve => {
+                if (remaining <= 0) resolve()
+                else setTimeout(resolve, remaining)
+            })
+        })
+
+        return this.last
+    }
+}
+
 export class PacketWrapper {
+    static packetSendDelay: number = 0
+    static packetSendDelayJitter: number = 0
+    private packetSendDelayQueue = (PROFILE && new DelayQueue()) as DelayQueue
+
+    static packetReceiveDelay: number = 0
+    static packetReceiveDelayJitter: number = 0
+    private packetReceiveDelayQueue = (PROFILE && new DelayQueue()) as DelayQueue
+
     private ackQueue = new Map<u32, (packet: NetPacket) => void>()
     private ackIdCounter = 0
     private seqCounter = 0
@@ -43,7 +71,7 @@ export class PacketWrapper {
         this.heartbeat = new Heartbeat(this, heartbeatConfig)
     }
 
-    receive(buf: Uint8Array) {
+    private actualReceive(buf: Uint8Array<ArrayBuffer>) {
         const packet: NetPacket = PacketEncoderDecoder.decode(buf)
         this.heartbeat.onReceive(packet)
 
@@ -67,6 +95,16 @@ export class PacketWrapper {
             }
         } else {
             this.settings.onData(packet)
+        }
+    }
+
+    receive(buf: Uint8Array<ArrayBuffer>) {
+        if (!PROFILE) {
+            this.actualReceive(buf)
+        } else {
+            this.packetReceiveDelayQueue
+                .addDelay(PacketWrapper.packetReceiveDelay, PacketWrapper.packetReceiveDelayJitter)
+                .then(() => this.actualReceive(buf))
         }
     }
 
@@ -111,7 +149,17 @@ export class PacketWrapper {
                   },
         }
         const buf = PacketEncoderDecoder.encode(packet)
-        this.settings.sendData(buf)
+        this.sendData(buf)
+    }
+
+    private sendData(buf: Uint8Array<ArrayBuffer>) {
+        if (!PROFILE) {
+            this.settings.sendData(buf)
+        } else {
+            this.packetSendDelayQueue
+                .addDelay(PacketWrapper.packetSendDelay, PacketWrapper.packetSendDelayJitter)
+                .then(() => this.settings.sendData(buf))
+        }
     }
 
     destroy() {
