@@ -55,6 +55,8 @@ prestart(() => {
     initInputManager()
 }, 4)
 
+const maxInputQueueLength = 3
+
 /* ig.Input */
 export const disallowedInputActions: ig.Input.KnownAction[] = ['snapshot', 'savedialog', 'langedit', 'fullscreen']
 
@@ -185,6 +187,7 @@ prestart(() => {
         },
         pushInput(input) {
             this.inputQueue.push(input)
+            if (this.inputQueue.length > maxInputQueueLength) this.inputQueue.shift()
         },
         popInput() {
             const input = this.inputQueue.shift()
@@ -287,6 +290,7 @@ prestart(() => {
         },
         pushInput(input) {
             this.inputQueue.push(input)
+            if (this.inputQueue.length > maxInputQueueLength) this.inputQueue.shift()
         },
         popInput() {
             const input = this.inputQueue.shift()

@@ -9,6 +9,11 @@
 - Add player input latency measurement
 - Add player input latency display (only available in PROFILE builds)
 
+### Changed
+
+- Improve base player input latency by about ~20 ms
+- Limit remote player input queue to 3 frames
+
 ## [0.8.5] 2026-08-29
 
 ### Added
