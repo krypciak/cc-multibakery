@@ -18,6 +18,14 @@ interface SessionObject {
     transport: WsNetTransport
 }
 
+function getRawSocket(ws: WebSocketNode | WebSocket): TLSSocket | undefined {
+    if ('_socket' in ws && ws._socket) {
+        const rawSocket = ws._socket as TLSSocket | undefined
+        return rawSocket
+    }
+    return
+}
+
 export class WsNetTransportServer implements NetTransportServer {
     private wss!: WebSocketServer
     private sessions: SessionObject[] = []
@@ -44,6 +52,8 @@ export class WsNetTransportServer implements NetTransportServer {
         this.wss = new WebSocketServer({ server: httpServer })
 
         this.wss.on('connection', ws => {
+            getRawSocket(ws)?.setNoDelay(true)
+
             const sessionObject: SessionObject = { socket: ws, transport: undefined as any }
             this.sessions.push(sessionObject)
 
@@ -134,11 +144,6 @@ export class WsNetTransport implements NetTransport {
     }
 
     getConnectionInfo(): string {
-        if ('_socket' in this.ws) {
-            const rawSocket = this.ws._socket as TLSSocket
-            return rawSocket.remoteAddress ?? 'unknown'
-        } else {
-            return this.ws.url ?? 'unknown'
-        }
+        return getRawSocket(this.ws)?.remoteAddress ?? 'unknown'
     }
 }
