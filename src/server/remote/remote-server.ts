@@ -41,6 +41,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         if (!REMOTE) return
 
         await super.start()
+
+        if (PROFILE) multi.perf.storeRecentlyAddedData = true
     }
 
     @profile()
@@ -222,5 +224,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
     destroy() {
         super.destroy()
         this.netManager.destroy?.()
+
+        if (PROFILE) multi.perf.storeRecentlyAddedData = false
     }
 }

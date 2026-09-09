@@ -6,7 +6,7 @@
 
 ### Added
 
-- Add player input latency measurement
+- Add player input latency measurement (only available in PROFILE builds)
 - Add player input latency display (only available in PROFILE builds)
 - Add packet send/receive artificial latency sliders (only available in PROFILE builds)
 

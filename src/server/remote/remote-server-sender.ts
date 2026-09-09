@@ -16,7 +16,7 @@ import { RemoteUpdatePacketEncoderDecoder } from '../../net/binary/remote-update
 import { cleanRecord, StateMemory } from '../../state/state-util'
 import { assertRemote } from './remote-server-types'
 import { packetDeepEqual } from '../../net/packet-deep-equal'
-import { profile } from '../../misc/performance-profiling'
+import { profile, type SerializedPerfData } from '../../misc/performance-profiling'
 import { getCCUILibRingConfFrom } from '../../mod-compatibility/nax-ccuilib'
 import { playerInputProfilingOnRemotePacketSent } from '../player-input-latency'
 
@@ -26,6 +26,7 @@ const maxInputFieldTextLength = 50
 export interface RemoteServerUpdatePacket {
     clients?: RemoteServerClientPackets
     readyMaps?: MapName[]
+    profilingData?: SerializedPerfData
 }
 export type GenerateType = RemoteServerUpdatePacket
 export function isRemoteServerUpdatePacket(_data: unknown): _data is RemoteServerUpdatePacket {
@@ -100,6 +101,7 @@ export class RemoteSender {
                 (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
             )
             const ccuilibRingConf = memory.isFirstTime() ? getCCUILibRingConfFrom(client.inst.nax!) : undefined
+
             const packet: RemoteServerClientPacket = {
                 input,
                 gamepad,
@@ -114,9 +116,12 @@ export class RemoteSender {
             }
         }
 
+        const profilingData = PROFILE ? multi.perf.getRecentlyAddedDataAndClearIt() : undefined
+
         const packet: RemoteServerUpdatePacket = {
             clients: cleanRecord(clientPackets),
             readyMaps: multi.server.notifyReadyMaps,
+            profilingData,
         }
         multi.server.notifyReadyMaps = undefined
 

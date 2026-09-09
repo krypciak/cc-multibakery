@@ -170,7 +170,8 @@ prestart(() => {
                         newValue &&
                         target[key] !== newValue &&
                         ig.client?.dummy &&
-                        (!isPhysics(multi.server) || !ig.client.settings.remote)
+                        (!isPhysics(multi.server) || !ig.client.settings.remote) &&
+                        !ig.game.pausedVirtual
                     ) {
                         const now = performance.now()
 
@@ -283,7 +284,6 @@ prestart(() => {
     })
 })
 
-/* das */
 declare global {
     interface GlobalStateUpdatePacket {
         playerInputLatency?: Record<InputSequenceNumber, PlayerInputLatencyEntry>

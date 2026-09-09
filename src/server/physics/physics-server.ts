@@ -181,6 +181,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                 entry.add(map)
             }
         }
+
         for (const username in data.clients) {
             const client = multi.server.clients.get(username)
             if (!client) continue
@@ -215,6 +216,13 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
                     setCCUILibRingConf(client, packet.ccuilibRingConf)
                 }
             })
+        }
+
+        if (PROFILE && data.profilingData) {
+            multi.perf.addDataFromSerialized(
+                data.profilingData,
+                'REMOTE ' + (conn.clients[0]?.username ?? 'UNKNOWN') + ' '
+            )
         }
     }
 

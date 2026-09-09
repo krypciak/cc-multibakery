@@ -1,3 +1,4 @@
+import type { RecordSize, u20 } from 'ts-binarifier/src/type-aliases'
 import { prestart } from '../loading-stages'
 import { CircularBuffer } from './circular-buffer'
 
@@ -44,8 +45,14 @@ interface PrintOptions {
     keys?: (keyof Stats)[]
 }
 
+export type SerializedPerfData = Record<string, Record<string, number[] & RecordSize<u20>> & RecordSize<u20>> &
+    RecordSize<u20>
+
 class Perf {
     data: Record<string, Record<string, CircularBuffer<number>>> = {}
+
+    storeRecentlyAddedData = false
+    private recentlyAddedData: SerializedPerfData = {}
 
     getTimesCircularBuffer(label: string, prefix: string): CircularBuffer<number> {
         const rec = (this.data[label] ??= {})
@@ -57,6 +64,12 @@ class Perf {
         time = Math.max(time, 0)
         const arr = this.getTimesCircularBuffer(label, prefix)
         arr.push(time)
+
+        if (this.storeRecentlyAddedData) {
+            const rec = (this.recentlyAddedData[label] ??= {})
+            const buf = (rec[prefix] ??= [])
+            buf.push(time)
+        }
     }
 
     printStatsToString(label: string, prefix: string, { precision, keys }: PrintOptions = {}) {
@@ -91,6 +104,24 @@ class Perf {
         for (const prefix of prefixes) {
             console.log(`  ${prefix}:`)
             console.log('  '.repeat(2) + this.printStatsToString(label, prefix, printOptions))
+        }
+    }
+
+    getRecentlyAddedDataAndClearIt(): SerializedPerfData {
+        const data = this.recentlyAddedData
+        this.recentlyAddedData = {}
+        return data
+    }
+
+    addDataFromSerialized(data: SerializedPerfData, labelPrefix: string) {
+        for (const label in data) {
+            const rec = data[label]
+            for (const prefix in rec) {
+                const arr = this.getTimesCircularBuffer(labelPrefix + label, prefix)
+                for (const value of rec[prefix]) {
+                    arr.push(value)
+                }
+            }
         }
     }
 }
