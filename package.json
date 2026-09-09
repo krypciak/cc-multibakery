@@ -5,7 +5,7 @@
     "scripts": {
         "start": "bun build/build.ts build",
         "watch": "bun build/build.ts watch",
-        "build": "bun build/build.ts build dev=false",
+        "build": "bun build/build.ts build dev=false profile",
         "pack": "bun pack.ts",
         "regenerateBin": "bun build/build.ts build forceRegenerateBinaryEncodeDecodeScripts",
         "buildRemote": "bun build/build.ts build dev=false minifySyntax minifyWhitespace physics=false",

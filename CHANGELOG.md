@@ -12,6 +12,7 @@
 
 ### Changed
 
+- Enable PROILE build flag for release builds (temporary)
 - Improve base player input latency by about ~20 ms
 - Limit remote player input queue to 3 frames
 - Enable websocket transport by default on startup
