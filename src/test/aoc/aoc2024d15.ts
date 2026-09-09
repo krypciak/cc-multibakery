@@ -6,6 +6,7 @@ import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import type { InputData } from '../../dummy/dummy-input-puppet'
 import type { TestConfig } from '../test-bridge'
 import { prestart } from '../../loading-stages'
+import { copy } from '../../misc/object-copy'
 import configs from './aoc2024d15-configs.json'
 
 import './aoc-box'
@@ -32,9 +33,9 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         },
     }
 
-    const inp: InputData = ig.copy(emptyInput)
+    const inp: InputData = copy(emptyInput)
 
-    const moveInp = ig.copy(emptyInput)
+    const moveInp = copy(emptyInput)
     moveInp['actions']![dir] = true
     moveInp['presses']![dir] = true
 
@@ -44,7 +45,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     else if (dir == 'down') dirVec = { x: 0, y: 1 }
     else if (dir == 'up') dirVec = { x: 0, y: -1 }
 
-    input.mainInputData.pushInput(moveInp)
+    input.mainInputData.pushInput(copy(moveInp))
 
     let collided: string = 'none'
     await multi.test.updateLoop(inst, 12, () => {
@@ -70,7 +71,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
         }
         return true
     })
-    input.mainInputData.pushInput(emptyInput)
+    input.mainInputData.pushInput(copy(emptyInput))
 
     if (collided == 'box') {
         const holdTime = 20
@@ -84,11 +85,11 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
             if (frame >= holdTime) {
                 inp.actions![dir] = true
             }
-            input.mainInputData.pushInput(inp)
+            input.mainInputData.pushInput(copy(inp))
         })
     }
 
-    input.mainInputData.pushInput(emptyInput)
+    input.mainInputData.pushInput(copy(emptyInput))
 }
 
 type AocConfig = (typeof configs)[number] & { expectedMoves: Record<string, Vec2 & { sum: number }> }

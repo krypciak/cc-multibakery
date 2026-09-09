@@ -56,4 +56,4 @@ const remote: TestServerConfig = {
     testFilterRegex: /^remote/,
 }
 
-export const chosenTestServerConfig: TestServerConfig = withFilter(remote, /^remote Lea NEUTRAL/)
+export const chosenTestServerConfig: TestServerConfig = physics // withFilter(remote, /^remote Lea NEUTRAL/)

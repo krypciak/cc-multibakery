@@ -8,6 +8,7 @@ import type { TestConfig } from '../test-bridge'
 import { poststart } from '../../loading-stages'
 import type { StoragePlayerState } from '../../server/physics/storage/storage'
 import type { MapTpInfo } from '../../server/server-types'
+import { copy } from '../../misc/object-copy'
 
 const enemyType = 'autumn-rh.practice-bot'
 
@@ -50,7 +51,7 @@ async function executeCombatArt(
     const combatArtType = combatArt.split('_')[0]
     const { triggerActions, preFrames } = combartArtTypeConfigMap[combatArtType]
 
-    const chargeInp = ig.copy(emptyInput)
+    const chargeInp = copy(emptyInput)
     function setAction(action: ig.Input.KnownAction, value: boolean) {
         chargeInp['actions']![action] = value
         chargeInp['presses']![action] = value
@@ -58,10 +59,10 @@ async function executeCombatArt(
 
     for (const action of triggerActions) setAction(action, true)
 
-    input.mainInputData.pushInput(chargeInp)
+    input.mainInputData.pushInput(copy(chargeInp))
 
     await multi.test.updateLoop(inst, preFrames, () => {
-        input.mainInputData.pushInput(chargeInp)
+        input.mainInputData.pushInput(copy(chargeInp))
     })
 
     setAction('special', true)
@@ -83,11 +84,11 @@ async function executeCombatArt(
     const chargeLevel = parseInt(combatArt[combatArt.length - 1])
     const chargeTime = chargeLevel * 4
     await multi.test.updateLoop(inst, chargeTime, () => {
-        input.mainInputData.pushInput(chargeInp)
+        input.mainInputData.pushInput(copy(chargeInp))
         for (const action of triggerActions) setAction(action, false)
     })
 
-    input.mainInputData.pushInput(emptyInput)
+    input.mainInputData.pushInput(copy(emptyInput))
 
     function getSpawnedEntities(hexaProps?: boolean) {
         function shouldInclude(e: ig.Entity): boolean {
