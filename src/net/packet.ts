@@ -1,6 +1,7 @@
 import type { f64, RecordSize, u16, u24, u32, u8 } from 'ts-binarifier/src/type-aliases'
 import { PacketEncoderDecoder } from './binary/packet-encoder-decoder.generated'
 import { type HeartbeatConfig, Heartbeat } from './heartbeat'
+import { DelayQueue } from './delay-queue'
 
 export type PacketEventType = 'ack' | 'update' | 'join' | 'leave' | 'ping1' | 'ready'
 
@@ -27,26 +28,6 @@ export type GenerateType = NetPacket
 interface PacketWrapperSettings {
     sendData: (buf: Uint8Array<ArrayBuffer>) => void
     onData: (packet: NetPacket, callback?: (data: any) => void) => void
-}
-
-class DelayQueue {
-    private last: Promise<void> = Promise.resolve()
-    addDelay(delay: number, jitter: number) {
-        const actualDelay = delay + Math.random() * jitter
-
-        const start = performance.now()
-
-        this.last = this.last.then(() => {
-            const elapsed = performance.now() - start
-            const remaining = actualDelay - elapsed
-            return new Promise<void>(resolve => {
-                if (remaining <= 0) resolve()
-                else setTimeout(resolve, remaining)
-            })
-        })
-
-        return this.last
-    }
 }
 
 export class PacketWrapper {
