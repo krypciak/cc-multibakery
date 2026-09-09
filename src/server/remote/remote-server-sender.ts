@@ -78,6 +78,9 @@ function isRemoteServerInputPacket(_data: unknown): _data is RemoteServerClientP
 type RemoteServerClientPackets = Record<Username, RemoteServerClientPacket>
 
 export class RemoteSender {
+    private static lastProfilingDataSendTime: number = 0
+    private static sendProfilingDataEveryMs: number = 5e3
+
     @profile(undefined, 'remote sender', true)
     static collectAndSend() {
         assertRemote(multi.server)
@@ -116,7 +119,14 @@ export class RemoteSender {
             }
         }
 
-        const profilingData = PROFILE ? multi.perf.getRecentlyAddedDataAndClearIt() : undefined
+        let profilingData: SerializedPerfData | undefined
+        if (PROFILE) {
+            const now = performance.now()
+            if (now > this.lastProfilingDataSendTime + this.sendProfilingDataEveryMs) {
+                profilingData = multi.perf.getRecentlyAddedDataAndClearIt()
+                this.lastProfilingDataSendTime = now
+            }
+        }
 
         const packet: RemoteServerUpdatePacket = {
             clients: cleanRecord(clientPackets),
