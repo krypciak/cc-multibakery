@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add ig.ENTITY.WavePushPullBlock remote state
+
 ### Fixed
 
 - Fix crash on wave ball throw into ig.ENTITY.WaveTeleport

@@ -7,22 +7,22 @@ import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 
 declare global {
     namespace ig.ENTITY {
-        interface PushPullBlock extends StateMemory.MapHolder<StateKey> {}
+        interface WavePushPullBlock extends StateMemory.MapHolder<StateKey> {}
     }
     interface EntityStates {
-        'ig.ENTITY.PushPullBlock': Return
+        'ig.ENTITY.WavePushPullBlock': Return
     }
 }
 
 type Return = ReturnType<typeof getEntityState>
-function getEntityState(this: ig.ENTITY.PushPullBlock, player?: StateKey) {
+function getEntityState(this: ig.ENTITY.WavePushPullBlock, player?: StateKey) {
     const memory = StateMemory.getBy(this, player)
 
     return {
         ...igAnimatedEntity.getEntityState.call(this, memory),
     }
 }
-function setEntityState(this: ig.ENTITY.PushPullBlock, state: Return) {
+function setEntityState(this: ig.ENTITY.WavePushPullBlock, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 
     if (state.pos && !ig.shared.settingStateImmediately && !this.pushPullable.soundHandle) {
@@ -31,18 +31,18 @@ function setEntityState(this: ig.ENTITY.PushPullBlock, state: Return) {
 }
 
 prestart(() => {
-    ig.ENTITY.PushPullBlock.inject({
+    ig.ENTITY.WavePushPullBlock.inject({
         getEntityState,
         setEntityState,
     })
-    ig.ENTITY.PushPullBlock.create = () => {
-        throw new Error('ig.ENTITY.PushPullBlock.create not implemented')
+    ig.ENTITY.WavePushPullBlock.create = () => {
+        throw new Error('ig.ENTITY.WavePushPullBlock.create not implemented')
     }
-    registerNetEntity({ entityClass: ig.ENTITY.PushPullBlock })
+    registerNetEntity({ entityClass: ig.ENTITY.WavePushPullBlock })
 
     if (!REMOTE) return
 
-    ig.ENTITY.PushPullBlock.inject({
+    ig.ENTITY.WavePushPullBlock.inject({
         update() {
             if (!isRemote(multi.server)) return this.parent()
             if (!ig.mapShared.lastStatePacket?.states?.[this.netid]) this.pushPullable.stopSound()
