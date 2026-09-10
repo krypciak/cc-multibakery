@@ -11,6 +11,7 @@
 - Add ig.ENTITY.RotateBlocker remote state
 - Add ig.ENTITY.PushPullDest remote state
 - Add ig.ENTITY.Compressor remote state
+- Add sc.CompressedWaveEntity remote state
 
 ### Fixed
 

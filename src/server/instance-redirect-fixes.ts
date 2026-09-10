@@ -76,7 +76,14 @@ export function universalPlayerEntityFix<T extends ig.Class, ARGS extends unknow
         if (!multi.server || ig.client) return this.parent(...args)
 
         const inst = findClientInst.call(this, ...extraFindClientInstArgs.call(this, ...args), ...args)
-        if (inst) return runTask(inst, () => this.parent(...args))
+        if (inst) {
+            try {
+                inst.ig.ENTITY_KILL_CALL = ig.ENTITY_KILL_CALL
+                return runTask(inst, () => this.parent(...args))
+            } finally {
+                ig.ENTITY_KILL_CALL = inst.ig.ENTITY_KILL_CALL
+            }
+        }
 
         return this.parent(...args)
     }
