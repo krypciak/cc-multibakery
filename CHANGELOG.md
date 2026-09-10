@@ -8,6 +8,7 @@
 
 - Add ig.ENTITY.WavePushPullBlock remote state
 - Add ig.ENTITY.WaveTeleport remote state
+- Add ig.ENTITY.RotateBlocker remote state
 
 ### Fixed
 
