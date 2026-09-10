@@ -7,6 +7,7 @@
 ### Added
 
 - Add ig.ENTITY.WavePushPullBlock remote state
+- Add ig.ENTITY.WaveTeleport remote state
 
 ### Fixed
 
