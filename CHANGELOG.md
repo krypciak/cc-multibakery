@@ -9,10 +9,12 @@
 - Add ig.ENTITY.WavePushPullBlock remote state
 - Add ig.ENTITY.WaveTeleport remote state
 - Add ig.ENTITY.RotateBlocker remote state
+- Add ig.ENTITY.PushPullDest remote state
 
 ### Fixed
 
 - Fix crash on wave ball throw into ig.ENTITY.WaveTeleport
+- Disable push interact on push blocks after they enter their destination
 
 ## [0.8.6] 2026-09-09
 
