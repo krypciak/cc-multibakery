@@ -26,13 +26,12 @@ export function addCombatantParty(name: string, forceId?: number): sc.COMBATANT_
 function enemyPartyFix<T>(party: sc.COMBATANT_PARTY = 2, func: () => T): T {
     // @ts-expect-error
     sc.COMBATANT_PARTY.ENEMY = party
-
-    const ret = func()
-
-    // @ts-expect-error
-    sc.COMBATANT_PARTY.ENEMY = 2
-
-    return ret
+    try {
+        return func()
+    } finally {
+        // @ts-expect-error
+        sc.COMBATANT_PARTY.ENEMY = 2
+    }
 }
 
 function playerPartyFix<T>(party: sc.COMBATANT_PARTY = 1, func: () => T): T {
@@ -40,13 +39,12 @@ function playerPartyFix<T>(party: sc.COMBATANT_PARTY = 1, func: () => T): T {
 
     // @ts-expect-error
     sc.COMBATANT_PARTY.PLAYER = party
-
-    const ret = func()
-
-    // @ts-expect-error
-    sc.COMBATANT_PARTY.PLAYER = 1
-
-    return ret
+    try {
+        return func()
+    } finally {
+        // @ts-expect-error
+        sc.COMBATANT_PARTY.PLAYER = 1
+    }
 }
 
 prestart(() => {
