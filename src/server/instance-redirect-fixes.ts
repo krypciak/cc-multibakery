@@ -92,4 +92,5 @@ prestart(() => {
     ig.EVENT_STEP.REMOVE_PLAYER_CAMERA_TARGET.inject({ start: universalPlayerEntityFix() })
     ig.ACTION_STEP.REMOVE_PLAYER_CAMERA_TARGET.inject({ start: universalPlayerEntityFix() })
     ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({ start: universalPlayerEntityFix() })
+    ig.ENTITY.WaveTeleport.inject({ ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]) })
 })

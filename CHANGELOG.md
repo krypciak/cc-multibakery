@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix crash on wave ball throw into ig.ENTITY.WaveTeleport
+
 ## [0.8.6] 2026-09-09
 
 ### Added
