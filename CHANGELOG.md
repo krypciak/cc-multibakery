@@ -12,6 +12,7 @@
 - Add ig.ENTITY.PushPullDest remote state
 - Add ig.ENTITY.Compressor remote state
 - Add sc.CompressedWaveEntity remote state
+- Add sc.CompressedShockEntity remote state
 
 ### Fixed
 
