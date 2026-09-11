@@ -14,6 +14,10 @@
 - Add sc.CompressedWaveEntity remote state
 - Add sc.CompressedShockEntity remote state
 
+### Changed
+
+- Move player icon on map menu display to menu-ui-replacer
+
 ### Fixed
 
 - Fix crash on wave ball throw into ig.ENTITY.WaveTeleport

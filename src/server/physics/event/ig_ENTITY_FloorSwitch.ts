@@ -14,9 +14,9 @@ prestart(() => {
     if (!PHYSICS) return
 
     ig.ENTITY.FloorSwitch.inject({
-        collideWith(entity) {
+        collideWith(entity, dir) {
             this.tmpEntity = entity
-            this.parent(entity)
+            this.parent(entity, dir)
             this.tmpEntity = undefined
         },
         onGroundAdd(entity) {

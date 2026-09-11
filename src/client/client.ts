@@ -33,7 +33,6 @@ import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility
 import './injects'
 import './menu/server-list-menu'
 import './menu/pause/pause-screen'
-import './menu/map-overlay'
 
 export class Client extends InstanceUpdateable {
     username: Username

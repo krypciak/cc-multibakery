@@ -162,3 +162,12 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    sc.MapModel.inject({
+        getPlayerInfos() {
+            if (!multi.server) return this.parent()
+            return Object.values(multi.server.getPlayerInfoEntries())
+        },
+    })
+})
