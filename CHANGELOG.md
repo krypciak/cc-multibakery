@@ -11,6 +11,7 @@
 ### Fixed
 
 - Respect custom teleport time delay (for example longer delay when switching between areas)
+- Fix leave server button not working
 
 ## [0.8.7] 2026-09-13
 
