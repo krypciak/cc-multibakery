@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Respect custom teleport time delay (for example longer delay when switching between areas)
+
 ## [0.8.7] 2026-09-13
 
 ### Added

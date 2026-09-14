@@ -1,6 +1,7 @@
 import { deepEqual } from '../misc/deep-equal'
 import { assert } from '../misc/assert'
 import type { AfterAllFunc, DescribeFunc, ExpectFunc, TestFunc, TestRunner } from './test-runner'
+import { wait } from '../misc/wait'
 
 function importAsyncHooks(): typeof import('async_hooks') | undefined {
     const isBun = typeof global.Bun !== 'undefined'
@@ -10,10 +11,6 @@ function importAsyncHooks(): typeof import('async_hooks') | undefined {
 
 const async_hooks = importAsyncHooks()
 const AsyncLocalStorage = async_hooks?.AsyncLocalStorage
-
-async function wait(timeMs: number) {
-    await new Promise<void>(resolve => setTimeout(resolve, timeMs))
-}
 
 const RESET = '\x1b[0m'
 const BOLD = '\x1b[1m'

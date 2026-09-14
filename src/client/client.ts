@@ -29,6 +29,7 @@ import { profile } from '../misc/performance-profiling'
 import type { StoragePlayerEntityState } from '../server/physics/storage/storage'
 import { notifyRemoteAboutTeleport } from '../state/player-teleport'
 import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility/nax-ccuilib'
+import { wait } from '../misc/wait'
 
 import './injects'
 import './menu/server-list-menu'
@@ -225,11 +226,14 @@ export class Client extends InstanceUpdateable {
 
             this.ready = false
 
-            await Promise.all([
-                map.initIfNeeded(),
-                initialJoin ||
-                    new Promise<void>(resolve => setTimeout(resolve, multi.server.settings.mapSwitchDelay ?? 0)),
-            ])
+            let mapSwitchDelay = 0
+            if (!initialJoin) {
+                mapSwitchDelay = Math.max(
+                    multi.server.settings.mapSwitchDelay ?? 0,
+                    (this.inst.ig.game.teleportColor.timeIn ?? 0) * 1000
+                )
+            }
+            await Promise.all([map.initIfNeeded(), mapSwitchDelay == 0 || wait(mapSwitchDelay)])
             assert(map)
             assert(map.initialized)
             assert(!map.inst.destroyed)
