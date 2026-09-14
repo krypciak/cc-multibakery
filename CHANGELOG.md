@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Remove "Map switch delay" option in favor of "No map switch delay" option
+
 ### Fixed
 
 - Respect custom teleport time delay (for example longer delay when switching between areas)

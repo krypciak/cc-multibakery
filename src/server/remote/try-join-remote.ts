@@ -41,7 +41,6 @@ class TryJoinRemote {
 
             netInfo: netInfo as any,
             modCompatibility: netInfo.details.modCompatibility,
-            mapSwitchDelay: netInfo.details.mapSwitchDelay,
         })
         multi.setServer(server)
 

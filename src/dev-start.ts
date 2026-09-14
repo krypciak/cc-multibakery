@@ -77,7 +77,6 @@ function createSettings(): PhysicsServerSettings {
         displayRemoteClientInstances: true,
 
         attemptCrashRecovery: false,
-        mapSwitchDelay: Opts.serverMapSwitchDelay,
         godmode: true,
         disablePlayerIdlePose: true,
         save: true

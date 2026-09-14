@@ -27,7 +27,6 @@ export interface ServerSettings {
     displayRemoteClientInstances?: boolean
     defaultMap?: MapTpInfo
     attemptCrashRecovery?: boolean
-    mapSwitchDelay?: number
 }
 
 export interface ClientJoinData {

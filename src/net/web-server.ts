@@ -46,7 +46,6 @@ export class PhysicsHttpServer {
             gameLoopIntervalTps: multi.server.settings.gameLoopIntervalTps,
 
             modCompatibility: getModCompatibilityList(),
-            mapSwitchDelay: multi.server.settings.mapSwitchDelay,
         }
         assert(isServerDetailsRemote(this.serverDetails))
         const serverDetailsString: string = JSON.stringify(this.serverDetails)

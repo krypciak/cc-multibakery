@@ -407,19 +407,11 @@ function registerOpts() {
                         name: 'Force JSON communication',
                         description: 'Disable message binary encoding',
                     },
-                    serverMapSwitchDelay: {
-                        type: 'OBJECT_SLIDER',
-                        init: 300,
-                        min: 0,
-                        max: 1000,
-                        step: 100,
-                        thumbWidth: 60,
-                        name: 'Map switch delay',
-                        description: 'Map switch delay',
-                        customNumberDisplay(index) {
-                            // @ts-expect-error
-                            return `${this.min + index * this.step} ms`
-                        },
+                    serverNoMapSwitchDelay: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'No map switch delay',
+                        description: 'Override the map switch delay to 0',
                     },
                     serverPingTimeout: {
                         type: 'OBJECT_SLIDER',

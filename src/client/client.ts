@@ -30,6 +30,7 @@ import type { StoragePlayerEntityState } from '../server/physics/storage/storage
 import { notifyRemoteAboutTeleport } from '../state/player-teleport'
 import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility/nax-ccuilib'
 import { wait } from '../misc/wait'
+import { Opts } from '../options'
 
 import './injects'
 import './menu/server-list-menu'
@@ -43,6 +44,7 @@ export class Client extends InstanceUpdateable {
     ready: boolean = false
     reservedNetid?: EntityNetid
     kickReason?: string
+    noTeleportDelayOverride: boolean = false
 
     constructor(public settings: ClientSettings) {
         super()
@@ -182,15 +184,28 @@ export class Client extends InstanceUpdateable {
         return tpInfo
     }
 
-    private startTeleportOverlay() {
-        runTask(this.inst, () => {
-            const { r, g, b, timeIn, lighter } = ig.game.teleportColor
-            ig.overlay.setColor(r, g, b, 1, timeIn, lighter)
-            ig.game.currentTeleportColor.r = r
-            ig.game.currentTeleportColor.g = g
-            ig.game.currentTeleportColor.b = b
-            ig.game.teleportColor.r = ig.game.teleportColor.g = ig.game.teleportColor.b = 0
-            ig.game.teleportColor.lighter = false
+    private startTeleportOverlay(initialJoin?: boolean) {
+        return runTask(this.inst, () => {
+            const { r, g, b, lighter } = ig.game.teleportColor
+
+            let fadeIn: number = ig.game.teleportColor.timeIn
+            let fadeOut: number = ig.game.teleportColor.timeOut
+            if (initialJoin || this.noTeleportDelayOverride || Opts.serverNoMapSwitchDelay) fadeIn = fadeOut = 0
+            this.noTeleportDelayOverride = false
+
+            ig.game.teleportColor.timeIn = fadeIn
+            ig.game.teleportColor.timeIn = fadeOut
+
+            if (fadeIn != 0 || fadeOut != 0) {
+                ig.overlay.setColor(r, g, b, 1, fadeIn, lighter)
+                ig.game.currentTeleportColor.r = r
+                ig.game.currentTeleportColor.g = g
+                ig.game.currentTeleportColor.b = b
+                ig.game.teleportColor.r = ig.game.teleportColor.g = ig.game.teleportColor.b = 0
+                ig.game.teleportColor.lighter = false
+            }
+
+            return { fadeIn, fadeOut }
         })
     }
 
@@ -205,7 +220,7 @@ export class Client extends InstanceUpdateable {
     @profile((self, _, __) => `${self.username}`)
     async teleport(tpInfo: MapTpInfo, initialJoin?: boolean) {
         try {
-            this.startTeleportOverlay()
+            const { fadeIn, fadeOut } = this.startTeleportOverlay(initialJoin)
             runTask(this.inst, () => {
                 sc.model.enterTeleport()
                 ig.game.events.clear()
@@ -217,23 +232,17 @@ export class Client extends InstanceUpdateable {
             }
 
             const map = multi.server.getMap(tpInfo)
-            if (isPhysics(multi.server)) {
-                this.reservedNetid ??= map.reservePlayerNetid()
-                if (!initialJoin) {
-                    notifyRemoteAboutTeleport(this.username, this.reservedNetid, tpInfo)
-                }
-            }
 
             this.ready = false
 
-            let mapSwitchDelay = 0
-            if (!initialJoin) {
-                mapSwitchDelay = Math.max(
-                    multi.server.settings.mapSwitchDelay ?? 0,
-                    (this.inst.ig.game.teleportColor.timeIn ?? 0) * 1000
-                )
+            if (isPhysics(multi.server)) {
+                this.reservedNetid ??= map.reservePlayerNetid()
+                if (!initialJoin) {
+                    notifyRemoteAboutTeleport(this.username, { netid: this.reservedNetid, tpInfo, fadeIn, fadeOut })
+                }
             }
-            await Promise.all([map.initIfNeeded(), mapSwitchDelay == 0 || wait(mapSwitchDelay)])
+
+            await Promise.all([map.initIfNeeded(), fadeIn == 0 || wait(fadeIn * 1000)])
             assert(map)
             assert(map.initialized)
             assert(!map.inst.destroyed)
