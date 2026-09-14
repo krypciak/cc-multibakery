@@ -111,6 +111,7 @@ export class MapDataLoad {
 
     @profile((_self, inst, _) => `${inst.ig.game.mapName}`)
     private static async onLoadingComplete(inst: InstanceinatorInstance, loader: ig.Loader) {
+        if (inst.ig.ccmap) inst.ig.ccmap.forceUpdateForFrames = 1
         await scheduleTask(inst, () => {
             /* this.finalize() */
             loader.prevResourcesCnt = ig.resources.length

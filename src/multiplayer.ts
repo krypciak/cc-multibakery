@@ -18,6 +18,7 @@ import './steps/all'
 import './misc/icons'
 import './mod-compatibility/all'
 import './server/instance-redirect-fixes'
+import './server/multi-map-rendering'
 
 declare global {
     namespace multi {

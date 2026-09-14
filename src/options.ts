@@ -38,6 +38,12 @@ function registerOpts() {
                         name: 'Hide your username',
                         description: 'Hides your player username',
                     },
+                    multiMapRendering: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Multi map rendering',
+                        description: 'Load, render adjanced maps and unlock the camera',
+                    },
                     showClientMsPing: {
                         type: 'CHECKBOX',
                         init: true,

@@ -17,6 +17,7 @@ import { assertPhysics } from '../physics/physics-server-types'
 import type { TestConfig } from '../../test/test-bridge'
 import { createServerTpsLabel } from '../../client/instance-label-draw'
 import { profile } from '../../misc/performance-profiling'
+import { findNeighbouringMapsForMultiMapRendering } from '../multi-map-rendering'
 
 import './injects'
 
@@ -106,6 +107,7 @@ export class CCMap extends InstanceUpdateable {
     }
 
     async initIfNeeded() {
+        assert(instanceinator.id == multi.server.inst.id)
         if (this.initPromise) return this.initPromise
         this.initPromise = new Promise<void>(resolve => {
             this.initResolve = () => {
@@ -148,6 +150,7 @@ export class CCMap extends InstanceUpdateable {
 
         runTask(this.inst, () => {
             MapDataLoad.setMapDataFromLevelData(levelData, this.name)
+            findNeighbouringMapsForMultiMapRendering()
         })
         createServerTpsLabel(this.inst)
     }

@@ -30,6 +30,7 @@ import type { StoragePlayerEntityState } from '../server/physics/storage/storage
 import { notifyRemoteAboutTeleport } from '../state/player-teleport'
 import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility/nax-ccuilib'
 import { wait } from '../misc/wait'
+import { loadNeighbouringMapsForMultiMapRendering } from '../server/multi-map-rendering'
 import { Opts } from '../options'
 
 import './injects'
@@ -254,6 +255,8 @@ export class Client extends InstanceUpdateable {
             }
 
             this.tpInfo = tpInfo
+
+            void runTask(map.inst, () => loadNeighbouringMapsForMultiMapRendering())
 
             await runTask(map.inst, () => this.createPlayer())
 

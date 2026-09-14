@@ -123,7 +123,7 @@ export function notifyMapAndPlayerInsts(model: sc.Model, msg: number, data?: unk
 prestart(() => {
     ig.ENTITY.EventTrigger.inject({
         update() {
-            if (!ig.ccmap || ig.ccmap.ready) return this.parent()
+            if (!ig.ccmap || (ig.ccmap.ready && ig.ccmap.clients.length > 0)) return this.parent()
         },
     })
 })

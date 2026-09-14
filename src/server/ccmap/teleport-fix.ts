@@ -5,23 +5,39 @@ import { isRemote } from '../remote/remote-server-types'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
 
-export function teleportPlayerToProperMarker(
-    player: ig.ENTITY.Player | undefined,
-    inputMarker: Nullable<string> | undefined
-): string | undefined {
-    let marker: string | undefined
-    if (!player) return marker
+export function normalizeMapNameFromMarkerLike(mapName: string): string {
+    return mapName.replace(/\./g, '/')
+}
 
-    const markerLikes: MarkerLike[] = ig.game.shownEntities.filter(e => e && 'applyMarkerPosition' in e) as MarkerLike[]
+export function getMarkerLikeEntities(game: ig.Game): MarkerLike[] {
+    return game.shownEntities.filter(e => e && 'applyMarkerPosition' in e) as MarkerLike[]
+}
+
+export function getTeleportDestinationMarkerAndEntity(inputMarker: Nullable<string> | undefined): {
+    marker: Nullable<string> | undefined
+    markerLike?: MarkerLike
+} {
+    let marker: string | undefined
+
+    const markerLikes = getMarkerLikeEntities(ig.game)
 
     let found: MarkerLike | undefined = markerLikes.find(e => e.name == inputMarker)
     if (!found) found = markerLikes[0]
 
-    if (found && player) {
-        marker = found.name
-        found.applyMarkerPosition(player)
+    if (found) {
+        return { marker: found.name, markerLike: found }
     }
-    return marker
+    return { marker }
+}
+
+export function teleportPlayerToProperMarker(
+    player: ig.ENTITY.Player | undefined,
+    inputMarker: Nullable<string> | undefined
+) {
+    const { markerLike } = getTeleportDestinationMarkerAndEntity(inputMarker)
+    if (markerLike && player) {
+        markerLike.applyMarkerPosition(player)
+    }
 }
 
 prestart(() => {
@@ -63,7 +79,7 @@ prestart(() => {
 
             const client = player.getClient()
 
-            const destMapName = this.map.replace(/\./g, '/')
+            const destMapName = normalizeMapNameFromMarkerLike(this.map)
 
             runTask(multi.server.inst, () => client.teleport({ map: destMapName, marker: this.marker }))
         },
