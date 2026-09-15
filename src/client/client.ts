@@ -258,7 +258,7 @@ export class Client extends InstanceUpdateable {
 
             void runTask(map.inst, () => loadNeighbouringMapsForMultiMapRendering())
 
-            await runTask(map.inst, () => this.createPlayer())
+            runTask(map.inst, () => this.createPlayer())
 
             this.reservedNetid = undefined
 
@@ -268,7 +268,7 @@ export class Client extends InstanceUpdateable {
                 teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
             })
 
-            await this.linkMapToInstanceStage1(map)
+            this.linkMapToInstanceStage1(map)
 
             runTask(this.inst, () => sc.model.enterLoading())
 
@@ -289,8 +289,9 @@ export class Client extends InstanceUpdateable {
     }
 
     @profile((self, _) => `${self.username}`)
-    private async linkMapToInstanceStage1(map: CCMap) {
-        const levelData = await map.getLevelData() /* this will be sync */
+    private linkMapToInstanceStage1(map: CCMap) {
+        const levelData = map.levelData
+        assert(levelData)
         runTask(this.inst, () => {
             const mig = map.inst.ig
 

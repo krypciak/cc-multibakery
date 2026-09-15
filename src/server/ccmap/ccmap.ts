@@ -58,6 +58,7 @@ export class CCMap extends InstanceUpdateable {
     initialized: boolean = false
     initPromise!: Promise<void>
     private initResolve!: () => void
+    levelData?: sc.MapModel.Map
 
     ready: boolean = false
     private readyPromise!: Promise<void>
@@ -128,7 +129,7 @@ export class CCMap extends InstanceUpdateable {
     private async init() {
         this.display = new CCMapDisplay(this)
 
-        const levelDataPromise = this.getLevelData()
+        const levelDataPromise = CCMap.loadMapData(this.fsName)
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             {
@@ -146,10 +147,10 @@ export class CCMap extends InstanceUpdateable {
         this.inst.ig.game.entityTypeIdCounterMap = this.netidReserve.entityTypeIdCounterMap
         this.inst.ig.game.entitiesByNetid = this.netidReserve.entitiesByNetid
 
-        const levelData = await this.awaitLevelData(levelDataPromise)
+        this.levelData = await this.awaitLevelData(levelDataPromise)
 
         runTask(this.inst, () => {
-            MapDataLoad.setMapDataFromLevelData(levelData, this.name)
+            MapDataLoad.setMapDataFromLevelData(this.levelData!, this.name)
             findNeighbouringMapsForMultiMapRendering()
         })
         createServerTpsLabel(this.inst)
@@ -217,10 +218,6 @@ export class CCMap extends InstanceUpdateable {
 
     static mapNameToFilePath(name: string): string {
         return ig.getFilePath(name.toPath(ig.root + 'data/maps/', '.json') + ig.getCacheSuffix())
-    }
-
-    async getLevelData() {
-        return CCMap.loadMapData(this.fsName)
     }
 
     enter(client: Client) {
