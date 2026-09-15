@@ -55,14 +55,14 @@ export class CCMap extends InstanceUpdateable {
 
     display!: CCMapDisplay
 
+    /* initialized when instance is created */
     initialized: boolean = false
-    initPromise!: Promise<void>
-    private initResolve!: () => void
+    private initPromise?: Promise<void>
     levelData?: sc.MapModel.Map
 
+    /* ready when resources are loaded */
     ready: boolean = false
-    private readyPromise!: Promise<void>
-    private readyResolve!: () => void
+    private readyPromise?: Promise<void>
 
     noStateAppliedYet: boolean = true
     onLinkChange: OnLinkChange[] = []
@@ -109,15 +109,7 @@ export class CCMap extends InstanceUpdateable {
 
     async initIfNeeded() {
         assert(instanceinator.id == multi.server.inst.id)
-        if (this.initPromise) return this.initPromise
-        this.initPromise = new Promise<void>(resolve => {
-            this.initResolve = () => {
-                this.initialized = true
-                resolve()
-            }
-        })
-        await this.init()
-        this.initResolve()
+        return (this.initPromise ??= this.init())
     }
 
     @profile((self, _) => `${self.name}`, 'map')
@@ -154,19 +146,12 @@ export class CCMap extends InstanceUpdateable {
             findNeighbouringMapsForMultiMapRendering()
         })
         createServerTpsLabel(this.inst)
+
+        this.initialized = true
     }
 
     async loadResourcesIfNeeded() {
-        if (this.readyPromise) return this.readyPromise
-
-        this.readyPromise = new Promise<void>(resolve => {
-            this.readyResolve = () => {
-                this.ready = true
-                resolve()
-            }
-        })
-        await this.loadResources()
-        this.readyResolve()
+        return (this.readyPromise ??= this.loadResources())
     }
 
     @profile(self => `${self.name}`)
@@ -186,6 +171,8 @@ export class CCMap extends InstanceUpdateable {
         if (isRemote(multi.server)) {
             multi.server.onMapReady(this)
         }
+
+        this.ready = true
     }
 
     attemptRecovery(e: unknown) {

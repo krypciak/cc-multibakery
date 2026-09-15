@@ -448,7 +448,7 @@ export class Client extends InstanceUpdateable {
     }
 
     @profile(self => `${self.username}`)
-    private async createPlayer() {
+    private createPlayer() {
         assert(this.reservedNetid)
         if (isPhysics(multi.server)) {
             if (this.dummy && !this.dummy._killed) {
