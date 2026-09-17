@@ -24,7 +24,7 @@ import './injects'
 export class CCMap extends InstanceUpdateable {
     private static mapUniqueCounter: Record<string, number> = {}
     private static mapDataCache: Record<string, sc.MapModel.Map> = {}
-    private static async loadMapData(name: string): Promise<sc.MapModel.Map> {
+    static async loadMapData(name: string): Promise<sc.MapModel.Map> {
         let data = this.mapDataCache[name]
         if (data) {
             return {
@@ -66,7 +66,7 @@ export class CCMap extends InstanceUpdateable {
 
     noStateAppliedYet: boolean = true
     onLinkChange: OnLinkChange[] = []
-    forceUpdateForFrames: number = 0
+    private forceUpdateForFrames: number = 0
 
     private netidReserve = {
         entityTypeIdCounterMap: {} as ig.Game['entityTypeIdCounterMap'],
@@ -112,6 +112,10 @@ export class CCMap extends InstanceUpdateable {
         return (this.initPromise ??= this.init())
     }
 
+    readLevelData(): Promise<sc.MapModel.Map> {
+        return CCMap.loadMapData(this.fsName)
+    }
+
     @profile((self, _) => `${self.name}`, 'map')
     private async awaitLevelData(promise: Promise<sc.MapModel.Map>): Promise<sc.MapModel.Map> {
         return await promise
@@ -121,7 +125,7 @@ export class CCMap extends InstanceUpdateable {
     private async init() {
         this.display = new CCMapDisplay(this)
 
-        const levelDataPromise = CCMap.loadMapData(this.fsName)
+        const levelDataPromise = this.readLevelData()
         this.inst = await instanceinator.copy(
             multi.server.baseInst,
             {
@@ -175,6 +179,10 @@ export class CCMap extends InstanceUpdateable {
         this.ready = true
     }
 
+    setForceUpdateForFrames(frames: number) {
+        this.forceUpdateForFrames = Math.max(this.forceUpdateForFrames, frames)
+    }
+
     attemptRecovery(e: unknown) {
         if (!multi.server.settings.attemptCrashRecovery) throw e
 
@@ -217,7 +225,7 @@ export class CCMap extends InstanceUpdateable {
         this.clients.erase(client)
         if (prevLen == this.clients.length) return
 
-        this.forceUpdateForFrames = multi.server.settings.gameTps
+        this.setForceUpdateForFrames(multi.server.settings.gameTps)
 
         if (client.dummy) this.leaveEntity(client.dummy)
 

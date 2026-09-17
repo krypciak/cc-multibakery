@@ -171,3 +171,18 @@ prestart(() => {
         },
     })
 })
+
+declare global {
+    namespace ig {
+        var disableMasterOverlayGui: boolean | undefined
+    }
+}
+
+prestart(() => {
+    sc.MasterOverlayGui.inject({
+        updateDrawables(renderer) {
+            if (ig.disableMasterOverlayGui) return
+            return this.parent(renderer)
+        },
+    })
+})

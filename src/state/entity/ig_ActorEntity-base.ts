@@ -16,7 +16,8 @@ export function getEntityState(this: ig.ActorEntity, _player: StateKey | undefin
 export function setEntityState(this: ig.ActorEntity, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 
-    if (state.animationFixed !== undefined) this.animationFixed = state.animationFixed
+    if (state.animationFixed !== undefined)
+        this.animationFixed = state.animationFixed && !ig.shared.settingStateImmediately
 
     if (state.hasCurrentAction === false) {
         this.currentAction = null

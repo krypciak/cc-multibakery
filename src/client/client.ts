@@ -45,7 +45,7 @@ export class Client extends InstanceUpdateable {
     ready: boolean = false
     reservedNetid?: EntityNetid
     kickReason?: string
-    noTeleportDelayOverride: boolean = false
+    teleportOverrides: { noBlackout?: boolean; pos?: () => Vec2; face?: Vec2 } = {}
 
     constructor(public settings: ClientSettings) {
         super()
@@ -191,20 +191,20 @@ export class Client extends InstanceUpdateable {
 
             let fadeIn: number = ig.game.teleportColor.timeIn
             let fadeOut: number = ig.game.teleportColor.timeOut
-            if (initialJoin || this.noTeleportDelayOverride || Opts.serverNoMapSwitchDelay) fadeIn = fadeOut = 0
-            this.noTeleportDelayOverride = false
+            if (initialJoin || Opts.serverNoMapSwitchDelay) fadeIn = fadeOut = 0
 
             ig.game.teleportColor.timeIn = fadeIn
             ig.game.teleportColor.timeIn = fadeOut
 
-            if (fadeIn != 0 || fadeOut != 0) {
+            if ((fadeIn != 0 || fadeOut != 0) && !this.teleportOverrides.noBlackout) {
                 ig.overlay.setColor(r, g, b, 1, fadeIn, lighter)
-                ig.game.currentTeleportColor.r = r
-                ig.game.currentTeleportColor.g = g
-                ig.game.currentTeleportColor.b = b
-                ig.game.teleportColor.r = ig.game.teleportColor.g = ig.game.teleportColor.b = 0
-                ig.game.teleportColor.lighter = false
             }
+            ig.game.currentTeleportColor.r = r
+            ig.game.currentTeleportColor.g = g
+            ig.game.currentTeleportColor.b = b
+            ig.disableMasterOverlayGui = this.teleportOverrides.noBlackout
+            ig.game.teleportColor.r = ig.game.teleportColor.g = ig.game.teleportColor.b = 0
+            ig.game.teleportColor.lighter = false
 
             return { fadeIn, fadeOut }
         })
@@ -212,9 +212,11 @@ export class Client extends InstanceUpdateable {
 
     private stopTeleportOverlay() {
         runTask(this.inst, () => {
-            ig.overlay.setAlpha(0, ig.game.teleportColor.timeOut)
-            ig.game.teleportColor.timeOut = 0.3
-            ig.game.teleportColor.timeIn = 0.3
+            if (!this.teleportOverrides.noBlackout) {
+                ig.overlay.setAlpha(0, ig.game.teleportColor.timeOut)
+                ig.game.teleportColor.timeOut = 0.3
+                ig.game.teleportColor.timeIn = 0.3
+            }
         })
     }
 
@@ -243,7 +245,9 @@ export class Client extends InstanceUpdateable {
                 }
             }
 
-            await Promise.all([map.initIfNeeded(), fadeIn == 0 || wait(fadeIn * 1000)])
+            if (!map.initialized || fadeIn > 0) {
+                await Promise.all([map.initIfNeeded(), fadeIn == 0 || wait(fadeIn * 1000)])
+            }
             assert(map)
             assert(map.initialized)
             assert(!map.inst.destroyed)
@@ -256,9 +260,11 @@ export class Client extends InstanceUpdateable {
 
             this.tpInfo = tpInfo
 
-            void runTask(map.inst, () => loadNeighbouringMapsForMultiMapRendering())
+            runTask(map.inst, () => {
+                void loadNeighbouringMapsForMultiMapRendering()
 
-            runTask(map.inst, () => this.createPlayer())
+                this.createPlayer()
+            })
 
             this.reservedNetid = undefined
 
@@ -266,13 +272,21 @@ export class Client extends InstanceUpdateable {
 
             runTask(map.inst, () => {
                 teleportPlayerToProperMarker(this.dummy, this.tpInfo.marker)
+
+                if (this.teleportOverrides.pos) {
+                    const { x, y } = this.teleportOverrides.pos()
+                    this.dummy.setPos(x, y)
+                }
+                if (this.teleportOverrides.face) {
+                    Vec2.assign(this.dummy.face, this.teleportOverrides.face)
+                }
             })
 
             this.linkMapToInstanceStage1(map)
 
             runTask(this.inst, () => sc.model.enterLoading())
 
-            await map.loadResourcesIfNeeded()
+            if (!map.ready) await map.loadResourcesIfNeeded()
 
             this.ready = true
 
@@ -285,6 +299,8 @@ export class Client extends InstanceUpdateable {
             this.stopTeleportOverlay()
         } catch (e) {
             multi.server.onInstanceUpdateError(e)
+        } finally {
+            this.teleportOverrides = {}
         }
     }
 
@@ -311,10 +327,7 @@ export class Client extends InstanceUpdateable {
             ig.light.shadowProviders = []
             MapDataLoad.initMapsAndLevels(levelData)
             for (const levelName in mig.game.levels) {
-                const level = mig.game.levels[levelName]
-                if (level.collision) {
-                    ig.game.levels[levelName].collision = level.collision
-                }
+                ig.game.levels[levelName].collision = mig.game.levels[levelName].collision
             }
 
             ig.game.physics = mig.game.physics
@@ -395,6 +408,7 @@ export class Client extends InstanceUpdateable {
             ig.game.playerEntity.onPlayerPlaced()
             ig.game.preDrawMaps()
             for (const addon of ig.game.addons.levelLoaded) addon.onLevelLoaded(ig.game)
+
             ig.game.handleLoadingComplete()
 
             initMapInteractEntries(map.inst)
