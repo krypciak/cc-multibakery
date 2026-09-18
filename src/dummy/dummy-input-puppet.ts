@@ -55,7 +55,7 @@ prestart(() => {
     initInputManager()
 }, 4)
 
-const maxInputQueueLength = 3
+const maxInputQueueLength = 60
 
 /* ig.Input */
 export const disallowedInputActions: ig.Input.KnownAction[] = ['snapshot', 'savedialog', 'langedit', 'fullscreen']
