@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add seamless overworld feature (enable in Settings->Client)
+
 ### Changed
 
 - Remove "Map switch delay" option in favor of "No map switch delay" option

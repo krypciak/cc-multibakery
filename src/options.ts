@@ -41,8 +41,8 @@ function registerOpts() {
                     multiMapRendering: {
                         type: 'CHECKBOX',
                         init: false,
-                        name: 'Multi map rendering',
-                        description: 'Load, render adjanced maps and unlock the camera',
+                        name: 'Seamless overworld',
+                        description: 'Multi map rendering. Load, render adjanced outside maps and unlock the camera',
                     },
                     showClientMsPing: {
                         type: 'CHECKBOX',
