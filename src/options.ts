@@ -44,6 +44,12 @@ function registerOpts() {
                         name: 'Seamless overworld',
                         description: 'Multi map rendering. Load, render adjanced outside maps and unlock the camera',
                     },
+                    showClientLeaveArBox: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Show teleport popup',
+                        description: 'Show popup when other player teleports out of the map',
+                    },
                     showClientMsPing: {
                         type: 'CHECKBOX',
                         init: true,

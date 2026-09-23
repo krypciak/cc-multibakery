@@ -7,6 +7,7 @@
 ### Added
 
 - Add seamless overworld feature (enable in Settings->Client)
+- Add AR Box message popup with player destination on player teleport
 
 ### Changed
 

@@ -2,10 +2,11 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { isRemote } from '../remote/remote-server-types'
+import { getPreTeleportInfoForArMsg, showTeleportArMsg } from '../../client/teleport-arbox'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
 
-export function normalizeMapNameFromMarkerLike(mapName: string): string {
+export function normalizeMapName(mapName: string): string {
     return mapName.replace(/\./g, '/')
 }
 
@@ -79,19 +80,16 @@ prestart(() => {
 
             const client = player.getClient()
 
-            const destMapName = normalizeMapNameFromMarkerLike(this.map)
+            const destMapName = normalizeMapName(this.map)
+
+            const preTeleportInfo = getPreTeleportInfoForArMsg(client)
 
             runTask(multi.server.inst, () => client.teleport({ map: destMapName, marker: this.marker }))
+
+            showTeleportArMsg(client, destMapName, eventCall, preTeleportInfo)
         },
     })
 
-    /* fix the goddamn door not being openable after one player passes through it */
-    ig.ENTITY.Door.inject({
-        close() {
-            this.parent()
-            this.coll.ignoreCollision = false
-        },
-    })
     function fixCollideWith<T extends ig.Entity>(this: T & { parent: T['collideWith'] }, entity: ig.Entity, dir: Vec2) {
         if (!(entity instanceof dummy.DummyPlayer)) return this.parent(entity, dir)
 

@@ -1,7 +1,7 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import type { MapTpInfo } from './server-types'
-import { getTeleportDestinationMarkerAndEntity, normalizeMapNameFromMarkerLike } from './ccmap/teleport-fix'
+import { getTeleportDestinationMarkerAndEntity, normalizeMapName } from './ccmap/teleport-fix'
 import { assert } from '../misc/assert'
 import { Opts } from '../options'
 import { CCMap } from './ccmap/ccmap'
@@ -130,7 +130,7 @@ export function findNeighbouringMapsForMultiMapRendering() {
         ) as ig.ENTITY.TeleportGround[]
 
         for (const fromMarkerLike of teleportGrounds) {
-            const mapName = normalizeMapNameFromMarkerLike(fromMarkerLike.map ?? '')
+            const mapName = normalizeMapName(fromMarkerLike.map ?? '')
             if (!mapName || mapName == ig.game.mapName) continue
             const duplicate = !!entries.find(e => e.tpInfo.map == mapName)
 
