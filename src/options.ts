@@ -38,17 +38,22 @@ function registerOpts() {
                         name: 'Hide your username',
                         description: 'Hides your player username',
                     },
-                    multiMapRendering: {
-                        type: 'CHECKBOX',
-                        init: false,
-                        name: 'Seamless overworld',
-                        description: 'Multi map rendering. Load, render adjanced outside maps and unlock the camera',
-                    },
                     showClientLeaveArBox: {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Show teleport popup',
                         description: 'Show popup when other player teleports out of the map',
+                    },
+                    multiMapRenderingNote: {
+                        type: 'INFO',
+                        name: 'NOTE: Seamless overworld can be glithy, buggy and will not work well when connecting to a remote server!',
+                        description: '',
+                    },
+                    multiMapRendering: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Seamless overworld',
+                        description: 'Multi map rendering. Load, render adjanced outside maps and unlock the camera',
                     },
                     showClientMsPing: {
                         type: 'CHECKBOX',

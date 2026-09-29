@@ -76,7 +76,9 @@ prestart(() => {
         const username = state.username
         assert(username)
 
-        const player = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, 0, 0, 0, {
+        const { x, y, z } = state.pos ?? { x: 0, y: 0, z: 0 }
+
+        const player = ig.game.spawnEntity<dummy.DummyPlayer, dummy.DummyPlayer.Settings>(dummy.DummyPlayer, x, y, z, {
             netid,
             username,
             inputManager: new dummy.input.Puppet.InputManager(),

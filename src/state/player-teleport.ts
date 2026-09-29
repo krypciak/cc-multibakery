@@ -17,6 +17,7 @@ interface TeleportInfoEntry {
     tpInfo: MapTpInfo
     fadeIn: number
     fadeOut: number
+    noBlackout: boolean
 }
 
 let playerTeleports: Record<Username, TeleportInfoEntry> = {}
@@ -39,11 +40,12 @@ export const playerTeleportGlobalStateHandler: GlobalStateHandler = {
 
         assert(isRemote(multi.server))
         for (const username in packet.playerTeleport) {
-            const { tpInfo, netid, fadeIn, fadeOut } = packet.playerTeleport[username]
+            const { tpInfo, netid, fadeIn, fadeOut, noBlackout } = packet.playerTeleport[username]
             const client = multi.server.clients.get(username)
             if (!client?.ready) continue
             client.reservedNetid = netid
             runTask(client.inst, () => ig.game.setTeleportTime(fadeIn, fadeOut))
+            client.teleportOverrides.noBlackout = noBlackout
             client.teleport(tpInfo)
         }
     },

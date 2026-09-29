@@ -241,7 +241,13 @@ export class Client extends InstanceUpdateable {
             if (isPhysics(multi.server)) {
                 this.reservedNetid ??= map.reservePlayerNetid()
                 if (!initialJoin) {
-                    notifyRemoteAboutTeleport(this.username, { netid: this.reservedNetid, tpInfo, fadeIn, fadeOut })
+                    notifyRemoteAboutTeleport(this.username, {
+                        netid: this.reservedNetid,
+                        tpInfo,
+                        fadeIn,
+                        fadeOut,
+                        noBlackout: !!this.teleportOverrides.noBlackout,
+                    })
                 }
             }
 

@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Changed
+
+- Add partial support for seamless overworld on remote
+
 ### Removed
 
 - Remove socket.io net transport
