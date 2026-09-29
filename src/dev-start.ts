@@ -13,7 +13,7 @@ import { getModCompatibilityErrorListText, isModCompatibilityListSatisfied } fro
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',
-    marker: 'entrance',
+    // marker: 'entrance',
     // map: 'co-op-dng/intro-rooms/room-3',
     // marker: 'd1',
     // map: 'co-op-dng/template',
@@ -21,13 +21,20 @@ const defaultMap: MapTpInfo = {
     // map: 'multibakery/mba-pvp',
     // marker: 'to_pvp',
 
+    map: 'autumn/path6',
+    // map: 'autumn/path-7-1',
+    // map: 'co-op-dng/template',
     // map: 'tree-dng/f4/boss',
     // map: 'multibakery/mba-dev',
-    map: 'multibakery/mba-lobby',
+    // map: 'multibakery/mba-lobby',
     // map: 'multibakery/mba-testing',
     // map: 'multibakery/mba-outdoors',
+    // marker: 'right-1',
     // map: 'multibakery/mba-south',
     // map: 'bergen/hideout-lobby',
+    // map: 'hideout/path-1',
+    // marker: 'bottom',
+    // marker: 'right',
     // map: 'xpc/bonus/training-1v1',
     // map: 'rhombus-dng/room-1',
     // map: 'rhombus-dng/room-1-6',
@@ -36,7 +43,13 @@ const defaultMap: MapTpInfo = {
     // map: 'rhombus-sqr/central-inner',
     // map: 'cargo-ship/room2',
     // map: 'rookie-harbor/teleporter',
+    // map: 'bergen-trail/path-1-entrance',
+    // map: 'jungle/grove/grove-path-02',
+    // map: 'rookie-harbor/south',
     // map: 'rookie-harbor/center',
+    // map: 'rookie-harbor/north',
+    // map: 'rookie-harbor/west',
+    // marker: 'top1',
     // map: 'autumn/entrance',
     // map: 'autumn/path4',
     // map: 'autumn/guild/inner-fs-og',
@@ -79,12 +92,12 @@ function createSettings(): PhysicsServerSettings {
         attemptCrashRecovery: false,
         godmode: true,
         disablePlayerIdlePose: true,
-        save: true
+        save: false
             ? undefined
             : {
                   manualSaving: true,
                   automaticallySave: true,
-                  loadFromSlot: 0,
+                  loadFromSlot: 1,
               },
         netInfo: false
             ? undefined
