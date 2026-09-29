@@ -215,13 +215,6 @@ function registerOpts() {
                         description: '',
                         hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
                     },
-                    serverNetTransportUseWebsocket: {
-                        type: 'CHECKBOX',
-                        init: true,
-                        name: 'Use websocket transport',
-                        description: 'websocket is a new experimental alternative to socket.io',
-                        hidden: (): boolean => !PHYSICSNET || !Opts.serverEnableNet,
-                    },
                 },
                 server: {
                     info: {
@@ -463,10 +456,6 @@ function registerOpts() {
         opts
     )
 
-    if (!Opts.serverNetTransportUseWebsocket) {
-        console.warn('[cc-multibakery] enabling experimental websocket net trasport')
-        Opts.serverNetTransportUseWebsocket = true
-    }
     updatePacketWrapperDelayValues()
 
     return opts

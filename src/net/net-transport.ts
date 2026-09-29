@@ -2,33 +2,19 @@ import { assert } from '../misc/assert'
 import type { NetTransportServer } from './net-manager-physics'
 import type { NetTransportClient } from './net-manager-remote'
 import {
-    SocketIoNetTransportClient,
-    SocketIoNetTransportServer,
-    type SocketIoNetTransportClientSettings,
-    type SocketIoNetTransportServerSettings,
-} from './socket-io'
-import {
     WsNetTransportClient,
     WsNetTransportServer,
     type WsNetTransportClientSettings,
     type WsNetTransportServerSettings,
 } from './websocket'
 
-export type NetTransportServerSettings =
-    | ({
-          type: 'socket.io'
-      } & SocketIoNetTransportServerSettings)
-    | ({
-          type: 'websocket'
-      } & WsNetTransportServerSettings)
+export type NetTransportServerSettings = {
+    type: 'websocket'
+} & WsNetTransportServerSettings
 
-export type NetTransportClientSettings =
-    | ({
-          type: 'socket.io'
-      } & SocketIoNetTransportClientSettings)
-    | ({
-          type: 'websocket'
-      } & WsNetTransportClientSettings)
+export type NetTransportClientSettings = {
+    type: 'websocket'
+} & WsNetTransportClientSettings
 
 export interface NetTransportListenerFunctions {
     onReceive(data: Uint8Array<ArrayBuffer>): void
@@ -45,7 +31,6 @@ export interface NetTransport {
 }
 
 const netTransportMap = {
-    'socket.io': { client: SocketIoNetTransportClient, server: SocketIoNetTransportServer },
     websocket: { client: WsNetTransportClient, server: WsNetTransportServer },
 } as const
 

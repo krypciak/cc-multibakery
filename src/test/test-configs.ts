@@ -45,7 +45,7 @@ const remote: TestServerConfig = {
         netInfo: {
             connection: {
                 httpPort: 0,
-                transport: { type: 'socket.io' },
+                transport: { type: 'websocket' },
             },
             details: {
                 title: 'tests',

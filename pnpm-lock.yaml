@@ -4,9 +4,6 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
-overrides:
-  ws: ^8.21.3
-
 importers:
 
   .:
@@ -23,9 +20,6 @@ importers:
       '@types/ws':
         specifier: ^8.18.1
         version: 8.18.1
-      cc-instanceinator:
-        specifier: github:krypciak/cc-instanceinator
-        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/7f32a5f5559e9ec62355a5fd1905ef72e7e45be2
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
         version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340
@@ -44,15 +38,6 @@ importers:
       nax-ccuilib:
         specifier: github:krypciak/nax-ccuilib
         version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b74236a046774647776158c664d0d730f8368a54
-      socket.io:
-        specifier: ^4.8.3
-        version: 4.8.3
-      socket.io-adapter:
-        specifier: ^2.5.8
-        version: 2.5.8
-      socket.io-client:
-        specifier: ^4.8.3
-        version: 4.8.3
       spdy:
         specifier: ^4.0.2
         version: 4.0.2
@@ -69,6 +54,9 @@ importers:
       bun:
         specifier: ^1.3.14
         version: 1.3.14
+      cc-instanceinator:
+        specifier: github:krypciak/cc-instanceinator
+        version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/3027ca35ee91237e03880d8e8220a68371449f99
       crosscode-web:
         specifier: github:krypciak/crosscode-web
         version: https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c
@@ -466,9 +454,6 @@ packages:
   '@simple-git/argv-parser@1.1.1':
     resolution: {integrity: sha512-Q9lBcfQ+VQCpQqGJFHe5yooOS5hGdLFFbJ5R+R5aDsnkPCahtn1hSkMcORX65J2Z5lxSkD0lQorMsncuBQxYUw==}
 
-  '@socket.io/component-emitter@3.1.2':
-    resolution: {integrity: sha512-9BCxFwvbGg/RsZK9tjXd8s4UcwR0MWeFQ1XEKIQVVvAGJyINdrqKMcTRyLoK8Rse1GjzLV9cwjWV1olXRWEXVA==}
-
   '@types/bun@1.3.14':
     resolution: {integrity: sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw==}
 
@@ -477,9 +462,6 @@ packages:
 
   '@types/chrome@0.2.9':
     resolution: {integrity: sha512-6rXrDPkkWv4D2Q23HqT+iED4voODU5CpOSc2VFgKyecSFItuEsIBvz9CY6jUQ3dd+Q7zo1bnCE9pKRMtkYut5g==}
-
-  '@types/cors@2.8.19':
-    resolution: {integrity: sha512-mFNylyeyqN93lfe/9CSxOGREz8cpzAhH+E93xJ4xWQf62V8sQ/24reV2nyzUWM6H6Xji+GGHpkbLe7pVoUEskg==}
 
   '@types/filesystem@0.0.36':
     resolution: {integrity: sha512-vPDXOZuannb9FZdxgHnqSwAG/jvdGM8Wq+6N4D/d80z+D4HWH+bItqsZaVRQykAn6WEVeEkLm2oQigyHtgb0RA==}
@@ -514,14 +496,6 @@ packages:
   '@types/ws@8.18.1':
     resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
 
-  accepts@1.3.8:
-    resolution: {integrity: sha512-PYAthTa2m2VKxuvSD3DPC/Gy+U+sOA1LAuT8mkmRuvw+NACSaeXEQ+NHcVF7rONl6qcaxV3Uuemwawk+7+SJLw==}
-    engines: {node: '>= 0.6'}
-
-  base64id@2.0.0:
-    resolution: {integrity: sha512-lGe34o6EHj9y3Kts9R4ZYs/Gr+6N7MCaMlIFA3F1R2O5/m7K06AxfSeO5530PEERE6/WyEg3lsuyw4GHlPZHog==}
-    engines: {node: ^4.5.0 || >= 5.9}
-
   bun-types@1.3.14:
     resolution: {integrity: sha512-4N0ig0fEomHt5R0KCFWjovxow98rIoRwKolrYdCcknNwMekCXRnWEUvgu5soYV8QXtVsrUD8B95MBOZGPvr6KQ==}
 
@@ -531,16 +505,16 @@ packages:
     os: [darwin, linux, android, freebsd, win32]
     hasBin: true
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/7f32a5f5559e9ec62355a5fd1905ef72e7e45be2:
-    resolution: {gitHosted: true, integrity: sha512-/j7bVNymtvwkVzc3/GW6tJm5M1o8JutmPBS3QiudLH/iCdpGreQtSDU0Z8DQO0qrpp8Ng6UIOyiBk+OUpFkh5g==, tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/7f32a5f5559e9ec62355a5fd1905ef72e7e45be2}
-    version: 1.1.6
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/3027ca35ee91237e03880d8e8220a68371449f99:
+    resolution: {gitHosted: true, integrity: sha512-XIO0ePmHyNxXdjjLVDX0yGY7YupNS6ooB2ztq7maiUY2zwBHWBzHSC57xVJDtiMtrDXud7jbx8z2C+aBlU4mMw==, tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/3027ca35ee91237e03880d8e8220a68371449f99}
+    version: 1.1.7
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340:
     resolution: {gitHosted: true, integrity: sha512-oXPNV1nnSwuzTK2ihfne7g+eQF+i1Ni0AEEXDpz/24p6y92O/paVFZENHjRa07BnhI6OsRtSNqraUlyN5TRnrw==, tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340}
     version: 1.2.3
 
   cc-map-screenshot@https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d}
+    resolution: {gitHosted: true, integrity: sha512-bg9k3HYtdoEWvvGmtjQexS4DeGWI6AMfQsBdwjE2Mwn0WEJdyRNGjl3Cu1ctNfm8+lepdNr9qieU/qLjdVZ8hg==, tarball: https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d}
     version: 1.0.2
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/0beba4bf60ccf74b3931bad3a446534f131990c4:
@@ -548,20 +522,16 @@ packages:
     version: 1.0.0
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e}
+    resolution: {gitHosted: true, integrity: sha512-QLocv18SGUnLnE5DQsJPdKP8PGkJLQxsiA6/LXfNgX9TvSHwExyjMJ8ZmsUWw92moJ6XUwee/n6af+7nzn8POQ==, tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e}
     version: 1.0.0
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e}
+    resolution: {gitHosted: true, integrity: sha512-qzZMhwvQX+BUHG8+zuSlYMnG5LmEKhSEeeysvWcxcfKWUV4eQ14ClvbSuv+dzQ5uEPDB2tRGF+GBOItQJVGq+w==, tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e}
     version: 1.2.1
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999:
     resolution: {gitHosted: true, integrity: sha512-QjfJ7YmWdekM9ITd2tcWs+1rlp5JRLwZBZQz5E++haD5vIzQ2n3hwWcP8/ckAwu7wpV9x8a/IIi1Oz5o3iY5hg==, tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999}
     version: 1.2.0
-
-  cookie@0.7.2:
-    resolution: {integrity: sha512-yki5XnKuf750l50uGTllt6kKILY4nQ1eNIQatoXEByZ5dWgnKqbnqmTrBE5B4N7lrMJKQ2ytWMiTO2o0v6Ew/w==}
-    engines: {node: '>= 0.6'}
 
   core-js@3.50.0:
     resolution: {integrity: sha512-BRWgOLKkFeCgRudR6zrs8p9XJZcE14grzKMMssoYrk6krtuEZ7MTKPIY5RzOnqsEKIR9kst7wNzphttraT+Yqw==}
@@ -569,12 +539,8 @@ packages:
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
 
-  cors@2.8.6:
-    resolution: {integrity: sha512-tJtZBBHA6vjIAaF6EnIaq6laBBP9aq/Y3ouVJjEfoHbRBcHBAHYcMh/w8LDrk2PvIMMq8gmopa5D4V8RmbrxGw==}
-    engines: {node: '>= 0.10'}
-
   crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c}
+    resolution: {gitHosted: true, integrity: sha512-Blekzo8Rwbtwc7NoEVJk+WZzqz5fsmJT/xKhNFWyKcmHBDe+mKO3L/n2+qgt4AjkuT31yAMSumhxQp3K3M8Y5A==, tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c}
     version: 0.8.0
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/497544ab69379c66d48f9bff58def3a73f3fe14c:
@@ -582,7 +548,7 @@ packages:
     version: 1.0.0
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e:
-    resolution: {gitHosted: true, tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e}
+    resolution: {gitHosted: true, integrity: sha512-7L6/rt3JzDsp4h1M28W98pLG2z1iLWg5ZQb5WJNNrs03G8JJnFFUunNzT3e7NNSfcqTO8xv5HOb4MEP1c82RMw==, tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e}
     version: 1.0.0
 
   debug@4.4.3:
@@ -596,17 +562,6 @@ packages:
 
   detect-node@2.1.0:
     resolution: {integrity: sha512-T0NIuQpnTvFDATNuHN5roPwSBG83rFsuO+MXXH9/3N1eFbn4wcPjttvjMLEPWJ0RGUYgQE7cGgS3tNxbqCGM7g==}
-
-  engine.io-client@6.6.6:
-    resolution: {integrity: sha512-iY6QdftLQ9pyiPoX082bpf/u1UewnOaJrtJIF9T0++QB34lZrj0uP+Q/bj8AlUsAxqhnkTV2BS8SBZSxOmoV5Q==}
-
-  engine.io-parser@5.2.3:
-    resolution: {integrity: sha512-HqD3yTBfnBxIrbnM1DoD6Pcq8NECnh8d4As1Qgh0z5Gg3jRRIqijury0CL3ghu/edArpUYiYqQiDUQBIs4np3Q==}
-    engines: {node: '>=10.0.0'}
-
-  engine.io@6.6.9:
-    resolution: {integrity: sha512-clKkw4C7nJ22mGgoVcCg6V/W/TxdNyIOTr89k2ONZu81qqkddPFDF0LXcbAwhzPD8DjkiRCjzuiO6Y+fkpD4vg==}
-    engines: {node: '>=10.2.0'}
 
   esbuild@0.28.2:
     resolution: {integrity: sha512-HKVLS8dvII+xoKW9kmqxbRKrnWEXfJJr/FZhhJmiqIB0e053QNYFqOBouTMO/k5sID4MvCiUCvv8b9M4h32wIA==}
@@ -638,14 +593,6 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-Qsmt8WrIXu0kjiD55IwFCL6vr0Js+vwzUriaMtGiyPjbLzpIDWVA3z9bqTXP8ETsH7o5TRz/0RxWoODmMY7I8w==, tarball: https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/eefda2356e8797bb8c8d9d23b51c95536a9a4051}
     version: 1.1.0
 
-  mime-db@1.52.0:
-    resolution: {integrity: sha512-sPU4uV7dYlvtWJxwwxHD0PuihVNiE7TyAbQ5SWxDCB9mUYvOgroQOwYQQOKPJ8CIbE+1ETVlOoK1UC2nU3gYvg==}
-    engines: {node: '>= 0.6'}
-
-  mime-types@2.1.35:
-    resolution: {integrity: sha512-ZDY+bPm5zTTF+YpCrAU9nK0UgICYPT0QtT1NZWFv4s++TNkcgVaT0g6+4R2uI4MjQjzysHB1zxuWL50hzaeXiw==}
-    engines: {node: '>= 0.6'}
-
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
 
@@ -656,10 +603,6 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-r5e7beHWDJT4aj3j409GJGxXZayo0WRcYIJWUHEs+QHY1e14BtmyTmiJ0sKs9UgMg/dfCB5mZoFBJQB3GcFyCQ==, tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b74236a046774647776158c664d0d730f8368a54}
     version: 1.5.7
 
-  negotiator@0.6.3:
-    resolution: {integrity: sha512-+EUsqGPLsM+j/zdChZjsnX51g4XrHFOIXwfnCVPGlQk/k5giakcKsuxCObBRu6DSm9opw/O6slWbJdghQM4bBg==}
-    engines: {node: '>= 0.6'}
-
   node-bin-setup@1.1.4:
     resolution: {integrity: sha512-vWNHOne0ZUavArqPP5LJta50+S8R261Fr5SvGul37HbEDcowvLjwdvd0ZeSr0r2lTSrPxl6okq9QUw8BFGiAxA==}
 
@@ -667,10 +610,6 @@ packages:
     resolution: {integrity: sha512-ti5ikv+YT+5+kSxcuu7K86ED/Cv5R1N8WylDenxzjPL6FUSGNI5WEEOcILFxWr9qKRj+q/BPJ82hKNrPPZKzLw==}
     engines: {npm: '>=5.0.0'}
     hasBin: true
-
-  object-assign@4.1.1:
-    resolution: {integrity: sha512-rJgTQnkUnH1sFw8yT6VSU3zD3sWmu6sZhIseY8VX+GRu3P6F7Fu+JNDoXfklElbLJSnc3FUQHVe4cU5hj+BcUg==}
-    engines: {node: '>=0.10.0'}
 
   obuf@1.1.2:
     resolution: {integrity: sha512-PX1wu0AmAdPqOL1mWhqmlOd8kOIZQwGZw6rh7uby9fTc5lhaOWFLX3I6R1hrF9k3zUY40e6igsLGkDXK92LJNg==}
@@ -718,21 +657,6 @@ packages:
   simple-git@3.36.0:
     resolution: {integrity: sha512-cGQjLjK8bxJw4QuYT7gxHw3/IouVESbhahSsHrX97MzCL1gu2u7oy38W6L2ZIGECEfIBG4BabsWDPjBxJENv9Q==}
 
-  socket.io-adapter@2.5.8:
-    resolution: {integrity: sha512-6Oy52pbg+kvdCVvjcN+FnY7BvxZ7cIHNScbvztT/It5d0vbwoJoVZmF2gjJmnV0/4WlXRfG15zc45ySk9Ah8bw==}
-
-  socket.io-client@4.8.3:
-    resolution: {integrity: sha512-uP0bpjWrjQmUt5DTHq9RuoCBdFJF10cdX9X+a368j/Ft0wmaVgxlrjvK3kjvgCODOMMOz9lcaRzxmso0bTWZ/g==}
-    engines: {node: '>=10.0.0'}
-
-  socket.io-parser@4.2.7:
-    resolution: {integrity: sha512-IH/iSeO9T6gz1KkFleGDWkG9N3dl4jXVYUtMhIqH10Md0ttMer8nUNWiP1DKuNrybD2xBrixLJdCC9J6ECoYkg==}
-    engines: {node: '>=10.0.0'}
-
-  socket.io@4.8.3:
-    resolution: {integrity: sha512-2Dd78bqzzjE6KPkD5fHZmDAKRNe3J15q+YHDrIsy9WEkqttc7GY+kT9OBLSMaPbQaEd0x1BjcmtMtXkfpc+T5A==}
-    engines: {node: '>=10.2.0'}
-
   spdy-transport@3.0.0:
     resolution: {integrity: sha512-hsLVFE5SjA6TCisWeJXFKniGGOpBgMLmerfO2aCyCU5s7nJ/rpAepqmFifv/GCbSbueEeAJJnmSQ2rKC/g8Fcw==}
 
@@ -776,10 +700,6 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-  vary@1.1.2:
-    resolution: {integrity: sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==}
-    engines: {node: '>= 0.8'}
-
   wbuf@1.7.3:
     resolution: {integrity: sha512-O84QOnr0icsbFGLS0O3bI5FswxzRr8/gHwWkDlQFskhSPryQXvrTMxjxGP4+iWYoauLoBvfDpkrOauZ+0iZpDA==}
 
@@ -794,10 +714,6 @@ packages:
         optional: true
       utf-8-validate:
         optional: true
-
-  xmlhttprequest-ssl@2.1.2:
-    resolution: {integrity: sha512-TEU+nJVUUnA4CYJFLvK5X9AOeH4KvDvhIfm0vV1GaQRtchnG0hgK5p8hw/xjv8cunWYCsiPCSDzObPyhEwq3KQ==}
-    engines: {node: '>=0.4.0'}
 
   yauzl@3.4.0:
     resolution: {integrity: sha512-jIH9yLR9wqr0wOS0TpBvo/g/2UgZH5qePVbjgRliiF0BYvOZyaBknKsF+x9Iht0O6sqgnB93rCICdOZFecJuDw==}
@@ -1004,8 +920,6 @@ snapshots:
     dependencies:
       '@simple-git/args-pathspec': 1.0.3
 
-  '@socket.io/component-emitter@3.1.2': {}
-
   '@types/bun@1.3.14':
     dependencies:
       bun-types: 1.3.14
@@ -1019,10 +933,6 @@ snapshots:
     dependencies:
       '@types/filesystem': 0.0.36
       '@types/har-format': 1.2.16
-
-  '@types/cors@2.8.19':
-    dependencies:
-      '@types/node': 26.5.1
 
   '@types/filesystem@0.0.36':
     dependencies:
@@ -1056,13 +966,6 @@ snapshots:
     dependencies:
       '@types/node': 26.2.0
 
-  accepts@1.3.8:
-    dependencies:
-      mime-types: 2.1.35
-      negotiator: 0.6.3
-
-  base64id@2.0.0: {}
-
   bun-types@1.3.14:
     dependencies:
       '@types/node': 26.2.0
@@ -1086,7 +989,7 @@ snapshots:
       '@oven/bun-windows-x64': 1.3.14
       '@oven/bun-windows-x64-baseline': 1.3.14
 
-  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/7f32a5f5559e9ec62355a5fd1905ef72e7e45be2:
+  cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/3027ca35ee91237e03880d8e8220a68371449f99:
     dependencies:
       '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
@@ -1109,7 +1012,7 @@ snapshots:
       '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
       '@types/node': 26.5.1
-      cc-instanceinator: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/7f32a5f5559e9ec62355a5fd1905ef72e7e45be2
+      cc-instanceinator: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/3027ca35ee91237e03880d8e8220a68371449f99
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/ad0d4848485a4f7f91793d35cace8d79eadd7414
 
@@ -1135,16 +1038,9 @@ snapshots:
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999: {}
 
-  cookie@0.7.2: {}
-
   core-js@3.50.0: {}
 
   core-util-is@1.0.3: {}
-
-  cors@2.8.6:
-    dependencies:
-      object-assign: 4.1.1
-      vary: 1.1.2
 
   crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c:
     dependencies:
@@ -1165,37 +1061,6 @@ snapshots:
       ms: 2.1.3
 
   detect-node@2.1.0: {}
-
-  engine.io-client@6.6.6:
-    dependencies:
-      '@socket.io/component-emitter': 3.1.2
-      debug: 4.4.3
-      engine.io-parser: 5.2.3
-      ws: 8.21.3
-      xmlhttprequest-ssl: 2.1.2
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
-  engine.io-parser@5.2.3: {}
-
-  engine.io@6.6.9:
-    dependencies:
-      '@types/cors': 2.8.19
-      '@types/node': 26.2.0
-      '@types/ws': 8.18.1
-      accepts: 1.3.8
-      base64id: 2.0.0
-      cookie: 0.7.2
-      cors: 2.8.6
-      debug: 4.4.3
-      engine.io-parser: 5.2.3
-      ws: 8.21.3
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
 
   esbuild@0.28.2:
     optionalDependencies:
@@ -1253,12 +1118,6 @@ snapshots:
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/ad0d4848485a4f7f91793d35cace8d79eadd7414
 
-  mime-db@1.52.0: {}
-
-  mime-types@2.1.35:
-    dependencies:
-      mime-db: 1.52.0
-
   minimalistic-assert@1.0.1: {}
 
   ms@2.1.3: {}
@@ -1268,15 +1127,11 @@ snapshots:
       '@types/jquery': 1.10.45
       '@types/node': 26.2.0
 
-  negotiator@0.6.3: {}
-
   node-bin-setup@1.1.4: {}
 
   node@26.7.0:
     dependencies:
       node-bin-setup: 1.1.4
-
-  object-assign@4.1.1: {}
 
   obuf@1.1.2: {}
 
@@ -1342,47 +1197,6 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  socket.io-adapter@2.5.8:
-    dependencies:
-      debug: 4.4.3
-      ws: 8.21.3
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
-  socket.io-client@4.8.3:
-    dependencies:
-      '@socket.io/component-emitter': 3.1.2
-      debug: 4.4.3
-      engine.io-client: 6.6.6
-      socket.io-parser: 4.2.7
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
-  socket.io-parser@4.2.7:
-    dependencies:
-      '@socket.io/component-emitter': 3.1.2
-      debug: 4.4.3
-    transitivePeerDependencies:
-      - supports-color
-
-  socket.io@4.8.3:
-    dependencies:
-      accepts: 1.3.8
-      base64id: 2.0.0
-      cors: 2.8.6
-      debug: 4.4.3
-      engine.io: 6.6.9
-      socket.io-adapter: 2.5.8
-      socket.io-parser: 4.2.7
-    transitivePeerDependencies:
-      - bufferutil
-      - supports-color
-      - utf-8-validate
-
   spdy-transport@3.0.0:
     dependencies:
       debug: 4.4.3
@@ -1432,15 +1246,11 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-  vary@1.1.2: {}
-
   wbuf@1.7.3:
     dependencies:
       minimalistic-assert: 1.0.1
 
   ws@8.21.3: {}
-
-  xmlhttprequest-ssl@2.1.2: {}
 
   yauzl@3.4.0:
     dependencies:

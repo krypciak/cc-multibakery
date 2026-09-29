@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Removed
+
+- Remove socket.io net transport
+
 ## [0.8.8] 2026-09-23
 
 ### Added

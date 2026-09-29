@@ -30,6 +30,8 @@ export class WsNetTransportServer implements NetTransportServer {
     private wss!: WebSocketServer
     private sessions: SessionObject[] = []
 
+    constructor(_settings: WsNetTransportServerSettings) {}
+
     private async getWs(): Promise<typeof import('ws')> {
         if (window.crossnode) {
             assert(CROSSNODE)
@@ -75,6 +77,8 @@ export interface WsNetTransportClientSettings {}
 
 export class WsNetTransportClient implements NetTransportClient {
     private ws!: WebSocket
+
+    constructor(_settings: WsNetTransportClientSettings) {}
 
     createNetTransport(listeners: NetTransportListenerFunctions): NetTransport {
         return new WsNetTransport(listeners, this.ws)

@@ -42,7 +42,7 @@ export async function createPhysicsServerFromCurrentState() {
                       httpPort: Number(Opts.serverHttpPort),
                       pingTimeout: getServerPingTimeout(),
                       transport: {
-                          type: Opts.serverNetTransportUseWebsocket ? 'websocket' : 'socket.io',
+                          type: 'websocket',
                       },
                   },
                   details: {

@@ -32,12 +32,6 @@ const config: Config = {
         },
         {
             ...configBase,
-            path: 'src/net/socket-io-parser.ts',
-            outPath: projectRoot + '/src/net/binary/socket-io-packet-encoder-decoder.generated.ts',
-            outClassName: 'SocketIoPacketEncoderDecoder',
-        },
-        {
-            ...configBase,
             path: 'src/net/packet.ts',
             outPath: projectRoot + '/src/net/binary/packet-encoder-decoder.generated.ts',
             outClassName: 'PacketEncoderDecoder',
