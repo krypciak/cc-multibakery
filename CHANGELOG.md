@@ -8,6 +8,10 @@
 
 - Add partial support for seamless overworld on remote
 
+### Fixed
+
+- Fix entity spawn ordered event not working
+
 ### Removed
 
 - Remove socket.io net transport

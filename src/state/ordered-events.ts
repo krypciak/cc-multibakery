@@ -23,18 +23,15 @@ export function pushOrderedEvent(event: EventUnion) {
     ig.mapShared.orderedEvents.push(event)
 }
 
+interface Handler<T> {
+    set(data: Extract<EventUnion, { type: T }>, packet?: StateUpdatePacket): void
+}
+
 const eventMap: {
-    [T in EventUnion['type']]: {
-        set(data: Extract<EventUnion, { type: T }>): void
-    }
+    [T in EventUnion['type']]: Handler<T>
 } = {} as any
 
-export function registerOrderedEvent<T extends EventUnion['type']>(
-    type: T,
-    handler: {
-        set(data: Extract<EventUnion, { type: T }>, packet?: StateUpdatePacket): void
-    }
-) {
+export function registerOrderedEvent<T extends EventUnion['type']>(type: T, handler: Handler<T>) {
     eventMap[type] = handler as (typeof eventMap)[T]
 }
 
@@ -50,7 +47,7 @@ export const orderedEventsMapStateHandler: MapStateHandler = {
 
         for (const event of packet.orderedEvents) {
             const handler = eventMap[event.type]
-            handler.set(event as any)
+            handler.set(event as any, packet)
         }
     },
 }
