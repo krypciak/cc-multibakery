@@ -5,68 +5,7 @@ import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
 import { normalizeMapName } from '../server/ccmap/teleport-fix'
 import { assert } from '../misc/assert'
 import type { CCMap } from '../server/ccmap/ccmap'
-
-declare global {
-    namespace ig.ENTITY {
-        namespace ARBoxEntity {
-            interface Settings extends ig.Entity.Settings {
-                text: string
-                time: number
-                size: Vec3
-                usernameShowException?: string
-            }
-        }
-        interface ARBoxEntity extends ig.Entity {
-            text: string
-            initialTime: number
-            timer: number
-            usernameShowException?: string
-        }
-        interface ARBoxEntityConstructor extends ImpactClass<ARBoxEntity> {
-            new (x: number, y: number, z: number, settings: ig.ENTITY.ARBoxEntity.Settings): ARBoxEntity
-        }
-        var ARBoxEntity: ARBoxEntityConstructor
-    }
-}
-prestart(() => {
-    ig.ENTITY.ARBoxEntity = ig.Entity.extend({
-        init(x, y, z, settings) {
-            this.parent(x, y, z, settings)
-
-            this.coll.setType(ig.COLLTYPE.NONE)
-            this.setSize(settings.size.x, settings.size.y, settings.size.z)
-
-            this.text = settings.text
-            this.initialTime = settings.time
-            this.usernameShowException = settings.usernameShowException
-        },
-        show(noShowFx) {
-            this.parent(noShowFx)
-
-            this.timer = this.initialTime
-
-            const text = this.text
-            const spawnBox = () => {
-                const box = new ig.GUI.ARBox(this, text, this.timer, sc.AR_BOX_MODE.NO_LINE, sc.AR_COLOR.GREEN)
-                ig.gui.addGuiElement(box)
-                return box
-            }
-            if (ig.mapShared?.ccmap) {
-                let clients = ig.mapShared.ccmap.clients
-                if (this.usernameShowException) clients = clients.filter(c => c.username != this.usernameShowException)
-                const insts = clients.map(c => c.inst)
-                runTasks(insts, spawnBox)
-            } else {
-                spawnBox()
-            }
-        },
-        update() {
-            this.parent()
-            this.timer -= ig.system.tick
-            if (this.timer <= 0) this.kill()
-        },
-    })
-})
+import { runEvent } from '../steps/event-steps-run'
 
 const alreadyShownEventCallDataKey = 'alreadyShownTeleportArMsg'
 
@@ -106,15 +45,34 @@ export async function showTeleportArMsg(
         data[alreadyShownEventCallDataKey] = true
     }
 
-    const text = areaTitle && mapTitle ? '-> ' + areaTitle + ' - ' + mapTitle : mapName
-
     runTask(map.inst, () => {
-        ig.game.spawnEntity('ARBoxEntity', x, y, z, {
-            text,
-            time: 1.5,
-            size: player.coll.size,
-            usernameShowException: player.username,
+        const fakeEntity = ig.game.spawnEntity('GhostAnimatedEntity', x, y, z, { size: player.coll.size })
+        fakeEntity.coll.setType(ig.COLLTYPE.NONE)
+
+        const text = areaTitle && mapTitle ? '-> ' + areaTitle + ' - ' + mapTitle : mapName
+
+        const time = 1.5
+        const event = new ig.Event({
+            steps: [
+                {
+                    type: 'SHOW_AR_MSG',
+                    entity: fakeEntity,
+                    text,
+                    mode: 'LINE_EMPTY',
+                    color: 'GREEN',
+                    hideOutsideOfScreen: false,
+                    time,
+                },
+                { type: 'WAIT', time },
+                { type: 'RUN_JS_FUNCTION', func: () => fakeEntity.kill() },
+            ],
         })
+
+        const usernameShowException = player.username
+        const clients = ig.mapShared.ccmap.clients.filter(c => c.username != usernameShowException)
+
+        const insts = clients.map(c => c.inst)
+        runTasks(insts, () => runEvent({ event, type: ig.EventRunType.INTERRUPTABLE }))
     })
 }
 

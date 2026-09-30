@@ -4,9 +4,10 @@
 
 ## [Unreleased]
 
-### Changed
+### Added
 
 - Add partial support for seamless overworld on remote
+- Add support for teleport arboxes on remote
 
 ### Fixed
 
