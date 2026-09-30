@@ -34,20 +34,18 @@ function setEntityState(this: ig.ENTITY.Ball, state: Return) {
 }
 
 prestart(() => {
-    let ignoreNetidCall = false
+    let netidOverride: number | undefined
     ig.ENTITY.Ball.inject({
         getEntityState,
         setEntityState,
         createNetid() {
-            if (ignoreNetidCall) return
+            if (netidOverride) return netidOverride
             return this.parent()
         },
         init(x, y, z, settings) {
-            ignoreNetidCall = true
+            netidOverride = settings.netid
             this.parent(x, y, z, settings)
-            ignoreNetidCall = false
-            /* ig.ENTITY.Ball creates a new settings object so netid doesnt get set */
-            this.setNetid(settings.netid)
+            netidOverride = undefined
         },
     })
 
