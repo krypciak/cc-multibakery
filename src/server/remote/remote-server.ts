@@ -132,7 +132,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const stateUpdatePacket = data.mapPackets[mapName]
 
             const map = multi.server.maps.get(mapName)
-            assert(map?.initialized)
+            if (!map?.initialized) continue
+
             assert(!map.destroyed)
 
             if (stateUpdatePacket.kicks) {

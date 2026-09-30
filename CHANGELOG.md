@@ -12,6 +12,7 @@
 ### Fixed
 
 - Fix entity spawn ordered event not working
+- Fix crash when remote has more than two clients on different maps and one leaves
 
 ### Removed
 
