@@ -445,6 +445,7 @@ export class Client extends InstanceUpdateable {
             }
 
             this.dummy.show()
+            Vec2.assign(this.dummy.face, { x: 0, y: 1 })
         })
     }
 

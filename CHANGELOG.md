@@ -9,6 +9,10 @@
 - Add partial support for seamless overworld on remote
 - Add support for teleport arboxes on remote
 
+### Changed
+
+- Force player face to south on server join
+
 ### Fixed
 
 - Fix entity spawn ordered event not working
