@@ -133,7 +133,9 @@ prestart(() => {
         onPreUpdate() {
             const playersPresent: Set<dummy.DummyPlayer> = new Set()
 
-            for (const player of ig.game.getEntitiesByType(dummy.DummyPlayer)) {
+            for (const player of ig.game.entities) {
+                if (!(player instanceof dummy.DummyPlayer) || player._hidden) continue
+
                 let configMap = this.guis.get(player)
                 if (!configMap) {
                     configMap = new Map()

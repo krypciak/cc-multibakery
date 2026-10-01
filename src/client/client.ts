@@ -290,9 +290,9 @@ export class Client extends InstanceUpdateable {
 
             this.linkMapToInstanceStage1(map)
 
-            runTask(this.inst, () => sc.model.enterLoading())
-
             if (!map.ready) await map.loadResourcesIfNeeded()
+
+            if (!this.isRemoteMapReady()) await this.waitForRemoteMap()
 
             this.ready = true
 
@@ -397,6 +397,8 @@ export class Client extends InstanceUpdateable {
 
             for (const addon of ig.game.addons.teleport) addon.onTeleport(ig.game.mapName, undefined, undefined)
             for (const addon of ig.game.addons.levelLoadStart) addon.onLevelLoadStart(levelData)
+
+            sc.model.enterLoading()
         })
     }
 
@@ -439,6 +441,8 @@ export class Client extends InstanceUpdateable {
                 client.dummy.model.updateStats()
                 sc.Model.notifyObserver(client.dummy.model, sc.PLAYER_MSG.LEVEL_CHANGE)
             }
+
+            this.dummy.show()
         })
     }
 
@@ -497,6 +501,16 @@ export class Client extends InstanceUpdateable {
         }
 
         this.dummy.setInputManager(this.inputManager)
+        this.dummy.hide()
+    }
+
+    private isRemoteMapReady(): boolean {
+        if (!isPhysics(multi.server) || !this.settings.connection) return true
+        return !!multi.server.connectionReadyMaps.get(this.settings.connection)?.has(this.tpInfo.map)
+    }
+
+    private async waitForRemoteMap() {
+        await updateLoop(multi.server.inst, this.inst, multi.server.settings.gameTps * 5, () => this.isRemoteMapReady())
     }
 
     getMap(noAssert: true): CCMap | undefined

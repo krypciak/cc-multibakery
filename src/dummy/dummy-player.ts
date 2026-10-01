@@ -124,6 +124,10 @@ prestart(() => {
                 inputBackup(this.inputManager, parent)
             }
         },
+        hide() {
+            this.parent()
+            this.gui.crosshair.kill()
+        },
         onKill(_dontRespawn?: boolean) {
             this.parent(true)
             this.model.destroy()
