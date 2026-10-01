@@ -1,4 +1,4 @@
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, updateLoop, waitFrames } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import type { CCMap } from '../../server/ccmap/ccmap'
 import type { Client } from '../../client/client'
@@ -48,7 +48,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     input.mainInputData.pushInput(copy(moveInp))
 
     let collided: string = 'none'
-    await multi.test.updateLoop(inst, 12, () => {
+    await updateLoop(multi.server.inst, inst, 12, () => {
         if (!e.coll._collData.collided) return
         const entities = ig.game.getEntitiesInCircle(
             {
@@ -76,7 +76,7 @@ async function moveDummy(e: dummy.DummyPlayer, inst: InstanceinatorInstance, dir
     if (collided == 'box') {
         const holdTime = 20
         const pushTime = 23
-        await multi.test.updateLoop(inst, pushTime + holdTime, frame => {
+        await updateLoop(multi.server.inst, inst, pushTime + holdTime, frame => {
             if (frame == 0) {
                 inp.presses!['aim'] = true
             } else {
@@ -132,7 +132,7 @@ class Aoc2024d15Test implements TestConfig {
         this.client = client
         this.map = map
 
-        await multi.test.updateLoop(this.client.inst, Infinity, this.update.bind(this))
+        await updateLoop(multi.server.inst, this.client.inst, Infinity, this.update.bind(this))
 
         tester.expect(this.sum).toEqual(this.config.expectedSum)
     }
@@ -173,7 +173,7 @@ class Aoc2024d15Test implements TestConfig {
         else if (move == '^') dir = 'up'
 
         await moveDummy(this.client.dummy, this.client.inst, dir)
-        await multi.test.waitFrames(this.client.inst, 11)
+        await waitFrames(multi.server.inst, this.client.inst, 11)
         const { x, y } = this.getCenteredPlayerPos(this.client.dummy)
         this.client.dummy.setPos(x, y)
 

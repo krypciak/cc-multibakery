@@ -1,4 +1,4 @@
-import { runTask } from 'cc-instanceinator/src/inst-util'
+import { runTask, updateLoop, waitFrames } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import { CCMap } from '../../server/ccmap/ccmap'
 import type { Client } from '../../client/client'
@@ -61,7 +61,7 @@ async function executeCombatArt(
 
     input.mainInputData.pushInput(copy(chargeInp))
 
-    await multi.test.updateLoop(inst, preFrames, () => {
+    await updateLoop(multi.server.inst, inst, preFrames, () => {
         input.mainInputData.pushInput(copy(chargeInp))
     })
 
@@ -83,7 +83,7 @@ async function executeCombatArt(
 
     const chargeLevel = parseInt(combatArt[combatArt.length - 1])
     const chargeTime = chargeLevel * 4
-    await multi.test.updateLoop(inst, chargeTime, () => {
+    await updateLoop(multi.server.inst, inst, chargeTime, () => {
         input.mainInputData.pushInput(copy(chargeInp))
         for (const action of triggerActions) setAction(action, false)
     })
@@ -110,7 +110,8 @@ async function executeCombatArt(
         return entities
     }
 
-    await multi.test.updateLoop(
+    await updateLoop(
+        multi.server.inst,
         inst,
         multi.server.settings.gameTps * 30,
         () => e.state == 0 && !e.currentAction && getSpawnedEntities().length == 0
@@ -220,7 +221,7 @@ class CombatArtTest implements TestConfig {
     private async awaitRemote() {
         if (!this.config.remote) return
 
-        await multi.test.waitFrames(this.map.inst, 60)
+        await waitFrames(multi.server.inst, this.map.inst, 60)
         if (this.map) this.map.inst.ig.mapShared.testDone = true
 
         const report = await multi.test.remoteReports[this.id]

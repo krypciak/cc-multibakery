@@ -1,8 +1,7 @@
 import { assert } from '../misc/assert'
 import { preload } from '../loading-stages'
 import type { MapTpInfo } from '../server/server-types'
-import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
-import { runTask, scheduleTask } from 'cc-instanceinator/src/inst-util'
+import { updateLoop, waitFrames } from 'cc-instanceinator/src/inst-util'
 import { Opts } from '../options'
 import type { TestConfig } from './test-bridge'
 import type { Client } from '../client/client'
@@ -91,7 +90,7 @@ class MultibakeryTestUtils {
 
         let client: Client | undefined
         let map: CCMap | undefined
-        await multi.test.updateLoop(multi.server.inst, multi.server.settings.gameLoopIntervalTps! * 10, () => {
+        await updateLoop(multi.server.inst, multi.server.inst, multi.server.settings.gameLoopIntervalTps! * 10, () => {
             client = multi.server.clients.get(username)
             if (client?.ready) {
                 map = client.getMap()
@@ -102,7 +101,7 @@ class MultibakeryTestUtils {
         assert(map, 'map undefined after waiting')
 
         /* wait because if we dont wait lvl3 combat arts execute instead of lvl2 for some reason */
-        await multi.test.waitFrames(client.inst, 10)
+        await waitFrames(multi.server.inst, client.inst, 10)
 
         return { client, map }
     }
@@ -155,42 +154,6 @@ class MultibakeryTestUtils {
         child.on('close', code => {
             print && console.log(`REMOTE ${remoteConfig.username}: Process exited with code ${code}`)
         })
-    }
-
-    updateLoop(
-        inst: InstanceinatorInstance,
-        maxFrames: number,
-        func: (frame: number) => boolean | undefined | void | Promise<boolean | undefined | void>
-    ) {
-        return new Promise<void>((res, rej) => {
-            let frames = 0
-            const loop = async () => {
-                if (inst.destroyed) {
-                    res()
-                    return
-                }
-                try {
-                    const done = await runTask(inst, () => func(frames))
-                    if (done || ++frames >= maxFrames) {
-                        res()
-                    } else {
-                        if (inst.destroyed) {
-                            res()
-                            return
-                        }
-                        scheduleTask(multi.server.inst, loop)
-                    }
-                } catch (e) {
-                    rej(e)
-                    throw e
-                }
-            }
-            runTask(multi.server.inst, loop)
-        })
-    }
-
-    async waitFrames(inst: InstanceinatorInstance, count: number) {
-        await this.updateLoop(inst, count + 1, () => {})
     }
 }
 
