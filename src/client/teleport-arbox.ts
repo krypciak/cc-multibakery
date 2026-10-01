@@ -26,7 +26,7 @@ export async function showTeleportArMsg(
     eventCall?: ig.EventCall,
     preTeleportInfo: PreTeleportInfo = getPreTeleportInfoForArMsg(client)
 ) {
-    if (!Opts.showClientLeaveArBox) return
+    if (!Opts.showClientTeleportArBox) return
     const map = preTeleportInfo.map
     if (!map) return
 

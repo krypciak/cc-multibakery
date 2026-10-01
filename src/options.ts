@@ -38,7 +38,7 @@ function registerOpts() {
                         name: 'Hide your username',
                         description: 'Hides your player username',
                     },
-                    showClientLeaveArBox: {
+                    showClientTeleportArBox: {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Show teleport popup',
