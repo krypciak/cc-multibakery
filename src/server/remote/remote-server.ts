@@ -178,7 +178,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         const settings: ClientSettings = {
             username: joinData.username,
             inputType: 'clone',
-            remote: false,
             initialInputType: joinData.initialInputType,
             tpInfo: ackData.tpInfo,
         }

@@ -1,4 +1,5 @@
 import type { Username } from '../net/binary/binary-types'
+import type { NetConnection } from '../net/net-connection'
 import type { MapTpInfo } from '../server/server-types'
 import type { Client } from './client'
 
@@ -10,7 +11,7 @@ declare global {
 
 export type ClientSettings = {
     username: Username
-    remote: boolean
+    connection?: NetConnection
     noShowInstance?: boolean
     forceDraw?: boolean
     tpInfo?: MapTpInfo

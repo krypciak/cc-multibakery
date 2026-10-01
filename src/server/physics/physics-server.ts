@@ -98,7 +98,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     private updateAnyRemoteClientsOn() {
         if (!this.netManager) return (this.anyRemoteClientsOn = false)
 
-        const anyRemoteClientsOn = [...this.clients.values()].some(c => c.settings.remote)
+        const anyRemoteClientsOn = [...this.clients.values()].some(c => c.settings.connection)
         if (this.anyRemoteClientsOn != anyRemoteClientsOn) {
             this.anyRemoteClientsOn = anyRemoteClientsOn
             if (this.settings.useAnimationFrameLoop) {
@@ -123,7 +123,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         const settings: ClientSettings = {
             username: joinData.username,
             inputType: connection ? 'puppet' : 'clone',
-            remote: !!connection,
+            connection,
             initialInputType: joinData.initialInputType,
             tpInfo: this.validatePreferredMap(joinData.preferredTpInfo, connection),
             ...(clientSettingsOverride ?? {}),

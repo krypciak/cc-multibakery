@@ -138,7 +138,7 @@ export class Client extends InstanceUpdateable {
         return !!(
             multi.server.settings.displayClientInstances &&
             !this.settings.noShowInstance &&
-            (!this.settings.remote || multi.server.settings.displayRemoteClientInstances)
+            (!this.settings.connection || multi.server.settings.displayRemoteClientInstances)
         )
     }
 
