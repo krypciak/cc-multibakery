@@ -1,6 +1,5 @@
 import type { GlobalStateHandler } from './global-state-handlers'
-import { isRemote } from '../server/remote/remote-server-types'
-import { assert } from '../misc/assert'
+import { assertRemote } from '../server/remote/remote-server-types'
 import type { Username } from '../net/binary/binary-types'
 import type { MapTpInfo } from '../server/server-types'
 import type { EntityNetid } from '../misc/entity-netid'
@@ -38,7 +37,7 @@ export const playerTeleportGlobalStateHandler: GlobalStateHandler = {
     set(packet) {
         if (!packet.playerTeleport) return
 
-        assert(isRemote(multi.server))
+        assertRemote(multi.server)
         for (const username in packet.playerTeleport) {
             const { tpInfo, netid, fadeIn, fadeOut, noBlackout } = packet.playerTeleport[username]
             const client = multi.server.clients.get(username)

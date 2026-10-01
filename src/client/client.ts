@@ -4,7 +4,7 @@ import type { CCMap } from '../server/ccmap/ccmap'
 import { addAddon, removeAddon } from '../misc/game-addon-util'
 import { clearForceGamepad, forceGamepad } from './force-gamepad'
 import { initMapInteractEntries } from './map-interact'
-import { runTask, filterInstanceObjectsFromArray } from 'cc-instanceinator/src/inst-util'
+import { runTask, filterInstanceObjectsFromArray, updateLoop } from 'cc-instanceinator/src/inst-util'
 import {
     createClientTransportInfoLabel,
     createClientNetworkPacketTrafficLabel,
@@ -23,7 +23,7 @@ import { linkClientVars } from './client-var-link'
 import { initClientOptionModel, linkClientOptionModel, loadClientOptionModelState } from './client-option-model-link'
 import type { Username } from '../net/binary/binary-types'
 import { assertPhysics, isPhysics } from '../server/physics/physics-server-types'
-import { isRemote } from '../server/remote/remote-server-types'
+import { assertRemote, isRemote } from '../server/remote/remote-server-types'
 import type { EntityNetid } from '../misc/entity-netid'
 import { profile } from '../misc/performance-profiling'
 import type { StoragePlayerEntityState } from '../server/physics/storage/storage'
@@ -302,6 +302,10 @@ export class Client extends InstanceUpdateable {
 
             multi.storage.save()
 
+            if (isRemote(multi.server)) await this.waitForFirstStatePacket()
+
+            runTask(this.inst, () => sc.model.enterGame())
+
             this.stopTeleportOverlay()
         } catch (e) {
             multi.server.onInstanceUpdateError(e)
@@ -423,8 +427,6 @@ export class Client extends InstanceUpdateable {
 
             this.updateGamepadForcer()
 
-            sc.model.enterGame()
-
             sc.Model.notifyObserver(sc.model.player.params, sc.COMBAT_PARAM_MSG.STATS_CHANGED)
 
             /* fix crash when opening encyclopedia */
@@ -511,6 +513,16 @@ export class Client extends InstanceUpdateable {
 
     private async waitForRemoteMap() {
         await updateLoop(multi.server.inst, this.inst, multi.server.settings.gameTps * 5, () => this.isRemoteMapReady())
+    }
+
+    private async waitForFirstStatePacket() {
+        assertRemote(multi.server)
+        return updateLoop(
+            multi.server.inst,
+            this.inst,
+            multi.server.settings.gameTps * 5,
+            () => !!this.dummy?.multiParty
+        )
     }
 
     getMap(noAssert: true): CCMap | undefined

@@ -1,8 +1,7 @@
 import type { GlobalStateHandler } from './global-state-handlers'
 import type { GlobalStateKey } from './global-state-handlers'
 import { StateMemory } from './state-util'
-import { isRemote } from '../server/remote/remote-server-types'
-import { assert } from '../misc/assert'
+import { assertRemote } from '../server/remote/remote-server-types'
 import type {
     AttackType,
     DefenceType,
@@ -139,7 +138,7 @@ export const playerInfoGlobalStateHandler: GlobalStateHandler = {
     set(packet) {
         if (!packet.playerInfo) return
 
-        assert(isRemote(multi.server))
+        assertRemote(multi.server)
         for (const username in packet.playerInfo) {
             const entry = (multi.server.playerInfoEntries[username] ??= {} as PlayerInfoEntry)
             const playerInfo = packet.playerInfo[username]
