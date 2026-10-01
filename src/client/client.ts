@@ -32,6 +32,7 @@ import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility
 import { wait } from '../misc/wait'
 import { loadNeighbouringMapsForMultiMapRendering } from '../server/multi-map-rendering'
 import { Opts } from '../options'
+import { showJoinAnimation } from './player-join-leave-animations'
 
 import './injects'
 import './menu/server-list-menu'
@@ -293,6 +294,8 @@ export class Client extends InstanceUpdateable {
             if (!map.ready) await map.loadResourcesIfNeeded()
 
             if (!this.isRemoteMapReady()) await this.waitForRemoteMap()
+
+            if (initialJoin) showJoinAnimation(this, map)
 
             this.ready = true
 

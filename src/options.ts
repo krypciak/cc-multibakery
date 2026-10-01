@@ -44,6 +44,12 @@ function registerOpts() {
                         name: 'Show teleport popup',
                         description: 'Show popup when other player teleports out of the map',
                     },
+                    showClientJoinAnimation: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Enable join animation',
+                        description: 'Enable the join animation that plays when the player joins the server',
+                    },
                     multiMapRenderingNote: {
                         type: 'INFO',
                         name: 'NOTE: Seamless overworld can be glithy, buggy and will not work well when connecting to a remote server!',
