@@ -13,7 +13,7 @@ import { getModCompatibilityErrorListText, isModCompatibilityListSatisfied } fro
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',
-    // marker: 'entrance',
+    marker: 'entrance',
     // map: 'co-op-dng/intro-rooms/room-3',
     // marker: 'd1',
     // map: 'co-op-dng/template',
@@ -21,8 +21,11 @@ const defaultMap: MapTpInfo = {
     // map: 'multibakery/mba-pvp',
     // marker: 'to_pvp',
 
-    map: 'autumn/path6',
+    // map: 'autumn/path6',
     // map: 'autumn/path-7-1',
+    map: 'autumn/entrance',
+    // map: 'autumn/path4',
+    // map: 'autumn/guild/inner-fs-og',
     // map: 'co-op-dng/template',
     // map: 'tree-dng/f4/boss',
     // map: 'multibakery/mba-dev',
@@ -50,9 +53,6 @@ const defaultMap: MapTpInfo = {
     // map: 'rookie-harbor/north',
     // map: 'rookie-harbor/west',
     // marker: 'top1',
-    // map: 'autumn/entrance',
-    // map: 'autumn/path4',
-    // map: 'autumn/guild/inner-fs-og',
     // map: 'rookie-harbor/inner-harbor-pub',
     // map: 'rhombus-dng/room-2',
     // map: 'rookie-harbor/inner-info-ug-1',
