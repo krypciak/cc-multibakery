@@ -38,18 +38,6 @@ function registerOpts() {
                         name: 'Hide your username',
                         description: 'Hides your player username',
                     },
-                    showClientTeleportArBox: {
-                        type: 'CHECKBOX',
-                        init: true,
-                        name: 'Show teleport popup',
-                        description: 'Show popup when other player teleports out of the map',
-                    },
-                    showClientJoinAnimation: {
-                        type: 'CHECKBOX',
-                        init: true,
-                        name: 'Enable join animation',
-                        description: 'Enable the join animation that plays when the player joins the server',
-                    },
                     multiMapRenderingNote: {
                         type: 'INFO',
                         name: 'NOTE: Seamless overworld can be glithy, buggy and will not work well when connecting to a remote server!',
@@ -228,6 +216,24 @@ function registerOpts() {
                     },
                 },
                 server: {
+                    showClientTeleportArBox: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Show teleport popup',
+                        description: 'Show popup when other player teleports out of the map',
+                    },
+                    showClientJoinAnimation: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Enable join animation',
+                        description: 'Enable the join animation that plays when the player joins the server',
+                    },
+                    showClientLeaveAnimation: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Enable leave animation',
+                        description: 'Enable the leave/crash animation that plays when the player leaves the server',
+                    },
                     info: {
                         type: 'INFO',
                         name: `Advanced configuration below, don't touch if you don't know what you're doing!`,

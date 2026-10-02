@@ -32,7 +32,7 @@ import { getCCUILibRingConfFrom, setCCUILibRingConf } from '../mod-compatibility
 import { wait } from '../misc/wait'
 import { loadNeighbouringMapsForMultiMapRendering } from '../server/multi-map-rendering'
 import { Opts } from '../options'
-import { showJoinAnimation } from './player-join-leave-animations'
+import { showJoinAnimation, showLeaveAnimation } from './player-join-leave-animations'
 
 import './injects'
 import './menu/server-list-menu'
@@ -268,6 +268,7 @@ export class Client extends InstanceUpdateable {
             if (!map.initialized || fadeIn > 0) {
                 await Promise.all([map.initIfNeeded(), fadeIn == 0 || wait(fadeIn * 1000)])
             }
+            if (this.destroyed) return
             assert(map)
             assert(map.initialized)
             assert(!map.inst.destroyed)
@@ -307,6 +308,7 @@ export class Client extends InstanceUpdateable {
             if (!map.ready) await map.loadResourcesIfNeeded()
 
             if (!this.isRemoteMapReady()) await this.waitForRemoteMap()
+            if (this.destroyed) return
 
             if (initialJoin) showJoinAnimation(this, map)
 
@@ -319,12 +321,13 @@ export class Client extends InstanceUpdateable {
             multi.storage.save()
 
             if (isRemote(multi.server)) await this.waitForFirstStatePacket()
+            if (this.destroyed) return
 
             runTask(this.inst, () => sc.model.enterGame())
 
             this.stopTeleportOverlay()
         } catch (e) {
-            multi.server.onInstanceUpdateError(e)
+            multi.server?.onInstanceUpdateError(e)
         } finally {
             this.teleportOverrides = {}
         }
@@ -555,7 +558,10 @@ export class Client extends InstanceUpdateable {
 
         this.inputManager?.destroy()
 
-        if (this.dummy) multi.storage.createAndSavePlayerStateWithClient(this)
+        if (this.dummy) {
+            multi.storage.createAndSavePlayerStateWithClient(this)
+            showLeaveAnimation(this)
+        }
 
         multi.server.party.onClientDestroy(this)
 

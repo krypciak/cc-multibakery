@@ -10,6 +10,8 @@
 - Add support for teleport arboxes on remote
 - Add player join animation
 - Send remote crash data to physics server
+- Add player leave animation
+- Add player crash animation
 
 ### Changed
 

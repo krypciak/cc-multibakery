@@ -46,8 +46,13 @@ export async function showTeleportArMsg(
     }
 
     runTask(map.inst, () => {
-        const fakeEntity = ig.game.spawnEntity('GhostAnimatedEntity', x, y, z, { size: player.coll.size })
-        fakeEntity.coll.setType(ig.COLLTYPE.NONE)
+        const fakeEntity = ig.game.spawnEntity(
+            'GhostActorEntity',
+            x,
+            y,
+            z,
+            ig.ENTITY.GhostActorEntity.settingsFromBaseEntity(player, true)
+        )
 
         const text = areaTitle && mapTitle ? '-> ' + areaTitle + ' - ' + mapTitle : mapName
 
