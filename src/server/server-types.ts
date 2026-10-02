@@ -61,6 +61,11 @@ export interface ClientCreateAndJoinSettings {
     ackDataOverride?: ClientJoinAckData
 }
 
+export interface ClientLeaveFunctionData {
+    reason?: string
+    error?: unknown
+}
+
 export function instanceinatorCopyInstanceConfig(): InstanceinatorCopyInstanceConfig {
     return {
         cacheKey: 'multibakery',

@@ -4,6 +4,7 @@ import type { StrictNonNullable } from '../../types'
 import type { ModCompatibilityList } from '../mod-compatibility-list-types'
 import type { ServerSettings } from '../server-types'
 import type { RemoteServer } from './remote-server'
+import type { CrashInfo } from '../../misc/error-popup'
 
 export function isRemote(server: typeof multi.server): server is RemoteServer {
     return server && !server.physics
@@ -32,6 +33,7 @@ export interface RemoteServerSettings extends ServerSettings {
 
 export interface ClientLeaveData {
     username: string
+    crashDetails?: CrashInfo
 }
 export function isClientLeaveData(data: unknown): data is ClientLeaveData {
     return !!data && typeof data == 'object' && 'username' in data && typeof data.username == 'string'

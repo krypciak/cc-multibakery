@@ -134,7 +134,7 @@ export class Repl {
                     server.displayPrompt()
                     return
                 }
-                multi.server.leaveClient(client, reason)
+                multi.server.leaveClient(client, { reason })
                 server.displayPrompt()
             },
         })

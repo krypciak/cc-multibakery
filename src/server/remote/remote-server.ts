@@ -3,7 +3,12 @@ import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender
 import type { CCMap } from '../ccmap/ccmap'
 import type { MapName, Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
-import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
+import type {
+    ClientCreateAndJoinSettings,
+    ClientJoinAckData,
+    ClientJoinData,
+    ClientLeaveFunctionData,
+} from '../server-types'
 import type { ClientSettings } from '../../client/client-types'
 import type { RemoteServerSettings } from './remote-server-types'
 import type { NetPacket } from '../../net/packet'
@@ -19,6 +24,7 @@ import { RemoteSender } from './remote-server-sender'
 import { PhysicsUpdatePacketEncoderDecoder } from '../../net/binary/physics-update-packet-encoder-decoder.generated'
 import { createNetTransportClient } from '../../net/net-transport'
 import { profile } from '../../misc/performance-profiling'
+import { gatherCrashInfo } from '../../misc/error-popup'
 
 import './ignore-pause-screen'
 import './entity-physics-forcer'
@@ -141,7 +147,7 @@ export class RemoteServer extends Server<RemoteServerSettings> {
                     const { reason } = stateUpdatePacket.kicks[username]
                     const client = this.clients.get(username)
                     if (!client) continue
-                    this.leaveClient(client, reason)
+                    this.leaveClient(client, { reason })
                 }
             }
 
@@ -203,12 +209,30 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         ;(this.notifyReadyMaps ??= []).push(map.name)
     }
 
-    async leaveClient(client: Client, reason?: string) {
-        super.leaveClient(client)
+    private sendLeave(clients: Iterable<Client>, error?: unknown) {
+        try {
+            for (const client of clients) {
+                this.netManager.sendLeave({
+                    username: client.username,
+                    crashDetails: error ? gatherCrashInfo(error, this.inst) : undefined,
+                })
+            }
+        } catch (e) {
+            console.error('error while sending leave: ', e)
+        }
+    }
 
-        this.netManager.sendLeave({ username: client.username })
+    async leaveClient(client: Client, data: ClientLeaveFunctionData = {}) {
+        super.leaveClient(client, data)
 
-        if (reason) console.warn(`${client.username} kicked, reason: ${reason}`)
+        this.sendLeave([client], data.error)
+
+        if (data.reason) console.warn(`${client.username} kicked, reason: ${data.reason}`)
+    }
+
+    onInstanceUpdateError(error: unknown): never {
+        this.sendLeave(this.clients.values(), error)
+        super.onInstanceUpdateError(error)
     }
 
     getPlayerInfoOf(username: Username): PlayerInfoEntry {

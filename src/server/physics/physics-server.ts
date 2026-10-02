@@ -1,6 +1,11 @@
 import type { PhysicsServerSettings } from './physics-server-types'
 import type { NetConnection } from '../../net/net-connection'
-import type { ClientCreateAndJoinSettings, ClientJoinAckData, ClientJoinData } from '../server-types'
+import type {
+    ClientCreateAndJoinSettings,
+    ClientJoinAckData,
+    ClientJoinData,
+    ClientLeaveFunctionData,
+} from '../server-types'
 import type { ClientSettings } from '../../client/client-types'
 import type { ClientLeaveData } from '../remote/remote-server-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
@@ -141,8 +146,8 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         return { client, map, ackData }
     }
 
-    leaveClient(client: Client, reason?: string) {
-        super.leaveClient(client, reason)
+    leaveClient(client: Client, data: ClientLeaveFunctionData = {}) {
+        super.leaveClient(client, data)
         this.updateAnyRemoteClientsOn()
     }
 
@@ -239,9 +244,19 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
             clients = conn.clients
         }
 
+        const leaveClientFunctionData: ClientLeaveFunctionData = {}
+        if (data?.crashDetails) {
+            console.warn(
+                `remote ${conn.clients.map(c => c.username).join(', ')} crashed:`,
+                ...Object.values(data.crashDetails)
+            )
+            leaveClientFunctionData.error = new Error('remote crash')
+            leaveClientFunctionData.reason = 'crash'
+        }
+
         for (const client of clients) {
             conn.leave(client)
-            this.leaveClient(client)
+            this.leaveClient(client, leaveClientFunctionData)
         }
     }
 

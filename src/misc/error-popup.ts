@@ -15,7 +15,11 @@ prestart(() => {
     })
 })
 
-function gatherInfo(err: unknown, inst: InstanceinatorInstance) {
+export interface CrashInfo {
+    infoText: string
+    modsText: string
+}
+export function gatherCrashInfo(err: unknown, inst: InstanceinatorInstance): CrashInfo {
     const isCCL3 = modMetadata.mod.isCCL3
     const version = ig.game?.getVersion()
     const platform = ig.getPlatformName(ig.platform)
@@ -66,7 +70,7 @@ export function showServerErrorPopup(inst: InstanceinatorInstance, err: unknown)
         document.body.removeChild(div)
     }
 
-    const { infoText, modsText } = gatherInfo(err, inst)
+    const { infoText, modsText } = gatherCrashInfo(err, inst)
 
     const bg = '#1d1f21'
     const fg = '#fcfcfc'

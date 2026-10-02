@@ -9,6 +9,7 @@
 - Add partial support for seamless overworld on remote
 - Add support for teleport arboxes on remote
 - Add player join animation
+- Send remote crash data to physics server
 
 ### Changed
 

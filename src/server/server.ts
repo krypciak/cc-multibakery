@@ -4,6 +4,7 @@ import {
     type ClientCreateAndJoinSettings,
     type ClientJoinAckData,
     type ClientJoinData,
+    type ClientLeaveFunctionData,
     type MapTpInfo,
     type ServerSettings,
 } from './server-types'
@@ -272,7 +273,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
         settings?: ClientCreateAndJoinSettings
     ): Promise<{ ackData: ClientJoinAckData; client?: Client; map?: CCMap }>
 
-    leaveClient(client: Client, reason?: string) {
+    leaveClient(client: Client, { reason }: ClientLeaveFunctionData = {}) {
         assert(instanceinator.id == this.inst.id)
         const id = client.inst.id
         client.kickReason = reason
