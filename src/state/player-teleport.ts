@@ -3,7 +3,6 @@ import { assertRemote } from '../server/remote/remote-server-types'
 import type { Username } from '../net/binary/binary-types'
 import type { MapTpInfo } from '../server/server-types'
 import type { EntityNetid } from '../misc/entity-netid'
-import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     interface GlobalStateUpdatePacket {
@@ -14,9 +13,8 @@ declare global {
 interface TeleportInfoEntry {
     netid: EntityNetid
     tpInfo: MapTpInfo
-    fadeIn: number
-    fadeOut: number
     noBlackout: boolean
+    color: { r: number; g: number; b: number; lighter: boolean; timeIn: number; timeOut: number }
 }
 
 let playerTeleports: Record<Username, TeleportInfoEntry> = {}
@@ -39,11 +37,11 @@ export const playerTeleportGlobalStateHandler: GlobalStateHandler = {
 
         assertRemote(multi.server)
         for (const username in packet.playerTeleport) {
-            const { tpInfo, netid, fadeIn, fadeOut, noBlackout } = packet.playerTeleport[username]
+            const { tpInfo, netid, color, noBlackout } = packet.playerTeleport[username]
             const client = multi.server.clients.get(username)
             if (!client?.ready) continue
             client.reservedNetid = netid
-            runTask(client.inst, () => ig.game.setTeleportTime(fadeIn, fadeOut))
+            Object.assign(client.inst.ig.game.teleportColor, color)
             client.teleportOverrides.noBlackout = noBlackout
             client.teleport(tpInfo)
         }

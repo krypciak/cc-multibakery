@@ -12,6 +12,7 @@
 - Send remote crash data to physics server
 - Add player leave animation
 - Add player crash animation
+- Add remote teleport color syncing (fix teleport color not being white on area changes)
 
 ### Changed
 

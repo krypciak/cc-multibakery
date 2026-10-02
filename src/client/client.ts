@@ -237,7 +237,7 @@ export class Client extends InstanceUpdateable {
     @profile((self, _, __) => `${self.username}`)
     async teleport(tpInfo: MapTpInfo, initialJoin?: boolean) {
         try {
-            const { fadeIn, fadeOut } = this.startTeleportOverlay(initialJoin)
+            const { fadeIn } = this.startTeleportOverlay(initialJoin)
             runTask(this.inst, () => {
                 sc.model.enterTeleport()
                 ig.game.events.clear()
@@ -255,12 +255,12 @@ export class Client extends InstanceUpdateable {
             if (isPhysics(multi.server)) {
                 this.reservedNetid ??= map.reservePlayerNetid()
                 if (!initialJoin) {
+                    const { r, g, b } = this.inst.ig.game.currentTeleportColor
                     notifyRemoteAboutTeleport(this.username, {
                         netid: this.reservedNetid,
                         tpInfo,
-                        fadeIn,
-                        fadeOut,
                         noBlackout: !!this.teleportOverrides.noBlackout,
+                        color: { ...this.inst.ig.game.teleportColor, r, g, b },
                     })
                 }
             }
