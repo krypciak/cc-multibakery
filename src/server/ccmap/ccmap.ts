@@ -172,10 +172,6 @@ export class CCMap extends InstanceUpdateable {
 
         instanceinator.retile()
 
-        if (isRemote(multi.server)) {
-            multi.server.onMapReady(this)
-        }
-
         this.ready = true
     }
 

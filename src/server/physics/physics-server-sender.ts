@@ -85,7 +85,7 @@ export class PhysicsSender {
                     continue
                 }
 
-                if (!map?.inst || !readyMaps || !readyMaps.has(mapName)) continue
+                if (!map?.inst || !readyMaps?.[mapName]) continue
                 this.getMapUpdatePacket(map, dest, client.dummy, cachePacket)
             }
 

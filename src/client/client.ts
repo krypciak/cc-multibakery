@@ -528,7 +528,7 @@ export class Client extends InstanceUpdateable {
 
     private isRemoteMapReady(): boolean {
         if (!isPhysics(multi.server) || !this.settings.connection) return true
-        return !!multi.server.connectionReadyMaps.get(this.settings.connection)?.has(this.tpInfo.map)
+        return !!multi.server.connectionReadyMaps.get(this.settings.connection)?.[this.tpInfo.map]
     }
 
     private async waitForRemoteMap() {

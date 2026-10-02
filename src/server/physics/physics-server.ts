@@ -44,7 +44,7 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
     serverDiscovery?: ServerDiscoveryServer
     anyRemoteClientsOn: boolean = false
 
-    connectionReadyMaps: WeakMap<NetConnection, Set<MapName>> = new WeakMap()
+    connectionReadyMaps: WeakMap<NetConnection, Record<MapName, boolean>> = new WeakMap()
 
     constructor(settings: PhysicsServerSettings) {
         console.info('ROLE: PhysicsServer')
@@ -179,12 +179,10 @@ export class PhysicsServer extends Server<PhysicsServerSettings> {
         if (data.readyMaps) {
             let entry = this.connectionReadyMaps.get(conn)
             if (!entry) {
-                entry = new Set()
+                entry = {}
                 this.connectionReadyMaps.set(conn, entry)
             }
-            for (const map of data.readyMaps) {
-                entry.add(map)
-            }
+            Object.assign(entry, data.readyMaps)
         }
 
         for (const username in data.clients) {

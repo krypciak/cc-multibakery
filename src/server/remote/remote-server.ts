@@ -1,7 +1,7 @@
 import type { NetConnection } from '../../net/net-connection'
 import type { PhysicsServerUpdatePacket } from '../physics/physics-server-sender'
 import type { CCMap } from '../ccmap/ccmap'
-import type { MapName, Username } from '../../net/binary/binary-types'
+import type { Username } from '../../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../../state/player-info'
 import type {
     ClientCreateAndJoinSettings,
@@ -33,7 +33,6 @@ import './injects'
 export class RemoteServer extends Server<RemoteServerSettings> {
     physics: boolean = false
     netManager!: NetManagerRemoteServer
-    notifyReadyMaps?: MapName[]
     playerInfoEntries: Record<Username, PlayerInfoEntry> = {}
 
     constructor(settings: RemoteServerSettings) {
@@ -138,8 +137,8 @@ export class RemoteServer extends Server<RemoteServerSettings> {
             const stateUpdatePacket = data.mapPackets[mapName]
 
             const map = multi.server.maps.get(mapName)
-            if (!map?.initialized) continue
-
+            if (!map) continue
+            assert(map.initialized)
             assert(!map.destroyed)
 
             if (stateUpdatePacket.kicks) {
@@ -203,10 +202,6 @@ export class RemoteServer extends Server<RemoteServerSettings> {
         this.netManager.conn.join(client)
 
         return { client, map, ackData }
-    }
-
-    onMapReady(map: CCMap) {
-        ;(this.notifyReadyMaps ??= []).push(map.name)
     }
 
     private sendLeave(clients: Iterable<Client>, error?: unknown) {

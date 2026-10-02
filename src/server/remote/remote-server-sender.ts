@@ -19,13 +19,15 @@ import { packetDeepEqual } from '../../net/packet-deep-equal'
 import { profile, type SerializedPerfData } from '../../misc/performance-profiling'
 import { getCCUILibRingConfFrom } from '../../mod-compatibility/nax-ccuilib'
 import { playerInputProfilingOnRemotePacketSent } from '../player-input-latency'
+import type { Client } from '../../client/client'
 
 let remoteSenderStateMemory: StateMemory | undefined
+let remoteSenderClientStateMemory: StateMemory.MapHolder<Client> = {}
 const maxInputFieldTextLength = 50
 
 export interface RemoteServerUpdatePacket {
     clients?: RemoteServerClientPackets
-    readyMaps?: MapName[]
+    readyMaps?: Record<MapName, boolean>
     profilingData?: SerializedPerfData
 }
 export type GenerateType = RemoteServerUpdatePacket
@@ -80,6 +82,12 @@ type RemoteServerClientPackets = Record<Username, RemoteServerClientPacket>
 export class RemoteSender {
     private static lastProfilingDataSendTime: number = 0
     private static sendProfilingDataEveryMs: number = 5e3
+    private static readyMaps: Record<MapName, boolean> = {}
+
+    private static updateReadyMaps() {
+        for (const mapName in this.readyMaps) this.readyMaps[mapName] = false
+        for (const map of multi.server.maps.values()) this.readyMaps[map.name] = map.ready
+    }
 
     @profile(undefined, 'remote sender', true)
     static collectAndSend() {
@@ -97,19 +105,20 @@ export class RemoteSender {
             const input = inst.ig.input.getInput()
             const gamepad = inst.ig.gamepad.getInput()
 
-            const memory = StateMemory.get(remoteSenderStateMemory)
-            remoteSenderStateMemory ??= memory
-
             const options = filterClientOptionModelValues(
                 (client.inst.sc?.options?.values as unknown as ClientOptionModelValues) ?? {}
             )
-            const ccuilibRingConf = memory.isFirstTime() ? getCCUILibRingConfFrom(client.inst.nax!) : undefined
+
+            const clientMemory = StateMemory.getBy(remoteSenderClientStateMemory, client)
+            const ccuilibRingConf = clientMemory.isFirstTime() ? getCCUILibRingConfFrom(client.inst.nax!) : undefined
 
             const packet: RemoteServerClientPacket = {
                 input,
                 gamepad,
-                inputFieldText: memory.diff(inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)),
-                options: memory.diffRecord(options),
+                inputFieldText: clientMemory.diff(
+                    inst.ig.shownInputDialog?.getText().substring(0, maxInputFieldTextLength)
+                ),
+                options: clientMemory.diffRecord(options),
                 ccuilibRingConf,
             }
 
@@ -118,6 +127,9 @@ export class RemoteSender {
                 clientPackets[client.username] = cleanPacket
             }
         }
+
+        const globalMemory = StateMemory.get(remoteSenderStateMemory)
+        remoteSenderStateMemory ??= globalMemory
 
         let profilingData: SerializedPerfData | undefined
         if (PROFILE) {
@@ -128,12 +140,13 @@ export class RemoteSender {
             }
         }
 
+        this.updateReadyMaps()
+
         const packet: RemoteServerUpdatePacket = {
             clients: cleanRecord(clientPackets),
-            readyMaps: multi.server.notifyReadyMaps,
+            readyMaps: globalMemory.diffRecord(this.readyMaps),
             profilingData,
         }
-        multi.server.notifyReadyMaps = undefined
 
         const cleanPacket = cleanRecord(packet)
         if (!cleanPacket) return
