@@ -27,6 +27,7 @@ export async function showTeleportArMsg(
     preTeleportInfo: PreTeleportInfo = getPreTeleportInfoForArMsg(client)
 ) {
     if (!Opts.showClientTeleportArBox) return
+    if (Opts.showClientTeleportArBoxNoTeleportGround && client.teleportOverrides.viaTeleportGround) return
     const map = preTeleportInfo.map
     if (!map) return
 
@@ -84,17 +85,36 @@ export async function showTeleportArMsg(
 prestart(() => {
     sc.MapModel.inject({
         getTeleportEvent(map) {
-            const client = ig.client
-            if (!client) return this.parent(map)
-
             let event = this.parent(map)
-            event = new ig.Event({
-                steps: [
-                    { type: 'RUN_JS_FUNCTION', func: call => showTeleportArMsg(client, map, call) },
-                    ...event.stepSettings,
-                ],
-            })
+
+            const client = ig.client
+            if (client) {
+                event = new ig.Event({
+                    steps: [
+                        { type: 'RUN_JS_FUNCTION', func: call => showTeleportArMsg(client, map, call) },
+                        ...event.stepSettings,
+                    ],
+                })
+            }
+
             return event
+        },
+    })
+
+    ig.ENTITY.TeleportGround.inject({
+        collideWith(entity, dir) {
+            if (
+                entity instanceof dummy.DummyPlayer &&
+                this.map &&
+                ig.game.isPlayerTouch(this, entity, dir) &&
+                ig.game.isInterruptible() &&
+                !sc.model.isMapLeaveBlocked() &&
+                entity.coll.pos.z == this.coll.pos.z
+            ) {
+                const client = entity.getClient(true)
+                if (client) client.teleportOverrides.viaTeleportGround = true
+            }
+            return this.parent(entity, dir)
         },
     })
 })

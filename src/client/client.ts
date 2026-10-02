@@ -46,7 +46,7 @@ export class Client extends InstanceUpdateable {
     ready: boolean = false
     reservedNetid?: EntityNetid
     kickReason?: string
-    teleportOverrides: { noBlackout?: boolean; pos?: () => Vec2; face?: Vec2 } = {}
+    teleportOverrides: { noBlackout?: boolean; pos?: () => Vec2; face?: Vec2; viaTeleportGround?: boolean } = {}
 
     constructor(public settings: ClientSettings) {
         super()

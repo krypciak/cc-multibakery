@@ -222,6 +222,12 @@ function registerOpts() {
                         name: 'Show teleport popup',
                         description: 'Show popup when other player teleports out of the map',
                     },
+                    showClientTeleportArBoxNoTeleportGround: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'No teleport popup via TPG',
+                        description: `Dont't show teleport popup when teleporting via TeleportGround (overworld)`,
+                    },
                     showClientJoinAnimation: {
                         type: 'CHECKBOX',
                         init: true,
