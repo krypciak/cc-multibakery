@@ -316,6 +316,8 @@ export class Client extends InstanceUpdateable {
 
             this.linkMapToInstanceStage2(map)
 
+            if (initialJoin) Vec2.assign(this.dummy.face, { x: 0, y: 1 })
+
             for (const obj of map.onLinkChange) obj.onClientLink?.(this)
 
             multi.storage.save()
@@ -464,7 +466,6 @@ export class Client extends InstanceUpdateable {
             }
 
             this.dummy.show()
-            Vec2.assign(this.dummy.face, { x: 0, y: 1 })
         })
     }
 
