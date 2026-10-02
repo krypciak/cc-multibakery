@@ -28,6 +28,7 @@ export function startGameLoop(useAnimationFrame = false) {
 
     if (useAnimationFrame && window.requestAnimationFrame) {
         function loop() {
+            canDraw = true
             run()
             window.requestAnimationFrame(loop)
         }

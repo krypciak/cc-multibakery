@@ -18,6 +18,7 @@
 
 - Fix entity spawn ordered event not working
 - Fix crash when remote has more than two clients on different maps and one leaves
+- Fix draw on physics server being disabled sometimes after last remote leaves
 
 ### Removed
 
