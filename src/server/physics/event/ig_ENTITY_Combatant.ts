@@ -39,6 +39,7 @@ prestart(() => {
         getLastDamagingPlayer() {
             if (this.lastDamagedNetidPlayer) {
                 const player = ig.game.entitiesByNetid[this.lastDamagedNetidPlayer]
+                if (!player) return
                 assert(player instanceof dummy.DummyPlayer)
                 return player
             }
