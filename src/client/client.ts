@@ -127,8 +127,13 @@ export class Client extends InstanceUpdateable {
     protected attemptRecovery(e: unknown) {
         if (!multi.server.settings.attemptCrashRecovery) throw e
 
-        const map = this.getMap()
-        map.attemptRecovery(e)
+        try {
+            multi.server.inst.apply()
+            multi.server.leaveClient(this, 'crash')
+        } catch (e1) {
+            const map = this.getMap()
+            map.attemptRecovery(e)
+        }
     }
 
     isActive() {
