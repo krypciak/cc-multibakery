@@ -74,6 +74,11 @@ prestart(() => {
             sc.combat.addActiveCombatant(this)
 
             this._updateCameraHandle()
+
+            this.gui.crosshair = ig.game.spawnEntity(ig.ENTITY.Crosshair, 0, 0, 0, {
+                thrower: this,
+                controller: new sc.PlayerCrossHairController(),
+            })
         },
         setInputManager(inputManager) {
             this.inputManager = inputManager
@@ -124,9 +129,16 @@ prestart(() => {
                 inputBackup(this.inputManager, parent)
             }
         },
-        hide() {
-            this.parent()
-            this.gui.crosshair.kill()
+        show(noShowFx) {
+            const backup = ig.game.spawnEntity
+            try {
+                ig.game.spawnEntity = (type: any, ...args: any[]) =>
+                    type == ig.ENTITY.Crosshair ? this.gui.crosshair : backup.apply(ig.game, [type, ...args] as any)
+
+                this.parent(noShowFx)
+            } finally {
+                ig.game.spawnEntity = backup
+            }
         },
         onKill(_dontRespawn?: boolean) {
             this.parent(true)
