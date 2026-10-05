@@ -17,6 +17,7 @@
 ### Changed
 
 - Force player face to south on server join
+- Iterate over all players for ig.CollTools.isInScreen instead of just always returning true
 
 ### Fixed
 

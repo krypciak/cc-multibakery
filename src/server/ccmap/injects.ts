@@ -8,9 +8,23 @@ import './sound-position-fix'
 
 prestart(() => {
     const backup = ig.CollTools.isInScreen
-    ig.CollTools.isInScreen = function (e: ig.Entity, x?: number, y?: number) {
-        if (multi.server && !ig.client) return true
-        return backup(e, x, y)
+    ig.CollTools.isInScreen = function isInScreen(coll: ig.CollEntry, x?: number, y?: number) {
+        if (!ig.mapShared) return backup(coll, x, y)
+
+        x ??= 0
+        y ??= x
+
+        for (const client of ig.mapShared.ccmap.clients) {
+            const ig = client.inst.ig
+            const isInScreen =
+                coll.pos.x + coll.size.x + x >= ig.game.screen.x &&
+                coll.pos.x - x <= ig.game.screen.x + ig.system.width &&
+                coll.pos.y - coll.pos.z + coll.size.y + y >= ig.game.screen.y &&
+                coll.pos.y - coll.pos.z - coll.size.z - y <= ig.game.screen.y + ig.system.height
+
+            if (isInScreen) return true
+        }
+        return false
     }
 
     ig.SlowMotion.inject({
