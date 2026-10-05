@@ -13,7 +13,7 @@ import { getModCompatibilityErrorListText, isModCompatibilityListSatisfied } fro
 
 const defaultMap: MapTpInfo = {
     // map: 'multibakery/dev',
-    marker: 'entrance',
+    // marker: 'entrance',
     // map: 'co-op-dng/intro-rooms/room-3',
     // marker: 'd1',
     // map: 'co-op-dng/template',
@@ -21,9 +21,11 @@ const defaultMap: MapTpInfo = {
     // map: 'multibakery/mba-pvp',
     // marker: 'to_pvp',
 
-    // map: 'autumn/path6',
+    map: 'autumn/path6',
     // map: 'autumn/path-7-1',
-    map: 'autumn/entrance',
+    // map: 'autumn/path-1',
+    marker: 'south',
+    // map: 'autumn/entrance',
     // map: 'autumn/path4',
     // map: 'autumn/guild/inner-fs-og',
     // map: 'co-op-dng/template',
@@ -92,16 +94,15 @@ function createSettings(): PhysicsServerSettings {
         attemptCrashRecovery: false,
         godmode: true,
         disablePlayerIdlePose: true,
-        save: false
-            ? undefined
-            : {
+        save: true
+            ? {
                   manualSaving: true,
                   automaticallySave: true,
                   loadFromSlot: 1,
-              },
-        netInfo: false
-            ? undefined
-            : {
+              }
+            : undefined,
+        netInfo: true
+            ? {
                   connection: {
                       httpPort: DEFAULT_HTTP_PORT,
                       https: {
@@ -130,7 +131,8 @@ function createSettings(): PhysicsServerSettings {
                       // forceJsonCommunication: true
                   },
                   // discovery: true,
-              },
+              }
+            : undefined,
         defaultMap,
     }
 }
