@@ -45,7 +45,10 @@ prestart(() => {
     sc.NPCRunnerEntity.forceRemotePhysics = true
     sc.NPCRunnerEntity.inject({
         initAction(enter, exit, waypoints, partyIdx) {
-            wrapIgnoreEffectNetid(() => this.parent(enter, exit, waypoints, partyIdx))
+            return wrapIgnoreEffectNetid(() => this.parent(enter, exit, waypoints, partyIdx))
+        },
+        onTouchGround(zVel) {
+            return wrapIgnoreEffectNetid(() => this.parent(zVel))
         },
     })
 

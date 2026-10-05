@@ -24,6 +24,7 @@
 - Fix crash when remote has more than two clients on different maps and one leaves
 - Fix draw on physics server being disabled sometimes after last remote leaves
 - Fix remote crash when reentering a map sometimes
+- Don't send sc.NPCRunnerEntity dust effects to remote
 
 ### Removed
 
