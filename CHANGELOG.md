@@ -26,6 +26,7 @@
 - Fix draw on physics server being disabled sometimes after last remote leaves
 - Fix remote crash when reentering a map sometimes
 - Don't send sc.NPCRunnerEntity dust effects to remote
+- Fix shadow rendering issues when Seamless overworld is enabled
 
 ### Removed
 

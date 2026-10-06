@@ -365,7 +365,7 @@ function drawMaps(entries: MultiMapRenderingMapInfoEntry[], gameWithParent: ig.G
     lightContext.globalCompositeOperation = 'source-over'
     lightContext.clearRect(0, 0, ig.system.realWidth, ig.system.realHeight)
 
-    function wrapLightContext(func: () => void) {
+    function wrapLightContext(func: () => void, isMain?: boolean) {
         const lightContextBackup = ig.light.lightContext
         const lightMapDarknessBackup = ig.light.lightMapDarkness
         const clearColorbackup = ig.game.clearColor
@@ -373,17 +373,38 @@ function drawMaps(entries: MultiMapRenderingMapInfoEntry[], gameWithParent: ig.G
         try {
             ig.light.lightContext = new Proxy(lightContext, {
                 get(target, p, _receiver) {
-                    if (p == 'clearRect' || p == 'fillRect') return () => {}
                     const value = Reflect.get(target, p, target)
-                    if (typeof value === 'function') return value.bind(target)
+                    if (typeof value === 'function') {
+                        const boundFunc = value.bind(target)
+                        if (p == 'clearRect') return () => {}
+                        if (p == 'fillRect') {
+                            return (x: number, y: number, width: number, height: number) => {
+                                if (
+                                    isMain &&
+                                    x == 0 &&
+                                    y == 0 &&
+                                    width == ig.system.realWidth &&
+                                    height == ig.system.realHeight &&
+                                    lightContext.globalAlpha != 1
+                                ) {
+                                    return boundFunc(x, y, width, height)
+                                } else {
+                                    return () => {}
+                                }
+                            }
+                        }
+                        return boundFunc
+                    }
                     return value
                 },
                 set(target, p, value) {
                     return Reflect.set(target, p, value, target)
                 },
             })
-            ig.light.lightMapDarkness = 0
-            ig.game.clearColor = '#00000000'
+            if (!isMain) {
+                ig.light.lightMapDarkness = 0
+                ig.game.clearColor = '#00000000'
+            }
 
             func()
         } finally {
@@ -396,7 +417,7 @@ function drawMaps(entries: MultiMapRenderingMapInfoEntry[], gameWithParent: ig.G
 
     wrapLightContext(() => {
         for (const addon of ig.game.addons.preDraw) addon.onPreDraw()
-    })
+    }, true)
 
     runForMaps(({ entry }) => {
         if (!entry) return
