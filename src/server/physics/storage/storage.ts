@@ -39,7 +39,7 @@ declare global {
     }
 }
 
-class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLoad {
+class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPreLoad {
     currentData?: MultibakerySaveData
     saving: boolean = false
 
@@ -52,7 +52,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         this.saveData()
     }
 
-    onStoragePostLoad(this: this, savefile: ig.SaveSlot.Data): void {
+    onStoragePreLoad(this: this, savefile: ig.SaveSlot.Data): void {
         this.currentData = savefile.multibakery
     }
 
@@ -128,8 +128,8 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
 
             if (slotId !== undefined && slotId != -1) {
                 if (ig.storage.slots[slotId]) ig.storage.slots.splice(slotId, 1)
-                ig.storage.slots.unshift(saveSlot)
-                ig.storage.lastUsedSlot = 0
+                ig.storage.slots[slotId] = saveSlot
+                ig.storage.lastUsedSlot = slotId
                 ig.storage._saveToStorage()
                 saved = true
             }
@@ -225,6 +225,7 @@ class MultiStorage implements ig.Storage.ListenerSave, ig.Storage.ListenerPostLo
         sc.menu.onStoragePreLoad(data)
         sc.newgame.onStoragePreLoad(data)
         sc.timers.onStoragePreLoad(data)
+        this.onStoragePreLoad(data)
     }
 
     @profile(undefined, 'storage')
