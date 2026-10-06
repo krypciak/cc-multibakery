@@ -29,6 +29,7 @@
 - Don't send sc.NPCRunnerEntity dust effects to remote
 - Fix shadow rendering issues when Seamless overworld is enabled
 - Fix issues and crashes related with navigation maps
+- Fix duplicate player pvp hp bars
 
 ### Removed
 

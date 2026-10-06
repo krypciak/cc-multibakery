@@ -117,8 +117,17 @@ prestart(() => {
             return instancePlayer.party == combatant.party ? 'ally' : 'enemy'
         },
         pushHpBar(bar) {
+            ig.pvpHpBarOrder ??= 0
             bar.order = ig.pvpHpBarOrder++
-            ;(this.hpBars[instanceinator.id] ??= []).push(bar)
+
+            const bars = (this.hpBars[instanceinator.id] ??= [])
+            if (ASSERT) {
+                for (const bar1 of bars) {
+                    assert(bar1.target.netid != bar.target.netid)
+                }
+            }
+
+            bars.push(bar)
             this.rearrangeHpBars()
         },
         eraseHpBar(bar) {

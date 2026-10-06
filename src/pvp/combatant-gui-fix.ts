@@ -9,6 +9,7 @@ declare global {
             statusGuis: Record<number, ig.GUI.StatusBar>
 
             createStatusGui(this: this): void
+            removeAllStatusGuis(this: this): void
         }
     }
 }
@@ -25,10 +26,9 @@ prestart(() => {
             const map = ig.mapShared.ccmap
             runTask(map.inst, () => {
                 this.parent(noShowFx)
-
                 this.statusGuis = {}
-                runTasks(map.getClientInstances(), () => this.createStatusGui())
                 this.statusGuis[instanceinator.id] = this.statusGui
+                runTasks(map.getClientInstances(), () => this.createStatusGui())
 
                 const self = this
                 map.onLinkChange.push(this)
@@ -49,7 +49,7 @@ prestart(() => {
                                     ret = runTask(inst, () => func.call(gui, ...args))
                                 }
                                 if (key == 'remove') {
-                                    self.statusGuis = {}
+                                    self.removeAllStatusGuis()
                                 }
                                 return ret
                             }
@@ -67,21 +67,28 @@ prestart(() => {
             this.statusGuis[instanceinator.id]?.forceRemove()
             this.statusGuis[instanceinator.id] = gui
         },
+        removeAllStatusGuis() {
+            for (const id in this.statusGuis) {
+                const inst = instanceinator.instances[id]
+                if (!inst) continue
+                const gui = this.statusGuis[id]
+                runTask(inst, () => gui.remove())
+            }
+            this.statusGuis = {}
+        },
         hide() {
             this.parent()
             if (!multi.server) return
 
             ig.mapShared.ccmap.onLinkChange.erase(this)
+            this.removeAllStatusGuis()
         },
         onKill(levelChange) {
             this.parent(levelChange)
             if (!multi.server) return
 
             ig.mapShared.ccmap.onLinkChange.erase(this)
-
-            /* memory leak fix, does it work: probably no */
-            this.statusGui = undefined as any
-            this.statusGuis = {}
+            this.removeAllStatusGuis()
         },
         onClientLink(client) {
             runTask(client.inst, () => {
@@ -92,8 +99,7 @@ prestart(() => {
             const id = client.inst.id
             const gui = this.statusGuis[id]
             if (gui) {
-                runTask(client.inst, () => ig.gui.removeGuiElement(gui))
-                gui.hide()
+                runTask(client.inst, () => gui.forceRemove())
                 delete this.statusGuis[id]
             }
         },
