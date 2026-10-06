@@ -364,6 +364,8 @@ export class Client extends InstanceUpdateable {
             MapDataLoad.initMapsAndLevels(levelData)
             for (const levelName in mig.game.levels) {
                 ig.game.levels[levelName].collision = mig.game.levels[levelName].collision
+                ig.game.levels[levelName].navigation  = mig.game.levels[levelName].navigation
+                ig.game.levels[levelName].heightMap  = mig.game.levels[levelName].heightMap
             }
 
             ig.game.physics = mig.game.physics

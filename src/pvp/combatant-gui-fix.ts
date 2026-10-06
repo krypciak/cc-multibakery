@@ -23,7 +23,7 @@ prestart(() => {
             if (!multi.server) return this.parent(noShowFx)
 
             const map = ig.mapShared.ccmap
-            runTask(ig.mapShared.ccmap.inst, () => {
+            runTask(map.inst, () => {
                 this.parent(noShowFx)
 
                 this.statusGuis = {}
@@ -71,8 +71,7 @@ prestart(() => {
             this.parent()
             if (!multi.server) return
 
-            const map = ig.mapShared.ccmap
-            map.onLinkChange.erase(this)
+            ig.mapShared.ccmap.onLinkChange.erase(this)
         },
         onKill(levelChange) {
             this.parent(levelChange)
