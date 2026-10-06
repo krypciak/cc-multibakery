@@ -13,6 +13,7 @@
 - Add player leave animation
 - Add player crash animation
 - Add remote teleport color syncing (fix teleport color not being white on area changes)
+- Add more options for controlling when the teleport popup should appear
 
 ### Changed
 

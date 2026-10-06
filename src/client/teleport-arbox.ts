@@ -7,6 +7,8 @@ import { assert } from '../misc/assert'
 import type { CCMap } from '../server/ccmap/ccmap'
 import { runEvent } from '../steps/event-steps-run'
 
+import './teleport-method'
+
 const alreadyShownEventCallDataKey = 'alreadyShownTeleportArMsg'
 
 interface PreTeleportInfo {
@@ -26,8 +28,17 @@ export async function showTeleportArMsg(
     eventCall?: ig.EventCall,
     preTeleportInfo: PreTeleportInfo = getPreTeleportInfoForArMsg(client)
 ) {
-    if (!Opts.showClientTeleportArBox) return
-    if (Opts.showClientTeleportArBoxNoTeleportGround && client.teleportOverrides.viaTeleportGround) return
+    const method = client.teleportOverrides.teleportMethod
+    if (method == 'TeleportGround') {
+        if (!Opts.showClientTeleportArBoxTeleportGround) return
+    } else if (method == 'Door') {
+        if (!Opts.showClientTeleportArBoxDoor) return
+    } else if (method == 'TeleportStairs') {
+        if (!Opts.showClientTeleportArBoxTeleportStairs) return
+    } else if (method == 'TeleportField') {
+        if (!Opts.showClientTeleportArBoxTeleportField) return
+    } else if (!Opts.showClientTeleportArBoxOther) return
+
     const map = preTeleportInfo.map
     if (!map) return
 
@@ -98,23 +109,6 @@ prestart(() => {
             }
 
             return event
-        },
-    })
-
-    ig.ENTITY.TeleportGround.inject({
-        collideWith(entity, dir) {
-            if (
-                entity instanceof dummy.DummyPlayer &&
-                this.map &&
-                ig.game.isPlayerTouch(this, entity, dir) &&
-                ig.game.isInterruptible() &&
-                !sc.model.isMapLeaveBlocked() &&
-                entity.coll.pos.z == this.coll.pos.z
-            ) {
-                const client = entity.getClient(true)
-                if (client) client.teleportOverrides.viaTeleportGround = true
-            }
-            return this.parent(entity, dir)
         },
     })
 })

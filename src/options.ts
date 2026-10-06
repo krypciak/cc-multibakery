@@ -216,18 +216,6 @@ function registerOpts() {
                     },
                 },
                 server: {
-                    showClientTeleportArBox: {
-                        type: 'CHECKBOX',
-                        init: true,
-                        name: 'Show teleport popup',
-                        description: 'Show popup when other player teleports out of the map',
-                    },
-                    showClientTeleportArBoxNoTeleportGround: {
-                        type: 'CHECKBOX',
-                        init: true,
-                        name: 'No teleport popup via TPG',
-                        description: `Dont't show teleport popup when teleporting via TeleportGround (overworld)`,
-                    },
                     showClientJoinAnimation: {
                         type: 'CHECKBOX',
                         init: true,
@@ -240,7 +228,42 @@ function registerOpts() {
                         name: 'Enable leave animation',
                         description: 'Enable the leave/crash animation that plays when the player leaves the server',
                     },
-                    info: {
+                    infoArBox: {
+                        type: 'INFO',
+                        name: 'Configure below when to show teleport popups when a player switches a map',
+                        description: '',
+                    },
+                    showClientTeleportArBoxTeleportGround: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'TeleportGround',
+                        description: `Show teleport popup when teleporting via TeleportGround (overworld)`,
+                    },
+                    showClientTeleportArBoxDoor: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'Door',
+                        description: `Show teleport popup when teleporting via Door`,
+                    },
+                    showClientTeleportArBoxTeleportStairs: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'TeleportStairs',
+                        description: `Show teleport popup when teleporting via TeleportStairs`,
+                    },
+                    showClientTeleportArBoxTeleportField: {
+                        type: 'CHECKBOX',
+                        init: false,
+                        name: 'TeleportField',
+                        description: `Show teleport popup when teleporting via TeleportField`,
+                    }, 
+                    showClientTeleportArBoxOther: {
+                        type: 'CHECKBOX',
+                        init: true,
+                        name: 'Other',
+                        description: `Show teleport popup when teleporting via the map menu or other events`,
+                    }, 
+                    infoAdvanced: {
                         type: 'INFO',
                         name: `Advanced configuration below, don't touch if you don't know what you're doing!`,
                         description: '',
