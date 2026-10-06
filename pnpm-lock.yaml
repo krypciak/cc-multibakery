@@ -9,35 +9,35 @@ importers:
   .:
     dependencies:
       '@types/chrome':
-        specifier: ^0.2.6
-        version: 0.2.6
+        specifier: ^0.2.9
+        version: 0.2.9
       '@types/jquery':
         specifier: ^4.0.1
         version: 4.0.1
       '@types/node':
-        specifier: ^26.2.0
-        version: 26.2.0
+        specifier: ^26.6.4
+        version: 26.6.4
       '@types/ws':
-        specifier: ^8.18.1
-        version: 8.18.1
+        specifier: ^8.18.2
+        version: 8.18.2
       cc-krypek-lib:
         specifier: github:krypciak/cc-krypek-lib
-        version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340
+        version: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/d2815336e27adf7849df981b5dd712cff313a8c1
       cc-variable-charge-time:
         specifier: github:krypciak/cc-variable-charge-time
         version: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/0beba4bf60ccf74b3931bad3a446534f131990c4
       ccmodmanager:
         specifier: github:CCDirectLink/CCModManager
-        version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999
+        version: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0
       crossnode:
         specifier: github:krypciak/crossnode
-        version: https://codeload.github.com/krypciak/crossnode/tar.gz/497544ab69379c66d48f9bff58def3a73f3fe14c
+        version: https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e
       menu-ui-replacer:
         specifier: github:CCDirectLink/cc-menu-ui-replacement
-        version: https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/eefda2356e8797bb8c8d9d23b51c95536a9a4051
+        version: https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/5aa343e5781791e67ea3e1c5e9e0e206bf3ffc0d
       nax-ccuilib:
         specifier: github:krypciak/nax-ccuilib
-        version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b74236a046774647776158c664d0d730f8368a54
+        version: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/d5dec43beb3491d0a382aada6402d009f25be54e
       spdy:
         specifier: ^4.0.2
         version: 4.0.2
@@ -45,21 +45,21 @@ importers:
         specifier: github:krypciak/ultimate-crosscode-typedefs
         version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff
       ws:
-        specifier: ^8.21.3
-        version: 8.21.3
+        specifier: ^8.22.0
+        version: 8.22.0
     devDependencies:
       '@types/bun':
-        specifier: ^1.3.14
-        version: 1.3.14
+        specifier: ^1.4.2
+        version: 1.4.2
       bun:
-        specifier: ^1.3.14
-        version: 1.3.14
+        specifier: ^1.4.2
+        version: 1.4.2
       cc-instanceinator:
         specifier: github:krypciak/cc-instanceinator
         version: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/05d40e6156b6962b9f26b87bd981c272666c4d74
       crosscode-web:
         specifier: github:krypciak/crosscode-web
-        version: https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c
+        version: https://codeload.github.com/krypciak/crosscode-web/tar.gz/9bfa623f2c192d5f71363876fc5778631c07dabb
       esbuild:
         specifier: ^0.28.2
         version: 0.28.2
@@ -67,8 +67,8 @@ importers:
         specifier: ^0.8.3
         version: 0.8.3
       node:
-        specifier: ^26.7.0
-        version: 26.7.0
+        specifier: ^26.10.0
+        version: 26.10.0
       oxfmt:
         specifier: ^0.60.0
         version: 0.60.0
@@ -246,83 +246,67 @@ packages:
   '@kwsites/promise-deferred@1.1.1':
     resolution: {integrity: sha512-GaHYm+c0O9MjZRu0ongGBRbinu8gVAMd2UZjji6jVmqKtZluZnptXGWhz1E8j8D2HJ3f/yMxKAUC0b+57wncIw==}
 
-  '@oven/bun-darwin-aarch64@1.3.14':
-    resolution: {integrity: sha512-Omj20SuiHBOUjUBIyqtkNjSUIjOtEOJwmbix/ZyFH4BaQ6OZTaaRWIR4TjHVz0yadHgli6lLTiAh1uarnvD49A==}
+  '@oven/bun-darwin-aarch64@1.4.2':
+    resolution: {integrity: sha512-MXdZkP1featqxZ+/VTXWG1BVjM4OGBehVY2Q88EeUj/7L0UMeCGItmyPYTN+wxvlGJ6F66JEtzsw+GvQWewnag==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oven/bun-darwin-x64-baseline@1.3.14':
-    resolution: {integrity: sha512-OSfsTZstc898HHElhU4NccaBGOSSDn5VfahiVTnidZ9B/+wb7WTyfZJaBeJcfjwJ9H2W9uTh2TGtl3UfcXgV9g==}
+  '@oven/bun-darwin-x64@1.4.2':
+    resolution: {integrity: sha512-gZTxZuLjkUhAWjTETu3tw0WhsEdNkJ64daj60ybhPf835a2yollV3yTkK9JozvzKPx4TRFzLSl8C+U525pxVbw==}
     cpu: [x64]
     os: [darwin]
 
-  '@oven/bun-darwin-x64@1.3.14':
-    resolution: {integrity: sha512-FFj3QdU/OhlDyZOJ8CWfN5eWLpRlT4qjZg7lMQi7jA6GuoY5ajlO1zWLP/MuHYRSbXQUvV52RejNi8DVnAp13w==}
-    cpu: [x64]
-    os: [darwin]
-
-  '@oven/bun-freebsd-aarch64@1.3.14':
-    resolution: {integrity: sha512-LIKrXaFxAHybVO5Pf+9XP2FHUj/5APvXTUKk9dqHm5iFz4oH+W24cmhjkJirNujh9hKeTyrpWSe3no9JZKowIw==}
+  '@oven/bun-freebsd-aarch64@1.4.2':
+    resolution: {integrity: sha512-SMNItMw1Z8QeeQVKnw8jA7xQNkeXdP+OPgin4Wi/QTx/B8RHHLnuZfqmFy7NtVeT2NF0kKYppW4WWd2CCYZjhQ==}
     cpu: [arm64]
     os: [freebsd]
 
-  '@oven/bun-freebsd-x64@1.3.14':
-    resolution: {integrity: sha512-uwD+fGUH1ADpIF3B1U2jWzzb20QwRLZfj5QZ28GUCGrAJ/nTmWrD6YYGsblCY1wuhldRez3lU40AyuvSCyLYmw==}
+  '@oven/bun-freebsd-x64@1.4.2':
+    resolution: {integrity: sha512-THbPKXhO54N0DpFRKZNDZpQ7dpbX0bWASuARckAUS9wRtFIHsiY+uULXJvxJGo2YD1YewvXQ4G8Fj7XT5oBCiw==}
     cpu: [x64]
     os: [freebsd]
 
-  '@oven/bun-linux-aarch64-android@1.3.14':
-    resolution: {integrity: sha512-y4kq5b85lsrmFb9Xvi4w9mA5IEFJkLMrSmYn06q24KjL9rUWDWO3VFZEtteZxUN5+ec3Zm5S8OnJw1umaCbVjA==}
+  '@oven/bun-linux-aarch64-android@1.4.2':
+    resolution: {integrity: sha512-3mZKO2rhsNgbAUtAHC1UKUlF2zTxFraDZT/Elv8wzyH0fJL9h+Iv3TgB9lO63w89PRn3eFe+NRA1bhVgikKNPQ==}
     cpu: [arm64]
     os: [android]
 
-  '@oven/bun-linux-aarch64-musl@1.3.14':
-    resolution: {integrity: sha512-jmqOA92Cd1NL/1XBd4bFkJLxQ86K0RW7ohxS2qzzAvuitO4JiIxjjTeCspoU44zCozH72HpfZfUE2On31OjnWA==}
+  '@oven/bun-linux-aarch64-musl@1.4.2':
+    resolution: {integrity: sha512-+Sm6y+lSiSFBOtXmnekp5Q6n1tUKlyv71FCPWBc61Cgb14T5eBs8SN/nh4MUCOKzONkI3O+as3MGUgikS4aCBQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [musl]
 
-  '@oven/bun-linux-aarch64@1.3.14':
-    resolution: {integrity: sha512-X5SsPZHs+iYO8R/efIcRtc7gT2Q2DgPfliCxEkx4cXBumwkw0c/EsHMNwH3EgGpCDaZ7IYVPhpCG/xBOQHEwZw==}
+  '@oven/bun-linux-aarch64@1.4.2':
+    resolution: {integrity: sha512-3BBP9ovJ2RGHFH6Ae1CAtxNtG1+YY6GD6rmYbsUosoAk9+OEl6zeDQ/k4fBkc6dYOJCtWnx8hUxzNzQATSmvYQ==}
     cpu: [arm64]
     os: [linux]
+    libc: [glibc]
 
-  '@oven/bun-linux-x64-android@1.3.14':
-    resolution: {integrity: sha512-qe9e1d+3VAEU7nAA2ol9Jvmy/o99PVMSgZhHn7Q/9O3YcDrfEqyQ8zm4zoe5qTEo8HZH0dN03Le0Ys2eQPs7eg==}
+  '@oven/bun-linux-x64-android@1.4.2':
+    resolution: {integrity: sha512-6HC5tzcC79113n2IHCTJMWv+HsQImv4ZFEK2XpYLxY6HbT8tM4cUM2Zv1bHZBQsS3jv/zYBamDJ1UX7If0d5tw==}
     cpu: [x64]
     os: [android]
 
-  '@oven/bun-linux-x64-baseline@1.3.14':
-    resolution: {integrity: sha512-q/8EdOC0yUE8FPeoOVq8/Pw5I9/tJaYmUfO/uDUAREx8IUnOJH1RJ5A3BjFqre8pvJoiZA9AovPJq5FnNNjSxA==}
+  '@oven/bun-linux-x64-musl@1.4.2':
+    resolution: {integrity: sha512-vVTKUg1bnPhRP/Hp73jIVoFh2vPFNYEqYX0ERKfZBOQEEHitNAeukZzzuUDZS0SoDCIpuWUGSpd/CDMbjdR+Uw==}
     cpu: [x64]
     os: [linux]
+    libc: [musl]
 
-  '@oven/bun-linux-x64-musl-baseline@1.3.14':
-    resolution: {integrity: sha512-n6iE71G4lQE4XkrZhQQcL5YUlxDbnq6nqV7zeQi33PMsLT/0kYE+RvHOtBWZ3w0wMdXZfINmp63hIb9ijUBGtw==}
+  '@oven/bun-linux-x64@1.4.2':
+    resolution: {integrity: sha512-9/E/UXOTpSo3YsV5g+FhtTd/qTpiWoKuxS12cqtuYA1ssu9fRAoPQnipFgGyck3tWO63iUdxBiygq+kELFawng==}
     cpu: [x64]
     os: [linux]
+    libc: [glibc]
 
-  '@oven/bun-linux-x64-musl@1.3.14':
-    resolution: {integrity: sha512-GBCB/k/sIqcr06eTNgg7g46qiUv35Jasx4XiccJ/n7RGqrE4RWUD/XJBbWFprVPjvqd59+QtSnS99XGqvftHfg==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oven/bun-linux-x64@1.3.14':
-    resolution: {integrity: sha512-7OVTAKvwfPmSbIV1HpdOoVVx5VRc427GuPPne93N6vk4eQBPId9nXmZDh9/zGaKPdbVjVtQSZafWQoUjx38Utw==}
-    cpu: [x64]
-    os: [linux]
-
-  '@oven/bun-windows-aarch64@1.3.14':
-    resolution: {integrity: sha512-T7s3x/BsVKQObGU6QDkZeI6wKynzqGbBH1yI77jrrj5siElclxr3DQrDIk8CV4G5/SJq2HHq4kpLyYY2DKCSmA==}
+  '@oven/bun-windows-aarch64@1.4.2':
+    resolution: {integrity: sha512-8EJ1ST7339WJE3poPW5nBgVW/lWf9HBz4W27ZUNhburKmcBLOByPyE6DP9fHD8FQGm5c+ilUN2hX1mrW0jxq9Q==}
     cpu: [arm64]
     os: [win32]
 
-  '@oven/bun-windows-x64-baseline@1.3.14':
-    resolution: {integrity: sha512-uIjLUC1S9DWgICzuoMba7vurBJnBruE4S5CxnvmZkdqWVXRzx1Rgu636HoH+k0qeaQCFh3jeG3JQ1y6fRHv0sw==}
-    cpu: [x64]
-    os: [win32]
-
-  '@oven/bun-windows-x64@1.3.14':
-    resolution: {integrity: sha512-mUFWL3BoYkNpjd8e9PqROiFF/1Xeotq20mABJsiQH62jM1g5zqWh4khw1RZ6bX8Q8fWvlPaxG1PjofkmjUi3vg==}
+  '@oven/bun-windows-x64@1.4.2':
+    resolution: {integrity: sha512-+bN6OuVld/9diT/RLSXSW7JE6CvNE3gL9XsAEjULi1nUsXd6DNO6GuA9jNdNb3r8PdJFnYHr5aypNV1Oj3Rd9g==}
     cpu: [x64]
     os: [win32]
 
@@ -448,17 +432,14 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@simple-git/args-pathspec@1.0.3':
-    resolution: {integrity: sha512-ngJMaHlsWDTfjyq9F3VIQ8b7NXbBLq5j9i5bJ6XLYtD6qlDXT7fdKY2KscWWUF8t18xx052Y/PUO1K1TRc9yKA==}
+  '@simple-git/args-pathspec@1.0.4':
+    resolution: {integrity: sha512-EtMX6XjRWSastG2SdkmSQByPtJ9dx/NIjnHbpQPCYt62j4RmSx5rgLTGpw0YCjF5h191gZOmBfheOT23cRSFdw==}
 
-  '@simple-git/argv-parser@1.1.1':
-    resolution: {integrity: sha512-Q9lBcfQ+VQCpQqGJFHe5yooOS5hGdLFFbJ5R+R5aDsnkPCahtn1hSkMcORX65J2Z5lxSkD0lQorMsncuBQxYUw==}
+  '@simple-git/argv-parser@2.0.1':
+    resolution: {integrity: sha512-M++IaVWrN+vYalilOHfwvT2IL3wYZtVEBQpmX6DLSOJLtxbZ+SUeIDE3IiPogzhPACLajwtxfa5rp+ZX1FczzQ==}
 
-  '@types/bun@1.3.14':
-    resolution: {integrity: sha512-h1hFqFVcvAvD9j9K7ZW7vd82aSA+rTdznZa+5bwvCwqSB1jmmfLcbIWhOLx1/+boy/xmjgCs/OMUL8hRJSmnPw==}
-
-  '@types/chrome@0.2.6':
-    resolution: {integrity: sha512-8OgXtL+OcR2IpY2ul5itg0R3xmdceAM4ldcHxh4BFL20p5z7fjhpyP5KuXAp1LIxA7oQgyViKTS9d+W8Sn8jdQ==}
+  '@types/bun@1.4.2':
+    resolution: {integrity: sha512-GimotNn7+ZV0uVArItBbriZsR1oNf0+WTzPkdcFrzShI7k2norL0uzEaJT8T33dWr7O/c9ZDuAFQrctKCi72oQ==}
 
   '@types/chrome@0.2.9':
     resolution: {integrity: sha512-6rXrDPkkWv4D2Q23HqT+iED4voODU5CpOSc2VFgKyecSFItuEsIBvz9CY6jUQ3dd+Q7zo1bnCE9pKRMtkYut5g==}
@@ -478,14 +459,11 @@ packages:
   '@types/jquery@4.0.1':
     resolution: {integrity: sha512-9a59A/tycXgYuPABcp6/3spSShn0NT2UOM4EfHvMumjYi4lJWTsK5SZWjhx3yRm9IHGCeWXdV2YfNsrWrft/CA==}
 
-  '@types/node@25.9.5':
-    resolution: {integrity: sha512-OScDchr2fwuUmWdf4kZ9h7PcJiYDVInhJizG/biAq3cAvqwYktuy/TYGGdZNMtNTFUP7rnb0NU4TUdm82kt4Rg==}
+  '@types/node@25.9.9':
+    resolution: {integrity: sha512-b4e2xxj/yMeT2hNlD6x7zNFiQK2Dlmkb9CQ6v3/1G2RezKN4YS2lcEv8lzGm1mhs4f2lM4yNAMI/zUDBZBBt7w==}
 
-  '@types/node@26.2.0':
-    resolution: {integrity: sha512-5IviulTZeRNp2vAJ514cc/HUlY5nZ9fCbq9DMyC52BrhFZACo3nI0R7qBxhQmo/d27NFe96ur/b7Wwxklda+kg==}
-
-  '@types/node@26.5.1':
-    resolution: {integrity: sha512-CzNm2FezW4VR/LjG6yUdiEgLE/rAQ9Slj5gCu/C2VrdcW7I0ahNZ8DRbHT7zOZ6r3ONgd/bsQIeSaoDGrd1C6g==}
+  '@types/node@26.6.4':
+    resolution: {integrity: sha512-ldVPDCzj7fsaGZrLB0NuHuTvJcsNasysBAqMolr/cgxrLd1xbqxIr3XJiPnHHJUCxj5sNF1vnRj9aWnrVh5Jcg==}
 
   '@types/semver@6.2.7':
     resolution: {integrity: sha512-blctEWbzUFzQx799RZjzzIdBJOXmE37YYEyDtKkx5Dg+V7o/zyyAxLPiI98A2jdTtDgxZleMdfV+7p8WbRJ1OQ==}
@@ -493,14 +471,14 @@ packages:
   '@types/semver@7.8.0':
     resolution: {integrity: sha512-1mAINjtQCXXeLkJ9ehXkwOcBpqtLxiVtKhpUf83DdRNdQKV0iXZpaHYqRr7nj+wvxuJzoAmAwXI+sCNMv1CzLQ==}
 
-  '@types/ws@8.18.1':
-    resolution: {integrity: sha512-ThVF6DCVhA8kUGy+aazFQ4kXQ7E1Ty7A3ypFOe0IcJV8O/M511G99AW24irKrW56Wt44yG9+ij8FaqoBGkuBXg==}
+  '@types/ws@8.18.2':
+    resolution: {integrity: sha512-67MQl+fpWKVTT1NYdnmo3U4sc/xPo/zQBncVnI74qmQa0z/b+1g6iYqNmGCPbxO+zz2aklb08a0oHfegiVd0/w==}
 
-  bun-types@1.3.14:
-    resolution: {integrity: sha512-4N0ig0fEomHt5R0KCFWjovxow98rIoRwKolrYdCcknNwMekCXRnWEUvgu5soYV8QXtVsrUD8B95MBOZGPvr6KQ==}
+  bun-types@1.4.2:
+    resolution: {integrity: sha512-bxV1FgK7yBIzjRe5zBozIM4Bem11ZJcCXSrjWRG3YWLt8yFDePu4cLjpebO8OvPeIE9trbyPF4fuj3Cia4Fj3w==}
 
-  bun@1.3.14:
-    resolution: {integrity: sha512-aB6GVd42x1Y5ie1K16SF+oLGtgSkwX9hgoDdIW88pjvfTccU8F1vfpoOt34QLv0dZ1v3XimtaxPlZUG81Gx9Zg==}
+  bun@1.4.2:
+    resolution: {integrity: sha512-TrSXo6HJfIEaczpb3kjX82I2pL47vK1QUNmHRCUdz9IzaOwa9lzOXSWwu2l18YHE3sNfGRapVLd4nNm+22vVVA==}
     cpu: [arm64, x64]
     os: [darwin, linux, android, freebsd, win32]
     hasBin: true
@@ -509,9 +487,9 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-Tv3da2p9aApk1QnaIDETyWqrN7ptGC6Ov3LBqbtfenfdHYHxF+1NeGYEpCwGaRHJBcuiWwRdEvz5yPP3d5exEw==, tarball: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/05d40e6156b6962b9f26b87bd981c272666c4d74}
     version: 1.1.7
 
-  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340:
-    resolution: {gitHosted: true, integrity: sha512-oXPNV1nnSwuzTK2ihfne7g+eQF+i1Ni0AEEXDpz/24p6y92O/paVFZENHjRa07BnhI6OsRtSNqraUlyN5TRnrw==, tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340}
-    version: 1.2.3
+  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/d2815336e27adf7849df981b5dd712cff313a8c1:
+    resolution: {gitHosted: true, integrity: sha512-SYbkFelmKFDBzmD0DnwCzijHJHdt23omvFTmg7XD0Ozbir6R7QfnVIjHXvoO4B8A2gcfYJ9Grrl2frkQuBGzgQ==, tarball: https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/d2815336e27adf7849df981b5dd712cff313a8c1}
+    version: 1.4.0
 
   cc-map-screenshot@https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d:
     resolution: {gitHosted: true, integrity: sha512-bg9k3HYtdoEWvvGmtjQexS4DeGWI6AMfQsBdwjE2Mwn0WEJdyRNGjl3Cu1ctNfm8+lepdNr9qieU/qLjdVZ8hg==, tarball: https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d}
@@ -521,17 +499,9 @@ packages:
     resolution: {gitHosted: true, integrity: sha512-HpeCrPA8VyoiPdbqhLVwI+QE4LRImz7LLZA9tiATNgmix2iJ0a2f9cCKLfaYxfxyvhz1Ek3Z6ka7dJ1DGyOZLQ==, tarball: https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/0beba4bf60ccf74b3931bad3a446534f131990c4}
     version: 1.0.0
 
-  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e:
-    resolution: {gitHosted: true, integrity: sha512-QLocv18SGUnLnE5DQsJPdKP8PGkJLQxsiA6/LXfNgX9TvSHwExyjMJ8ZmsUWw92moJ6XUwee/n6af+7nzn8POQ==, tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e}
+  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/0a8802d2f60ac892b3da493fcd206a2daeec1c69:
+    resolution: {gitHosted: true, integrity: sha512-YzNwniG2bm4L7PQ7uMbAHrggJFNV4NikbT8lEtrRFpkLMp5NfeQlKBP2PzedMpF/o9qyOA9nFbtSOMxg3QP5HA==, tarball: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/0a8802d2f60ac892b3da493fcd206a2daeec1c69}
     version: 1.0.0
-
-  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e:
-    resolution: {gitHosted: true, integrity: sha512-qzZMhwvQX+BUHG8+zuSlYMnG5LmEKhSEeeysvWcxcfKWUV4eQ14ClvbSuv+dzQ5uEPDB2tRGF+GBOItQJVGq+w==, tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e}
-    version: 1.2.1
-
-  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999:
-    resolution: {gitHosted: true, integrity: sha512-QjfJ7YmWdekM9ITd2tcWs+1rlp5JRLwZBZQz5E++haD5vIzQ2n3hwWcP8/ckAwu7wpV9x8a/IIi1Oz5o3iY5hg==, tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999}
-    version: 1.2.0
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0:
     resolution: {gitHosted: true, integrity: sha512-f0ANdfurpm5fPIFOQdFAUXkzT5AXgfqyoAwEf97RoMiM6rgTAkzVBAGwYivDOG52wugTeLajZlXeHPmGYAq+aw==, tarball: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0}
@@ -543,13 +513,9 @@ packages:
   core-util-is@1.0.3:
     resolution: {integrity: sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==}
 
-  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c:
-    resolution: {gitHosted: true, integrity: sha512-Blekzo8Rwbtwc7NoEVJk+WZzqz5fsmJT/xKhNFWyKcmHBDe+mKO3L/n2+qgt4AjkuT31yAMSumhxQp3K3M8Y5A==, tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c}
+  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/9bfa623f2c192d5f71363876fc5778631c07dabb:
+    resolution: {gitHosted: true, integrity: sha512-wzOJAwZi3utnuCYuDacJEXiSOU2UVM1wESryc5tSv7j4gesthXXIGRdGBIMqL48Tb7KEiG/gf5t3EdKywL+i+A==, tarball: https://codeload.github.com/krypciak/crosscode-web/tar.gz/9bfa623f2c192d5f71363876fc5778631c07dabb}
     version: 0.8.0
-
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/497544ab69379c66d48f9bff58def3a73f3fe14c:
-    resolution: {gitHosted: true, integrity: sha512-2aojbWHzhS5GZKW8HjHhxOolsqdrWXVhuTlXYCDmdffkx2RyLyfLr745hc8lACjdLCZNdTYV1ipiTc3iLlYuWg==, tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/497544ab69379c66d48f9bff58def3a73f3fe14c}
-    version: 1.0.0
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e:
     resolution: {gitHosted: true, integrity: sha512-7L6/rt3JzDsp4h1M28W98pLG2z1iLWg5ZQb5WJNNrs03G8JJnFFUunNzT3e7NNSfcqTO8xv5HOb4MEP1c82RMw==, tarball: https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e}
@@ -593,9 +559,9 @@ packages:
   js-fileexplorer@1.0.0:
     resolution: {integrity: sha512-VBWW9MAoNsLbc7+AKIapWXLCPTQUddvaoDmTfJwXpAW8XtA8jF26VsWP41DBSxlLpvj5QlCulGObaqgLhKfKVA==}
 
-  menu-ui-replacer@https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/eefda2356e8797bb8c8d9d23b51c95536a9a4051:
-    resolution: {gitHosted: true, integrity: sha512-Qsmt8WrIXu0kjiD55IwFCL6vr0Js+vwzUriaMtGiyPjbLzpIDWVA3z9bqTXP8ETsH7o5TRz/0RxWoODmMY7I8w==, tarball: https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/eefda2356e8797bb8c8d9d23b51c95536a9a4051}
-    version: 1.1.0
+  menu-ui-replacer@https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/5aa343e5781791e67ea3e1c5e9e0e206bf3ffc0d:
+    resolution: {gitHosted: true, integrity: sha512-Tf8IaNPj5lYdBh1uQDWudOE/5lP+73G6LC6ydDvnMlM+WVi1if4SZEAIiKD3bH5Px3MC5yxadpEqi8GSmC01Mw==, tarball: https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/5aa343e5781791e67ea3e1c5e9e0e206bf3ffc0d}
+    version: 1.2.0
 
   minimalistic-assert@1.0.1:
     resolution: {integrity: sha512-UtJcAD4yEaGtjPezWuO9wC4nwUnVH/8/Im3yEHQP4b67cXlD/Qr9hdITCU1xDbSEXg2XKNaP8jsReV7vQd00/A==}
@@ -603,15 +569,15 @@ packages:
   ms@2.1.3:
     resolution: {integrity: sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA==}
 
-  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b74236a046774647776158c664d0d730f8368a54:
-    resolution: {gitHosted: true, integrity: sha512-r5e7beHWDJT4aj3j409GJGxXZayo0WRcYIJWUHEs+QHY1e14BtmyTmiJ0sKs9UgMg/dfCB5mZoFBJQB3GcFyCQ==, tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b74236a046774647776158c664d0d730f8368a54}
-    version: 1.5.7
+  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/d5dec43beb3491d0a382aada6402d009f25be54e:
+    resolution: {gitHosted: true, integrity: sha512-Hk29381qAKXEPR1dnaPp8UKmtvP01tu8L3JHo70dG23WhjEz3cuM05Gx93S6T4DpFhdqu7++o/5+dsWRRokHYg==, tarball: https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/d5dec43beb3491d0a382aada6402d009f25be54e}
+    version: 1.5.8
 
   node-bin-setup@1.1.4:
     resolution: {integrity: sha512-vWNHOne0ZUavArqPP5LJta50+S8R261Fr5SvGul37HbEDcowvLjwdvd0ZeSr0r2lTSrPxl6okq9QUw8BFGiAxA==}
 
-  node@26.7.0:
-    resolution: {integrity: sha512-ti5ikv+YT+5+kSxcuu7K86ED/Cv5R1N8WylDenxzjPL6FUSGNI5WEEOcILFxWr9qKRj+q/BPJ82hKNrPPZKzLw==}
+  node@26.10.0:
+    resolution: {integrity: sha512-iqvbVmkYIK5ioMlgjQim7A2MUTMqRgNrEDw6bRs0sIx2j7/R9dLC4358Eh5g8NOs4jSMtLCO+vl/+A0nO24sPA==}
     engines: {npm: '>=5.0.0'}
     hasBin: true
 
@@ -658,8 +624,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  simple-git@3.36.0:
-    resolution: {integrity: sha512-cGQjLjK8bxJw4QuYT7gxHw3/IouVESbhahSsHrX97MzCL1gu2u7oy38W6L2ZIGECEfIBG4BabsWDPjBxJENv9Q==}
+  simple-git@4.0.2:
+    resolution: {integrity: sha512-l0sIsv9VrPwovKELFDBOj/lhmIcbMvxBk2B+hRhsMM4/VL3gKtuZvYnBNixVo+N/0HnqQx2cBdLvxnAbygHpqA==}
 
   spdy-transport@3.0.0:
     resolution: {integrity: sha512-hsLVFE5SjA6TCisWeJXFKniGGOpBgMLmerfO2aCyCU5s7nJ/rpAepqmFifv/GCbSbueEeAJJnmSQ2rKC/g8Fcw==}
@@ -695,9 +661,6 @@ packages:
   undici-types@7.24.6:
     resolution: {integrity: sha512-WRNW+sJgj5OBN4/0JpHFqtqzhpbnV0GuB+OozA9gCL7a993SmU+1JBZCzLNxYsbMfIeDL+lTsphD5jN5N+n0zg==}
 
-  undici-types@8.3.0:
-    resolution: {integrity: sha512-j375ScV60dom+YkPFIfTLcOiPxkN/buHz5GobjLhixFuANaNs3C9l4GmrWqejgXWJ7BbJcFYpTEUkS1Ge8bpZQ==}
-
   undici-types@8.9.0:
     resolution: {integrity: sha512-KTDyRTYX8sWmKXAikPHHSyc63CRPETMctyjKFupcC6OBLXT3xsN0e9aF7m+mIXutFWpUXuedtowG7iLOzp0kQg==}
 
@@ -707,8 +670,8 @@ packages:
   wbuf@1.7.3:
     resolution: {integrity: sha512-O84QOnr0icsbFGLS0O3bI5FswxzRr8/gHwWkDlQFskhSPryQXvrTMxjxGP4+iWYoauLoBvfDpkrOauZ+0iZpDA==}
 
-  ws@8.21.3:
-    resolution: {integrity: sha512-201TZ/kPWxoPr/OKWjquZR1SWKXcvxdH+e1xrx89b3YbmzLMFCLfnaG1HFIgWzJOEWZ7MvpK++odZufgYR50Rw==}
+  ws@8.22.0:
+    resolution: {integrity: sha512-Ydggc987+RO0AnWtZ/7Wq9FtNvcrL1b/RO0ud9mWjUPgDrsAAwQSF51sm2hm1XofbU/4jkpGEsLFsZZxU+1DOg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -813,52 +776,40 @@ snapshots:
 
   '@kwsites/promise-deferred@1.1.1': {}
 
-  '@oven/bun-darwin-aarch64@1.3.14':
+  '@oven/bun-darwin-aarch64@1.4.2':
     optional: true
 
-  '@oven/bun-darwin-x64-baseline@1.3.14':
+  '@oven/bun-darwin-x64@1.4.2':
     optional: true
 
-  '@oven/bun-darwin-x64@1.3.14':
+  '@oven/bun-freebsd-aarch64@1.4.2':
     optional: true
 
-  '@oven/bun-freebsd-aarch64@1.3.14':
+  '@oven/bun-freebsd-x64@1.4.2':
     optional: true
 
-  '@oven/bun-freebsd-x64@1.3.14':
+  '@oven/bun-linux-aarch64-android@1.4.2':
     optional: true
 
-  '@oven/bun-linux-aarch64-android@1.3.14':
+  '@oven/bun-linux-aarch64-musl@1.4.2':
     optional: true
 
-  '@oven/bun-linux-aarch64-musl@1.3.14':
+  '@oven/bun-linux-aarch64@1.4.2':
     optional: true
 
-  '@oven/bun-linux-aarch64@1.3.14':
+  '@oven/bun-linux-x64-android@1.4.2':
     optional: true
 
-  '@oven/bun-linux-x64-android@1.3.14':
+  '@oven/bun-linux-x64-musl@1.4.2':
     optional: true
 
-  '@oven/bun-linux-x64-baseline@1.3.14':
+  '@oven/bun-linux-x64@1.4.2':
     optional: true
 
-  '@oven/bun-linux-x64-musl-baseline@1.3.14':
+  '@oven/bun-windows-aarch64@1.4.2':
     optional: true
 
-  '@oven/bun-linux-x64-musl@1.3.14':
-    optional: true
-
-  '@oven/bun-linux-x64@1.3.14':
-    optional: true
-
-  '@oven/bun-windows-aarch64@1.3.14':
-    optional: true
-
-  '@oven/bun-windows-x64-baseline@1.3.14':
-    optional: true
-
-  '@oven/bun-windows-x64@1.3.14':
+  '@oven/bun-windows-x64@1.4.2':
     optional: true
 
   '@oxfmt/binding-android-arm-eabi@0.60.0':
@@ -918,20 +869,15 @@ snapshots:
   '@oxfmt/binding-win32-x64-msvc@0.60.0':
     optional: true
 
-  '@simple-git/args-pathspec@1.0.3': {}
+  '@simple-git/args-pathspec@1.0.4': {}
 
-  '@simple-git/argv-parser@1.1.1':
+  '@simple-git/argv-parser@2.0.1':
     dependencies:
-      '@simple-git/args-pathspec': 1.0.3
+      '@simple-git/args-pathspec': 1.0.4
 
-  '@types/bun@1.3.14':
+  '@types/bun@1.4.2':
     dependencies:
-      bun-types: 1.3.14
-
-  '@types/chrome@0.2.6':
-    dependencies:
-      '@types/filesystem': 0.0.36
-      '@types/har-format': 1.2.16
+      bun-types: 1.4.2
 
   '@types/chrome@0.2.9':
     dependencies:
@@ -950,15 +896,11 @@ snapshots:
 
   '@types/jquery@4.0.1': {}
 
-  '@types/node@25.9.5':
+  '@types/node@25.9.9':
     dependencies:
       undici-types: 7.24.6
 
-  '@types/node@26.2.0':
-    dependencies:
-      undici-types: 8.3.0
-
-  '@types/node@26.5.1':
+  '@types/node@26.6.4':
     dependencies:
       undici-types: 8.9.0
 
@@ -966,81 +908,73 @@ snapshots:
 
   '@types/semver@7.8.0': {}
 
-  '@types/ws@8.18.1':
+  '@types/ws@8.18.2':
     dependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.4
 
-  bun-types@1.3.14:
+  bun-types@1.4.2:
     dependencies:
-      '@types/node': 26.2.0
+      '@types/node': 26.6.4
 
-  bun@1.3.14:
+  bun@1.4.2:
     optionalDependencies:
-      '@oven/bun-darwin-aarch64': 1.3.14
-      '@oven/bun-darwin-x64': 1.3.14
-      '@oven/bun-darwin-x64-baseline': 1.3.14
-      '@oven/bun-freebsd-aarch64': 1.3.14
-      '@oven/bun-freebsd-x64': 1.3.14
-      '@oven/bun-linux-aarch64': 1.3.14
-      '@oven/bun-linux-aarch64-android': 1.3.14
-      '@oven/bun-linux-aarch64-musl': 1.3.14
-      '@oven/bun-linux-x64': 1.3.14
-      '@oven/bun-linux-x64-android': 1.3.14
-      '@oven/bun-linux-x64-baseline': 1.3.14
-      '@oven/bun-linux-x64-musl': 1.3.14
-      '@oven/bun-linux-x64-musl-baseline': 1.3.14
-      '@oven/bun-windows-aarch64': 1.3.14
-      '@oven/bun-windows-x64': 1.3.14
-      '@oven/bun-windows-x64-baseline': 1.3.14
+      '@oven/bun-darwin-aarch64': 1.4.2
+      '@oven/bun-darwin-x64': 1.4.2
+      '@oven/bun-freebsd-aarch64': 1.4.2
+      '@oven/bun-freebsd-x64': 1.4.2
+      '@oven/bun-linux-aarch64': 1.4.2
+      '@oven/bun-linux-aarch64-android': 1.4.2
+      '@oven/bun-linux-aarch64-musl': 1.4.2
+      '@oven/bun-linux-x64': 1.4.2
+      '@oven/bun-linux-x64-android': 1.4.2
+      '@oven/bun-linux-x64-musl': 1.4.2
+      '@oven/bun-windows-aarch64': 1.4.2
+      '@oven/bun-windows-x64': 1.4.2
 
   cc-instanceinator@https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/05d40e6156b6962b9f26b87bd981c272666c4d74:
     dependencies:
       '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
-      '@types/node': 26.5.1
+      '@types/node': 26.6.4
       cc-map-screenshot: https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d
-      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e
+      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0
       crossnode: https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff
 
-  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/eab3311a511b0d233043b5ec7b65302fc8f45340:
+  cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/d2815336e27adf7849df981b5dd712cff313a8c1:
     dependencies:
-      '@types/chrome': 0.2.6
+      '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
-      '@types/node': 26.2.0
-      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999
+      '@types/node': 26.6.4
+      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff
 
   cc-map-screenshot@https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ad4a18df7c8e1d4c6df2bbf3454dcefd04c5505d:
     dependencies:
       '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
-      '@types/node': 26.5.1
+      '@types/node': 26.6.4
       cc-instanceinator: https://codeload.github.com/krypciak/cc-instanceinator/tar.gz/05d40e6156b6962b9f26b87bd981c272666c4d74
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/0beba4bf60ccf74b3931bad3a446534f131990c4:
     dependencies:
-      '@types/chrome': 0.2.6
+      '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
-      '@types/node': 26.2.0
-      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999
+      '@types/node': 26.6.4
+      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff
 
-  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e:
+  ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/0a8802d2f60ac892b3da493fcd206a2daeec1c69:
     dependencies:
       '@types/semver': 7.8.0
-      bun: 1.3.14
+      bun: 1.4.2
       semver: 7.8.5
-      simple-git: 3.36.0
+      simple-git: 4.0.2
       yauzl: 3.4.0
     transitivePeerDependencies:
       - supports-color
-
-  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e: {}
-
-  ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/56c70a6257a984a0bf5013b50da2a09df68ba999: {}
 
   ccmodmanager@https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0: {}
 
@@ -1048,17 +982,15 @@ snapshots:
 
   core-util-is@1.0.3: {}
 
-  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/51f0fad21c48d86bdadcbae536309588f66aa79c:
+  crosscode-web@https://codeload.github.com/krypciak/crosscode-web/tar.gz/9bfa623f2c192d5f71363876fc5778631c07dabb:
     dependencies:
       '@jspm/core': 2.1.0
-      ccmoddb: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/5db0f12e388904b7c1b44ca256a76c21a012022e
+      ccmoddb: https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/0a8802d2f60ac892b3da493fcd206a2daeec1c69
       core-js: 3.50.0
       fflate: 0.8.3
       js-fileexplorer: 1.0.0
     transitivePeerDependencies:
       - supports-color
-
-  crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/497544ab69379c66d48f9bff58def3a73f3fe14c: {}
 
   crossnode@https://codeload.github.com/krypciak/crossnode/tar.gz/66e16371b87c5b94efa73de31bb0c3fc198dc33e: {}
 
@@ -1116,26 +1048,26 @@ snapshots:
 
   js-fileexplorer@1.0.0: {}
 
-  menu-ui-replacer@https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/eefda2356e8797bb8c8d9d23b51c95536a9a4051:
+  menu-ui-replacer@https://codeload.github.com/CCDirectLink/cc-menu-ui-replacement/tar.gz/5aa343e5781791e67ea3e1c5e9e0e206bf3ffc0d:
     dependencies:
       '@types/chrome': 0.2.9
       '@types/jquery': 1.10.45
-      '@types/node': 26.5.1
-      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/2229437c81e4b0f6acb9725d45fa50925cc9b28e
+      '@types/node': 26.6.4
+      ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/830c47de06e11401fcfd11ce7d0ff92a74504bb0
       ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff
 
   minimalistic-assert@1.0.1: {}
 
   ms@2.1.3: {}
 
-  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/b74236a046774647776158c664d0d730f8368a54:
+  nax-ccuilib@https://codeload.github.com/krypciak/nax-ccuilib/tar.gz/d5dec43beb3491d0a382aada6402d009f25be54e:
     dependencies:
       '@types/jquery': 1.10.45
-      '@types/node': 26.2.0
+      '@types/node': 26.6.4
 
   node-bin-setup@1.1.4: {}
 
-  node@26.7.0:
+  node@26.10.0:
     dependencies:
       node-bin-setup: 1.1.4
 
@@ -1193,12 +1125,12 @@ snapshots:
 
   semver@7.8.5: {}
 
-  simple-git@3.36.0:
+  simple-git@4.0.2:
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
-      '@simple-git/args-pathspec': 1.0.3
-      '@simple-git/argv-parser': 1.1.1
+      '@simple-git/args-pathspec': 1.0.4
+      '@simple-git/argv-parser': 2.0.1
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
@@ -1241,12 +1173,10 @@ snapshots:
   ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/30f0246b2949c554f2911d49e01c53195bcdc4ff:
     dependencies:
       '@types/jquery': 1.10.45
-      '@types/node': 25.9.5
+      '@types/node': 25.9.9
       '@types/semver': 6.2.7
 
   undici-types@7.24.6: {}
-
-  undici-types@8.3.0: {}
 
   undici-types@8.9.0: {}
 
@@ -1256,7 +1186,7 @@ snapshots:
     dependencies:
       minimalistic-assert: 1.0.1
 
-  ws@8.21.3: {}
+  ws@8.22.0: {}
 
   yauzl@3.4.0:
     dependencies:

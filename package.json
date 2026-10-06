@@ -20,10 +20,10 @@
         "serverBun": "bun run scripts/run.ts"
     },
     "dependencies": {
-        "@types/chrome": "^0.2.6",
+        "@types/chrome": "^0.2.9",
         "@types/jquery": "^4.0.1",
-        "@types/node": "^26.2.0",
-        "@types/ws": "^8.18.1",
+        "@types/node": "^26.6.4",
+        "@types/ws": "^8.18.2",
         "cc-krypek-lib": "github:krypciak/cc-krypek-lib",
         "cc-variable-charge-time": "github:krypciak/cc-variable-charge-time",
         "ccmodmanager": "github:CCDirectLink/CCModManager",
@@ -32,16 +32,16 @@
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
         "spdy": "^4.0.2",
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
-        "ws": "^8.21.3"
+        "ws": "^8.22.0"
     },
     "devDependencies": {
-        "@types/bun": "^1.3.14",
-        "bun": "^1.3.14",
+        "@types/bun": "^1.4.2",
+        "bun": "^1.4.2",
         "cc-instanceinator": "github:krypciak/cc-instanceinator",
         "crosscode-web": "github:krypciak/crosscode-web",
         "esbuild": "^0.28.2",
         "fflate": "^0.8.3",
-        "node": "^26.7.0",
+        "node": "^26.10.0",
         "oxfmt": "^0.60.0",
         "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^6.0.3"
