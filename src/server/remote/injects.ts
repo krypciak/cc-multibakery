@@ -55,6 +55,7 @@ prestart(() => {
     ig.ENTITY.TeleportField.inject({
         onInteraction() {
             if (!isRemote(multi.server)) return this.parent()
+            return false
         },
     })
 

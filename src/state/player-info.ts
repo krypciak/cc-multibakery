@@ -21,6 +21,7 @@ export interface PlayerInfoEntry {
     username: Username
     character: string
     tpInfo: MapTpInfo
+    area: string
     netid: EntityNetid
     pos: Vec2
 
@@ -49,6 +50,7 @@ interface PartialPlayerInfoEntry {
     username?: Username
     character?: string
     tpInfo?: MapTpInfo
+    area?: string
     netid?: EntityNetid
     pos?: Vec2
 
