@@ -10,6 +10,7 @@ declare global {
             interface Settings {
                 players: ig.Event.ArrayExpression
                 steps: ig.EventStepBase.Settings[]
+                runType?: ig.EventRunType | keyof typeof ig.EventRunType
                 indexVarName?: ig.Event.VariableExpression
                 noWait?: boolean
             }
@@ -20,6 +21,7 @@ declare global {
         interface FOR_EACH_PLAYER extends ig.EventStepBase {
             players: ig.Event.ArrayExpression
             event: ig.Event
+            runType: ig.EventRunType
             indexVarName?: ig.Event.VariableExpression
             noWait?: boolean
 
@@ -37,8 +39,11 @@ prestart(() => {
     ig.EVENT_STEP.FOR_EACH_PLAYER = ig.EventStepBase.extend({
         init(settings) {
             this.players = settings.players ?? { varName: 'game.entities.type.Player' }
-            this.noWait = settings.noWait
+            this.runType =
+                (typeof settings.runType == 'string' ? ig.EventRunType[settings.runType] : settings.runType) ??
+                ig.EventRunType.INTERRUPTABLE
             this.indexVarName = settings.indexVarName
+            this.noWait = settings.noWait
 
             assert(settings.steps, 'ig.EVENT_STEP.FOR_EACH_PLAYER "steps" missing!')
             this.event = new ig.Event({ steps: settings.steps })
@@ -65,7 +70,7 @@ prestart(() => {
                     if (indexVarName) ig.vars.set(indexVarName, i)
                     return runEvent({
                         event: this.event,
-                        type: ig.EventRunType.PARALLEL,
+                        type: this.runType,
                         callEntity: ig.game.playerEntity,
                         allData: { ...data },
                     })

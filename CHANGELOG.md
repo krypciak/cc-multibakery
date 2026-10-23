@@ -3,6 +3,15 @@
 # Change Log
 
 ## [Unreleased]
+
+### Added
+
+- Add `ig.EVENT_STEP.FOR_EACH_PLAYER` option `runType`
+
+### Changed
+
+- Change `ig.EVENT_STEP.FOR_EACH_PLAYER` default `runType` value to `INTERRUPTABLE`
+
 ## [0.8.9] 2026-10-07
 
 ### Added
