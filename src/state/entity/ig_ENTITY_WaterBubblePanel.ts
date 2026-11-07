@@ -2,6 +2,7 @@ import { registerNetEntity } from '../../misc/entity-netid'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
+import { prestart } from '../../loading-stages'
 
 declare global {
     namespace ig.ENTITY {
@@ -35,3 +36,13 @@ export function register() {
     }
     registerNetEntity({ entityClass: ig.ENTITY.WaterBubblePanel })
 }
+
+prestart(() => {
+    ig.ENTITY.WaterBubblePanel.inject({
+        spawnBubble(noEffects) {
+            if (!multi.server) return this.parent(noEffects)
+            if (this.currentBubble) return
+            this.parent(noEffects)
+        },
+    })
+})

@@ -17,6 +17,7 @@
 - Fix `ig.ENTITY.WaveTeleport` smooth camera transition not playing on teleport
 - Fix remote crash on events that use `call.` variables
 - Fix `ig.ENTITY.BounceBlock` not hiding properly on remote
+- Fix `sc.WaterBubbleEntity` duplication on remote when `ig.ENTITY.KeyPanel` is shown after map load
 
 ## [0.8.10] 2026-10-23
 

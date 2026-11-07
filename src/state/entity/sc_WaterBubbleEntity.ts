@@ -35,11 +35,12 @@ export function register() {
     sc.WaterBubbleEntity.create = (netid, state: Return) => {
         const panel = state.panel ? ig.game.entitiesByNetid[state.panel] : undefined
         if (panel) assert(panel instanceof ig.ENTITY.WaterBubblePanel)
-        if (panel?.currentBubble) panel.currentBubble.kill(true)
+        panel?.currentBubble?.kill(true)
 
         const settings: sc.WaterBubbleEntity.Settings = { panel, netid }
         const { x, y, z } = state.pos!
         const entity = ig.game.spawnEntity(sc.WaterBubbleEntity, x, y, z, settings)
+        if (panel) panel.currentBubble = entity
         return entity
     }
     registerNetEntity({ entityClass: sc.WaterBubbleEntity, temporary: true })
