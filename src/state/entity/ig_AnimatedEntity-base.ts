@@ -9,6 +9,7 @@ export function getEntityState(this: ig.AnimatedEntity, memory: StateMemory) {
     return {
         pos: memory.diffVec3(this.coll.pos),
         baseZPos: memory.diff(this.coll.baseZPos),
+        size: memory.diffVec3(this.coll.size),
         hidden: memory.diff(this._hidden),
         currentAnim: memory.diff(typeof this.currentAnim === 'string' ? this.currentAnim : undefined),
         currentAnimTimer: memory.onlyOnce(this.animState.timer),
@@ -27,6 +28,8 @@ export function setEntityState(this: ig.AnimatedEntity, state: Return) {
         this.setPos(state.pos.x, state.pos.y, state.pos.z)
     }
     if (state.baseZPos !== undefined) this.coll.baseZPos = state.baseZPos
+
+    if (state.size !== undefined) this.setSize(state.size.x, state.size.y, state.size.z)
 
     if (state.currentAnim !== undefined) {
         this.currentAnim = state.currentAnim

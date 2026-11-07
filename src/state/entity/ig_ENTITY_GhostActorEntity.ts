@@ -69,7 +69,6 @@ function getEntityState(this: ig.ENTITY.GhostActorEntity, player?: StateKey) {
 
     return {
         ...igActorEntity.getEntityState.call(this, player, memory),
-        size: memory.onlyOnce(this.coll.size),
         face: memory.onlyOnce(this.face),
         animSheetName: memory.onlyOnce(this.animSheet?.path),
     }
