@@ -50,15 +50,18 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
     }
 
     if (state.currentMenu !== undefined) this.currentMenu = state.currentMenu
+
     if (state.currentGameState !== undefined) {
         const gameState = state.currentGameState
         this.currentGameState = gameState
         const client = this.getClient(true)
-        if (client) {
-            runTask(client.inst, () => setGameModelState(gameState))
-        }
+        if (client) runTask(client.inst, () => setGameModelState(gameState))
     }
-    if (state.currentSubState !== undefined) this.currentSubState = state.currentSubState
+    if (state.currentSubState !== undefined) {
+        this.currentSubState = state.currentSubState
+        const client = this.getClient(true)
+        if (client) runTask(client.inst, () => sc.model._setSubState(state.currentSubState!))
+    }
     if (state.inCutscene !== undefined) this.inCutscene = state.inCutscene
 
     if (state.combatArtLabelText !== undefined) this.combatArtLabelText = state.combatArtLabelText
