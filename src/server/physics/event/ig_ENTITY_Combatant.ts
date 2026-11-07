@@ -48,17 +48,23 @@ prestart(() => {
             const entity = this.getLastDamagingEntity()
             if (!isPhysics(multi.server) || !entity) return this.parent(resolveDefeat)
 
-            setNextSetBy(entity)
-            this.parent(resolveDefeat)
-            unsetNextSetBy()
+            try {
+                setNextSetBy(entity)
+                return this.parent(resolveDefeat)
+            } finally {
+                unsetNextSetBy()
+            }
         },
         update() {
             const entity = this.getLastDamagingEntity()
             if (!isPhysics(multi.server) || !entity) return this.parent()
 
-            setNextSetBy(entity)
-            this.parent()
-            unsetNextSetBy()
+            try {
+                setNextSetBy(entity)
+                this.parent()
+            } finally {
+                unsetNextSetBy()
+            }
         },
     })
 })

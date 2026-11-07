@@ -30,7 +30,7 @@ prestart(() => {
 
             /* to fix calls from varsChanged */
             const inst = instanceinator.instances[this._instanceId]
-            runTask(inst, () => {
+            return runTask(inst, () => {
                 const entities = findSetByEntityByVars(this.startCondition.vars)
                 if (entities.length > 0) {
                     const setBy = entities.find(e => e instanceof dummy.DummyPlayer) ?? entities[0]
@@ -39,10 +39,12 @@ prestart(() => {
 
                 if (!this.forceRunOnMap) setEventNextTriggeredBy(this.startCondition)
 
-                this.parent()
-
-                unsetEventNextTriggeredBy()
-                unsetNextSetBy()
+                try {
+                    return this.parent()
+                } finally {
+                    unsetEventNextTriggeredBy()
+                    unsetNextSetBy()
+                }
             })
         },
     })

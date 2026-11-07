@@ -9,12 +9,14 @@ prestart(() => {
         ballHit(ball) {
             if (!isPhysics(multi.server)) return this.parent(ball)
 
-            if ('combatant' in ball && ball.combatant && ball.combatant instanceof ig.Entity)
-                setNextSetBy(ball.getCombatantRoot())
+            try {
+                if ('combatant' in ball && ball.combatant && ball.combatant instanceof ig.Entity)
+                    setNextSetBy(ball.getCombatantRoot())
 
-            const ret = this.parent(ball)
-            unsetNextSetBy()
-            return ret
+                return this.parent(ball)
+            } finally {
+                unsetNextSetBy()
+            }
         },
     })
 })

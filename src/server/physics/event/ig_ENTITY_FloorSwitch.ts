@@ -26,9 +26,13 @@ prestart(() => {
         },
         activate(noDelay) {
             if (!isPhysics(multi.server)) return this.parent(noDelay)
-            if (!this.isOn) setNextSetBy(this.tmpEntity!)
-            this.parent(noDelay)
-            unsetNextSetBy()
+
+            try {
+                if (!this.isOn) setNextSetBy(this.tmpEntity!)
+                this.parent(noDelay)
+            } finally {
+                unsetNextSetBy()
+            }
         },
     })
 })

@@ -18,18 +18,23 @@ prestart(() => {
             if (entity) this.lastCausalEntity = entity
             if (!isPhysics(multi.server) || !entity || ig.vars.nextSetBy.length > 0) return this.parent(combatant, type)
 
-            setNextSetBy(entity)
-            const ret = this.parent(combatant, type)
-            unsetNextSetBy()
-            return ret
+            try {
+                setNextSetBy(entity)
+                return this.parent(combatant, type)
+            } finally {
+                unsetNextSetBy()
+            }
         },
         decreaseCount() {
             const entity = this.lastCausalEntity
             if (!isPhysics(multi.server) || !entity) return this.parent()
 
-            setNextSetBy(entity)
-            this.parent()
-            unsetNextSetBy()
+            try {
+                setNextSetBy(entity)
+                this.parent()
+            } finally {
+                unsetNextSetBy()
+            }
         },
     })
 })

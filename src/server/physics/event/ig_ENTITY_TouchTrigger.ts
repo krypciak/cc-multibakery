@@ -31,15 +31,22 @@ prestart(() => {
         },
         setOn() {
             if (!isPhysics(multi.server)) return this.parent()
-            setNextSetBy(ig.game.playerEntity)
-            this.parent()
-            unsetNextSetBy()
+
+            try {
+                setNextSetBy(ig.game.playerEntity)
+                return this.parent()
+            } finally {
+                unsetNextSetBy()
+            }
         },
         setOff() {
             if (!isPhysics(multi.server)) return this.parent()
-            setNextSetBy(ig.game.playerEntity)
-            this.parent()
-            unsetNextSetBy()
+            try {
+                setNextSetBy(ig.game.playerEntity)
+                return this.parent()
+            } finally {
+                unsetNextSetBy()
+            }
         },
     })
 })
