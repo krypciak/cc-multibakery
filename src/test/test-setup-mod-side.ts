@@ -69,6 +69,7 @@ function execPhysics() {
 export interface TestRemoteClientReport {
     crashed: boolean
     playerZoom?: number
+    cameraTargets?: number
     errors?: string[]
 }
 
@@ -104,10 +105,12 @@ function createReport(): TestRemoteClientReport {
     if (!client) return { crashed: true }
 
     const playerZoom = client.inst.ig.camera._currentZoom
+    const cameraTargets = ig.camera.targets.length
 
     return {
         crashed: false,
         playerZoom,
+        cameraTargets,
     }
 }
 

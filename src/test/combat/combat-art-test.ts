@@ -228,6 +228,7 @@ class CombatArtTest implements TestConfig {
 
         tester.expect(report.crashed, 'remote crashed').toEqual(false)
         tester.expect(report.playerZoom, 'player zoom not 1!').toEqual(1)
+        tester.expect(report.cameraTargets, 'camera targets count not 1!').toEqual(1)
         if (report.errors) {
             if (PROFILE) {
                 report.errors = report.errors.filter(err => !err.startsWith('['))
