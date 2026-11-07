@@ -19,6 +19,7 @@ import { isRemote } from '../server/remote/remote-server-types'
 import type { MapStateHandler, StateKey } from './map-state-handlers'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
 import { addEventStepStartListener } from '../steps/event-call-history'
+import { copy } from '../misc/object-copy'
 
 export type EventCallId = i24
 
@@ -154,13 +155,13 @@ declare global {
             eventCallId: number
             stepSettings: SerializedStepSettings
             data: Record<string, unknown>
-            input: ig.Event.Vars
+            input: Record<string, any>
         }
     }
 }
 
 registerOrderedEvent('eventStep', {
-    set({ eventCallId, stepSettings, data }) {
+    set({ eventCallId, stepSettings, data, input }) {
         const eventCall = eventCallCache[eventCallId]
         if (!eventCall) return
 
@@ -177,7 +178,7 @@ registerOrderedEvent('eventStep', {
                 {}
             ) as ig.EventStepBase
 
-            ig.vars.setupCallScope({})
+            ig.vars.setupCallScope(input)
             step.start(data, eventCall)
             step.run(data)
             ig.vars.setupCallScope(null)
@@ -197,7 +198,7 @@ if (PHYSICSNET) {
             eventCallId: eventCall.uniqueId,
             stepSettings: serializeEventStepSettings(step.settings),
             data: serializeStepSettingsRecursive(eventCall.data ?? {}),
-            input: eventCall.stack?.[0]?.vars ?? {},
+            input: copy(ig.vars.storage.call),
         })
     })
 }

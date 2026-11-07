@@ -14,6 +14,7 @@
 - Fix remote crash when cc-vim keybinding is pressed
 - Fix camera getting stuck after using Lightning Prophecy on remote
 - Fix `ig.ENTITY.WaveTeleport` smooth camera transition not playing on teleport
+- Fix remote crash on events that use `call.` variables
 
 ## [0.8.10] 2026-10-23
 
