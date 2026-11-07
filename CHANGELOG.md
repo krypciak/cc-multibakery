@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix player being invisible when "Enable join animation" option is off
+
 ## [0.8.10] 2026-10-23
 
 ### Added

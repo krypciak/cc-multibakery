@@ -7,9 +7,9 @@ import { Opts } from '../options'
 import { prestart } from '../loading-stages'
 
 export function showJoinAnimation(client: Client, map: CCMap) {
+    if (!Opts.showClientJoinAnimation) return
     client.dummy.animState.alpha = 0
     if (isRemote(multi.server)) return
-    if (!Opts.showClientJoinAnimation) return
 
     runTask(map.inst, () => {
         const player = client.dummy
