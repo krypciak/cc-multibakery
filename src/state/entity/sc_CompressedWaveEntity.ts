@@ -27,7 +27,7 @@ function setEntityState(this: sc.CompressedWaveEntity, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     sc.CompressedWaveEntity.inject({
         getEntityState,
         setEntityState,
@@ -41,7 +41,7 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: sc.CompressedWaveEntity, temporary: true })
-}, 2)
+}
 
 prestart(() => {
     sc.CompressedBaseEntity.inject({

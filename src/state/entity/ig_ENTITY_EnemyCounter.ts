@@ -37,7 +37,7 @@ function setEntityState(this: ig.ENTITY.EnemyCounter, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.EnemyCounter.inject({
         getEntityState,
         setEntityState,
@@ -46,12 +46,13 @@ prestart(() => {
         throw new Error('ig.ENTITY.EnemyCounter.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.EnemyCounter })
+}
 
-    if (PHYSICSNET) {
-        ig.ENTITY.EnemyCounter.inject({
-            decreaseCount() {
-                return wrapCollectSounds(() => this.parent())
-            },
-        })
-    }
+prestart(() => {
+    if (!PHYSICSNET) return
+    ig.ENTITY.EnemyCounter.inject({
+        decreaseCount() {
+            return wrapCollectSounds(() => this.parent())
+        },
+    })
 }, 2)

@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import type { i5 } from 'ts-binarifier/src/type-aliases'
@@ -46,7 +45,7 @@ function setEntityState(this: ig.ENTITY.OLPlatform, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.OLPlatform.inject({
         getEntityState,
         setEntityState,
@@ -55,4 +54,4 @@ prestart(() => {
         throw new Error('ig.ENTITY.OLPlatform.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.OLPlatform })
-}, 2)
+}

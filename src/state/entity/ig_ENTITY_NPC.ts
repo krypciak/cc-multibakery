@@ -53,7 +53,7 @@ function setEntityState(this: ig.ENTITY.NPC, state: Return) {
     scActorEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.NPC.inject({
         getEntityState,
         setEntityState,
@@ -62,16 +62,17 @@ prestart(() => {
         throw new Error('ig.ENTITY.NPC.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.NPC })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.NPC.inject({
-            updateNpcState(init, force) {
-                if (!isRemote(multi.server)) return this.parent(init, force)
-            },
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
-                ig.AnimatedEntity.prototype.update.call(this)
-            },
-        })
-    }
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.NPC.inject({
+        updateNpcState(init, force) {
+            if (!isRemote(multi.server)) return this.parent(init, force)
+        },
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+            ig.AnimatedEntity.prototype.update.call(this)
+        },
+    })
 }, 2)

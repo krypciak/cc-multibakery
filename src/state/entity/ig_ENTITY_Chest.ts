@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 
@@ -32,7 +31,7 @@ function setEntityState(this: ig.ENTITY.Chest, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Chest.inject({
         getEntityState,
         setEntityState,
@@ -41,5 +40,6 @@ prestart(() => {
         throw new Error('ig.ENTITY.Chest.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.Chest })
+
     ig.ENTITY.Chest.forceRemotePhysics = true
-}, 2)
+}

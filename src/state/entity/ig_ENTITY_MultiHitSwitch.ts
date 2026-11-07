@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.MultiHitSwitch, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.MultiHitSwitch.inject({
         getEntityState,
         setEntityState,
@@ -36,22 +36,24 @@ prestart(() => {
         throw new Error('ig.ENTITY.MultiHitSwitch.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.MultiHitSwitch })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.MultiHitSwitch.inject({
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.MultiHitSwitch.inject({
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
 
-                ig.AnimatedEntity.prototype.update.call(this)
-            },
-        })
-    }
+            ig.AnimatedEntity.prototype.update.call(this)
+        },
+    })
+}, 2)
 
-    if (PHYSICSNET) {
-        ig.ENTITY.MultiHitSwitch.inject({
-            ballHit(ballLike, blockDir) {
-                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
-            },
-        })
-    }
+prestart(() => {
+    if (!PHYSICSNET) return
+    ig.ENTITY.MultiHitSwitch.inject({
+        ballHit(ballLike, blockDir) {
+            return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+        },
+    })
 }, 2)

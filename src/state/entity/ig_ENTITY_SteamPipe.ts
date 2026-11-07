@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 
@@ -31,7 +30,7 @@ function setEntityState(this: ig.ENTITY.SteamPipe, state: Return) {
     if (state.startPoint !== undefined) this.steam.startPoint = state.startPoint
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.SteamPipe.inject({
         getEntityState,
         setEntityState,
@@ -40,4 +39,4 @@ prestart(() => {
         throw new Error('ig.ENTITY.SteamPipe.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.SteamPipe })
-}, 2)
+}

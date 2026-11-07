@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
@@ -45,7 +44,7 @@ function setEntityState(this: ig.ENTITY.PushPullDest, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.PushPullDest.inject({
         getEntityState,
         setEntityState,
@@ -54,4 +53,4 @@ prestart(() => {
         throw new Error('ig.ENTITY.PushPullDest.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.PushPullDest })
-}, 2)
+}

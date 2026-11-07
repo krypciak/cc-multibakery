@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.Compressor, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Compressor.inject({
         getEntityState,
         setEntityState,
@@ -36,7 +36,7 @@ prestart(() => {
         throw new Error('ig.ENTITY.Compressor.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.Compressor })
-}, 2)
+}
 
 prestart(() => {
     ig.ENTITY.Compressor.inject({

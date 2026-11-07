@@ -79,7 +79,7 @@ function setEntityState(this: ig.ENTITY.GhostActorEntity, state: Return) {
     igActorEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.GhostActorEntity.inject({
         getEntityState,
         setEntityState,
@@ -101,4 +101,4 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: ig.ENTITY.GhostActorEntity })
-})
+}

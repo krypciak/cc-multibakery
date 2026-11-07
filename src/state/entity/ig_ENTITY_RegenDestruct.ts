@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.RegenDestruct, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.RegenDestruct.inject({
         getEntityState,
         setEntityState,
@@ -36,12 +36,13 @@ prestart(() => {
         throw new Error('ig.ENTITY.RegenDestruct.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.RegenDestruct })
+}
 
-    if (PHYSICSNET) {
-        ig.ENTITY.RegenDestruct.inject({
-            ballHit(ballLike, blockDir) {
-                return wrapCollectSounds(() => this.parent!(ballLike, blockDir))
-            },
-        })
-    }
+prestart(() => {
+    if (!PHYSICSNET) return
+    ig.ENTITY.RegenDestruct.inject({
+        ballHit(ballLike, blockDir) {
+            return wrapCollectSounds(() => this.parent!(ballLike, blockDir))
+        },
+    })
 }, 2)

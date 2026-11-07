@@ -76,7 +76,7 @@ function setEntityState(this: ig.ENTITY.Crosshair, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Crosshair.inject({
         getEntityState,
         setEntityState,
@@ -101,19 +101,20 @@ prestart(() => {
 
     ig.ENTITY.Crosshair.forceRemotePhysics = true
     ig.ENTITY.CrosshairDot.forceRemotePhysics = true
+}
 
-    if (PHYSICS) {
-        ig.ENTITY.Crosshair.inject({
-            setThrown() {
-                this.lastThrowFrame = ig.system.frame
-                return this.parent()
-            },
-            setCircleGlow() {
-                this.lastSetCircleGlowFrame = ig.system.frame
-                return this.parent()
-            },
-        })
-    }
+prestart(() => {
+    if (!PHYSICS) return
+    ig.ENTITY.Crosshair.inject({
+        setThrown() {
+            this.lastThrowFrame = ig.system.frame
+            return this.parent()
+        },
+        setCircleGlow() {
+            this.lastSetCircleGlowFrame = ig.system.frame
+            return this.parent()
+        },
+    })
 }, 2)
 
 declare global {

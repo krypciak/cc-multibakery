@@ -39,7 +39,7 @@ function setEntityState(this: ig.ENTITY.RotateBlocker, state: Return) {
     if (state.turnTimer !== undefined) this.turnTimer = state.turnTimer
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.RotateBlocker.inject({
         getEntityState,
         setEntityState,
@@ -48,16 +48,17 @@ prestart(() => {
         throw new Error('ig.ENTITY.RotateBlocker.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.RotateBlocker })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.RotateBlocker.inject({
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
-                ig.AnimatedEntity.prototype.update.call(this)
-            },
-            turn(dir) {
-                if (!isRemote(multi.server)) return this.parent(dir)
-            },
-        })
-    }
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.RotateBlocker.inject({
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+            ig.AnimatedEntity.prototype.update.call(this)
+        },
+        turn(dir) {
+            if (!isRemote(multi.server)) return this.parent(dir)
+        },
+    })
 }, 2)

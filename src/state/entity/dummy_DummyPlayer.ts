@@ -67,7 +67,7 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
     if (state.showNoSpLabel !== undefined) this.showNoSpLabel = state.showNoSpLabel
 }
 
-prestart(() => {
+export function register() {
     dummy.DummyPlayer.inject({
         getEntityState,
         setEntityState,
@@ -87,7 +87,9 @@ prestart(() => {
         return player
     }
     registerNetEntity({ entityClass: dummy.DummyPlayer, temporary: true })
+}
 
+prestart(() => {
     if (REMOTE) {
         dummy.DummyPlayer.inject({
             update() {

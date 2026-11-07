@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././map-state-handlers'
 import { assert } from '../../misc/assert'
@@ -33,7 +32,7 @@ function setEntityState(this: sc.FoodIconEntity, state: Return) {
     if (state.offset !== undefined) this.setState(this.state, state.offset)
 }
 
-prestart(() => {
+export function register() {
     sc.FoodIconEntity.inject({
         getEntityState,
         setEntityState,
@@ -58,4 +57,4 @@ prestart(() => {
     registerNetEntity({ entityClass: sc.FoodIconEntity, temporary: true })
 
     sc.FoodIconEntity.forceRemotePhysics = true
-}, 2)
+}

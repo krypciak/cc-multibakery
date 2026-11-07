@@ -39,7 +39,7 @@ function setEntityState(this: sc.CombatProxyEntity, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     sc.CombatProxyEntity.inject({
         getEntityState,
         setEntityState,
@@ -78,23 +78,24 @@ prestart(() => {
         applyPriority: 1500 /* after ig.ENTITY.Enemy */,
         temporary: true,
     })
+}
 
-    if (REMOTE) {
-        sc.CombatProxyEntity.inject({
-            init(x, y, z, settings) {
-                if (!isRemote(multi.server) || !('collaboration' in settings.combatant))
-                    return this.parent(x, y, z, settings)
+prestart(() => {
+    if (!REMOTE) return
+    sc.CombatProxyEntity.inject({
+        init(x, y, z, settings) {
+            if (!isRemote(multi.server) || !('collaboration' in settings.combatant))
+                return this.parent(x, y, z, settings)
 
-                settings.combatant.collaboration = { addCollabAttached() {} }
-                this.parent(x, y, z, settings)
-                settings.combatant.collaboration = undefined
-            },
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
-                ig.AnimatedEntity.prototype.update.call(this)
-            },
-        })
-    }
+            settings.combatant.collaboration = { addCollabAttached() {} }
+            this.parent(x, y, z, settings)
+            settings.combatant.collaboration = undefined
+        },
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+            ig.AnimatedEntity.prototype.update.call(this)
+        },
+    })
 }, 2)
 
 declare global {

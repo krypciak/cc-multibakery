@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
@@ -26,7 +25,7 @@ function setEntityState(this: ig.ENTITY.Magnet, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Magnet.inject({
         getEntityState,
         setEntityState,
@@ -35,4 +34,4 @@ prestart(() => {
         throw new Error('ig.ENTITY.Magnet.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.Magnet })
-}, 2)
+}

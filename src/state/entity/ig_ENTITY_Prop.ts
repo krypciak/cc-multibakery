@@ -21,7 +21,7 @@ function getEntityState(this: ig.ENTITY.Prop, player?: StateKey) {
 }
 function setEntityState(this: ig.ENTITY.Prop, state: Return) {}
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Prop.inject({
         getEntityState,
         setEntityState,
@@ -30,7 +30,7 @@ prestart(() => {
         throw new Error('ig.ENTITY.Prop.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.Prop })
-}, 2)
+}
 
 prestart(() => {
     ig.ENTITY.Prop.inject({

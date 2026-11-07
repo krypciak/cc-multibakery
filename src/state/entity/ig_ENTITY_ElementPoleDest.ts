@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.ElementPoleDest, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.ElementPoleDest.inject({
         getEntityState,
         setEntityState,
@@ -36,7 +36,7 @@ prestart(() => {
         throw new Error('ig.ENTITY.ElementPoleDest.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.ElementPoleDest })
-}, 2)
+}
 
 prestart(() => {
     ig.ENTITY.ElementPoleDest.inject({

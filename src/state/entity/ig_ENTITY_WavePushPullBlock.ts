@@ -30,7 +30,7 @@ function setEntityState(this: ig.ENTITY.WavePushPullBlock, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.WavePushPullBlock.inject({
         getEntityState,
         setEntityState,
@@ -39,7 +39,9 @@ prestart(() => {
         throw new Error('ig.ENTITY.WavePushPullBlock.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.WavePushPullBlock })
+}
 
+prestart(() => {
     if (!REMOTE) return
 
     ig.ENTITY.WavePushPullBlock.inject({

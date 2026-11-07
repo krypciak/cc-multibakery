@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.BounceBlock, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.BounceBlock.inject({
         getEntityState,
         setEntityState,
@@ -36,7 +36,9 @@ prestart(() => {
         throw new Error('ig.ENTITY.BounceBlock.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.BounceBlock })
+}
 
+prestart(() => {
     if (PHYSICSNET) {
         ig.ENTITY.BounceBlock.inject({
             ballHit(ballLike, blockDir) {

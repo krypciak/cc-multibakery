@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.Door, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Door.inject({
         getEntityState,
         setEntityState,
@@ -36,7 +36,7 @@ prestart(() => {
         throw new Error('ig.ENTITY.Door.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.Door })
-}, 2)
+}
 
 declare global {
     namespace ig.ENTITY {

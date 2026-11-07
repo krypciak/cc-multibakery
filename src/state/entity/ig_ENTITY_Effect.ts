@@ -77,7 +77,7 @@ function resolveObjects(state: Return) {
 
 let particles: ig.EntityConstructor[]
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Effect.inject({
         getEntityState,
         setEntityState,
@@ -132,7 +132,7 @@ prestart(() => {
     for (const clazz of particles) {
         clazz.forceRemotePhysics = true
     }
-}, 2)
+}
 
 declare global {
     namespace ig {

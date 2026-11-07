@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.Switch, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Switch.inject({
         getEntityState,
         setEntityState,
@@ -36,20 +36,22 @@ prestart(() => {
         throw new Error('ig.ENTITY.Switch.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.Switch })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.Switch.inject({
-            varsChanged() {
-                if (!isRemote(multi.server)) return this.parent()
-            },
-        })
-    }
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.Switch.inject({
+        varsChanged() {
+            if (!isRemote(multi.server)) return this.parent()
+        },
+    })
+}, 2)
 
-    if (PHYSICSNET) {
-        ig.ENTITY.Switch.inject({
-            ballHit(ballLike, blockDir) {
-                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
-            },
-        })
-    }
+prestart(() => {
+    if (!PHYSICSNET) return
+    ig.ENTITY.Switch.inject({
+        ballHit(ballLike, blockDir) {
+            return wrapCollectSounds(() => this.parent(ballLike, blockDir))
+        },
+    })
 }, 2)

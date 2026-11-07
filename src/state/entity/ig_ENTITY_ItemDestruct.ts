@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 
@@ -29,7 +28,7 @@ function setEntityState(this: ig.ENTITY.ItemDestruct, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.ItemDestruct.inject({
         getEntityState,
         setEntityState,
@@ -38,4 +37,4 @@ prestart(() => {
         throw new Error('ig.ENTITY.ItemDestruct.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.ItemDestruct })
-}, 2)
+}

@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.WaveTeleport, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.WaveTeleport.inject({
         getEntityState,
         setEntityState,
@@ -36,7 +36,7 @@ prestart(() => {
         throw new Error('ig.ENTITY.WaveTeleport.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.WaveTeleport })
-}, 2)
+}
 
 prestart(() => {
     ig.ENTITY.WaveTeleport.inject({ ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]) })

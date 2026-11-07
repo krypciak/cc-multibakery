@@ -56,7 +56,7 @@ function setEntityState(this: ig.ENTITY.XenoDialog, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.XenoDialog.inject({
         getEntityState,
         setEntityState,
@@ -65,16 +65,17 @@ prestart(() => {
         throw new Error('ig.ENTITY.XenoDialog.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.XenoDialog, temporary: true })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.XenoDialog.inject({
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
-            },
-            _showNextMessage() {
-                if (!isRemote(multi.server) || ig.shared.settingState) return this.parent()
-                return false
-            },
-        })
-    }
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.XenoDialog.inject({
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+        },
+        _showNextMessage() {
+            if (!isRemote(multi.server) || ig.shared.settingState) return this.parent()
+            return false
+        },
+    })
 }, 2)

@@ -33,7 +33,7 @@ function setEntityState(this: ig.ENTITY.FloorSwitch, state: Return) {
     }
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.FloorSwitch.inject({
         getEntityState,
         setEntityState,
@@ -42,25 +42,28 @@ prestart(() => {
         throw new Error('ig.ENTITY.FloorSwitch.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.FloorSwitch })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.FloorSwitch.inject({
-            varsChanged() {
-                if (!isRemote(multi.server)) return this.parent()
-            },
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
-            },
-        })
-    }
-    if (PHYSICSNET) {
-        ig.ENTITY.FloorSwitch.inject({
-            activate(noDelay) {
-                wrapIgnoreEffectNetid(() => this.parent(noDelay))
-            },
-            deactivate() {
-                wrapIgnoreEffectNetid(() => this.parent())
-            },
-        })
-    }
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.FloorSwitch.inject({
+        varsChanged() {
+            if (!isRemote(multi.server)) return this.parent()
+        },
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+        },
+    })
+})
+
+prestart(() => {
+    if (!PHYSICSNET) return
+    ig.ENTITY.FloorSwitch.inject({
+        activate(noDelay) {
+            wrapIgnoreEffectNetid(() => this.parent(noDelay))
+        },
+        deactivate() {
+            wrapIgnoreEffectNetid(() => this.parent())
+        },
+    })
 }, 2)

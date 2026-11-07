@@ -37,7 +37,7 @@ function setEntityState(this: sc.ItemDropEntity, state: Return) {
     if (state.pos) this.setPos(state.pos.x, state.pos.y, state.pos.z)
 }
 
-prestart(() => {
+export function register() {
     sc.ItemDropEntity.inject({
         getEntityState,
         setEntityState,
@@ -64,7 +64,9 @@ prestart(() => {
     registerNetEntity({ entityClass: sc.ItemDropEntity, ignoreDeath: true, temporary: true })
 
     sc.ItemDropEntity.forceRemotePhysics = true
+}
 
+prestart(() => {
     if (!REMOTE) return
 
     sc.ItemDropEntity.inject({

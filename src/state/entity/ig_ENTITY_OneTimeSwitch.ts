@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.OneTimeSwitch, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.OneTimeSwitch.inject({
         getEntityState,
         setEntityState,
@@ -36,15 +36,18 @@ prestart(() => {
         throw new Error('ig.ENTITY.OneTimeSwitch.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.OneTimeSwitch })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.OneTimeSwitch.inject({
-            varsChanged() {
-                if (!isRemote(multi.server)) return this.parent()
-            },
-        })
-    }
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.OneTimeSwitch.inject({
+        varsChanged() {
+            if (!isRemote(multi.server)) return this.parent()
+        },
+    })
+}, 2)
 
+prestart(() => {
     if (PHYSICSNET) {
         ig.ENTITY.OneTimeSwitch.inject({
             ballHit(ballLike, blockDir) {

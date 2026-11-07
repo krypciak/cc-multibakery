@@ -26,7 +26,7 @@ function setEntityState(this: ig.ENTITY.DynamicPlatform, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.DynamicPlatform.inject({
         getEntityState,
         setEntityState,
@@ -35,15 +35,16 @@ prestart(() => {
         throw new Error('ig.ENTITY.DynamicPlatform.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.DynamicPlatform })
+}
 
-    if (REMOTE) {
-        ig.ENTITY.DynamicPlatform.inject({
-            update() {
-                if (!isRemote(multi.server)) return this.parent()
-                if (!ig.shared.settingState) return
+prestart(() => {
+    if (!REMOTE) return
+    ig.ENTITY.DynamicPlatform.inject({
+        update() {
+            if (!isRemote(multi.server)) return this.parent()
+            if (!ig.shared.settingState) return
 
-                this.parent()
-            },
-        })
-    }
+            this.parent()
+        },
+    })
 }, 2)

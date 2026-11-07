@@ -33,7 +33,7 @@ function setEntityState(this: ig.ENTITY.Ball, state: Return) {
     if (state.vel) Vec3.assign(this.coll.vel, state.vel)
 }
 
-prestart(() => {
+export function register() {
     let netidOverride: number | undefined
     ig.ENTITY.Ball.inject({
         getEntityState,
@@ -80,7 +80,9 @@ prestart(() => {
         return ball
     }
     registerNetEntity({ entityClass: ig.ENTITY.Ball, temporary: true })
+}
 
+prestart(() => {
     if (REMOTE) {
         ig.ENTITY.Ball.inject({
             update() {

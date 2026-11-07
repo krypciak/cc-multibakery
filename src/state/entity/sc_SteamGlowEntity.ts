@@ -24,7 +24,7 @@ function getEntityState(this: sc.SteamGlowEntity, player?: StateKey) {
 
 function setEntityState(this: sc.SteamGlowEntity, _state: Return) {}
 
-prestart(() => {
+export function register() {
     sc.SteamGlowEntity.inject({
         getEntityState,
         setEntityState,
@@ -38,7 +38,7 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: sc.SteamGlowEntity, temporary: true })
-}, 2)
+}
 
 prestart(() => {
     sc.SteamGlowEntity.inject({ stop: universalPlayerEntityFix() })

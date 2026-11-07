@@ -87,7 +87,7 @@ function setEntityState(this: ig.ENTITY.ElementPole, state: Return) {
     if (state.timerDuration !== undefined) this.charge.timer.duration = state.timerDuration
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.ElementPole.inject({
         getEntityState,
         setEntityState,
@@ -96,7 +96,7 @@ prestart(() => {
         throw new Error('ig.ENTITY.ElementPole.create not implemented')
     }
     registerNetEntity({ entityClass: ig.ENTITY.ElementPole })
-}, 2)
+}
 
 prestart(() => {
     ig.ENTITY.ElementPole.inject({
@@ -105,6 +105,6 @@ prestart(() => {
 
             ig.AnimatedEntity.prototype.update.call(this)
         },
-        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()])
+        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
     })
 })

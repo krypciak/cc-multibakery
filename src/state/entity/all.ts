@@ -1,3 +1,5 @@
+import { prestart } from '../../loading-stages'
+
 import './entity-death'
 import './entity-spawn'
 import './entity-hit-effect'
@@ -5,60 +7,70 @@ import './actor-action-steps'
 import './entity-hit-effect'
 import './entity-hit-number'
 
-/* these modules cannot export anything,
- * or else it might screw up import order
- * and therefore screw up binary encoding */
-import './dummy_DummyPlayer'
-import './ig_ENTITY_Effect'
-import './ig_ENTITY_PushPullBlock'
-import './ig_ENTITY_Switch'
-import './ig_ENTITY_OneTimeSwitch'
-import './ig_ENTITY_MultiHitSwitch'
-import './ig_ENTITY_WallHorizontal'
-import './ig_ENTITY_WallVertical'
-import './ig_ENTITY_OLPlatform'
-import './ig_ENTITY_Ball'
-import './sc_CombatProxyEntity'
-import './ig_ENTITY_Crosshair'
-import './ig_ENTITY_Enemy'
-import './ig_ENTITY_CombatantMarble'
-import './sc_ItemDropEntity'
-import './ig_ENTITY_Chest'
-import './ig_ENTITY_FloorSwitch'
-import './ig_ENTITY_NPC'
-import './ig_ENTITY_BounceBlock'
-import './ig_ENTITY_BounceSwitch'
-import './ig_ENTITY_Destructible'
-import './ig_ENTITY_EnemyCounter'
-import './ig_ENTITY_DynamicPlatform'
-import './ig_ENTITY_ItemDestruct'
-import './ig_ENTITY_XenoDialog'
-import './sc_PartyMemberEntity'
-import './ig_ENTITY_Prop'
-import './sc_FoodIconEntity'
-import './ig_ENTITY_Door'
-import './sc_BombEntity'
-import './ig_ENTITY_BombPanel'
-import './sc_FerroEntity'
-import './sc_WaterBubbleEntity'
-import './sc_IceDiskEntity'
-import './ig_ENTITY_SteamTurnout'
-import './ig_ENTITY_SteamOven'
-import './sc_SteamGlowEntity'
-import './ig_ENTITY_SteamPipe'
-import './ig_ENTITY_WaterBlock'
-import './ig_ENTITY_Magnet'
-import './ig_ENTITY_SlidingBlock'
-import './ig_ENTITY_BallChanger'
-import './ig_ENTITY_ElementPole'
-import './ig_ENTITY_RegenDestruct'
-import './ig_ENTITY_WaterBubblePanel'
-import './ig_ENTITY_WavePushPullBlock'
-import './ig_ENTITY_WaveTeleport'
-import './ig_ENTITY_RotateBlocker'
-import './ig_ENTITY_PushPullDest'
-import './ig_ENTITY_Compressor'
-import './sc_CompressedWaveEntity'
-import './sc_CompressedShockEntity'
-import './ig_ENTITY_GhostActorEntity'
-import './ig_ENTITY_ElementPoleDest'
+const netEntityModuleArray: Promise<{ register: () => void }>[] = [
+    import('./dummy_DummyPlayer'),
+    import('./ig_ENTITY_Effect'),
+    import('./ig_ENTITY_PushPullBlock'),
+    import('./ig_ENTITY_Switch'),
+    import('./ig_ENTITY_OneTimeSwitch'),
+    import('./ig_ENTITY_MultiHitSwitch'),
+    import('./ig_ENTITY_WallHorizontal'),
+    import('./ig_ENTITY_WallVertical'),
+    import('./ig_ENTITY_OLPlatform'),
+    import('./ig_ENTITY_Ball'),
+    import('./sc_CombatProxyEntity'),
+    import('./ig_ENTITY_Crosshair'),
+    import('./ig_ENTITY_Enemy'),
+    import('./ig_ENTITY_CombatantMarble'),
+    import('./sc_ItemDropEntity'),
+    import('./ig_ENTITY_Chest'),
+    import('./ig_ENTITY_FloorSwitch'),
+    import('./ig_ENTITY_NPC'),
+    import('./ig_ENTITY_BounceBlock'),
+    import('./ig_ENTITY_BounceSwitch'),
+    import('./ig_ENTITY_Destructible'),
+    import('./ig_ENTITY_EnemyCounter'),
+    import('./ig_ENTITY_DynamicPlatform'),
+    import('./ig_ENTITY_ItemDestruct'),
+    import('./ig_ENTITY_XenoDialog'),
+    import('./sc_PartyMemberEntity'),
+    import('./ig_ENTITY_Prop'),
+    import('./sc_FoodIconEntity'),
+    import('./ig_ENTITY_Door'),
+    import('./sc_BombEntity'),
+    import('./ig_ENTITY_BombPanel'),
+    import('./sc_FerroEntity'),
+    import('./sc_WaterBubbleEntity'),
+    import('./sc_IceDiskEntity'),
+    import('./ig_ENTITY_SteamTurnout'),
+    import('./ig_ENTITY_SteamOven'),
+    import('./sc_SteamGlowEntity'),
+    import('./ig_ENTITY_SteamPipe'),
+    import('./ig_ENTITY_WaterBlock'),
+    import('./ig_ENTITY_Magnet'),
+    import('./ig_ENTITY_SlidingBlock'),
+    import('./ig_ENTITY_BallChanger'),
+    import('./ig_ENTITY_ElementPole'),
+    import('./ig_ENTITY_RegenDestruct'),
+    import('./ig_ENTITY_WaterBubblePanel'),
+    import('./ig_ENTITY_WavePushPullBlock'),
+    import('./ig_ENTITY_WaveTeleport'),
+    import('./ig_ENTITY_RotateBlocker'),
+    import('./ig_ENTITY_PushPullDest'),
+    import('./ig_ENTITY_Compressor'),
+    import('./sc_CompressedWaveEntity'),
+    import('./sc_CompressedShockEntity'),
+    import('./ig_ENTITY_GhostActorEntity'),
+    import('./ig_ENTITY_ElementPoleDest'),
+]
+
+async function registerAllNetEntities() {
+    const modules = await Promise.all(netEntityModuleArray)
+    for (const module of modules) {
+        module.register()
+    }
+}
+
+prestart(() => {
+    registerAllNetEntities()
+}, 0)

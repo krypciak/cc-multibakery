@@ -1,5 +1,4 @@
 import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import type { StateKey } from '../map-state-handlers'
 import { StateMemory } from '../state-util'
 import * as scPlayerBaseEntity from './sc_PlayerBaseEntity-base'
@@ -26,7 +25,7 @@ function setEntityState(this: sc.PartyMemberEntity, state: Return) {
     scPlayerBaseEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     sc.PartyMemberEntity.inject({
         getEntityState,
         setEntityState,
@@ -45,4 +44,4 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: sc.PartyMemberEntity, temporary: true })
-}, 2)
+}

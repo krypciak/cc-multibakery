@@ -29,7 +29,7 @@ function setEntityState(this: sc.BombEntity, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     sc.BombEntity.inject({
         getEntityState,
         setEntityState,
@@ -45,7 +45,7 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: sc.BombEntity, temporary: true })
-}, 2)
+}
 
 prestart(() => {
     sc.BombEntity.inject({

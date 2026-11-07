@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
@@ -26,7 +25,7 @@ function setEntityState(this: sc.FerroEntity, state: Return) {
     igAnimatedEntity.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     sc.FerroEntity.inject({
         getEntityState,
         setEntityState,
@@ -40,4 +39,4 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: sc.FerroEntity, temporary: true })
-}, 2)
+}

@@ -157,8 +157,9 @@ import { addImport } from 'ts-binarifier/src/code-gen-imports'
 import { getOrDefineFunction, resetVarCounterForFunction } from 'ts-binarifier/src/code-gen-functions'
 const entityImportOrder = (await fs.promises.readFile('src/state/entity/all.ts', 'utf8'))
     .split('\n')
-    .filter(line => line.startsWith("import './"))
-    .map(line => line.trim().slice("import './".length, -1))
+    .map(line => line.trim())
+    .filter(line => line.startsWith("import('./"))
+    .map(line => line.trim().slice("import('./".length, -3))
     .filter(line => line.startsWith('sc') || line.startsWith('ig') || line.startsWith('dummy'))
     .map(line => line.replace(/_/g, '.'))
 

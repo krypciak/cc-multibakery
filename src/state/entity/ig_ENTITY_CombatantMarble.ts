@@ -27,7 +27,7 @@ function setEntityState(this: ig.ENTITY.CombatantMarble, state: Return) {
     this.updateAnim()
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.CombatantMarble.inject({
         getEntityState,
         setEntityState,
@@ -42,7 +42,9 @@ prestart(() => {
         return entity
     }
     registerNetEntity({ entityClass: ig.ENTITY.CombatantMarble })
+}
 
+prestart(() => {
     if (!REMOTE) return
 
     ig.ENTITY.CombatantMarble.inject({

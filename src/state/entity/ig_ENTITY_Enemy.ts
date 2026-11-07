@@ -32,7 +32,7 @@ function setEntityState(this: ig.ENTITY.Enemy, state: Return) {
     igEntityCombatant.setEntityState.call(this, state)
 }
 
-prestart(() => {
+export function register() {
     ig.ENTITY.Enemy.inject({
         getEntityState,
         setEntityState,
@@ -51,7 +51,9 @@ prestart(() => {
         return enemy
     }
     registerNetEntity({ entityClass: ig.ENTITY.Enemy })
+}
 
+prestart(() => {
     if (!REMOTE) return
 
     ig.ENTITY.Enemy.inject({

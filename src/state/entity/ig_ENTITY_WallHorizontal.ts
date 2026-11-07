@@ -1,5 +1,4 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import type { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import type { WallBaseReturn } from './ig_ENTITY_WallBase-base'
@@ -14,6 +13,6 @@ declare global {
     }
 }
 
-prestart(() => {
+export function register() {
     registerNetEntity({ entityClass: ig.ENTITY.WallHorizontal })
-}, 2)
+}
