@@ -59,6 +59,7 @@ Settings:
 
 - `players` (`ig.Event.ArrayExpression<dummy.DummyPlayer>`) - array of players
 - `steps` (`ig.EventStepBase[]`) - steps to run
+- `runType` (`'INTERRUPTABLE' | 'PARALLEL' | 'BLOCKING'`) (optional, default = `INTERRUPTABLE`) - event run type
 - `noWait` (`boolean`) (optional, default = `false`) - whether to wait for all `steps` to finish in all client instances
 - `indexVarName` (`string`) (optional) - if set, set variable named `indexVarName` to the index of the current player in the array
 
@@ -82,6 +83,7 @@ Examples:
 {
     "type": "FOR_EACH_PLAYER",
     "players": [{ "varName": "multi.playersOnMap[0]" }],
+    "runType": "BLOCKING",
     "steps": [
         { "type": "DO_ACTION", "entity": { "player": true }, "action": [
             { "type": "SET_POS", "newPos": { "x": 100, "y": 100, "z": 32 } }
