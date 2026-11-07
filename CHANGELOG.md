@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add `ig.ENTITY.ElementPoleDest` support
+
 ### Fixed
 
 - Fix player being invisible when "Enable join animation" option is off

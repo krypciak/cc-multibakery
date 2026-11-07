@@ -410,6 +410,8 @@ export class Client extends InstanceUpdateable {
 
             sc.combat.activeCombatants = msc.combat.activeCombatants
 
+            sc.ElementPoleGroups = msc.ElementPoleGroups
+
             rehookObservers(msc.map, sc.map)
             removeAddon(sc.map, ig.game)
             ig.storage.unregister(sc.map)

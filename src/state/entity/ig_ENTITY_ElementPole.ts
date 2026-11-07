@@ -4,6 +4,7 @@ import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 import { isRemote } from '../../server/remote/remote-server-types'
+import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
 
 declare global {
     namespace ig.ENTITY {
@@ -104,5 +105,6 @@ prestart(() => {
 
             ig.AnimatedEntity.prototype.update.call(this)
         },
+        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()])
     })
 })
