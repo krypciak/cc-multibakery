@@ -26,10 +26,17 @@ function getEntityState(this: sc.CombatProxyEntity, player?: StateKey) {
         ...scActorEntity.getEntityState.call(this, player, memory),
         proxyType: memory.onlyOnce(this.proxyType),
         sourceEntity: memory.onlyOnce(this.sourceEntity.netid),
+        tmpTarget: memory.diff(this.tmpTarget?.netid),
     }
 }
 function setEntityState(this: sc.CombatProxyEntity, state: Return) {
     scActorEntity.setEntityState.call(this, state)
+
+    if (state.tmpTarget) {
+        const entity = ig.game.entitiesByNetid[state.tmpTarget]
+        assert(entity instanceof sc.BasicCombatant)
+        this.tmpTarget = entity
+    }
 }
 
 prestart(() => {
