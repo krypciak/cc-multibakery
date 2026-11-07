@@ -4,6 +4,7 @@ import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
 import { wrapCollectSounds } from './sound-collector'
+import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
 
 declare global {
     namespace ig.ENTITY {
@@ -40,6 +41,9 @@ export function register() {
 
 prestart(() => {
     if (!PHYSICSNET) return
+    ig.ENTITY.Destructible.inject({
+        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
+    })
     ig.ENTITY.Destructible.inject({
         ballHit(ballLike, blockDir) {
             return wrapCollectSounds(() => this.parent(ballLike, blockDir))

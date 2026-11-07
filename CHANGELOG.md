@@ -7,6 +7,7 @@
 ### Added
 
 - Add `ig.ENTITY.ElementPoleDest` support
+- Add `ig.ENTITY.KeyPanel` support
 
 ### Fixed
 

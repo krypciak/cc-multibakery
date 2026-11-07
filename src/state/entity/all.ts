@@ -62,6 +62,7 @@ const netEntityModuleArray: Promise<{ register: () => void }>[] = [
     import('./sc_CompressedShockEntity'),
     import('./ig_ENTITY_GhostActorEntity'),
     import('./ig_ENTITY_ElementPoleDest'),
+    import('./ig_ENTITY_KeyPanel'),
 ]
 
 async function registerAllNetEntities() {
