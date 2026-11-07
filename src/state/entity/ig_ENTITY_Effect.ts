@@ -6,6 +6,8 @@ import type { StateKey } from '../map-state-handlers'
 import type { f64, i6, u16 } from 'ts-binarifier/src/type-aliases'
 import { isPhysics } from '../../server/physics/physics-server-types'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
+import { runTask } from 'cc-instanceinator/src/inst-util'
+import { getInstFromInstPlayerNetid } from '../step-settings-serializer'
 
 declare global {
     namespace ig.ENTITY {
@@ -175,18 +177,22 @@ declare global {
         stopEffect: {
             type: 'stopEffect'
             netid: EntityNetid
+            instPlayerNetid?: EntityNetid
         }
     }
 }
 registerOrderedEvent('stopEffect', {
-    set({ netid }) {
-        const entity = ig.game.entitiesByNetid[netid]
-        if (!entity) {
-            // console.warn('effect', netid, 'not found, tried to stop')
-            return
-        }
-        assert(entity instanceof ig.ENTITY.Effect)
-        entity.stop()
+    set({ netid, instPlayerNetid }) {
+        const inst = getInstFromInstPlayerNetid(instPlayerNetid)
+        runTask(inst, () => {
+            const entity = ig.game.entitiesByNetid[netid]
+            if (!entity) {
+                // console.warn('effect', netid, 'not found, tried to stop')
+                return
+            }
+            assert(entity instanceof ig.ENTITY.Effect)
+            entity.stop()
+        })
     },
 })
 
@@ -196,7 +202,7 @@ prestart(() => {
         stop() {
             this.parent()
             if (!shouldCollectStateData() || !this.netid) return
-            pushOrderedEvent({ type: 'stopEffect', netid: this.netid })
+            pushOrderedEvent({ type: 'stopEffect', netid: this.netid, instPlayerNetid: ig.client?.dummy?.netid })
         },
     })
 })
@@ -208,17 +214,21 @@ declare global {
             type: 'clearEffects'
             netid: EntityNetid
             group?: string
+            instPlayerNetid?: EntityNetid
         }
     }
 }
 registerOrderedEvent('clearEffects', {
-    set({ netid, group }) {
-        const entity = ig.game.entitiesByNetid[netid]
-        if (!entity) {
-            // console.warn('effect', netid, 'not found, tried to clear')
-            return
-        }
-        ig.EffectTools.clearEffects(entity, group)
+    set({ netid, group, instPlayerNetid }) {
+        const inst = getInstFromInstPlayerNetid(instPlayerNetid)
+        runTask(inst, () => {
+            const entity = ig.game.entitiesByNetid[netid]
+            if (!entity) {
+                // console.warn('effect', netid, 'not found, tried to clear')
+                return
+            }
+            ig.EffectTools.clearEffects(entity, group)
+        })
     },
 })
 
@@ -228,6 +238,6 @@ prestart(() => {
     ig.EffectTools.clearEffects = (entity, group) => {
         orig(entity, group)
         if (!shouldCollectStateData() || !entity.netid) return
-        pushOrderedEvent({ type: 'clearEffects', netid: entity.netid, group })
+        pushOrderedEvent({ type: 'clearEffects', netid: entity.netid, group, instPlayerNetid: ig.client?.dummy?.netid })
     }
 })

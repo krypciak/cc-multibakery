@@ -8,6 +8,8 @@ import * as scActorEntity from './sc_ActorEntity-base'
 import { isRemote } from '../../server/remote/remote-server-types'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
+import { runTask } from 'cc-instanceinator/src/inst-util'
+import { getInstFromInstPlayerNetid } from '../step-settings-serializer'
 
 declare global {
     namespace sc {
@@ -103,19 +105,23 @@ declare global {
         destroyCombatProxies: {
             type: 'destroyCombatProxies'
             netid: EntityNetid
+            instPlayerNetid?: EntityNetid
         }
     }
 }
 registerOrderedEvent('destroyCombatProxies', {
-    set({ netid }) {
-        const entity = ig.game.entitiesByNetid[netid]
-        if (!entity) {
-            // sometimes it already got destroyed by actorClearActionAttached
-            // console.warn('destroyCombatProxies entity not found:', netid)
-            return
-        }
-        assert(entity instanceof sc.CombatProxyEntity)
-        entity.destroy()
+    set({ netid, instPlayerNetid }) {
+        const inst = getInstFromInstPlayerNetid(instPlayerNetid)
+        runTask(inst, () => {
+            const entity = ig.game.entitiesByNetid[netid]
+            if (!entity) {
+                // sometimes it already got destroyed by actorClearActionAttached
+                // console.warn('destroyCombatProxies entity not found:', netid)
+                return
+            }
+            assert(entity instanceof sc.CombatProxyEntity)
+            entity.destroy()
+        })
     },
 })
 
@@ -124,7 +130,11 @@ prestart(() => {
         sc.CombatProxyEntity.inject({
             destroy(type) {
                 if (shouldCollectStateData() && !this.destroyType) {
-                    pushOrderedEvent({ type: 'destroyCombatProxies', netid: this.netid })
+                    pushOrderedEvent({
+                        type: 'destroyCombatProxies',
+                        netid: this.netid,
+                        instPlayerNetid: ig.client?.dummy?.netid,
+                    })
                 }
                 wrapIgnoreEffectNetid(() => this.parent(type))
             },

@@ -5,6 +5,8 @@ import { shouldCollectStateData, StateMemory } from '../state-util'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 import type { RecordSize, u16 } from 'ts-binarifier/src/type-aliases'
 import type { MapStateHandler, StateKey } from '../map-state-handlers'
+import { getInstFromInstPlayerNetid } from '../step-settings-serializer'
+import { runTask } from 'cc-instanceinator/src/inst-util'
 
 function killEntity(netid: EntityNetid) {
     const entity = ig.game.entitiesByNetid[netid]
@@ -21,12 +23,14 @@ declare global {
             type: 'entityDeath'
             /* named netid1 instead of netid to avoid ts-binarifier error */
             netid1: EntityNetid
+            instPlayerNetid?: EntityNetid
         }
     }
 }
 registerOrderedEvent('entityDeath', {
-    set({ netid1: netid }) {
-        killEntity(netid)
+    set({ netid1: netid, instPlayerNetid }) {
+        const inst = getInstFromInstPlayerNetid(instPlayerNetid)
+        runTask(inst, () => killEntity(netid))
     },
 })
 
@@ -40,13 +44,17 @@ prestart(() => {
             const typeId = getEntityTypeId(this.netid)
             if (entityIgnoreDeath.has(typeId)) return
 
-            if (shouldCollectStateData()) {
-                pushOrderedEvent({ type: 'entityDeath', netid1: this.netid })
+            if (!shouldCollectStateData()) return
 
-                if (!entityTemporary.has(typeId)) {
-                    const deaths = (ig.mapShared.entityDeaths ??= {})
-                    deaths[this.netid] = true
-                }
+            pushOrderedEvent({
+                type: 'entityDeath',
+                netid1: this.netid,
+                instPlayerNetid: ig.client?.dummy?.netid,
+            })
+
+            if (!entityTemporary.has(typeId)) {
+                const deaths = (ig.mapShared.entityDeaths ??= {})
+                deaths[this.netid] = true
             }
         },
     })

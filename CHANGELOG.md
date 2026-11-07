@@ -12,6 +12,7 @@
 
 - Fix player being invisible when "Enable join animation" option is off
 - Fix remote crash when cc-vim keybinding is pressed
+- Fix camera getting stuck after using Lightning Prophecy on remote
 
 ## [0.8.10] 2026-10-23
 
