@@ -1,26 +1,16 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
-import { assert } from '../../../misc/assert'
 import { prestart } from '../../../loading-stages'
 import { isPhysics } from '../physics-server-types'
-import { type Client } from '../../../client/client'
+import type { Client } from '../../../client/client'
 
 declare global {
     namespace ig {
-        interface MapSharedVars {
-            actionNextTriggeredBy?: dummy.DummyPlayer
-        }
-
         interface ActorEntity {
             actionBoundToPlayer?: dummy.DummyPlayer
 
             getClientFromBoundAction(this: this): Client | undefined
         }
     }
-}
-
-export function setActionNextTriggeredBy(player: dummy.DummyPlayer) {
-    assert(player)
-    ig.mapShared.actionNextTriggeredBy = player
 }
 
 prestart(() => {
@@ -39,7 +29,11 @@ prestart(() => {
         },
         setAction(action, keepState, noStateReset) {
             if (action && isPhysics(multi.server) && !(this instanceof dummy.DummyPlayer)) {
-                const player = ig.mapShared.actionNextTriggeredBy || ig.client?.dummy
+                let player = ig.client?.dummy
+                if (!player && this instanceof sc.BasicCombatant) {
+                    const root = this.getCombatantRoot()
+                    if (root instanceof dummy.DummyPlayer) player = root
+                }
                 if (player) this.actionBoundToPlayer = player
             }
             return this.parent(action, keepState, noStateReset)

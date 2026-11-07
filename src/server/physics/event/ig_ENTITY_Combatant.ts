@@ -2,7 +2,6 @@ import { prestart } from '../../../loading-stages'
 import { assert } from '../../../misc/assert'
 import type { EntityNetid } from '../../../misc/entity-netid'
 import { isPhysics } from '../physics-server-types'
-import { setActionNextTriggeredBy } from './action-manager'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
 declare global {
@@ -24,12 +23,7 @@ prestart(() => {
             const root = damagingEntity.getCombatantRoot()
             if (root) {
                 this.lastDamagedNetid = root.netid
-                if (root instanceof dummy.DummyPlayer) {
-                    this.lastDamagedNetidPlayer = root.netid
-                    setActionNextTriggeredBy(root)
-                } else if (this instanceof dummy.DummyPlayer) {
-                    setActionNextTriggeredBy(this)
-                }
+                if (root instanceof dummy.DummyPlayer) this.lastDamagedNetidPlayer = root.netid
             }
             return this.parent(damagingEntity, attackInfo, animPart)
         },
