@@ -11,22 +11,23 @@ import type { RemoteServerConnectionSettings } from './server/remote/remote-serv
 import { profile } from './misc/performance-profiling'
 import { getModCompatibilityErrorListText, isModCompatibilityListSatisfied } from './server/mod-compatibility-list'
 
-const defaultMap: MapTpInfo | undefined = true
+const defaultMap: MapTpInfo | undefined = false
     ? undefined
     : {
           // map: 'multibakery/dev',
-          // marker: 'entrance',
+          marker: 'entrance',
           // map: 'co-op-dng/intro-rooms/room-3',
           // marker: 'd1',
-          // map: 'co-op-dng/template',
+          map: 'co-op-dng/template',
+          // map: 'xpc/bonus/art-testing',
 
           // map: 'multibakery/mba-pvp',
           // marker: 'to_pvp',
 
-          map: 'autumn/path6',
+          // map: 'autumn/path6',
           // map: 'autumn/path-7-1',
           // map: 'autumn/path-1',
-          marker: 'south',
+          // marker: 'south',
           // map: 'autumn/entrance',
           // map: 'autumn/path4',
           // map: 'autumn/guild/inner-fs-og',
@@ -44,10 +45,12 @@ const defaultMap: MapTpInfo | undefined = true
           // marker: 'right',
           // map: 'xpc/bonus/training-1v1',
           // map: 'rhombus-dng/room-1',
+          // map: 'rhombus-dng/room-1-5',
           // map: 'rhombus-dng/room-1-6',
           // map: 'rhombus-dng/boss',
           // map: 'rhombus-sqr/dng-end',
           // map: 'rhombus-sqr/central-inner',
+          // map: 'heat-dng/f4/room-01'
           // map: 'cargo-ship/room2',
           // map: 'rookie-harbor/teleporter',
           // map: 'bergen-trail/path-1-entrance',
@@ -96,7 +99,7 @@ function createSettings(): PhysicsServerSettings {
         attemptCrashRecovery: false,
         godmode: true,
         disablePlayerIdlePose: true,
-        save: true
+        save: false
             ? {
                   manualSaving: true,
                   automaticallySave: true,
