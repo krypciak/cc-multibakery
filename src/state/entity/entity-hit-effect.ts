@@ -61,7 +61,7 @@ prestart(() => {
 
             if (entity.netid === undefined) {
                 console.warn(
-                    `sc.Combat#showHitEffect entity (${fcn(entity)}) is not an net entity! remote clients will crash!`
+                    `sc.Combat#showHitEffect entity (${fcn(entity)}) is not an net entity! remote clients might crash!`
                 )
             }
             pushOrderedEvent({

@@ -8,6 +8,7 @@
 
 - Add `ig.ENTITY.ElementPoleDest` support
 - Add `ig.ENTITY.KeyPanel` support
+- Add `ig.ENTITY.Scalable` remote state
 
 ### Fixed
 
