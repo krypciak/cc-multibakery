@@ -19,6 +19,7 @@
 - Fix `ig.ENTITY.BounceBlock` not hiding properly on remote
 - Fix `sc.WaterBubbleEntity` duplication on remote when `ig.ENTITY.KeyPanel` is shown after map load
 - Fix `ig.ENTITY.Destructible` variable increases not preserving event chain
+- Fix light handles timing out too fast
 
 ## [0.8.10] 2026-10-23
 

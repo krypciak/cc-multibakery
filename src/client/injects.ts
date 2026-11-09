@@ -186,3 +186,11 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.Light.inject({
+        onDeferredUpdate() {
+            if (!ig.client) return this.parent()
+        },
+    })
+})
