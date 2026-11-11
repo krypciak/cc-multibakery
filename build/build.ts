@@ -30,10 +30,11 @@ const projectRoot = fileURLToPath(new URL('..', import.meta.url))
 function requireFix(code: string): string {
     code = code.replace(
         new RegExp(`import \\{\\s*([^}]*)\\s*\\} from "(.*)"`, 'g'),
-        (_, imports, mod) => `var { ${imports.trim().replace(/\s+as\s+/g, ': ')} } = __require("${mod}")`
+        (_, imports, mod) => `var { ${imports.trim().replace(/\s+as\s+/g, ': ')} } = require("${mod}")`
     )
-    code = code.replace(new RegExp(`import \\* as (.*) from "(.*)"`, 'g'), `var $1 = __require("$2")`)
-    code = code.replace(new RegExp(`import (.*) from "(.*)"`, 'g'), `var $1 = __require("$2")`)
+
+    code = code.replace(new RegExp(`import \\* as (.*) from "(.*)"`, 'g'), `var $1 = require("$2")`)
+    code = code.replace(new RegExp(`import (.*) from "(.*)"`, 'g'), `var $1 = require("$2")`)
     return code
 }
 

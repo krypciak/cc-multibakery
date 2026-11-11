@@ -1,5 +1,5 @@
 #!/bin/node
-import { startCrossnode } from '../../crossnode/crossnode.js'
+import { startCrossnode } from '../../crossnode/src/crossnode.ts'
 
 startCrossnode({
     ccloader2: true,
@@ -21,11 +21,11 @@ startCrossnode({
         'extension-asset-preloader',
         'extendable-severed-heads',
 
-        'starcaller-2',
+        // 'starcaller-2',
 
-        'lqm-joern-mod',
-        'font-utils',
-        'lub-summoner-frame',
+        // 'lqm-joern-mod',
+        // 'font-utils',
+        // 'lub-summoner-frame',
     ],
     extensionWhitelist: ['post-game'],
 })
