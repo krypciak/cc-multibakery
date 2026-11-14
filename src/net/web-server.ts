@@ -83,6 +83,8 @@ export class PhysicsHttpServer {
             ...(await getCrosscodeWebHttpModules(this.netInfo.connection.crosscodeWeb))
         )
 
+        if (navigator.userAgent.startsWith('Porffor')) this.netInfo.connection.https = undefined
+
         if (this.netInfo.connection.https) {
             const https: typeof import('https') = (0, eval)('require("https")')
             const [cert, key] = await Promise.all([
