@@ -31,7 +31,7 @@
         "nax-ccuilib": "github:krypciak/nax-ccuilib",
         "spdy": "^4.0.2",
         "ultimate-crosscode-typedefs": "github:krypciak/ultimate-crosscode-typedefs",
-        "ws": "^8.22.1"
+        "ws": "^8.22.2"
     },
     "devDependencies": {
         "@types/bun": "^1.4.4",
@@ -40,7 +40,7 @@
         "crosscode-web": "github:krypciak/crosscode-web",
         "esbuild": "^0.28.2",
         "fflate": "^0.8.3",
-        "node": "^26.13.0",
+        "node": "^26.13.1",
         "oxfmt": "^0.60.0",
         "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^6.0.3"

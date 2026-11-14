@@ -1,7 +1,7 @@
 import type {} from './net/binary/binary-types'
 import type {} from 'ultimate-crosscode-typedefs'
 import type {} from 'cc-instanceinator/src/plugin'
-import type {} from 'crossnode/crossnode'
+import type {} from 'crossnode/src/types'
 import type {} from 'ccmodmanager/types/plugin'
 import type {} from 'ccmodmanager/types/gui/menu'
 import type {} from 'nax-ccuilib/src/ui/pause-screen/pause-screen-api'
