@@ -3,7 +3,6 @@ import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
-import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
 import { isPhysics } from '../../server/physics/physics-server-types'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
@@ -60,7 +59,6 @@ export function register() {
 
 prestart(() => {
     ig.ENTITY.WaveTeleport.inject({
-        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
         doTeleport() {
             if (!isPhysics(multi.server)) return this.parent()
 

@@ -1,6 +1,7 @@
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { prestart } from '../loading-stages'
 import type { InstanceinatorInstance } from 'cc-instanceinator/src/instance'
+import { wrapCollectSounds } from '../state/entity/sound-collector'
 
 /* any -> any */
 prestart(() => {
@@ -76,16 +77,14 @@ export function universalPlayerEntityFix<T extends ig.Class, ARGS extends unknow
         if (!multi.server || ig.client) return this.parent(...args)
 
         const inst = findClientInst.call(this, ...extraFindClientInstArgs.call(this, ...args), ...args)
-        if (inst) {
-            try {
-                inst.ig.ENTITY_KILL_CALL = ig.ENTITY_KILL_CALL
-                return runTask(inst, () => this.parent(...args))
-            } finally {
-                ig.ENTITY_KILL_CALL = inst.ig.ENTITY_KILL_CALL
-            }
-        }
+        if (!inst) return this.parent(...args)
 
-        return this.parent(...args)
+        try {
+            inst.ig.ENTITY_KILL_CALL = ig.ENTITY_KILL_CALL
+            return runTask(inst, () => this.parent(...args))
+        } finally {
+            ig.ENTITY_KILL_CALL = inst.ig.ENTITY_KILL_CALL
+        }
     }
 }
 
@@ -100,3 +99,49 @@ prestart(() => {
     ig.ACTION_STEP.REMOVE_PLAYER_CAMERA_TARGET.inject({ start: universalPlayerEntityFix() })
     ig.ACTION_STEP.ADD_PLAYER_CAMERA_TARGET.inject({ start: universalPlayerEntityFix() })
 })
+
+prestart(() => {
+    const playerEntityFixFunc = universalPlayerEntityFix<ig.Class, [ig.BallLike], boolean>(ballLike => [
+        ballLike.getCombatantRoot(),
+    ])
+
+    const ballHit = function <T extends ig.Class, ARGS extends [ig.BallLike]>(
+        this: T & { parent: (...args: ARGS) => boolean },
+        ...args: ARGS
+    ): boolean {
+        return wrapCollectSounds(() => playerEntityFixFunc.call(this as any, ...args))
+    }
+
+    ig.ENTITY.Prop.inject({ ballHit })
+    ig.ENTITY.ScalableProp.inject({ ballHit })
+    sc.CombatProxyEntity.inject({ ballHit })
+    sc.BombEntity.inject({ ballHit })
+    sc.WaterBubbleEntity.inject({ ballHit })
+    ig.ENTITY.Compressor.inject({ ballHit })
+    sc.CompressedBaseEntity.inject({ ballHit })
+    ig.ENTITY.AntiCompressor.inject({ ballHit })
+    ig.ENTITY.CompressorBouncer.inject({ ballHit })
+    ig.ENTITY.WaterBlock.inject({ ballHit })
+    sc.IceDiskEntity.inject({ ballHit })
+    ig.ENTITY.BallChanger.inject({ ballHit })
+    ig.ENTITY.FerroSpot.inject({ ballHit })
+    ig.ENTITY.FerroRespawner.inject({ ballHit })
+    sc.FerroEntity.inject({ ballHit })
+    ig.ENTITY.OneTimeSwitch.inject({ ballHit })
+    sc.ElementShieldBallEntity.inject({ ballHit })
+    ig.ENTITY.Magnet.inject({ ballHit })
+    ig.ENTITY.MultiHitSwitch.inject({ ballHit })
+    ig.ENTITY.BounceSwitch.inject({ ballHit })
+    ig.ENTITY.BounceBlock.inject({ ballHit })
+    ig.ENTITY.ElementPole.inject({ ballHit })
+    ig.ENTITY.WavePushPullBlock.inject({ ballHit })
+    ig.ENTITY.SlidingBlock.inject({ ballHit })
+    ig.ENTITY.Switch.inject({ ballHit })
+    ig.ENTITY.Destructible.inject({ ballHit })
+    ig.ENTITY.ItemDestruct.inject({ ballHit })
+    ig.ENTITY.RegenDestruct.inject({ ballHit })
+    ig.ENTITY.GroupSwitch.inject({ ballHit })
+    ig.ENTITY.TeslaCoil.inject({ ballHit })
+    ig.ENTITY.WaveTeleport.inject({ ballHit })
+    ig.ENTITY.RotateBlocker.inject({ ballHit })
+}, 2000)

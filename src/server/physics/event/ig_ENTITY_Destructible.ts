@@ -15,8 +15,7 @@ prestart(() => {
 
     ig.ENTITY.Destructible.inject({
         ballHit(ballLike, blockDir) {
-            const root = ballLike.getCombatantRoot()
-            if (root instanceof dummy.DummyPlayer) this.lastHitByPlayer = root.netid
+            if (ig.client) this.lastHitByPlayer = ig.client.dummy.netid
             return this.parent(ballLike, blockDir)
         },
         destroy: universalPlayerEntityFix(function () {

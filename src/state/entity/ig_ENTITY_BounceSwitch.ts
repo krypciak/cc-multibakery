@@ -1,9 +1,7 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
-import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -36,13 +34,3 @@ export function register() {
     }
     registerNetEntity({ entityClass: ig.ENTITY.BounceSwitch })
 }
-
-prestart(() => {
-    if (PHYSICSNET) {
-        ig.ENTITY.BounceSwitch.inject({
-            ballHit(ballLike, blockDir) {
-                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
-            },
-        })
-    }
-}, 2)

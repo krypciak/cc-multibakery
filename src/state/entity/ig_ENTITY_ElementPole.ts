@@ -105,6 +105,5 @@ prestart(() => {
 
             ig.AnimatedEntity.prototype.update.call(this)
         },
-        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
     })
 })

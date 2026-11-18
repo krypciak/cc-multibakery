@@ -2,7 +2,6 @@ import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
-import { isPhysics } from '../physics/physics-server-types'
 
 import './sound-position-fix'
 
@@ -187,14 +186,6 @@ prestart(() => {
     })
 })
 
-declare global {
-    namespace ig.ENTITY {
-        interface ItemDestruct {
-            destroyedBy?: ig.ENTITY.Combatant
-        }
-    }
-}
-
 prestart(() => {
     if (!PHYSICS) return
 
@@ -205,34 +196,6 @@ prestart(() => {
             const player = enemyEntity.getLastDamagingPlayer() ?? ig.ccmap.clients[0]?.dummy
             if (!player) return
             inputBackup(player.inputManager, () => this.parent(enemyEntity))
-        },
-    })
-
-    ig.ENTITY.ItemDestruct.inject({
-        ballHit(ballLike, blockDir) {
-            if (!isPhysics(multi.server)) return this.parent!(ballLike, blockDir)
-
-            this.destroyedBy = ballLike.getCombatantRoot()
-            const ret = this.parent!(ballLike, blockDir)
-            this.destroyedBy = undefined
-            return ret
-        },
-        dropItem() {
-            if (!isPhysics(multi.server)) return this.parent()
-
-            assert(this.destroyedBy)
-            let player!: dummy.DummyPlayer
-            if (this.destroyedBy instanceof dummy.DummyPlayer) {
-                player = this.destroyedBy
-            } else if (ig.client) {
-                player = ig.client.dummy
-            } else if (ig.ccmap) {
-                // console.warn('ig.ENTITY.ItemDestruct not destroyed by player, picking first player on map')
-                player = ig.ccmap.clients[0]?.dummy
-                /* haven't encountered a situation where player is undefined, but just to be safe */
-                if (!player) return
-            }
-            inputBackup(player.inputManager, () => this.parent())
         },
     })
 })

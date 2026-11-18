@@ -49,7 +49,6 @@ export function register() {
 
 prestart(() => {
     sc.BombEntity.inject({
-        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
         explode: universalPlayerEntityFix(function () {
             return [this.combatant]
         }),

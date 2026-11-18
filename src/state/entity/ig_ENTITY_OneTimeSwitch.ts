@@ -4,7 +4,6 @@ import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import { isRemote } from '../../server/remote/remote-server-types'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
-import { wrapCollectSounds } from './sound-collector'
 
 declare global {
     namespace ig.ENTITY {
@@ -45,14 +44,4 @@ prestart(() => {
             if (!isRemote(multi.server)) return this.parent()
         },
     })
-}, 2)
-
-prestart(() => {
-    if (PHYSICSNET) {
-        ig.ENTITY.OneTimeSwitch.inject({
-            ballHit(ballLike, blockDir) {
-                return wrapCollectSounds(() => this.parent(ballLike, blockDir))
-            },
-        })
-    }
 }, 2)

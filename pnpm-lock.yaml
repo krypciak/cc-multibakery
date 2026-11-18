@@ -43,10 +43,10 @@ importers:
         version: 4.0.2
       ultimate-crosscode-typedefs:
         specifier: github:krypciak/ultimate-crosscode-typedefs
-        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb
+        version: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358
       ws:
-        specifier: ^8.22.2
-        version: 8.22.2
+        specifier: ^8.23.0
+        version: 8.23.0
     devDependencies:
       '@types/bun':
         specifier: ^1.4.4
@@ -435,8 +435,8 @@ packages:
   '@simple-git/args-pathspec@1.0.4':
     resolution: {integrity: sha512-EtMX6XjRWSastG2SdkmSQByPtJ9dx/NIjnHbpQPCYt62j4RmSx5rgLTGpw0YCjF5h191gZOmBfheOT23cRSFdw==}
 
-  '@simple-git/argv-parser@2.0.1':
-    resolution: {integrity: sha512-M++IaVWrN+vYalilOHfwvT2IL3wYZtVEBQpmX6DLSOJLtxbZ+SUeIDE3IiPogzhPACLajwtxfa5rp+ZX1FczzQ==}
+  '@simple-git/argv-parser@3.0.0':
+    resolution: {integrity: sha512-MhLm6/9J7PiVZghJnaJG4tOc+rTotsSINJkjbUqZA7lYmYklOXdk+d0UZ8Pm8WFcMuxafx3oSUIYYYnPY92GTQ==}
 
   '@types/bun@1.4.4':
     resolution: {integrity: sha512-9wkRDXUXK124pEnAutE6n/l18j+i9GC5IAHK8TmX/2nlySETmky0OU6yL5U8pW1AoKh++AN9auDCr647BfurjQ==}
@@ -624,8 +624,8 @@ packages:
     engines: {node: '>=10'}
     hasBin: true
 
-  simple-git@4.0.2:
-    resolution: {integrity: sha512-l0sIsv9VrPwovKELFDBOj/lhmIcbMvxBk2B+hRhsMM4/VL3gKtuZvYnBNixVo+N/0HnqQx2cBdLvxnAbygHpqA==}
+  simple-git@4.1.0:
+    resolution: {integrity: sha512-FZJESy4Vxahk4eOadmRsWF5TjhCrfpDP563j8jAMbMEi/phIHPDgzN/tDkRIZ2GyQdLKEeXMPXqA8hhWjAdQZA==}
 
   spdy-transport@3.0.0:
     resolution: {integrity: sha512-hsLVFE5SjA6TCisWeJXFKniGGOpBgMLmerfO2aCyCU5s7nJ/rpAepqmFifv/GCbSbueEeAJJnmSQ2rKC/g8Fcw==}
@@ -653,8 +653,8 @@ packages:
     engines: {node: '>=14.17'}
     hasBin: true
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb:
-    resolution: {gitHosted: true, integrity: sha512-ESBvuojTBgJG54Db2kPearWRfJFg0x5q6p0P+qHRctiUFsZjCVYavi4EutKIS4ZFLnWaPDtHlZElDMtfwlp/Hw==, tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb}
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358:
+    resolution: {gitHosted: true, integrity: sha512-8sYzPbhjFCa7GKJB1KNmDZe/PXClCw7MwRk6B2ZOttGwWY6EjJLW2SiM3SZlgQBW+N4XQ7brv8+ZsLNh+T3leQ==, tarball: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358}
     version: 0.0.1
     engines: {node: '>=10.0.0'}
 
@@ -673,8 +673,8 @@ packages:
   wbuf@1.7.3:
     resolution: {integrity: sha512-O84QOnr0icsbFGLS0O3bI5FswxzRr8/gHwWkDlQFskhSPryQXvrTMxjxGP4+iWYoauLoBvfDpkrOauZ+0iZpDA==}
 
-  ws@8.22.2:
-    resolution: {integrity: sha512-/rEZ2ejown2N5gxVTHUu9bVVC7ttu0/Tgzf5hbTOixR3Fs7mbbXgn2DbdbcKgJOmpQMtrIUWivtYuVMnp/W/yA==}
+  ws@8.23.0:
+    resolution: {integrity: sha512-wCkmX8QMOrKjgO8HW2WyDbTSGeqkocxgDzS9iR79rEAexty6/2qzilx3Ag8Tqf9ykop3irLKle0MtVn5qjVnoQ==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
       bufferutil: ^4.0.1
@@ -874,7 +874,7 @@ snapshots:
 
   '@simple-git/args-pathspec@1.0.4': {}
 
-  '@simple-git/argv-parser@2.0.1':
+  '@simple-git/argv-parser@3.0.0':
     dependencies:
       '@simple-git/args-pathspec': 1.0.4
 
@@ -943,7 +943,7 @@ snapshots:
       cc-map-screenshot: https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ea63652509bdd436f11718bf3b74686e4d557f6d
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/585f4dcb52341924c61c21910abb9f6b19bbd5a6
       crossnode: https://codeload.github.com/krypciak/crossnode/tar.gz/63f3ef671604075e9f44b9a717a053f8b030c0be
-      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb
+      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358
 
   cc-krypek-lib@https://codeload.github.com/krypciak/cc-krypek-lib/tar.gz/ad54b45093d0acf7154bf878170d30759110de78:
     dependencies:
@@ -951,7 +951,7 @@ snapshots:
       '@types/jquery': 1.10.45
       '@types/node': 26.6.6
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/585f4dcb52341924c61c21910abb9f6b19bbd5a6
-      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb
+      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358
 
   cc-map-screenshot@https://codeload.github.com/krypciak/cc-map-screenshot/tar.gz/ea63652509bdd436f11718bf3b74686e4d557f6d:
     dependencies:
@@ -959,7 +959,7 @@ snapshots:
       '@types/jquery': 1.10.45
       '@types/node': 26.6.6
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/585f4dcb52341924c61c21910abb9f6b19bbd5a6
-      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb
+      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358
 
   cc-variable-charge-time@https://codeload.github.com/krypciak/cc-variable-charge-time/tar.gz/0beba4bf60ccf74b3931bad3a446534f131990c4:
     dependencies:
@@ -967,14 +967,14 @@ snapshots:
       '@types/jquery': 1.10.45
       '@types/node': 26.6.6
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/585f4dcb52341924c61c21910abb9f6b19bbd5a6
-      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb
+      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358
 
   ccmoddb@https://codeload.github.com/CCDirectLink/CCModDB/tar.gz/15b60fe87ec12ea13f0cced76890a92fba629b60:
     dependencies:
       '@types/semver': 7.8.0
       bun: 1.4.4
       semver: 7.8.6
-      simple-git: 4.0.2
+      simple-git: 4.1.0
       yauzl: 3.4.0
     transitivePeerDependencies:
       - supports-color
@@ -1057,7 +1057,7 @@ snapshots:
       '@types/jquery': 1.10.45
       '@types/node': 26.6.6
       ccmodmanager: https://codeload.github.com/CCDirectLink/CCModManager/tar.gz/585f4dcb52341924c61c21910abb9f6b19bbd5a6
-      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb
+      ultimate-crosscode-typedefs: https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358
 
   minimalistic-assert@1.0.1: {}
 
@@ -1128,12 +1128,12 @@ snapshots:
 
   semver@7.8.6: {}
 
-  simple-git@4.0.2:
+  simple-git@4.1.0:
     dependencies:
       '@kwsites/file-exists': 1.1.1
       '@kwsites/promise-deferred': 1.1.1
       '@simple-git/args-pathspec': 1.0.4
-      '@simple-git/argv-parser': 2.0.1
+      '@simple-git/argv-parser': 3.0.0
       debug: 4.4.3
     transitivePeerDependencies:
       - supports-color
@@ -1173,7 +1173,7 @@ snapshots:
 
   typescript@6.0.3: {}
 
-  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/12d912dd735339feee4d1619ad96e77e73b472cb:
+  ultimate-crosscode-typedefs@https://codeload.github.com/krypciak/ultimate-crosscode-typedefs/tar.gz/54576cc713fc083cd1495f200679fdc175197358:
     dependencies:
       '@types/jquery': 1.10.45
       '@types/node': 25.9.9
@@ -1191,7 +1191,7 @@ snapshots:
     dependencies:
       minimalistic-assert: 1.0.1
 
-  ws@8.22.2: {}
+  ws@8.23.0: {}
 
   yauzl@3.4.0:
     dependencies:

@@ -8,13 +8,13 @@ prestart(() => {
     function replace<T extends ig.StepBase, R>(this: T & { parent: T['start'] }, ...args: unknown[]): R {
         if (!isPhysics(multi.server)) return this.parent(...args) as R
 
-        if (ig.client?.dummy) setNextSetBy(ig.client.dummy)
-
-        const ret = this.parent(...args)
-
-        unsetNextSetBy()
-
-        return ret as R
+        const player = ig.client?.dummy
+        try {
+            if (player) setNextSetBy(player)
+            return this.parent(...args) as R
+        } finally {
+            unsetNextSetBy()
+        }
     }
 
     ig.EVENT_STEP.CHANGE_VAR_BOOL.inject({ start: replace })

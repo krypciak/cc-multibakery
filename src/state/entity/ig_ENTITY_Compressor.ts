@@ -1,9 +1,7 @@
 import { registerNetEntity } from '../../misc/entity-netid'
-import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
-import { universalPlayerEntityFix } from '../../server/instance-redirect-fixes'
 
 declare global {
     namespace ig.ENTITY {
@@ -37,9 +35,3 @@ export function register() {
     }
     registerNetEntity({ entityClass: ig.ENTITY.Compressor })
 }
-
-prestart(() => {
-    ig.ENTITY.Compressor.inject({
-        ballHit: universalPlayerEntityFix(ballLike => [ballLike.getCombatantRoot()]),
-    })
-})

@@ -41,9 +41,6 @@ export function register() {
 prestart(() => {
     if (!PHYSICSNET) return
     ig.ENTITY.BounceBlock.inject({
-        ballHit(ballLike, blockDir) {
-            return wrapCollectSounds(() => this.parent(ballLike, blockDir))
-        },
         animationEnded(animation) {
             return wrapCollectSounds(() => this.parent(animation))
         },
