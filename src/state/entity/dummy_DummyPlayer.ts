@@ -59,8 +59,14 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
     }
     if (state.currentSubState !== undefined) {
         this.currentSubState = state.currentSubState
-        const client = this.getClient(true)
-        if (client) runTask(client.inst, () => sc.model._setSubState(state.currentSubState!))
+
+        /* trigger observers, but only for RUNNING (sc.KeyHudGui fix) */
+        if (ig.shared.settingStateImmediately && state.currentSubState == sc.GAME_MODEL_SUBSTATE.RUNNING) {
+            const client = this.getClient(true)
+            if (client) {
+                runTask(client.inst, () => sc.model._setSubState(state.currentSubState!))
+            }
+        }
     }
     if (state.inCutscene !== undefined) this.inCutscene = state.inCutscene
 

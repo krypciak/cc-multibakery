@@ -7,6 +7,7 @@
 ### Fixed
 
 - Fixed crash on Hexacast lvl 2 neutral throw art Arcane Volley
+- Fix remote map menu world view not being enterable
 
 ## [0.8.11] 2026-11-09
 
