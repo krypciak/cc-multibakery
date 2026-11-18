@@ -43,7 +43,7 @@ prestart(() => {
         collideWith: universalPlayerEntityFix(),
         update: universalPlayerEntityFix(function () {
             return [this.throwerEntity]
-        }),
+        }, true),
     })
 
     const keyTypes: Record<string, ig.ENTITY.KeyPanel.KeyTypeConfig> = (ig.ENTITY.KeyPanel.prototype._wm._data as any)

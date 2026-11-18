@@ -7,6 +7,7 @@
 ### Added
 
 - Add `ig.ENTITY.TeslaCoil` remote state
+- Add elevator support
 
 ### Fixed
 

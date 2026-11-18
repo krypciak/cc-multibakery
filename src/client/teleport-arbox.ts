@@ -81,7 +81,7 @@ export async function showTeleportArMsg(
                     time,
                 },
                 { type: 'WAIT', time },
-                { type: 'RUN_JS_FUNCTION', func: () => fakeEntity.kill() },
+                { type: 'RUN_JS_FUNCTION', func: () => runTask(map.inst, () => fakeEntity.kill()) },
             ],
         })
 

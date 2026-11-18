@@ -46,7 +46,11 @@ prestart(() => {
     })
 })
 
-export function findClientInst(this: ig.Class, ...args: unknown[]): InstanceinatorInstance | undefined {
+function findClientInst(
+    this: ig.Class,
+    noWarning: boolean | undefined,
+    ...args: unknown[]
+): InstanceinatorInstance | undefined {
     let inst: InstanceinatorInstance | undefined = instanceinator.instances[this._instanceId]
     if (inst?.ig?.client) return inst
 
@@ -67,16 +71,17 @@ export function findClientInst(this: ig.Class, ...args: unknown[]): Instanceinat
         inst = ig.ccmap.clients[0].inst
         return inst
     }
-    console.warn(`universalFindClientInst: client not found!!`, this, ...args)
+    if (!noWarning) console.warn(`universalFindClientInst: client not found!!`, this, ...args)
 }
 
 export function universalPlayerEntityFix<T extends ig.Class, ARGS extends unknown[], R>(
-    extraFindClientInstArgs: (this: T, ...args: ARGS) => unknown[] = () => []
+    extraFindClientInstArgs: (this: T, ...args: ARGS) => unknown[] = () => [],
+    noWarning?: boolean
 ) {
     return function universalPlayerEntityFix(this: T & { parent: (...args: ARGS) => R }, ...args: ARGS): R {
         if (!multi.server || ig.client) return this.parent(...args)
 
-        const inst = findClientInst.call(this, ...extraFindClientInstArgs.call(this, ...args), ...args)
+        const inst = findClientInst.call(this, noWarning, ...extraFindClientInstArgs.call(this, ...args), ...args)
         if (!inst) return this.parent(...args)
 
         try {

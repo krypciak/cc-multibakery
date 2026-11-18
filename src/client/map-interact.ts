@@ -43,7 +43,6 @@ function cloneXenoDialogIcon(e: sc.XenoDialogIcon): sc.XenoDialogIcon {
 }
 
 function cloneMapInteractEntry(e: sc.MapInteractEntry): sc.MapInteractEntry {
-    // TODO elevator ruining my day, it makes double icons
     const ne = new sc.MapInteractEntry(e.entity, e.handler, e.icon, e.zCondition, e.interrupting)
     ne.gui.offset = Vec2.create(e.gui.offset)
 
