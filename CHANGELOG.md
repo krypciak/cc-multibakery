@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add `ig.ENTITY.TeslaCoil` remote state
+
 ### Fixed
 
 - Fixed crash on Hexacast lvl 2 neutral throw art Arcane Volley
