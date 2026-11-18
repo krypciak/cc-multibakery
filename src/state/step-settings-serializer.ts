@@ -1,6 +1,6 @@
 import type { i16 } from 'ts-binarifier/src/type-aliases'
 import { assert } from '../misc/assert'
-import type { EntityNetid } from '../misc/entity-netid'
+import { resolveNetEntityWithBackup, type EntityNetid } from '../misc/entity-netid'
 
 /* copies */
 export function serializeStepSettingsRecursive(value: any, key: PropertyKey = '', depth: number = 0) {
@@ -63,7 +63,7 @@ export function deserializeStepSettingsRecursive(data: any) {
             if (value && typeof value === 'object') {
                 if ('netid' in value) {
                     const netid = value.netid as EntityNetid
-                    const entity = ig.game.entitiesByNetid[netid]
+                    const entity = resolveNetEntityWithBackup(netid)
                     assert(entity)
                     data[key] = entity
                 } else {

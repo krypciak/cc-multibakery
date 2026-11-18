@@ -1,5 +1,5 @@
 import { prestart } from '../../../loading-stages'
-import type { EntityNetid } from '../../../misc/entity-netid'
+import { resolveNetEntityWithBackup, type EntityNetid } from '../../../misc/entity-netid'
 import { isPhysics } from '../physics-server-types'
 import { setNextSetBy, unsetNextSetBy } from './vars'
 
@@ -22,7 +22,7 @@ prestart(() => {
         turnOn() {
             if (!isPhysics(multi.server) || !this.lastInteractPlayerNetid) return this.parent()
 
-            const entity = ig.game.entitiesByNetid[this.lastInteractPlayerNetid]
+            const entity = resolveNetEntityWithBackup(this.lastInteractPlayerNetid)
             if (!entity) return this.parent()
 
             try {

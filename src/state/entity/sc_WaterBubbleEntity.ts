@@ -1,4 +1,4 @@
-import { registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity, resolveNetEntityWithBackup } from '../../misc/entity-netid'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././map-state-handlers'
 import * as igAnimatedEntity from './ig_AnimatedEntity-base'
@@ -33,7 +33,7 @@ export function register() {
         setEntityState,
     })
     sc.WaterBubbleEntity.create = (netid, state: Return) => {
-        const panel = state.panel ? ig.game.entitiesByNetid[state.panel] : undefined
+        const panel = state.panel ? resolveNetEntityWithBackup(state.panel) : undefined
         if (panel) assert(panel instanceof ig.ENTITY.WaterBubblePanel)
         panel?.currentBubble?.kill(true)
 

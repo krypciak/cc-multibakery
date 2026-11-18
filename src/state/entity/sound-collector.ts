@@ -1,5 +1,5 @@
 import { prestart } from '../../loading-stages'
-import type { EntityNetid } from '../../misc/entity-netid'
+import { resolveNetEntityWithBackup, type EntityNetid } from '../../misc/entity-netid'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 import { shouldCollectStateData } from '../state-util'
 
@@ -27,7 +27,7 @@ registerOrderedEvent('sound', {
         const { path, volume, variance, group } = soundSettings
         const sound = new ig.Sound(path, volume, variance, group)
         if (netid) {
-            const entity = ig.game.entitiesByNetid[netid]
+            const entity = resolveNetEntityWithBackup(netid)
             if (!entity) return
 
             ig.SoundHelper.playAtEntity(sound, entity, false, settings, range, soundType)

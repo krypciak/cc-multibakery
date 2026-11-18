@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fixed crash on Hexacast lvl 2 neutral throw art Arcane Volley
+
 ## [0.8.11] 2026-11-09
 
 ### Added

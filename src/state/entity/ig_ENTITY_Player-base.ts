@@ -6,6 +6,7 @@ import type { StateKey } from '../map-state-handlers'
 import * as scPlayerBaseEntity from './sc_PlayerBaseEntity-base'
 import type { RecordSize, u10, u11, u3 } from 'ts-binarifier/src/type-aliases'
 import type { ItemType } from '../../net/binary/binary-types'
+import { resolveNetEntityWithBackup } from '../../misc/entity-netid'
 
 declare global {
     namespace ig.ENTITY {
@@ -83,8 +84,8 @@ export function setEntityState(this: ig.ENTITY.Player, state: Return) {
     scPlayerBaseEntity.setEntityState.call(this, state, updateStats)
 
     if (state.interactObject) {
-        const entity = ig.game.entitiesByNetid[state.interactObject]
-        assert('pushPullable' in entity && entity.pushPullable instanceof sc.PushPullable)
+        const entity = resolveNetEntityWithBackup(state.interactObject)
+        assert(entity && 'pushPullable' in entity && entity.pushPullable instanceof sc.PushPullable)
         this.interactObject = entity.pushPullable
     } else this.interactObject = null
 

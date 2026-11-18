@@ -1,7 +1,7 @@
 import { prestart } from '../../loading-stages'
 import { assert } from '../../misc/assert'
 import { shouldCollectStateData } from '../state-util'
-import type { EntityNetid } from '../../misc/entity-netid'
+import { resolveNetEntityWithBackup, type EntityNetid } from '../../misc/entity-netid'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 
 prestart(() => {
@@ -30,7 +30,7 @@ registerOrderedEvent('hitNumberSpawn', {
         if (!sc.options.get('damage-numbers') || sc.combat.hideDamageNumbers) return
         if (sc.options.get('damage-numbers-crit') && !isCrit) return
 
-        const combatant = ig.game.entitiesByNetid[netid]
+        const combatant = resolveNetEntityWithBackup(netid)
         if (!combatant) return
         assert(combatant instanceof ig.ENTITY.Combatant)
 
@@ -88,7 +88,7 @@ registerOrderedEvent('healNumberSpawn', {
     set({ pos, netid, healAmount }) {
         if (!sc.options.get('damage-numbers')) return
 
-        const combatant = ig.game.entitiesByNetid[netid]
+        const combatant = resolveNetEntityWithBackup(netid)
         if (!combatant) return
         assert(combatant instanceof ig.ENTITY.Combatant)
 
@@ -123,7 +123,7 @@ declare global {
 }
 registerOrderedEvent('clearHitNumber', {
     set({ netid }) {
-        const combatant = ig.game.entitiesByNetid[netid]
+        const combatant = resolveNetEntityWithBackup(netid)
         if (!combatant) return
         assert(combatant instanceof ig.ENTITY.Combatant)
 

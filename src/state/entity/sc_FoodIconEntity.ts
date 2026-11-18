@@ -1,4 +1,4 @@
-import { registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity, resolveNetEntityWithBackup } from '../../misc/entity-netid'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././map-state-handlers'
 import { assert } from '../../misc/assert'
@@ -39,7 +39,7 @@ export function register() {
     })
     sc.FoodIconEntity.create = (netid, state: Return) => {
         assert(state.combatant)
-        const combatant = ig.game.entitiesByNetid[state.combatant]
+        const combatant = resolveNetEntityWithBackup(state.combatant)
         if (!combatant) console.warn('sc.FoodIconEntity#create combatant not found:', state.combatant)
         assert(combatant instanceof ig.ENTITY.Combatant)
 

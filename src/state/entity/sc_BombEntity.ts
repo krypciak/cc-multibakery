@@ -1,4 +1,4 @@
-import { registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity, resolveNetEntityWithBackup } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '.././state-util'
 import type { StateKey } from '.././map-state-handlers'
@@ -35,7 +35,7 @@ export function register() {
         setEntityState,
     })
     sc.BombEntity.create = (netid, state: Return) => {
-        const panel = state.panel ? ig.game.entitiesByNetid[state.panel] : undefined
+        const panel = state.panel ? resolveNetEntityWithBackup(state.panel) : undefined
         if (panel) assert(panel instanceof ig.ENTITY.BombPanel)
         if (panel?.bomb) panel.bomb.kill(true)
 

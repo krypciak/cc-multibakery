@@ -352,6 +352,8 @@ export class Client extends InstanceUpdateable {
             ig.game.mapName = mig.game.mapName
             ig.game.entities = mig.game.entities
             ig.game.entitiesByNetid = mig.game.entitiesByNetid
+            ig.game.entitiesByNetidKilledTemporary = mig.game.entitiesByNetidKilledTemporary
+            ig.game.entityTypeIdCounterMap = mig.game.entityTypeIdCounterMap
             ig.game.mapEntities = mig.game.mapEntities
             ig.game.shownEntities = mig.game.shownEntities
             ig.game.freeEntityIds = mig.game.freeEntityIds
@@ -364,8 +366,8 @@ export class Client extends InstanceUpdateable {
             MapDataLoad.initMapsAndLevels(levelData)
             for (const levelName in mig.game.levels) {
                 ig.game.levels[levelName].collision = mig.game.levels[levelName].collision
-                ig.game.levels[levelName].navigation  = mig.game.levels[levelName].navigation
-                ig.game.levels[levelName].heightMap  = mig.game.levels[levelName].heightMap
+                ig.game.levels[levelName].navigation = mig.game.levels[levelName].navigation
+                ig.game.levels[levelName].heightMap = mig.game.levels[levelName].heightMap
             }
 
             ig.game.physics = mig.game.physics

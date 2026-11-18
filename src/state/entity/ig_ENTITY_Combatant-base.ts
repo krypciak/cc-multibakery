@@ -9,7 +9,7 @@ import type { f32, u16, u4 } from 'ts-binarifier/src/type-aliases'
 import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { assert } from '../../misc/assert'
 import type { StateKey } from '../map-state-handlers'
-import type { EntityNetid } from '../../misc/entity-netid'
+import { resolveNetEntityWithBackup, type EntityNetid } from '../../misc/entity-netid'
 
 declare global {
     namespace sc {
@@ -122,7 +122,7 @@ export function setEntityState(this: ig.ENTITY.Combatant, state: Return) {
         if (state.target === 0) {
             this.setTarget(null)
         } else {
-            const entity = ig.game.entitiesByNetid[state.target]
+            const entity = resolveNetEntityWithBackup(state.target)
             if (!entity) {
                 // console.warn('ig.ENTITY.Combatant target not found:', state.target)
             } else {

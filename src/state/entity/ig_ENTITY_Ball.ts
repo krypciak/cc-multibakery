@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
+import { type EntityNetid, registerNetEntity, resolveNetEntityWithBackup } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { resolveProxyFromType } from './proxy-util'
 import { StateMemory } from '../state-util'
@@ -58,7 +58,7 @@ export function register() {
         const ballInfo: sc.BallInfo.Data = proxy.data
 
         assert(state.combatant)
-        const combatant = ig.game.entitiesByNetid[state.combatant]
+        const combatant = resolveNetEntityWithBackup(state.combatant)
         assert(combatant)
         assert(combatant instanceof ig.ENTITY.Combatant)
         // params can be null when the enemy data isnt loaded yet,

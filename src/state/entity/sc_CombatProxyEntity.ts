@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { type EntityNetid, registerNetEntity } from '../../misc/entity-netid'
+import { type EntityNetid, registerNetEntity, resolveNetEntityWithBackup } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData, StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
@@ -35,7 +35,7 @@ function setEntityState(this: sc.CombatProxyEntity, state: Return) {
     scActorEntity.setEntityState.call(this, state)
 
     if (state.tmpTarget) {
-        const entity = ig.game.entitiesByNetid[state.tmpTarget]
+        const entity = resolveNetEntityWithBackup(state.tmpTarget)
         assert(entity instanceof sc.BasicCombatant)
         this.tmpTarget = entity
     }
@@ -55,7 +55,7 @@ export function register() {
 
         const { x, y, z } = state.pos
 
-        const combatant = ig.game.entitiesByNetid[state.sourceEntity]
+        const combatant = resolveNetEntityWithBackup(state.sourceEntity)
         assert(combatant, `sc.CombatantProxyEntity#create target not found:  ${state.sourceEntity}`)
         assert(combatant instanceof sc.BasicCombatant)
 

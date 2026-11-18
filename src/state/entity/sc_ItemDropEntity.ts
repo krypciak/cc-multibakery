@@ -1,5 +1,5 @@
 import { assert } from '../../misc/assert'
-import { registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity, resolveNetEntityWithBackup } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { createFakeEffectSheet } from './effect-sheet-util'
 import { StateMemory } from '.././state-util'
@@ -47,7 +47,7 @@ export function register() {
         assert(state.item !== undefined)
         assert(state.amount !== undefined)
         assert(state.target)
-        const target = ig.game.entitiesByNetid[state.target]
+        const target = resolveNetEntityWithBackup(state.target)
         assert(target)
 
         const settings: sc.ItemDropEntity.Settings = {

@@ -1,7 +1,7 @@
 import { prestart } from '../../loading-stages'
 import { shouldCollectStateData } from '../state-util'
 import type { u16 } from 'ts-binarifier/src/type-aliases'
-import type { EntityNetid } from '../../misc/entity-netid'
+import { resolveNetEntityWithBackup, type EntityNetid } from '../../misc/entity-netid'
 import { wrapIgnoreEffectNetid } from './effect-netid'
 import { pushOrderedEvent, registerOrderedEvent } from '../ordered-events'
 
@@ -22,7 +22,7 @@ declare global {
 }
 registerOrderedEvent('entityHitEffect', {
     set({ netid, hitPos, hitDegree, hitElement, shieldResult, critical, ignoreSounds, spriteFilter }) {
-        const entity = ig.game.entitiesByNetid[netid]
+        const entity = resolveNetEntityWithBackup(netid)
         if (!entity) return
         sc.combat.showHitEffect(
             entity,

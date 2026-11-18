@@ -19,6 +19,7 @@ declare global {
         }
         interface Entity {
             netid: EntityNetid
+            killedFrame?: number
 
             changeNetid(this: this, netid: EntityNetid): void
             createNetid(this: this): EntityNetid | void
@@ -27,6 +28,8 @@ declare global {
 
         interface Game {
             entitiesByNetid: Record<EntityNetid | string, ig.Entity>
+            // for sc.CombatProxyEntity remote source entity resolution, only populated on remote
+            entitiesByNetidKilledTemporary: Record<EntityNetid | string, ig.Entity>
             entityTypeIdCounterMap: Record<number, number>
         }
     }
@@ -119,12 +122,36 @@ export function createNetid(
     return netid
 }
 
+function deleteNetid(netid: EntityNetid) {
+    if (isRemote(multi.server)) ig.game.entitiesByNetidKilledTemporary[netid] = ig.game.entitiesByNetid[netid]
+    delete ig.game.entitiesByNetid[netid]
+}
+
+export function resolveNetEntityWithBackup(netid: EntityNetid): ig.Entity | undefined {
+    return ig.game.entitiesByNetid[netid] ?? ig.game.entitiesByNetidKilledTemporary[netid]
+}
+
 prestart(() => {
     ig.Game.inject({
         init() {
             this.parent()
             this.entitiesByNetid = {}
+            this.entitiesByNetidKilledTemporary = {}
             this.entityTypeIdCounterMap = {}
+        },
+        update() {
+            this.parent()
+
+            if (!isRemote(multi.server)) return
+            const tps = multi.server.settings.gameTps
+            const frame = ig.system.frame
+            for (const _netid in this.entitiesByNetidKilledTemporary) {
+                const netid: EntityNetid = Number(_netid)
+                const entity = this.entitiesByNetidKilledTemporary[netid]
+                if (entity.killedFrame! < frame - tps || !entity._killed || entity.netid != netid) {
+                    delete this.entitiesByNetidKilledTemporary[netid]
+                }
+            }
         },
     })
 
@@ -137,6 +164,7 @@ prestart(() => {
             assert(this._killed)
             this.parent(x, y, z, settings)
             this.setNetid(settings.netid)
+            this.killedFrame = undefined
         },
         createNetid() {
             return createNetid(this.classId, ig.game.entityTypeIdCounterMap, ig.game.entitiesByNetid)
@@ -156,18 +184,19 @@ prestart(() => {
             ig.game.entitiesByNetid[this.netid] = this
         },
         changeNetid(netid) {
-            if (this.netid) delete ig.game.entitiesByNetid[this.netid]
+            if (this.netid) deleteNetid(this.netid)
             this.setNetid(netid)
         },
         onKill() {
             this.parent()
+            this.killedFrame = ig.system.frame
             const netid = this.netid
             if (netid) {
                 const inst = instanceinator.instances[instanceinator.id]
                 scheduleNextTask(inst, () => {
                     // console.log(ig.game.mapName, fcn(this), netid, 'deleting')
                     assert(ig.game.entitiesByNetid[netid] == this)
-                    delete ig.game.entitiesByNetid[netid]
+                    deleteNetid(netid)
                 })
             }
         },
