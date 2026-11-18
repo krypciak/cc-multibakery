@@ -1,4 +1,4 @@
-import { registerNetEntity } from '../../misc/entity-netid'
+import { registerNetEntity, type EntityNetid } from '../../misc/entity-netid'
 import { prestart } from '../../loading-stages'
 import { StateMemory } from '../state-util'
 import type { StateKey } from '../map-state-handlers'
@@ -37,11 +37,24 @@ export function register() {
     registerNetEntity({ entityClass: ig.ENTITY.TeslaCoil })
 }
 
+declare global {
+    namespace ig.ENTITY {
+        interface TeslaCoil {
+            lastInteractPlayerNetid?: EntityNetid
+        }
+    }
+}
+
 prestart(() => {
+    if (!PHYSICS) return
+
     ig.ENTITY.TeslaCoil.inject({
-        collideWith: universalPlayerEntityFix(),
-        // discharge: universalPlayerEntityFix(function (_entities) {
-        //     return [this.throwerEntity]
-        // }),
+        discharge: universalPlayerEntityFix(function (_entities) {
+            return [ig.game.entitiesByNetid[this.lastInteractPlayerNetid ?? -1]]
+        }),
+        ballHit(ballLike, blockDir) {
+            this.lastInteractPlayerNetid = ig.game.playerEntity?.netid
+            return this.parent(ballLike, blockDir)
+        },
     })
-}, 2)
+})

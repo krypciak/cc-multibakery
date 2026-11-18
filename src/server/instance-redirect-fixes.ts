@@ -101,6 +101,8 @@ prestart(() => {
 })
 
 prestart(() => {
+    if (!PHYSICS) return
+
     const playerEntityFixFunc = universalPlayerEntityFix<ig.Class, [ig.BallLike], boolean>(ballLike => [
         ballLike.getCombatantRoot(),
     ])
