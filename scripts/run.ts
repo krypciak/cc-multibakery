@@ -3,7 +3,7 @@ import { startCrossnode } from '../../crossnode/src/crossnode.ts'
 
 startCrossnode({
     ccloader2: true,
-    nukeImageStack: true,
+    // nukeImageStack: true,
     // writeImage: true,
     // writeImageInstanceinator: true,
     modWhitelist: [
@@ -28,4 +28,8 @@ startCrossnode({
         // 'lub-summoner-frame',
     ],
     extensionWhitelist: ['post-game'],
+    patchVarCondition: true,
+    writeImage: true,
+    writeImageInstanceinator: true,
+    debugLogs: true,
 })
