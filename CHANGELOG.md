@@ -14,6 +14,7 @@
 - Fixed crash on Hexacast lvl 2 neutral throw art Arcane Volley
 - Fix remote map menu world view not being enterable
 - Fix `ig.ENTITY.TeslaCoil` crash on activate
+- Remove ARBox'es that target entities from previous map when switching to a new map
 
 ## [0.8.11] 2026-11-09
 

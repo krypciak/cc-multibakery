@@ -325,3 +325,20 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.GUI.ARBox.inject({
+        update() {
+            this.parent()
+            if (!multi.server) return
+
+            const targetInst = instanceinator.instances[this.target?._instanceId]
+            const thisInst = instanceinator.instances[this._instanceId]
+            if (!targetInst || targetInst.ig.mapShared.ccmap != thisInst.ig.mapShared.ccmap) {
+                this.remove()
+                this.hook.removeAfterTransition = false /* to force state transition call */
+                this.doStateTransition('HIDDEN', true, true)
+            }
+        },
+    })
+})
