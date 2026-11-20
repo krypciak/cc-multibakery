@@ -10,7 +10,6 @@ async function setupCrosscode() {
     if (global.window) return
 
     try {
-        // @ts-ignore
         const { startCrossnode } = await import('../../../crossnode/src/crossnode')
         await startCrossnode({
             ccloader2: true,
