@@ -14,7 +14,7 @@
         "buildPhysicsNetless": "bun build/build.ts build dev=false minifySyntax minifyWhitespace remote=false physicsnet=false",
         "buildCrossnode": "bun build/build.ts build dev=false remote=false target=esnext crossnode",
         "buildTest": "bun build/build.ts build dev target=esnext crossnode test",
-        "format": "oxfmt",
+        "format": "bun fmt",
         "test": "bun run buildTest && bun test --parallel=2 --isolate --concurrent",
         "server": "bun run scripts/run.ts"
     },
@@ -42,7 +42,6 @@
         "esbuild": "^0.28.2",
         "fflate": "^0.8.3",
         "node": "^26.13.1",
-        "oxfmt": "^0.60.0",
         "ts-binarifier": "github:krypciak/ts-binarifier",
         "typescript": "^6.0.3"
     }

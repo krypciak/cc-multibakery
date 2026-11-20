@@ -256,13 +256,13 @@ function registerOpts() {
                         init: false,
                         name: 'TeleportField',
                         description: `Show teleport popup when teleporting via TeleportField`,
-                    }, 
+                    },
                     showClientTeleportArBoxOther: {
                         type: 'CHECKBOX',
                         init: true,
                         name: 'Other',
                         description: `Show teleport popup when teleporting via the map menu or other events`,
-                    }, 
+                    },
                     infoAdvanced: {
                         type: 'INFO',
                         name: `Advanced configuration below, don't touch if you don't know what you're doing!`,

@@ -1,6 +1,6 @@
 allowBuilds:
-  esbuild: true
-  bun: true
-  node: true
-  core-js: false
+    esbuild: true
+    bun: true
+    node: true
+    core-js: false
 blockExoticSubdeps: false
