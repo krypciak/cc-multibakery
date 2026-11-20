@@ -18,13 +18,13 @@ const base: TestServerConfig = {
         gameTps: 60,
         forceConsistentTickTimes: true,
         gameLoopIntervalTps: 240,
-        displayClientInstances: !window.crossnode?.options.nukeImageStack,
-        displayRemoteClientInstances: !window.crossnode?.options.nukeImageStack,
+        displayClientInstances: !globalThis.crossnode?.options.nukeImageStack,
+        displayRemoteClientInstances: !globalThis.crossnode?.options.nukeImageStack,
 
         attemptCrashRecovery: true,
         useAnimationFrameAsFpsLimiter: true,
     },
-    crossnodeForceWriteImage: false && !window.crossnode?.options.nukeImageStack,
+    crossnodeForceWriteImage: false && !globalThis.crossnode?.options.nukeImageStack,
     disablePerfFlags: true,
     printRemoteServerLogs: false,
     remoteJavascriptEngine: 'node',
@@ -56,4 +56,4 @@ const remote: TestServerConfig = {
     testFilterRegex: /^remote/,
 }
 
-export const chosenTestServerConfig: TestServerConfig = physics // withFilter(remote, /^remote Lea NEUTRAL/)
+export const chosenTestServerConfig: TestServerConfig = withFilter(physics, /^physics Lea/)

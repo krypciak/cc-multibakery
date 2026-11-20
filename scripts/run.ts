@@ -3,9 +3,6 @@ import { startCrossnode } from '../../crossnode/src/crossnode.ts'
 
 startCrossnode({
     ccloader2: true,
-    // nukeImageStack: true,
-    // writeImage: true,
-    // writeImageInstanceinator: true,
     modWhitelist: [
         'cc-multibakery',
         'cc-instanceinator',
@@ -27,9 +24,10 @@ startCrossnode({
         // 'font-utils',
         // 'lub-summoner-frame',
     ],
-    extensionWhitelist: ['post-game'],
-    patchVarCondition: true,
+    // nukeImageStack: true,
     writeImage: true,
     writeImageInstanceinator: true,
+    extensionWhitelist: ['post-game'],
+    patchVarCondition: true,
     debugLogs: true,
 })

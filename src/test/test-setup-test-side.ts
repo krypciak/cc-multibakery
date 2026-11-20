@@ -11,7 +11,7 @@ async function setupCrosscode() {
 
     try {
         // @ts-ignore
-        const { startCrossnode } = await import('../../../crossnode/crossnode.js')
+        const { startCrossnode } = await import('../../../crossnode/src/crossnode')
         await startCrossnode({
             ccloader2: true,
             nukeImageStack: true,
