@@ -80,6 +80,11 @@ prestart(() => {
                 controller: new sc.PlayerCrossHairController(),
             })
         },
+        initModel() {
+            this.parent()
+            /* cc-alybox feature fix */
+            this.name = this.model.name
+        },
         setInputManager(inputManager) {
             this.inputManager = inputManager
             this.inputManager.player = this

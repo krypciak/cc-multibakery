@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix player.name feature of cc-alybox always beaing Lea (sitting fix)
+
 ## [0.8.13] 2026-11-21
 
 ### Fixed
