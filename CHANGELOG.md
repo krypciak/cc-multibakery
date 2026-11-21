@@ -3,6 +3,11 @@
 # Change Log
 
 ## [Unreleased]
+
+### Fixed
+
+- Fix https server support
+
 ## [0.8.12] 2026-11-18
 
 ### Added

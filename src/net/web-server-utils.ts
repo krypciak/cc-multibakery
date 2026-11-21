@@ -1,7 +1,6 @@
 import type { RemoteServerConnectionSettings } from '../server/remote/remote-server-types'
 import { isServerDetailsRemote, type ServerDetailsRemote } from '../client/menu/server-info-types'
 import { assert } from '../misc/assert'
-import { wait } from '../misc/wait'
 
 export function isPortValid(text: unknown) {
     const port = Number(text)
@@ -21,30 +20,21 @@ function getIconUrl(connection: RemoteServerConnectionSettings) {
     return `${getServerUrl(connection)}/icon`
 }
 
-const DETAILS_TIMEOUT = 5000
-
 async function setHttps(connection: RemoteServerConnectionSettings): Promise<boolean> {
-    connection.https = false
-    try {
-        await fetchWithTimeout(getDetailsUrl(connection), DETAILS_TIMEOUT)
-        return false
-    } catch (e) {}
-
     try {
         connection.https = true
-        await fetchWithTimeout(getDetailsUrl(connection), DETAILS_TIMEOUT)
+        await fetch(getDetailsUrl(connection))
         return false
-    } catch (e) {}
-    connection.https = undefined
-    return true
-}
-
-async function fetchWithTimeout(url: string, timeout: number): Promise<Response | void> {
-    return Promise.race([
-        //
-        fetch(url, { signal: AbortSignal.timeout?.(timeout) }),
-        wait(timeout + 100),
-    ])
+    } catch (e) {
+        try {
+            connection.https = false
+            await fetch(getDetailsUrl(connection))
+            return false
+        } catch (e) {
+            connection.https = undefined
+            return true
+        }
+    }
 }
 
 export async function getServerDetails(
@@ -83,8 +73,13 @@ async function fetchUrlWithPing(url: string): Promise<{
 } | void> {
     const started = performance.now()
     try {
-        const res = await fetchWithTimeout(url, DETAILS_TIMEOUT)
-        if (res?.status == 200) {
+        const timeout = 3000
+        const res = await Promise.race([
+            fetch(url, { signal: AbortSignal.timeout?.(3000) }),
+            /* AbortSignal.timeout is not available in older nwjs versions */
+            new Promise<{ status: 408 }>(resolve => setTimeout(() => resolve({ status: 408 }), timeout + 100)),
+        ])
+        if (res.status == 200) {
             const ping = Math.round(performance.now() - started)
             return { ping, res }
         }
