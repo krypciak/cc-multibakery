@@ -82,13 +82,21 @@ prestart(() => {
     ig.AnimatedEntity.inject({
         externAnimSheetName: '',
         externAnimSheetPath: '',
-
         setCurrentAnim(...args) {
             this.parent(...args)
             this.externAnimSheetName = ''
             this.externAnimSheetPath = ''
         },
     })
+    /* inject into player seperately because xenon-playable-classes injects into ig.ENTITY.Player first so ig.AnimatedEntity inject gets skipped */
+    ig.ENTITY.Player.inject({
+        setCurrentAnim(...args) {
+            this.parent(...args)
+            this.externAnimSheetName = ''
+            this.externAnimSheetPath = ''
+        },
+    })
+
     ig.ACTION_STEP.SHOW_EXTERN_ANIM.inject({
         start(target) {
             this.parent(target)

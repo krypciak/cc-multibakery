@@ -8,6 +8,7 @@
 
 - Fix player.name feature of cc-alybox always beaing Lea (sitting fix)
 - Fix extern anims for non Lea not displaying on remote
+- Fix same repeated extern anims not displaying on remote
 
 ## [0.8.13] 2026-11-21
 
