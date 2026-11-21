@@ -12,7 +12,9 @@ import { runTask } from 'cc-instanceinator/src/inst-util'
 
 declare global {
     namespace dummy {
-        interface DummyPlayer extends StateMemory.MapHolder<StateKey> {}
+        interface DummyPlayer extends StateMemory.MapHolder<StateKey> {
+            retargetCameraFromTeleport?: boolean
+        }
         interface DummyPlayerConstructor {
             create(netid: EntityNetid, state: Partial<Return>): dummy.DummyPlayer
         }
@@ -39,6 +41,8 @@ function getEntityState(this: dummy.DummyPlayer, player?: StateKey) {
         combatArtLabelText: memory.diff(this.combatArtLabelText),
         showElementalOverloadLabel: memory.diff(this.model.showElementalOverloadLabel),
         showNoSpLabel: memory.diff(this.showNoSpLabel),
+
+        retargetCameraFromTeleport: memory.diff(this.retargetCameraFromTeleport),
     }
 }
 
@@ -74,6 +78,15 @@ function setEntityState(this: dummy.DummyPlayer, state: Return) {
     if (state.showElementalOverloadLabel !== undefined)
         this.model.showElementalOverloadLabel = state.showElementalOverloadLabel
     if (state.showNoSpLabel !== undefined) this.showNoSpLabel = state.showNoSpLabel
+
+    if (state.retargetCameraFromTeleport) {
+        const client = this.getClient(true)
+        if (client) {
+            runTask(client.inst, () => {
+                ig.camera.retarget('FASTER', KEY_SPLINES.EASE_IN_OUT)
+            })
+        }
+    }
 }
 
 export function register() {
@@ -108,6 +121,12 @@ prestart(() => {
         })
     }
     if (PHYSICSNET) {
+        dummy.DummyPlayer.inject({
+            update() {
+                this.parent()
+                this.retargetCameraFromTeleport = false
+            },
+        })
         sc.Combat.inject({
             showCharge(target, chargeLevelEffectName, element) {
                 if (!shouldCollectStateData()) return this.parent(target, chargeLevelEffectName, element)
