@@ -36,14 +36,20 @@ export function setEntityState(this: ig.AnimatedEntity, state: Return) {
     } else if (state.externAnimSheetPath) {
         const animName = state.externAnimSheetName
         assert(animName)
-        const animSheet = new ig.AnimationSheet(state.externAnimSheetPath)
-        const replacedAnimSheet = sc.playerSkins.replaceAnim(animSheet)
-        this.setCurrentAnim(
-            replacedAnimSheet.anims[animName],
-            true,
-            /* e && e.anims[this.followUpName] */ undefined,
-            true
-        )
+
+        let anim: ig.MultiDirAnimationSet | ig.SingleDirAnimationSet | undefined
+        /* fix from xenons-playable-classes js/azure-lazuline/extern-anim-fix.js */
+        if (this.name != 'Lea' && this.name != 'Shizuka0') {
+            const animSheet = this.animSheet
+            anim = animSheet.anims[animName]
+        }
+        if (!anim) {
+            let animSheet = new ig.AnimationSheet(state.externAnimSheetPath)
+            animSheet = sc.playerSkins.replaceAnim(animSheet)
+            anim = animSheet.anims[animName]
+        }
+
+        this.setCurrentAnim(anim, true, /* e && e.anims[this.followUpName] */ undefined, true)
     }
 
     if (state.hidden !== undefined && this._hidden !== state.hidden) {
