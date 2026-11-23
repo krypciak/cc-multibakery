@@ -12,6 +12,7 @@
 - Fix remote wave teleport transition not working when there is more than 1 remote player
 - Fix crash on party menu enter while using gamepad
 - Fix crash on bounce switch hit
+- Fix killed entities spawning show effects on remote map join
 
 ## [0.8.13] 2026-11-21
 

@@ -56,7 +56,7 @@ export function setEntityState(this: ig.AnimatedEntity, state: Return) {
         if (state.hidden) {
             this.hide()
         } else {
-            this.show()
+            this.show(ig.shared.settingStateImmediately)
         }
     }
 
@@ -123,3 +123,18 @@ prestart(() => {
         },
     })
 })
+
+prestart(() => {
+    ig.Entity.inject({
+        show(noShowFx) {
+            if (!multi.server || !this._killed) return this.parent(noShowFx)
+        },
+    })
+
+    /* inject into Enemy seperately because ig.AnimatedEntity inject gets skipped */
+    ig.ENTITY.Enemy.inject({
+        show(noShowFx) {
+            if (!multi.server || !this._killed) return this.parent(noShowFx)
+        },
+    })
+}, 0)
