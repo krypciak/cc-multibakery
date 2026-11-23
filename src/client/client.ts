@@ -282,6 +282,7 @@ export class Client extends InstanceUpdateable {
             if (oldMap) {
                 for (const obj of oldMap.onLinkChange) obj.onClientUnlink?.(this)
                 if (oldMap != map) oldMap.leave(this)
+                this.inst.ig.game.previousMap = oldMap.name
             }
 
             this.tpInfo = tpInfo
