@@ -139,11 +139,13 @@ prestart(() => {
             if (!multi.server) return this.parent(range, noIgnoreZ)
             assert(ig.ccmap)
             return ig.ccmap.clients.some(client => {
-                assert(!ig.game.playerEntity)
-                ig.game.playerEntity = client.dummy
-                const ret = this.parent(range, noIgnoreZ)
-                ig.game.playerEntity = undefined as any
-                return ret
+                try {
+                    assert(!ig.game.playerEntity)
+                    ig.game.playerEntity = client.dummy
+                    return this.parent(range, noIgnoreZ)
+                } finally {
+                    ig.game.playerEntity = undefined as any
+                }
             })
         },
         onEventStart() {
