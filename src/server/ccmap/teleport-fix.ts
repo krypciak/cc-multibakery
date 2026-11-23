@@ -3,6 +3,7 @@ import { prestart } from '../../loading-stages'
 import { runTask } from 'cc-instanceinator/src/inst-util'
 import { isRemote } from '../remote/remote-server-types'
 import { getPreTeleportInfoForArMsg, showTeleportArMsg } from '../../client/teleport-arbox'
+import type { MapTpInfo } from '../server-types'
 
 export type MarkerLike = ig.Entity & { name: string; applyMarkerPosition(entity: ig.Entity): void }
 
@@ -42,6 +43,18 @@ export function teleportPlayerToProperMarker(
 }
 
 prestart(() => {
+    function runTeleport(player: dummy.DummyPlayer, tpInfo: MapTpInfo, eventCall?: ig.EventCall) {
+        const client = player.getClient()
+
+        tpInfo.map = normalizeMapName(tpInfo.map)
+
+        const preTeleportInfo = getPreTeleportInfoForArMsg(client)
+
+        runTask(multi.server.inst, () => client.teleport(tpInfo))
+
+        showTeleportArMsg(client, tpInfo.map, eventCall, preTeleportInfo)
+    }
+
     ig.Game.inject({
         isPlayerTouch(entity, player, dir) {
             if (!multi.server || ig.client) return this.parent(entity, player, dir)
@@ -63,7 +76,13 @@ prestart(() => {
         teleport(mapName, marker, hint, clearCache, reloadCache) {
             if (!multi.server) return this.parent(mapName, marker, hint, clearCache, reloadCache)
 
-            assert(false)
+            assert(ig.client, 'ig.Game#teleport called on map instance')
+            const tpInfo: MapTpInfo = { map: mapName, marker: typeof marker == 'string' ? marker : marker?.marker }
+            if (marker && typeof marker === 'object') {
+                if (marker.face) ig.client.teleportOverrides.face = marker.face
+                if (marker.pos) ig.client.teleportOverrides.pos = () => marker.pos as Vec2
+            }
+            runTeleport(ig.client.dummy, tpInfo)
         },
     })
 
@@ -72,21 +91,11 @@ prestart(() => {
             if (!multi.server) return this.parent(data, eventCall)
             if (isRemote(multi.server)) return
 
-            const player: ig.ENTITY.Player | undefined =
-                ig.client?.dummy ?? eventCall?.stack[0]?.stepData?._actionEntity
+            const player = ig.client?.dummy ?? eventCall?.stack[0]?.stepData?._actionEntity
             assert(player, 'nuh uh ig.EVENT_STEP.TELEPORT player not sniffed :((')
-            assert(player.isPlayer, 'that is just ridiculous ig.EVENT_STEP.TELEPORT')
             assert(player instanceof dummy.DummyPlayer)
 
-            const client = player.getClient()
-
-            const destMapName = normalizeMapName(this.map)
-
-            const preTeleportInfo = getPreTeleportInfoForArMsg(client)
-
-            runTask(multi.server.inst, () => client.teleport({ map: destMapName, marker: this.marker }))
-
-            showTeleportArMsg(client, destMapName, eventCall, preTeleportInfo)
+            runTeleport(player, { map: this.map, marker: this.marker }, eventCall)
         },
     })
 
