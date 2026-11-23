@@ -414,6 +414,9 @@ export class Client extends InstanceUpdateable {
 
             sc.ElementPoleGroups = msc.ElementPoleGroups
 
+            removeAddon(sc.bounceSwitchGroups, ig.game)
+            sc.bounceSwitchGroups = msc.bounceSwitchGroups
+
             rehookObservers(msc.map, sc.map)
             removeAddon(sc.map, ig.game)
             ig.storage.unregister(sc.map)
