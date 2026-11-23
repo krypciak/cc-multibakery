@@ -20,7 +20,7 @@ import { linkOptions } from './physics/storage/storage'
 import { MultiPartyManager } from '../party/party'
 import type { MapName, Username } from '../net/binary/binary-types'
 import type { PlayerInfoEntry } from '../state/player-info'
-import { removeUnnecessarySystemsForServerInstance } from './game-systems-cleanup'
+import { removeUnnecessarySystemsForInstance } from './game-systems-cleanup'
 import type { NetConnection } from '../net/net-connection'
 import { isUsernameValid } from '../misc/username-util'
 import { executeWithStrategy } from '../misc/function-execute-strategy'
@@ -109,7 +109,7 @@ export abstract class Server<S extends ServerSettings = ServerSettings> extends 
             instanceinatorCopyInstanceConfig()
         )
         this.inst.apply()
-        removeUnnecessarySystemsForServerInstance()
+        removeUnnecessarySystemsForInstance('server')
         this.safeguardInst()
         this.link()
         this.updateMusicInstance()

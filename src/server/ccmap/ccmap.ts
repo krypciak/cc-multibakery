@@ -20,6 +20,7 @@ import { profile } from '../../misc/performance-profiling'
 import { findNeighbouringMapsForMultiMapRendering } from '../multi-map-rendering'
 
 import './injects'
+import { removeUnnecessarySystemsForInstance } from '../game-systems-cleanup'
 
 export class CCMap extends InstanceUpdateable {
     private static mapUniqueCounter: Record<string, number> = {}
@@ -148,6 +149,7 @@ export class CCMap extends InstanceUpdateable {
         runTask(this.inst, () => {
             MapDataLoad.setMapDataFromLevelData(this.levelData!, this.name)
             findNeighbouringMapsForMultiMapRendering()
+            removeUnnecessarySystemsForInstance('map')
         })
         createServerTpsLabel(this.inst)
 
