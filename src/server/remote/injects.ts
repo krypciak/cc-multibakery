@@ -65,4 +65,25 @@ prestart(() => {
             return false
         },
     })
+
+    let ignoreEffectSpawn = 0
+    ig.EffectSheet.inject({
+        spawnOnTarget(name, target, settings) {
+            if (ignoreEffectSpawn == 0) return this.parent(name, target, settings)
+            return null
+        },
+    })
+
+    ig.Game.inject({
+        requestEntityHide(entity) {
+            if (!isRemote(multi.server) || !ig.mapShared.ccmap.noStateAppliedYet) return this.parent(entity)
+            try {
+                ignoreEffectSpawn++
+                return this.parent(entity)
+            } finally {
+                ignoreEffectSpawn--
+                if (!entity._hidden) entity.hide()
+            }
+        },
+    })
 }, 3)

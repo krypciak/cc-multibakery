@@ -127,7 +127,7 @@ export const varsGlobalStateHandler: GlobalStateHandler = {
                 .map(mapName => multi.server.maps.get(mapName))
                 .map(map => map?.inst!)
                 .filter(Boolean),
-            () => ig.game.varsChangedDeferred()
+            () => ig.game.varsChanged()
         )
     },
 }

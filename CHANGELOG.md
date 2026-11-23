@@ -13,6 +13,7 @@
 - Fix crash on party menu enter while using gamepad
 - Fix crash on bounce switch hit
 - Fix killed entities spawning show effects on remote map join
+- Fix some entities playing hide effect on map join on remote
 
 ## [0.8.13] 2026-11-21
 
