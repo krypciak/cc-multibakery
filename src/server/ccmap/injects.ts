@@ -1,10 +1,9 @@
 import { assert } from '../../misc/assert'
 import { prestart } from '../../loading-stages'
-import { runTask, runTasks } from 'cc-instanceinator/src/inst-util'
+import { runTasks } from 'cc-instanceinator/src/inst-util'
 import { inputBackup } from '../../dummy/dummy-input'
 
 import './sound-position-fix'
-import { isPhysics } from '../physics/physics-server-types'
 
 prestart(() => {
     const backup = ig.CollTools.isInScreen
@@ -254,91 +253,6 @@ prestart(() => {
             const players = ig.game.entities.filter(e => e instanceof dummy.DummyPlayer) as dummy.DummyPlayer[]
             const maxDummyLevel = Math.max(newLevel, ...players.map(e => e.model.level))
             return this.parent(maxDummyLevel)
-        },
-    })
-})
-
-declare global {
-    namespace ig.ENTITY {
-        interface Elevator {
-            preMoveZ?: number
-            lastUsedPlayers?: string[]
-        }
-    }
-}
-prestart(() => {
-    let noRecursve = false
-    ig.ENTITY.Elevator.inject({
-        moveToDestination(destinationIndex) {
-            this.preMoveZ = this.coll.pos.z
-            return this.parent(destinationIndex)
-        },
-        performTeleport(destination) {
-            this.parent(destination)
-            if (!multi.server || noRecursve) return
-
-            const clients = ig.mapShared.ccmap.clients.filter(c => {
-                const ground = c.dummy?.coll._collData.groundEntry
-                return ground && ground.entity == this
-            })
-
-            for (const client of clients) {
-                if (client == ig.client) continue
-                try {
-                    noRecursve = true
-                    runTask(client.inst, () => this.performTeleport(destination))
-                } finally {
-                    noRecursve = false
-                }
-            }
-
-            assert(ig.client)
-            if (this.doTeleport) {
-                this.lastUsedPlayers = clients.map(p => p.username)
-                for (const client of clients) {
-                    const relativePos = Vec2.sub(Vec2.create(this.getCenter()), client.dummy.getCenter())
-                    relativePos.x = relativePos.x.limit(-this.coll.size.x / 2.2, this.coll.size.x / 2.2)
-                    relativePos.y = relativePos.y.limit(-this.coll.size.y / 2, this.coll.size.y / 2)
-                    client.teleportOverrides.pos = () => {
-                        const newPos = Vec2.sub(Vec2.create(client.dummy.coll.pos), relativePos)
-                        return newPos
-                    }
-                }
-            }
-        },
-        update() {
-            this.parent()
-            if (!isPhysics(multi.server) || !this.lastUsedPlayers) return
-
-            if (this.targetZ !== undefined && this.targetZ !== null && Math.abs(this.targetZ - this.coll.pos.z) < 1) {
-                for (const username of this.lastUsedPlayers) {
-                    const client = multi.server.clients.get(username)
-                    if (!client) continue
-                    runTask(client.inst, () => sc.elevatorModel.endMoveSound(this.sounds.end))
-                }
-                this.lastUsedPlayers = undefined
-                this.coll.vel.z = 0
-                this.targetZ = null
-                this.setZPos(this.preMoveZ!)
-                this.switchEntity.setMoving(false)
-            }
-        },
-    })
-})
-
-prestart(() => {
-    ig.GUI.ARBox.inject({
-        update() {
-            this.parent()
-            if (!multi.server) return
-
-            const targetInst = instanceinator.instances[this.target?._instanceId]
-            const thisInst = instanceinator.instances[this._instanceId]
-            if (!targetInst || targetInst.ig.mapShared.ccmap != thisInst.ig.mapShared.ccmap) {
-                this.remove()
-                this.hook.removeAfterTransition = false /* to force state transition call */
-                this.doStateTransition('HIDDEN', true, true)
-            }
         },
     })
 })

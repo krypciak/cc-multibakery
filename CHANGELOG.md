@@ -4,6 +4,10 @@
 
 ## [Unreleased]
 
+### Added
+
+- Add `ig.ENTITY.Elevator` remote state
+
 ### Fixed
 
 - Fix player.name feature of cc-alybox always beaing Lea (sitting fix)

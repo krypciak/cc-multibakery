@@ -65,6 +65,7 @@ const netEntityModuleArray: Promise<{ register: () => void }>[] = [
     import('./ig_ENTITY_KeyPanel'),
     import('./ig_ENTITY_ScalableProp'),
     import('./ig_ENTITY_TeslaCoil'),
+    import('./ig_ENTITY_Elevator'),
 ]
 
 async function registerAllNetEntities() {
