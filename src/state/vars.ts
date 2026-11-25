@@ -30,7 +30,7 @@ declare global {
 }
 
 function flattenRecursive(obj: Record<string, unknown>, path: string, into: Record<string, unknown>): void {
-    for (const key in obj) {
+    for (const key in obj ?? {}) {
         const value = obj[key]
         const newPath = path + '.' + key
         if (typeof value == 'object' && value) {
@@ -60,6 +60,7 @@ export const varsMapStateHandler: MapStateHandler = {
 
             packet.vars ??= {}
             flattenRecursive(ig.vars.storage.tmp, 'tmp', packet.vars)
+            flattenRecursive(ig.vars.storage.session, 'session', packet.vars)
         }
     },
     clear() {
@@ -79,6 +80,8 @@ export const varsMapStateHandler: MapStateHandler = {
     },
 }
 
+const globalIgnoreVarKeys = new Set(['maps', 'map', 'tmp', 'session', 'playerVar', 'mouse', '_system'])
+
 const globalEverSent = new WeakSet<GlobalStateKey>()
 let globalVarsChanged: VarObj | undefined = undefined
 export const varsGlobalStateHandler: GlobalStateHandler = {
@@ -89,10 +92,16 @@ export const varsGlobalStateHandler: GlobalStateHandler = {
             globalEverSent.add(conn)
 
             packet.vars ??= {}
-            flattenRecursive(ig.vars.storage.menu ?? {}, 'menu', packet.vars)
 
             for (const map in ig.vars.storage.maps) packet.vars[`maps.${map}`] ??= {}
             flattenRecursive(ig.vars.storage.maps ?? {}, 'maps', packet.vars)
+
+            for (const key in ig.vars.storage) {
+                if (globalIgnoreVarKeys.has(key)) continue
+                const obj = ig.vars.storage[key]
+                if (typeof obj != 'object') continue
+                flattenRecursive(obj, key, packet.vars)
+            }
         }
     },
     clear() {
@@ -146,12 +155,12 @@ prestart(() => {
             if (path.startsWith('map.')) {
                 path = 'maps.' + ig.vars.currentLevelName + path.substring(3)
             }
-            if (path.startsWith('maps.') || path.startsWith('menu.')) {
-                globalVarsChanged ??= {}
-                globalVarsChanged[path] = newValue
-            } else if (path.startsWith('tmp.')) {
+            if (path.startsWith('tmp.') || path.startsWith('session.')) {
                 ig.mapShared.varsChanged ??= {}
                 ig.mapShared.varsChanged[path] = newValue
+            } else {
+                globalVarsChanged ??= {}
+                globalVarsChanged[path] = newValue
             }
         })
     }
