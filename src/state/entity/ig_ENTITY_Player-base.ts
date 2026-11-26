@@ -137,11 +137,17 @@ prestart(() => {
 
     sc.QuickRingMenu.inject({
         update() {
-            if (multi.server) {
-                const active = !sc.pvp.isActive() && sc.model.player.itemBlockTimer <= 0 && !sc.quickmodel.itemsBlocked
-                this.items.setActive(active)
-            }
-            this.parent()
+            if (!multi.server) return this.parent()
+            const itemsActive = !sc.pvp.isActive() && sc.model.player.itemBlockTimer <= 0 && !sc.quickmodel.itemsBlocked
+            this.items.setActive(itemsActive)
+
+            const mapActive = (sc.model.isSaveAllowed() && !sc.model.isTeleportBlocked()) || !!sc.autoControl.isActive()
+            this.map.setActive(mapActive)
+
+            const partyActive = sc.model.player.getCore(sc.PLAYER_CORE.MENU_SOCIAL) && sc.party.currentParty.length > 0
+            this.party.setActive(partyActive)
+
+            return this.parent()
         },
     })
 })

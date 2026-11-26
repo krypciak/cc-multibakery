@@ -20,6 +20,7 @@
 - Fix some entities playing hide effect on map join on remote
 - Fix non standard global variables not getting sent to remote
 - Fix `ig.ENTITY.RegenDestruct` behaving glithy on remote
+- Fix quick menu map button staying disabled after cutscene ends requiring a quick menu reopen
 
 ## [0.8.13] 2026-11-21
 
