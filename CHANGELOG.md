@@ -22,6 +22,7 @@
 - Fix `ig.ENTITY.RegenDestruct` behaving glithy on remote
 - Fix quick menu map button staying disabled after cutscene ends requiring a quick menu reopen
 - Fix remote element hud glithing after switching elements multiple times on high latency
+- Fix enemies not having any attribs after joining a remote server and then loading a local save
 
 ## [0.8.13] 2026-11-21
 

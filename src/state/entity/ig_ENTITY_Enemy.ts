@@ -61,12 +61,4 @@ prestart(() => {
             if (!isRemote(multi.server)) return this.parent()
         },
     })
-
-    sc.EnemyType.inject({
-        initEntity(enemy) {
-            if (!isRemote(multi.server)) return this.parent(enemy)
-            this.attribs = {}
-            return this.parent(enemy)
-        },
-    })
 }, 2)
