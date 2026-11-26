@@ -21,6 +21,7 @@
 - Fix non standard global variables not getting sent to remote
 - Fix `ig.ENTITY.RegenDestruct` behaving glithy on remote
 - Fix quick menu map button staying disabled after cutscene ends requiring a quick menu reopen
+- Fix remote element hud glithing after switching elements multiple times on high latency
 
 ## [0.8.13] 2026-11-21
 

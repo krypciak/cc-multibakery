@@ -71,7 +71,16 @@ export function setEntityState(this: ig.ENTITY.Player | sc.PartyMemberEntity, st
     if (setParams) notifyMapAndPlayerInsts(this.model, sc.PLAYER_MSG.SET_PARAMS)
 
     if (state.element !== undefined) {
-        this.model.currentElementMode = state.element
+        if (
+            !ig.shared.settingStateImmediately &&
+            this instanceof dummy.DummyPlayer &&
+            this.getClient(true) &&
+            isRemote(multi.server)
+        ) {
+            /* element has already been set! */
+        } else {
+            this.model.currentElementMode = state.element
+        }
     }
 
     if (state.multiParty !== undefined && isRemote(multi.server)) {
