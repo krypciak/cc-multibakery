@@ -75,6 +75,13 @@ const eventStepWhitelist = new Set<keyof typeof ig.EVENT_STEP>([
     'SET_OVERLAY',
     'SHOW_AR_MSG',
 
+    // this doesnt cover arena timers but whatever
+    'ADD_TIMER',
+    'REMOVE_TIMER',
+    'RESET_TIMER',
+    'PAUSE_TIMER',
+    'RESUME_TIMER',
+
     'START_NPC_TRADE_MENU',
     'SHOW_INPUT_DIALOG',
     'SHOW_OBJECT_SLIDER_DIALOG',
@@ -83,7 +90,7 @@ const eventStepWhitelist = new Set<keyof typeof ig.EVENT_STEP>([
 const eventStepWhitelistClassIds = new Set<number>()
 prestart(() => {
     for (const name of eventStepWhitelist) {
-        eventStepWhitelistClassIds.add(ig.EVENT_STEP[name].classId)
+        eventStepWhitelistClassIds.add((ig.EVENT_STEP[name] as ImpactClass<ig.EventStepBase>).classId)
     }
 }, 2000)
 
