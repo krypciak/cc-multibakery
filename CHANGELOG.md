@@ -9,6 +9,10 @@
 - Add remote timers support
 - Add remote `ADD_GUI` related steps support
 
+### Fixed
+
+- Fix remote var state mismatch for vars with array indexing
+
 ## [0.8.14] 2026-11-26
 
 ### Added

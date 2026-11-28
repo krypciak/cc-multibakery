@@ -151,6 +151,7 @@ prestart(() => {
             ) {
                 return
             }
+            path = ig.VarPathResolver.resolve(path) ?? ''
 
             if (path.startsWith('map.')) {
                 path = 'maps.' + ig.vars.currentLevelName + path.substring(3)
