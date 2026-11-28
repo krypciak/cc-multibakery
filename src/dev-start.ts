@@ -14,16 +14,17 @@ import { getModCompatibilityErrorListText, isModCompatibilityListSatisfied } fro
 const defaultMap: MapTpInfo | undefined = false
     ? undefined
     : //
-      { map: 'multibakery/mba-dev' }
-// { map: 'co-op-dng/template', }
+      // { map: 'co-op-dng/intro-rooms/room-4', marker: 'd1' }
+      // { map: 'multibakery/mba-lobby', }
+      // { map: 'multibakery/mba-dev' }
+      // { map: 'co-op-dng/template' }
+      { map: 'cold-dng/g/center' }
 // { map: 'co-op-dng/nw/g/room-nw5', marker: 'd2' }
 
 // { map: 'multibakery/dev', marker: 'entrance' },
 // { map: 'co-op-dng/template', }
 // { map: 'xpc/bonus/art-testing', }
 // { map: 'multibakery/mba-pvp', marker: 'to_pvp', }
-
-// { map: 'co-op-dng/intro-rooms/room-3', marker: 'd1', }
 
 // map: 'autumn/path6',
 // map: 'autumn/path-7-1',
@@ -32,7 +33,6 @@ const defaultMap: MapTpInfo | undefined = false
 // map: 'autumn/path4',
 // map: 'autumn/guild/inner-fs-og',
 // map: 'tree-dng/f4/boss',
-// map: 'multibakery/mba-lobby',
 // map: 'multibakery/mba-testing',
 // map: 'multibakery/mba-outdoors', marker: 'right-1',
 // map: 'multibakery/mba-south',
@@ -92,11 +92,11 @@ function createSettings(): PhysicsServerSettings {
         attemptCrashRecovery: false,
         godmode: true,
         disablePlayerIdlePose: true,
-        save: false
+        save: true
             ? {
                   manualSaving: true,
                   automaticallySave: true,
-                  loadFromSlot: 1,
+                  loadFromSlot: 0,
               }
             : undefined,
         netInfo: true
