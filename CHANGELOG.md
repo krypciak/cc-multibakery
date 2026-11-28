@@ -7,6 +7,7 @@
 ### Added
 
 - Add remote timers support
+- Add remote `ADD_GUI` related steps support
 
 ## [0.8.14] 2026-11-26
 

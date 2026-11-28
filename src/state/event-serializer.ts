@@ -82,6 +82,13 @@ const eventStepWhitelist = new Set<keyof typeof ig.EVENT_STEP>([
     'PAUSE_TIMER',
     'RESUME_TIMER',
 
+    'ADD_GUI',
+    'REMOVE_GUI',
+    'CHANGE_GUI_STATE',
+    'SHOW_IMAGE',
+    'MOVE_IMAGE',
+    'REMOVE_IMAGE',
+
     'START_NPC_TRADE_MENU',
     'SHOW_INPUT_DIALOG',
     'SHOW_OBJECT_SLIDER_DIALOG',
